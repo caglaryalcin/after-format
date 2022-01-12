@@ -23,6 +23,7 @@ This script does exactly the following;
 - Hiding Taskview Icon from Taskbar
 - Hiding MultiTaskview Icon from Taskbar
 - Showing Small Icons in Taskbar
+- Hiding Taskbar Search
 - Removing Chat from Taskbar
 - Removing Widgets from Taskbar
 - Taskbar Aligns Left (For Windows 11)
