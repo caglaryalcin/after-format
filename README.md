@@ -141,7 +141,7 @@ This script does exactly the following;
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
   
   If you don't want to use WinGet, you can as below edit 'run.vbs' file in startup folder.
-```
+```vbs
 Set WshShell = CreateObject("WScript.Shell") 
 WshShell.Run chr(34) & "C:\startup\Run.cmd" & Chr(34), 0
 Set WshShell = Nothing
