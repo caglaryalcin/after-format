@@ -1,0 +1,1 @@
+@powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\after format\Admin.ps1" -include "C:\after format\Shells.psm1" -preset "C:\after format\Functions.preset"
