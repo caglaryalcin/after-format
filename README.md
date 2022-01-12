@@ -9,7 +9,7 @@ This script does exactly the following;
 <details><summary>System Settings</summary>&nbsp;
   
 - Date format is set to turkey
-- Getting the Old Classic Right-Click Context Menu
+- Getting the Old Classic Right-Click Context Menu (For Windows 11)
 - Disabling News and Interes on Taskbar
 - Default Old Photo Viewer
 - Setting Dark Mode for Applications
