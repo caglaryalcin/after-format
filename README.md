@@ -53,7 +53,6 @@ This script does exactly the following;
 - Disabling System Restore for System Drive
 - Setting Low UAC Level
 - Removing Unnecessary Tasks
-- Disabling Scheduled Defragmentation
 - Enabling Clearing of Recent Files on Exit
 - Disabling Recent Files Lists
 - Disabling Search for App in Store for Unknown Extensions
