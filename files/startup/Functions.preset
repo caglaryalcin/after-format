@@ -1,0 +1,14 @@
+### Require administrator privileges ###
+RequireAdmin
+
+ImportTask
+RemoveENKeyboard
+AddTRKeyboard
+RemoveStickyKeys
+RemoveToggleKeys
+RemoveTasks
+DefenderHistory
+DisableDefender
+HideDefenderTrayIcon
+DisableStartupApps
+SyncTime
