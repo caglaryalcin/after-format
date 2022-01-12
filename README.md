@@ -25,7 +25,7 @@ This script does exactly the following;
 - Showing Small Icons in Taskbar
 - Removing Chat from Taskbar
 - Removing Widgets from Taskbar
-- Taskbar Aligns Left
+- Taskbar Aligns Left (For Windows 11)
 - Hiding Recycle Bin Shortcut from Desktop
 - Disabling hiberfil.sys
 - Disabling Display and Sleep Mode Timeouts
