@@ -2,7 +2,7 @@
 
 If you new formatted your computer, you can run this script.
 
-After downloading the [zip](https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip) file, move the 'after-format-main' file inside the zip to 'C:\'. Then double click(don't right click and 'run as administrator') on 'Run.cmd' confirm User Account Control prompt. Make sure your account is a member of Administrators group as the script attempts to run with elevated privileges.
+After downloading the [zip](https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip) file, move the 'after-format-main' folder inside the zip to 'C:\'. Then double click(don't right click and 'run as administrator') on 'Run.cmd' confirm User Account Control prompt. Make sure your account is a member of Administrators group as the script attempts to run with elevated privileges.
 
 This script does exactly the following;
 
