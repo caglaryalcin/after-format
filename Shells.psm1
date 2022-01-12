@@ -48,7 +48,7 @@ Function TRFormats {
 
 #Default .ps1 file for Powershell
 Function Defaultps1 {
-    reg import "C:\after format\files\default_ps.reg" *>$null
+    reg import "C:\after-format-main\files\default_ps.reg" *>$null
 }
 
 #Get the Old Classic Right-Click Context Menu for Windows 11
@@ -71,7 +71,7 @@ Function DisableNews {
 #Default Photo Viewer Old
 Function DefaultPhotoViewer {
     Write-Host "Default Old Photo Viewer..." -NoNewline
-    reg import "C:\after format\files\default_foto.reg" *>$null
+    reg import "C:\after-format-main\files\default_foto.reg" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
@@ -1144,7 +1144,7 @@ Function DisableServices {
 #Set Wallpaper
 Function SetWallpaper {
 	Write-Host "Setting Desktop Wallpaper..." -NoNewline
-    Copy-Item -Path "c:\after format\files\hello.png" -Destination $env:USERPROFILE\Documents -Force
+    Copy-Item -Path "c:\after-format-main\files\hello.png" -Destination $env:USERPROFILE\Documents -Force
     Set-Itemproperty -path "HKCU:Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 }
@@ -1160,8 +1160,8 @@ Function ShowAllIcons {
 #Copy Files to Documents
 Function CopyFiles {
 	Write-Host "Copy Files to documents..." -NoNewline
-    Copy-Item -Path "c:\after format\files\Tools\SpaceSniffer.exe" -Destination $env:USERPROFILE\Documents -Force *>$null
-    Copy-Item -Path "c:\after format\files\Tools\speedtest.exe" -Destination $env:USERPROFILE\Documents -Force *>$null
+    Copy-Item -Path "c:\after-format-main\files\Tools\SpaceSniffer.exe" -Destination $env:USERPROFILE\Documents -Force *>$null
+    Copy-Item -Path "c:\after-format-main\files\Tools\speedtest.exe" -Destination $env:USERPROFILE\Documents -Force *>$null
     Set-Itemproperty -path "HKCU:\Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
@@ -1169,7 +1169,7 @@ Function CopyFiles {
 #Import Batch to Startup
 Function ImportStartup {
 	Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
-    Copy-Item -Path "C:\after format\files\startup\" -Destination "c:\" -Recurse *>$null
+    Copy-Item -Path "C:\after-format-main\files\startup\" -Destination "c:\" -Recurse *>$null
     cmd /c "C:\startup\Default.cmd" *>$null
     Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -1826,7 +1826,7 @@ catch
 # Disable Edge desktop shortcut creation after certain Windows updates are applied 
 Function UninstallEdge {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
-	cd "c:\after format\files" *>$null
+	cd "c:\after-format-main\files" *>$null
     .\remove_edge.bat *>$null
     Remove-Item -Path $env:temp\edge_version.txt -Force
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
@@ -1869,7 +1869,7 @@ Function Winget {
 # Install Browser 
 Function InstallSoftwares {
     Write-Host "Installing Latest Version Brave Browser..." -NoNewline
-    cd 'C:\after format\files\Software\'
+    cd 'C:\after-format-main\files\Software\'
     & '.\BraveLatest Setup.exe'
     Start-Sleep -Seconds 30
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
