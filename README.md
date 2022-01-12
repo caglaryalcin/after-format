@@ -52,9 +52,7 @@ This script does exactly the following;
 - Disabling Action Center (Notification Center)
 - Disabling System Restore for System Drive
 - Setting Low UAC Level
-- Fixing System Files
 - Removing Unnecessary Tasks
-- Disk Cleaning
 - Disabling Scheduled Defragmentation
 - Enabling Clearing of Recent Files on Exit
 - Disabling Recent Files Lists
