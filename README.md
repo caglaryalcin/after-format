@@ -110,8 +110,8 @@ This script does exactly the following;
 - Uninstalling Windows Fax and Scan Services
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
-  
-- Installing WinGet for Windows 10
+
+- [Installing WinGet for Windows 10](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script)
 - Installing Latest Version Brave Browser
 </details>
   
