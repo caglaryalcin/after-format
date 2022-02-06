@@ -101,7 +101,7 @@ DisableUpdateAutoDownload
 
 ### Remove Unused Apps/Softwares ###
 UninstallThirdPartyBloat
-UninstallMediaPlayer
+#UninstallMediaPlayer
 UninstallWorkFolders
 UninstallXPSPrinter
 RemoveFaxPrinter
