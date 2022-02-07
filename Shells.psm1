@@ -1073,9 +1073,6 @@ Function DisableServices {
     ##NetBIOS
     Stop-Service -Name "lmhosts" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "lmhosts" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Dokunmatik klavye
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\services\TabletInputService" -Name "Start" -Type DWord -Value 4 -ErrorAction SilentlyContinue
-    Set-Service -Name "TabletInputService" -StartupType disabled -ErrorAction SilentlyContinue
     ##Windows hata gonderme
     Stop-Service -Name "WerSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "WerSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
