@@ -113,6 +113,3 @@ UninstallFaxAndScan
 ### Install Softwares ###
 Winget
 InstallSoftwares
-
-### Restart ###
-Restart
