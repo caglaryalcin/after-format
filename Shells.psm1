@@ -115,6 +115,14 @@ Function EnableNumlock {
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
+# Disable Windows Beep Sound
+Function DisableBeepSound {
+	Write-Host "Disabling Windows Beep Sound..." -NoNewline
+	Set-ItemProperty -Path "HKCU:\Control Panel\Sound" -Name "Beep" -Type String -Value no
+    Set-Service beep -StartupType disabled *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
 # Disable IPv6 stack for all installed network interfaces 
 Function DisableIPv6 {
 	Write-Host "Disabling IPv6 stack..." -NoNewline

@@ -15,6 +15,7 @@ SetAppsDarkMode
 SetSystemDarkMode
 SetControlPanelLargeIcons
 EnableNumlock
+DisableBeepSound
 DisableIPv6
 #DisableVMEthernets
 DisableStartupApps
