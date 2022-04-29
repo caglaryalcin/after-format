@@ -16,6 +16,7 @@ This script does exactly the following;
 - Setting Dark Mode for System
 - Setting Control Panel View to Large Icons
 - Enabling NumLock After Startup
+- Disabling Windows Beep Sound
 - Disabling IPv6 stack
 - Disabling Startup Apps
 - Setting Cloud Flare DNS
