@@ -115,6 +115,13 @@ Function EnableNumlock {
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
+# Set Hostname
+Function SetHostname {
+	Write-Host "Hostname is Setting to 'm4a1' ..." -NoNewline
+	Rename-Computer -NewName "m4a1" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
 # Disable Windows Beep Sound
 Function DisableBeepSound {
 	Write-Host "Disabling Windows Beep Sound..." -NoNewline

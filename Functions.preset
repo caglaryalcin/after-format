@@ -15,6 +15,7 @@ SetAppsDarkMode
 SetSystemDarkMode
 SetControlPanelLargeIcons
 EnableNumlock
+SetHostname
 DisableBeepSound
 DisableIPv6
 #DisableVMEthernets
@@ -31,8 +32,8 @@ TaskbarAlignLeft
 HideRecycleBinFromDesktop
 DisableHiberfil
 DisableSleepTimeout
-DisableDefender
-HideDefenderTrayIcon
+#DisableDefender
+#HideDefenderTrayIcon
 DisableUpdateMSProducts
 DisableCortana
 DisableWebSearch
