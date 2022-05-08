@@ -1862,34 +1862,112 @@ Function UninstallFaxAndScan {
 ##########
 
 ##########
-#region Install Software
+#region Install Softwares
 ##########
 
-# Install Winget for Windows 10  
-
 Function Winget {
-    Write-Host "Installing Winget for Windows 10..." -NoNewline
-	$hasPackageManager = Get-AppPackage -name "Microsoft.DesktopAppInstaller"
-    $progressPreference = 'SilentlyContinue'
-	Add-AppxPackage -Path "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" *>$null
-	$releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-	$releases = Invoke-RestMethod -uri "$($releases_url)"
-	$latestRelease = $releases.assets | Where { $_.browser_download_url.EndsWith("msixbundle") } | Select -First 1
-    $progressPreference = 'SilentlyContinue'
-	Add-AppxPackage -Path $latestRelease.browser_download_url *>$null
+    Write-Host `n"---------Install Softwares" -ForegroundColor Blue -BackgroundColor Black
+
+    Write-Host `n"Installing Winget..." -NoNewline
+    $progressPreference = 'silentlyContinue'
+	Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx *>$null
+    Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
-# Install Browser 
 Function InstallSoftwares {
-    Write-Host "Installing Latest Version Brave Browser..." -NoNewline
-    cd 'C:\after-format-main\files\Software\'
-    & '.\BraveLatest Setup.exe'
-    Start-Sleep -Seconds 30
+    Write-Host "Installing 7-Zip..." -NoNewline
+cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Firefox..." -NoNewline
+cmd.exe /c "winget install Mozilla.Firefox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Chrome..." -NoNewline
+cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing PuTTY..." -NoNewline
+cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing iTunes..." -NoNewline
+cmd.exe /c "winget install iTunes -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Notepad++..." -NoNewline
+cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing VMWare Workstation Pro..." -NoNewline
+cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Filezilla..." -NoNewline
+cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    
+    Write-Host "Installing Deluge..." -NoNewline
+cmd.exe /c "winget install DelugeTeam.Deluge -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing HWMonitor..." -NoNewline
+cmd.exe /c "winget install hwmonitor -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Cryptomator..." -NoNewline
+cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing LibreOffice..." -NoNewline
+cmd.exe /c "winget install LibreOffice -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Wireshark..." -NoNewline
+cmd.exe /c "winget install Wireshark -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing VirtualBox..." -NoNewline
+cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Steam..." -NoNewline
+cmd.exe /c "winget install Steam -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Signal Desktop..." -NoNewline
+cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Rufus..." -NoNewline
+cmd.exe /c "winget install Rufus -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing K-Lite Codec Pack Mega..." -NoNewline
+cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing TreeSize..." -NoNewline
+cmd.exe /c "winget install TreeSize -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Speedtest..." -NoNewline
+cmd.exe /c "winget install Ookla.Speedtest -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Windows Terminal..." -NoNewline
+$progressPreference = 'silentlyContinue'
+Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v1.12.10982.0/Microsoft.WindowsTerminal_Win10_1.12.10982.0_8wekyb3d8bbwe.msixbundle' -OutFile 'C:\WindowsTerminal.msixbundle'
+Add-AppPackage -path "C:\WindowsTerminal.msixbundle"
+Remove-Item -Path C:\WindowsTerminal.msixbundle -recurse
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
 ##########
 #endregion Install Software
 ##########
+
+Function Restart {
+cmd.exe /c "shutdown /r /t 0"
+}
