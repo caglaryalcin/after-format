@@ -1,3 +1,5 @@
+![Alt Text](https://github.com/caglaryalcin/after-format/blob/main/files/flow.gif)
+
 ## Description
 
 If you new formatted your computer on Windows 10-11, you can run this script.
