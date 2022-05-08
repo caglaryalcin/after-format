@@ -1956,6 +1956,10 @@ cmd.exe /c "winget install TreeSize -e --silent --accept-package-agreements --ac
 cmd.exe /c "winget install Ookla.Speedtest -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
+    Write-Host "Installing AnyDesk..." -NoNewline
+cmd.exe /c "winget install AnyDesk -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
     Write-Host "Installing Windows Terminal..." -NoNewline
 $progressPreference = 'silentlyContinue'
 Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v1.12.10982.0/Microsoft.WindowsTerminal_Win10_1.12.10982.0_8wekyb3d8bbwe.msixbundle' -OutFile 'C:\WindowsTerminal.msixbundle'
