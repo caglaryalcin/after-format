@@ -1941,23 +1941,23 @@ cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Rufus..." -NoNewline
-cmd.exe /c "winget install Rufus -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing K-Lite Codec Pack Mega..." -NoNewline
-cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing TreeSize..." -NoNewline
-cmd.exe /c "winget install TreeSize -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install TreeSize -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Speedtest..." -NoNewline
-cmd.exe /c "winget install Ookla.Speedtest -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Ookla.Speedtest -e --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing AnyDesk..." -NoNewline
-cmd.exe /c "winget install AnyDesk -e --silent --accept-package-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Windows Terminal..." -NoNewline
