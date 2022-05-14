@@ -1959,6 +1959,10 @@ cmd.exe /c "winget install Ookla.Speedtest -e --accept-source-agreements --accep
     Write-Host "Installing AnyDesk..." -NoNewline
 cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    
+    Write-Host "Installing Visual Studio Code..." -NoNewline
+cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Windows Terminal..." -NoNewline
 $progressPreference = 'silentlyContinue'
