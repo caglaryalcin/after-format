@@ -9,3 +9,4 @@ Windows Registry Editor Version 5.00
 ".jpeg"="PhotoViewer.FileAssoc.Tiff"
 ".jpg"="PhotoViewer.FileAssoc.Tiff"
 ".ico"="PhotoViewer.FileAssoc.Tiff"
+".dng"="PhotoViewer.FileAssoc.Tiff"
