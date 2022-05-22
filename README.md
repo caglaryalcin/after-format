@@ -118,10 +118,7 @@ This script does exactly the following;
   
 > **_NOTE 1:_** Before executing the script, add # at the beginning of the line you don't want from file 'Functions.Preset'.
 
-> **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.
-  
-> **_NOTE 3:_** After run this script, you can check useful tools from in Documents.
-  
+> **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
 
 <p>
 
