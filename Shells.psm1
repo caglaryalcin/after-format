@@ -117,10 +117,9 @@ Function EnableNumlock {
 
 # Set Hostname
 Function SetHostname {
-	Write-Host "Hostname is Setting..." 
-    $hostname = Read-Host -Prompt 'Please enter your hostname'
-    Rename-Computer -NewName "$hostname" *>$null
-    Write-Host "Hostname is set to "$hostname"" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+	Write-Host "Hostname is Setting to m4a1..." 
+    Rename-Computer -NewName "m4a1" *>$null
+    Write-Host "[DONE]"" -ForegroundColor Yellow -BackgroundColor Black
 }
 
 # Disable Windows Beep Sound
