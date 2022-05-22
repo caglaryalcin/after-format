@@ -135,7 +135,7 @@ This script does exactly the following;
 - Sync Windows Localtime
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
   
-  If you don't want to use startup updates, you can as below edit 'run.vbs' file in startup folder.
+  If you don't want to use startup updates, you can as below edit 'run.vbs' file in 'C:\after-format-main\files\startup' folder.
 ```vbs
 Set WshShell = CreateObject("WScript.Shell") 
 WshShell.Run chr(34) & "C:\startup\Run.cmd" & Chr(34), 0
