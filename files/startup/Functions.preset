@@ -2,13 +2,13 @@
 RequireAdmin
 
 ImportTask
-RemoveENKeyboard
-AddTRKeyboard
+#RemoveENKeyboard
+#AddTRKeyboard
 RemoveStickyKeys
 RemoveToggleKeys
 RemoveTasks
-DefenderHistory
-DisableDefender
-HideDefenderTrayIcon
+#DefenderHistory
+#DisableDefender
+#HideDefenderTrayIcon
 DisableStartupApps
 SyncTime
