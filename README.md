@@ -124,8 +124,7 @@ This script does exactly the following; (You can optionally reply(y/n) to groups
 
 ### Startup Script
   
-You can use just startup script too, follow the instructions below.
-After downloading the [zip](https://github.com/caglaryalcin/windows-scripts/archive/refs/heads/main.zip) file, move the 'after-format-main\files\startup' folder inside the zip to 'C:\'. Then double click(don't right click and 'run as administrator') on 'Run.cmd' confirm User Account Control prompt. Make sure your account is a member of Administrators group as the script attempts to run with elevated privileges.
+There is another script called startup in the script.
 
 This script does exactly the following;
 - Importing Previously Set Task to Task Scheduler
@@ -134,6 +133,8 @@ This script does exactly the following;
 - Remove Unnecessary Tasks(update and such) in Task Scheduler.(It also adds task to delete Unnecessary Tasks on every boot)
 - Sync Windows Localtime
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
+  
+> **_NOTE 1:_** You can put '#' at the beginning of the functions you want to add or remove in the functions.preset file in 'C:\after-format-main\files\startup' folder.
   
   If you don't want to use startup updates, you can as below edit 'run.vbs' file in 'C:\after-format-main\files\startup' folder.
 ```vbs
