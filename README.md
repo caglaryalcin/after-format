@@ -129,16 +129,13 @@ After downloading the [zip](https://github.com/caglaryalcin/windows-scripts/arch
 
 This script does exactly the following;
 - Importing Previously Set Task to Task Scheduler
-- Removing Secondary en-US Keyboard
-- Adding tr-TR Keyboard
 - Removing Stick Keys
 - Removing Toggle Keys
 - Remove Unnecessary Tasks(update and such) in Task Scheduler.(It also adds task to delete Unnecessary Tasks on every boot)
-- Deleting Windows Defender History
 - Sync Windows Localtime
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
   
-  If you don't want to use WinGet, you can as below edit 'run.vbs' file in startup folder.
+  If you don't want to use startup updates, you can as below edit 'run.vbs' file in startup folder.
 ```vbs
 Set WshShell = CreateObject("WScript.Shell") 
 WshShell.Run chr(34) & "C:\startup\Run.cmd" & Chr(34), 0
