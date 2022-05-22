@@ -1706,7 +1706,6 @@ Function UninstallThirdPartyBloat {
     Get-AppxPackage -AllUsers Microsoft.People | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
     Get-AppxPackage -AllUsers Microsoft.Print3D | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
     Get-AppxPackage -AllUsers Microsoft.Reader | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
-    Get-AppxPackage -AllUsers Microsoft.SkypeApp | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
     Get-AppxPackage -AllUsers Microsoft.Todos | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
     Get-AppxPackage -AllUsers Microsoft.Wallet | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
     Get-AppxPackage -AllUsers Microsoft.WebMediaExtensions | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
