@@ -2236,6 +2236,10 @@ cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --acce
     Write-Host "Installing Libre Wolf..." -NoNewline
 cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    
+    Write-Host "Installing VLC Media Player..." -NoNewline
+cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Windows Terminal..." -NoNewline
 $progressPreference = 'silentlyContinue'
