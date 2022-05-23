@@ -6,7 +6,7 @@ If you new formatted your computer on Windows 10 Pro, Windows 11, you can run th
 
 After downloading the [zip](https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip) file, move the 'after-format-main' folder inside the zip to 'C:\'. Then double click(don't right click and 'run as administrator') on 'Run.cmd' confirm User Account Control prompt. Make sure your account is a member of Administrators group as the script attempts to run with elevated privileges.
 
-This script does exactly the following; (You can optionally reply(y/n) to groups)
+This script does exactly the following; (Some are optional(y/n))
 
 <details><summary>System Settings</summary>&nbsp;
   
