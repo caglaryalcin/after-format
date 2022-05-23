@@ -62,7 +62,7 @@ Function TRFormats {
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 else {
-    Write-Host 'Turkish keyboard adjustment has been canceled' -ForegroundColor Red -BackgroundColor Black
+    Write-Host "[Turkish keyboard adjustment has been canceled]" -ForegroundColor Red -BackgroundColor Black
 }
 }
 
@@ -361,6 +361,14 @@ Function DisableSleepTimeout {
 
 DisableSleepTimeout
 
+Write-Host "Do you want " -NoNewline
+Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
+Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+$systemset = Read-Host
+
+if ($systemset -match "[Yy]") {
+
+# DisableDefender
 Function DisableDefender {
 	Write-Host "Disabling Windows Defender..." -NoNewline
     # Disable Defender Cloud
@@ -432,8 +440,9 @@ Function DisableDefender {
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
 
-#DisableDefender
+DisableDefender
 
+# Hide Defender Tray Icon on Taskbar
 Function HideDefenderTrayIcon {
 	Write-Host "Hiding Windows Defender SysTray icon..." -NoNewline
 	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray")) {
@@ -446,13 +455,19 @@ Function HideDefenderTrayIcon {
 		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "SecurityHealth" -ErrorAction SilentlyContinue
 	}
 	Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
 }
 
-#HideDefenderTrayIcon
+HideDefenderTrayIcon
+
+}
+else {
+    Write-Host "[Windows Defender will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+}
 
 # Disable receiving updates for other Microsoft products via Windows Update
 Function DisableUpdateMSProducts {
-	Write-Host "Disabling Updates for Other Microsoft Products..." -NoNewline
+	Write-Host `n"Disabling Updates for Other Microsoft Products..." -NoNewline
 	If ((New-Object -ComObject Microsoft.Update.ServiceManager).Services | Where-Object { $_.ServiceID -eq "7971f918-a847-4430-9279-4a52d1efe18d"}) {
 		(New-Object -ComObject Microsoft.Update.ServiceManager).RemoveService("7971f918-a847-4430-9279-4a52d1efe18d") | Out-Null
 	}
@@ -1872,99 +1887,185 @@ Function UninstallThirdPartyBloat {
 	Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsAlarms | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -Allusers Microsoft.AppConnector | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Cortana | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -Allusers Microsoft.549981C3F5F10 | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.YourPhone | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
-    Get-AppxPackage -AllUsers Microsoft.Edge| Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingFinance | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingFoodAndDrink | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingHealthAndFitness | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingMaps | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingNews | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingSports | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingTranslator | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingTravel | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.BingWeather | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsFeedbackHub| Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.GetHelp| Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.3DBuilder | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *Skype* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Getstarted | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsZuneMusic | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.ZuneMusic | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsMaps | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -Allusers Microsoft.Skydrive | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *messaging* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsZuneVideo | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.ZuneVideo | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Office.OneNote | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.OneConnect | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.People | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsPhone | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Windows.Photos | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Reader | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Office.Sway | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.SoundRecorder | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.XboxApp | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *ACG* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *CandyCrush* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *Facebook* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *Plex* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *Spotify* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *Twitter* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *Viber* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *3d* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *comm* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *mess* | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.CommsPhone | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.ConnectivityStore | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.FreshPaint | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.GetHelp | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Getstarted | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.HelpAndTips | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Media.PlayReadyClient.2 | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Messaging | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Microsoft3DViewer | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MicrosoftPowerBIForWindows | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MinecraftUWP | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MixedReality.Portal | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MoCamera | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.MSPaint | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.NetworkSpeedTest | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.OfficeLens | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Office.OneNote | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Office.Sway | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.OneConnect | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.People | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Print3D | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Reader | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Todos | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Wallet | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WebMediaExtensions | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Whiteboard | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsAlarms | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers microsoft.windowscommunicationsapps | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsFeedbackHub | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsMaps | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsPhone | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Windows.Photos | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsReadingList | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsScan | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsSoundRecorder | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WinJS.1.0 | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WinJS.2.0 | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.YourPhone | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.ZuneMusic | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.ZuneVideo | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Advertising.Xaml | Remove-AppxPackage  | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers *Microsoft.ScreenSketch*  | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     Get-AppxPackage "2414FC7A.Viber" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
 	Get-AppxPackage "41038Axilesoft.ACGMediaPlayer" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
@@ -2095,19 +2196,30 @@ UninstallOneDrive
 
 # Disable Edge desktop shortcut creation after certain Windows updates are applied 
 Function UninstallEdge {
+    Write-Host "Do you want " -NoNewline
+    Write-Host "remove Windows Edge?" -ForegroundColor Yellow -NoNewline
+    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+    $input = Read-Host
+    if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
 	cd "c:\after-format-main\files" *>$null
     .\remove_edge.bat *>$null
     Remove-Item -Path $env:temp\edge_version.txt -Force
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
+    $progressPreference = 'SilentlyContinue'
+    Get-AppxPackage -AllUsers Microsoft.Edge| Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
+}
+else {
+    Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+}
 }
 
 UninstallEdge
 
 # Uninstall Windows Fax and Scan Services - Not applicable to Server
 Function UninstallFaxAndScan {
-	Write-Host "Uninstalling Windows Fax and Scan Services..." -NoNewline
+	Write-Host `n"Uninstalling Windows Fax and Scan Services..." -NoNewline
     $progressPreference = 'silentlyContinue'
 	Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart | Out-Null
 	Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online | Out-Null
@@ -2174,7 +2286,7 @@ cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --ac
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing VMWare Workstation Pro..." -NoNewline
-cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Filezilla..." -NoNewline
