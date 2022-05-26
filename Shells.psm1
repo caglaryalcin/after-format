@@ -77,7 +77,7 @@ Defaultps1
 
 #Get the Old Classic Right-Click Context Menu for Windows 11
 Function RightClickMenu {
-    Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
+    Write-Host `n"Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
     New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" *>$null
     New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" *>$null
     Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value $null *>$null
@@ -462,7 +462,7 @@ HideDefenderTrayIcon
 
 }
 else {
-    Write-Host "[Windows Defender will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+    Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
 }
 
 # Disable receiving updates for other Microsoft products via Windows Update
@@ -2201,15 +2201,17 @@ Function UninstallEdge {
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $input = Read-Host
     if ($input -match "[Yy]") {
+
 	Write-Host "Removing Microsoft Edge..." -NoNewline
 	cd "c:\after-format-main\files" *>$null
     .\remove_edge.bat *>$null
     Remove-Item -Path $env:temp\edge_version.txt -Force
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     $progressPreference = 'SilentlyContinue'
-    Get-AppxPackage -AllUsers Microsoft.Edge| Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
+
 else {
     Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
 }
@@ -2372,6 +2374,56 @@ else {
 
 ##########
 #endregion Install Software
+##########
+
+##########
+#region My Custom Drivers
+##########
+
+Write-Host `n"Do you own " -NoNewline
+Write-Host "this script?:" -ForegroundColor Red -NoNewline -BackgroundColor Black
+$systemset = Read-Host
+
+if ($systemset -match "[Yy]") {
+
+Function Drivers {
+
+Write-Host `n"Installing Chipset Driver..." -NoNewline
+$progressPreference = 'silentlyContinue'
+Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
+$progressPreference = 'silentlyContinue'
+Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force
+$progressPreference = 'silentlyContinue'
+C:\Asus\SetupChipset.exe -s
+Start-Sleep 15
+Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
+Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+Write-Host "Installing Nvidia Driver..." -NoNewline
+$progressPreference = 'silentlyContinue'
+Invoke-WebRequest -Uri https://tr.download.nvidia.com/Windows/472.12/472.12-desktop-win10-win11-64bit-international-whql.exe -OutFile C:\Nvidia.exe
+$progressPreference = 'silentlyContinue'
+C:\Nvidia.exe -s
+Start-Sleep 60
+Start-Process C:\Nvidia.exe -NoNewWindow -Wait
+Start-Process C:\NVIDIA\DisplayDriver\472.12\Win11_Win10_64\International\setup.exe -NoNewWindow -Wait
+Remove-Item C:\Nvidia.exe -recurse -ErrorAction SilentlyContinue
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+}
+
+Drivers
+
+}
+
+else {
+    Write-Host "[The Process Cancelled]" -ForegroundColor Green -BackgroundColor Black
+}
+
+
+##########
+#endregion My Custom Drivers
 ##########
 
 Function Restart {
