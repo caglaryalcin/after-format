@@ -21,7 +21,8 @@ powershell -command (Get-Command 'C:\Program Files (x86)\Microsoft\Edge\Applicat
 timeout 4 >nul
 echo.Uninstalling Microsoft Edge ^(NEW^)...
 set /p EDGE=<%TMP%\edge_version.txt
-"C:\Program Files (x86)\Microsoft\Edge\Application\%EDGE%\Installer\setup.exe" -uninstall -system-level -verbose-logging -force-uninstall
+cd "C:\Program Files (x86)\Microsoft\Edge\Application\*1*\Installer\"
+setup.exe -uninstall -system-level -verbose-logging -force-uninstall
 echo.To complete the uninstallation of Microsoft Edge ^(NEW^) please restart Windows...
 timeout 8 >nul
 exit
