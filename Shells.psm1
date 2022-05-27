@@ -16,9 +16,6 @@ New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-
 ##########
 
 Function Info {
-    Get-ComputerInfo CsProcessors |Out-Host;
-    Get-CimInstance -ClassName Win32_VideoController | Select Description |Out-Host;
-    Get-Disk | Select FriendlyName, HealthStatus |Out-Host;
     Get-ComputerInfo -Property OSName, OsArchitecture, CsProcessorsOSName |Out-Host;
 }
 
@@ -50,8 +47,8 @@ Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -Backgro
 
 #Set TR Formatss
 Function TRFormats {
-    Write-Host `n"Do you want to adjust the keyboard settings according to " -NoNewline
-    Write-Host "Turkey?" -ForegroundColor Yellow -NoNewline
+    Write-Host `n"Do you want to change the region settings to " -NoNewline
+    Write-Host "Turkey?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $input = Read-Host
     if ($input -match "[Yy]") {
@@ -62,11 +59,111 @@ Function TRFormats {
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 else {
-    Write-Host "[Turkish keyboard adjustment has been canceled]" -ForegroundColor Red -BackgroundColor Black
+    Write-Host "[Turkish region format adjustment has been canceled]" -ForegroundColor Red -BackgroundColor Black
 }
 }
 
 TRFormats
+
+# Set Hostname
+Function SetHostname {
+    Write-Host "Do you want change your " -NoNewline
+    Write-Host "hostname?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+    $input = Read-Host
+    if ($input -match "[Yy]") {
+    $hostq = Write-Host "Please enter your hostname:" -ForegroundColor White -BackgroundColor Red -NoNewline
+    $hostname = Read-Host -Prompt $hostq
+    Rename-Computer -NewName "$hostname" *>$null
+    Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor Black
+    }
+else {
+    Write-Host "[The Process Cancelled]" -ForegroundColor Red -BackgroundColor Black
+}
+}
+
+SetHostname
+
+Write-Host "Do you want " -NoNewline
+Write-Host "disable Windows Defender?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+$systemset = Read-Host
+
+if ($systemset -match "[Yy]") {
+
+# DisableDefender
+Function DisableDefender {
+	Write-Host "Disabling Windows Defender..." -NoNewline
+    # Disable Defender Cloud
+	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")) {
+		New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
+    }
+    # REG
+    Remove-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Recurse -ErrorAction SilentlyContinue
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -PropertyType Dword -Value "1" *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiVirus" -PropertyType Dword -Value "1" *>$null
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows Defender" -Name "DisableRoutinelyTakingAction"-PropertyType Dword -Value "1" *>$null
+    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\MpEngine" -Force *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\MpEngine" -Name "MpEnablePus" -PropertyType Dword -Value "0" *>$null
+    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Force *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableBehaviorMonitoring" -PropertyType Dword -Value "1" *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableIOAVProtection" -PropertyType Dword -Value "1" *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -PropertyType Dword -Value "1" *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -PropertyType Dword -Value "1" *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableScanOnRealtimeEnable" -PropertyType Dword -Value "1" *>$null
+    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Force *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Name "DisableEnhancedNotifications" -PropertyType Dword -Value "1" *>$null
+    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Force *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "DisableBlockAtFirstSeen" -PropertyType Dword -Value "1" *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "SpynetReporting" -PropertyType Dword -Value "0" *>$null
+    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "SubmitSamplesConsent" -PropertyType Dword -Value "0" *>$null
+    Set-Item "HKLM:\SOFTWARE\Classes\CLSID\{09A47860-11B0-4DA5-AFA5-26D86198A780}\InprocServer32" "" *>$null
+    
+    # Disable Logging
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\WMI\Autologger\DefenderApiLogger" -Name "Start" -Type Dword -Value 0 *>$null
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\WMI\Autologger\DefenderAuditLogger" -Name "Start" -Type Dword -Value 0 *>$null
+    
+    # Disable WD Tasks
+    schtasks /Change /TN "Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh" /Disable *>$null
+    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /Disable *>$null
+    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /Disable *>$null
+    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /Disable *>$null
+    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Verification" /Disable *>$null
+    
+    # Remove WD context menu
+    New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+    Remove-Item -LiteralPath "HKCR:\*\shellex\ContextMenuHandlers\EPP" -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKCR:\Directory\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKCR:\Drive\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
+
+    # Disable WD services
+    #reg add "HKLM\System\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d "4" /f
+    #reg add "HKLM\System\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d "4" /f
+    #reg add "HKLM\System\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d "4" /f
+    #reg add "HKLM\System\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d "4" /f
+    #reg add "HKLM\System\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d "4" /f
+    #reg add "HKLM\System\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d "4" /f
+    
+    #PS
+    Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction Ignore;
+    Set-MpPreference -DisableBehaviorMonitoring $true -ErrorAction Ignore;
+    Set-MpPreference -DisableBlockAtFirstSeen $true -ErrorAction Ignore;
+    Set-MpPreference -DisableIOAVProtection $true -ErrorAction Ignore;
+    Set-MpPreference -DisablePrivacyMode $true -ErrorAction Ignore;
+    Set-MpPreference -SignatureDisableUpdateOnStartupWithoutEngine $true -ErrorAction Ignore;
+    Set-MpPreference -DisableArchiveScanning $true -ErrorAction Ignore;
+    Set-MpPreference -DisableIntrusionPreventionSystem $true -ErrorAction Ignore;
+    Set-MpPreference -DisableScriptScanning $true -ErrorAction Ignore;
+    Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Ignore;
+    Set-MpPreference -MAPSReporting 0 -ErrorAction Ignore;
+    Set-MpPreference -HighThreatDefaultAction 6 -Force -ErrorAction Ignore;
+    Set-MpPreference -ModerateThreatDefaultAction 6 -ErrorAction Ignore;
+    Set-MpPreference -LowThreatDefaultAction 6 -ErrorAction Ignore;
+    Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
+}
+
+DisableDefender
 
 #Default .ps1 file for Powershell
 Function Defaultps1 {
@@ -142,7 +239,7 @@ Function EnableNumlock {
 	If (!(Test-Path "HKU:")) {
 		New-PSDrive -Name "HKU" -PSProvider "Registry" -Root "HKEY_USERS" | Out-Null
 	}
-	Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 2147483650
+	Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value "2147483650"
 	Add-Type -AssemblyName System.Windows.Forms
 	If (!([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
 		$wsh = New-Object -ComObject WScript.Shell
@@ -152,25 +249,6 @@ Function EnableNumlock {
 }
 
 EnableNumlock
-
-# Set Hostname
-Function SetHostname {
-    Write-Host "Do you want change your " -NoNewline
-    Write-Host "hostname?" -ForegroundColor Yellow -NoNewline
-    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-    $input = Read-Host
-    if ($input -match "[Yy]") {
-    $hostq = Write-Host "Please enter your hostname:" -ForegroundColor White -BackgroundColor Red -NoNewline
-    $hostname = Read-Host -Prompt $hostq
-    Rename-Computer -NewName "$hostname" *>$null
-    Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor Black
-    }
-else {
-    Write-Host "[The Process Cancelled]" -ForegroundColor Red -BackgroundColor Black
-}
-}
-
-SetHostname
 
 # Disable Windows Beep Sound
 Function DisableBeepSound {
@@ -360,87 +438,6 @@ Function DisableSleepTimeout {
 }
 
 DisableSleepTimeout
-
-Write-Host "Do you want " -NoNewline
-Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
-Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-$systemset = Read-Host
-
-if ($systemset -match "[Yy]") {
-
-# DisableDefender
-Function DisableDefender {
-	Write-Host "Disabling Windows Defender..." -NoNewline
-    # Disable Defender Cloud
-	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")) {
-		New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
-    }
-    # REG
-    Remove-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Recurse -ErrorAction SilentlyContinue
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -PropertyType Dword -Value "1" *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiVirus" -PropertyType Dword -Value "1" *>$null
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows Defender" -Name "DisableRoutinelyTakingAction"-PropertyType Dword -Value "1" *>$null
-    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\MpEngine" -Force *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\MpEngine" -Name "MpEnablePus" -PropertyType Dword -Value "0" *>$null
-    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Force *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableBehaviorMonitoring" -PropertyType Dword -Value "1" *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableIOAVProtection" -PropertyType Dword -Value "1" *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -PropertyType Dword -Value "1" *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -PropertyType Dword -Value "1" *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableScanOnRealtimeEnable" -PropertyType Dword -Value "1" *>$null
-    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Force *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Name "DisableEnhancedNotifications" -PropertyType Dword -Value "1" *>$null
-    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Force *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "DisableBlockAtFirstSeen" -PropertyType Dword -Value "1" *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "SpynetReporting" -PropertyType Dword -Value "0" *>$null
-    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "SubmitSamplesConsent" -PropertyType Dword -Value "0" *>$null
-    Set-Item "HKLM:\SOFTWARE\Classes\CLSID\{09A47860-11B0-4DA5-AFA5-26D86198A780}\InprocServer32" "" *>$null
-    
-    # Disable Logging
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\WMI\Autologger\DefenderApiLogger" -Name "Start" -Type Dword -Value 0 *>$null
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\WMI\Autologger\DefenderAuditLogger" -Name "Start" -Type Dword -Value 0 *>$null
-    
-    # Disable WD Tasks
-    schtasks /Change /TN "Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh" /Disable *>$null
-    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /Disable *>$null
-    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /Disable *>$null
-    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /Disable *>$null
-    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Verification" /Disable *>$null
-    
-    # Remove WD context menu
-    New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-    Remove-Item -LiteralPath "HKCR:\*\shellex\ContextMenuHandlers\EPP" -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKCR:\Directory\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKCR:\Drive\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
-
-    # Disable WD services
-    #reg add "HKLM\System\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d "4" /f
-    #reg add "HKLM\System\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d "4" /f
-    #reg add "HKLM\System\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d "4" /f
-    #reg add "HKLM\System\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d "4" /f
-    #reg add "HKLM\System\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d "4" /f
-    #reg add "HKLM\System\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d "4" /f
-    
-    #PS
-    Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction Ignore;
-    Set-MpPreference -DisableBehaviorMonitoring $true -ErrorAction Ignore;
-    Set-MpPreference -DisableBlockAtFirstSeen $true -ErrorAction Ignore;
-    Set-MpPreference -DisableIOAVProtection $true -ErrorAction Ignore;
-    Set-MpPreference -DisablePrivacyMode $true -ErrorAction Ignore;
-    Set-MpPreference -SignatureDisableUpdateOnStartupWithoutEngine $true -ErrorAction Ignore;
-    Set-MpPreference -DisableArchiveScanning $true -ErrorAction Ignore;
-    Set-MpPreference -DisableIntrusionPreventionSystem $true -ErrorAction Ignore;
-    Set-MpPreference -DisableScriptScanning $true -ErrorAction Ignore;
-    Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Ignore;
-    Set-MpPreference -MAPSReporting 0 -ErrorAction Ignore;
-    Set-MpPreference -HighThreatDefaultAction 6 -Force -ErrorAction Ignore;
-    Set-MpPreference -ModerateThreatDefaultAction 6 -ErrorAction Ignore;
-    Set-MpPreference -LowThreatDefaultAction 6 -ErrorAction Ignore;
-    Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
-}
-
-DisableDefender
 
 # Hide Defender Tray Icon on Taskbar
 Function HideDefenderTrayIcon {
@@ -1880,6 +1877,27 @@ $removeapps = Read-Host
 
 if ($removeapps -match "[Yy]") {
 
+# Disable Edge desktop shortcut creation after certain Windows updates are applied 
+Function UninstallEdge {
+    Write-Host "Do you want " -NoNewline
+    Write-Host "remove Windows Edge?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+    $input = Read-Host
+    if ($input -match "[Yy]") {
+
+	Write-Host "Removing Microsoft Edge..." -NoNewline
+	cd "C:\Program Files (x86)\Microsoft\Edge\Application\*\Installer\"
+    .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
+}
+
+else {
+    Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+}
+}
+
+UninstallEdge
+
 # Remove Apps 
 Function UninstallThirdPartyBloat {
     Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Black
@@ -2194,31 +2212,6 @@ catch
 
 UninstallOneDrive
 
-# Disable Edge desktop shortcut creation after certain Windows updates are applied 
-Function UninstallEdge {
-    Write-Host "Do you want " -NoNewline
-    Write-Host "remove Windows Edge?" -ForegroundColor Yellow -NoNewline
-    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-    $input = Read-Host
-    if ($input -match "[Yy]") {
-
-	Write-Host "Removing Microsoft Edge..." -NoNewline
-	cd "c:\after-format-main\files" *>$null
-    .\remove_edge.bat *>$null
-    Remove-Item -Path $env:temp\edge_version.txt -Force
-    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
-    $progressPreference = 'SilentlyContinue'
-    Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
-}
-
-else {
-    Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
-}
-}
-
-UninstallEdge
-
 # Uninstall Windows Fax and Scan Services - Not applicable to Server
 Function UninstallFaxAndScan {
 	Write-Host `n"Uninstalling Windows Fax and Scan Services..." -NoNewline
@@ -2267,6 +2260,10 @@ Function InstallSoftwares {
 cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
+    Write-Host "Installing Brave Browser..." -NoNewline
+cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
     Write-Host "Installing Firefox..." -NoNewline
 cmd.exe /c "winget install Mozilla.Firefox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2277,10 +2274,6 @@ cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements 
 
     Write-Host "Installing PuTTY..." -NoNewline
 cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing iTunes..." -NoNewline
-cmd.exe /c "winget install iTunes -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Notepad++..." -NoNewline
@@ -2381,7 +2374,7 @@ else {
 ##########
 
 Write-Host `n"Do you own " -NoNewline
-Write-Host "this script?:" -ForegroundColor Red -NoNewline -BackgroundColor Black
+Write-Host "this script?(Drivers will be installed):" -ForegroundColor Red -NoNewline -BackgroundColor Black
 $systemset = Read-Host
 
 if ($systemset -match "[Yy]") {
@@ -2392,24 +2385,13 @@ Write-Host `n"Installing Chipset Driver..." -NoNewline
 $progressPreference = 'silentlyContinue'
 Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
 $progressPreference = 'silentlyContinue'
-Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force
+Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
 $progressPreference = 'silentlyContinue'
 C:\Asus\SetupChipset.exe -s
 Start-Sleep 15
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-Write-Host "Installing Nvidia Driver..." -NoNewline
-$progressPreference = 'silentlyContinue'
-Invoke-WebRequest -Uri https://tr.download.nvidia.com/Windows/472.12/472.12-desktop-win10-win11-64bit-international-whql.exe -OutFile C:\Nvidia.exe
-$progressPreference = 'silentlyContinue'
-C:\Nvidia.exe -s
-Start-Sleep 60
-Start-Process C:\Nvidia.exe -NoNewWindow -Wait
-Start-Process C:\NVIDIA\DisplayDriver\472.12\Win11_Win10_64\International\setup.exe -NoNewWindow -Wait
-Remove-Item C:\Nvidia.exe -recurse -ErrorAction SilentlyContinue
-Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
 }
 
