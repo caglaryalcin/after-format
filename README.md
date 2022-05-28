@@ -113,7 +113,7 @@ This script does exactly the following; (Some are optional(y/n))
 <details><summary>Install Softwares</summary>&nbsp;
 
 - [Installing WinGet for Windows 10](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
-- Installing 7-zip, Mozilla Firefox, Google Chrome, PuTTY, Notepad++, VMWARE Workstation Pro, Filezilla, Deluge, HWMonitor, Cryptomator, LibreOffice, Wireshark, VirtualBox, Steam, Signal Desktop, Rufus, K-Lite Codec Pack Mega, TreeSize, Speedtest, Windows Terminal, Visual Studio Code, Libre Wolf, VLC Player.
+- Installing 7-zip, Mozilla Firefox, Google Chrome, PuTTY, Notepad++, VMWARE Workstation Pro, Filezilla, Deluge, HWMonitor, Cryptomator, LibreOffice, Wireshark, VirtualBox, Steam, Signal Desktop, Rufus, K-Lite Codec Pack Mega, TreeSize, Speedtest, Windows Terminal, Visual Studio Code, Libre Wolf, VLC Player, Lightshot.
 </details>
   
 > **_NOTE 1:_** Before executing the script, add # at the beginning of the line you don't want from file 'Functions.Preset'.
