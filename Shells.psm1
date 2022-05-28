@@ -2003,6 +2003,17 @@ Function Lightshot {
 
 Lightshot
 
+Function Valorant {
+    Write-Host "Installing Valorant..." -NoNewline
+    $progressPreference = 'silentlyContinue'
+    Invoke-WebRequest -Uri https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.eu.exe -OutFile C:\valo.exe
+    Start-Process C:\valo.exe -NoNewWindow -Wait
+    Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+Valorant
+
 }
 
 else {
