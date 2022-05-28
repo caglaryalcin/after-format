@@ -15,17 +15,12 @@ New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-
 #region Priority
 ##########
 
-Function Info {
-    Get-ComputerInfo -Property OSName, OsArchitecture, CsProcessorsOSName |Out-Host;
-}
-
 Function Priority {
     $progressPreference = 'silentlyContinue'
     Get-WindowsPackage -Online | Where PackageName -like *QuickAssist*15** | Remove-WindowsPackage -Online -NoRestart -WarningAction SilentlyContinue *>$null
 }
 
 RequireAdmin
-Info
 Priority
 
 ##########
@@ -47,8 +42,8 @@ Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -Backgro
 
 #Set TR Formatss
 Function TRFormats {
-    Write-Host `n"Do you want to change the region settings to " -NoNewline
-    Write-Host "Turkey?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host `n"Do you want to " -NoNewline
+    Write-Host "change the region settings to Turkey?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $input = Read-Host
     if ($input -match "[Yy]") {
@@ -67,8 +62,8 @@ TRFormats
 
 # Set Hostname
 Function SetHostname {
-    Write-Host "Do you want change your " -NoNewline
-    Write-Host "hostname?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host `n"Do you want " -NoNewline
+    Write-Host "change your hostname?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $input = Read-Host
     if ($input -match "[Yy]") {
@@ -84,7 +79,7 @@ else {
 
 SetHostname
 
-Write-Host "Do you want " -NoNewline
+Write-Host `n"Do you want " -NoNewline
 Write-Host "disable Windows Defender?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
 $systemset = Read-Host
@@ -164,6 +159,29 @@ Function DisableDefender {
 }
 
 DisableDefender
+
+# Hide Defender Tray Icon on Taskbar
+Function HideDefenderTrayIcon {
+	Write-Host "Hiding Windows Defender SysTray icon..." -NoNewline
+	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray")) {
+		New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Force | Out-Null
+	}
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Name "HideSystray" -Type DWord -Value 1
+	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
+		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "WindowsDefender" -ErrorAction SilentlyContinue
+	} ElseIf ([System.Environment]::OSVersion.Version.Build -ge 15063) {
+		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "SecurityHealth" -ErrorAction SilentlyContinue
+	}
+	Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+}
+
+HideDefenderTrayIcon
+
+}
+else {
+    Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
+}
 
 #Default .ps1 file for Powershell
 Function Defaultps1 {
@@ -252,7 +270,7 @@ EnableNumlock
 
 # Disable Windows Beep Sound
 Function DisableBeepSound {
-	Write-Host `n"Disabling Windows Beep Sound..." -NoNewline
+	Write-Host "Disabling Windows Beep Sound..." -NoNewline
 	Set-ItemProperty -Path "HKCU:\Control Panel\Sound" -Name "Beep" -Type String -Value no
     Set-Service beep -StartupType disabled *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -439,32 +457,9 @@ Function DisableSleepTimeout {
 
 DisableSleepTimeout
 
-# Hide Defender Tray Icon on Taskbar
-Function HideDefenderTrayIcon {
-	Write-Host "Hiding Windows Defender SysTray icon..." -NoNewline
-	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray")) {
-		New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Force | Out-Null
-	}
-	Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Name "HideSystray" -Type DWord -Value 1
-	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
-		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "WindowsDefender" -ErrorAction SilentlyContinue
-	} ElseIf ([System.Environment]::OSVersion.Version.Build -ge 15063) {
-		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "SecurityHealth" -ErrorAction SilentlyContinue
-	}
-	Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-}
-
-HideDefenderTrayIcon
-
-}
-else {
-    Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
-}
-
 # Disable receiving updates for other Microsoft products via Windows Update
 Function DisableUpdateMSProducts {
-	Write-Host `n"Disabling Updates for Other Microsoft Products..." -NoNewline
+	Write-Host "Disabling Updates for Other Microsoft Products..." -NoNewline
 	If ((New-Object -ComObject Microsoft.Update.ServiceManager).Services | Where-Object { $_.ServiceID -eq "7971f918-a847-4430-9279-4a52d1efe18d"}) {
 		(New-Object -ComObject Microsoft.Update.ServiceManager).RemoveService("7971f918-a847-4430-9279-4a52d1efe18d") | Out-Null
 	}
@@ -1867,6 +1862,158 @@ else {
 ##########
 
 ##########
+#region Install Softwares
+##########
+
+Write-Host `n"Do you want to " -NoNewline
+Write-Host "install the specified applications on Github?" -ForegroundColor Yellow -NoNewline
+Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+$installapps = Read-Host
+
+if ($installapps -match "[Yy]") {
+
+Function Winget {
+    Write-Host `n"---------Install Softwares" -ForegroundColor Blue -BackgroundColor Black
+
+    Write-Host `n"Installing Winget..." -NoNewline
+    $progressPreference = 'silentlyContinue'
+	Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx *>$null
+    Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+Winget
+
+Function InstallSoftwares {
+    Write-Host "Installing 7-Zip..." -NoNewline
+cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Brave Browser..." -NoNewline
+cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Firefox..." -NoNewline
+cmd.exe /c "winget install Mozilla.Firefox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Chrome..." -NoNewline
+cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing PuTTY..." -NoNewline
+cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Notepad++..." -NoNewline
+cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing VMWare Workstation Pro..." -NoNewline
+cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Filezilla..." -NoNewline
+cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    
+    Write-Host "Installing Deluge..." -NoNewline
+cmd.exe /c "winget install DelugeTeam.Deluge -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing HWMonitor..." -NoNewline
+cmd.exe /c "winget install hwmonitor -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Cryptomator..." -NoNewline
+cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Wireshark..." -NoNewline
+cmd.exe /c "winget install Wireshark -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing VirtualBox..." -NoNewline
+cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Steam..." -NoNewline
+cmd.exe /c "winget install Steam -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Signal Desktop..." -NoNewline
+cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Rufus..." -NoNewline
+cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing K-Lite Codec Pack Mega..." -NoNewline
+cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing TreeSize..." -NoNewline
+cmd.exe /c "winget install TreeSize -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Speedtest..." -NoNewline
+cmd.exe /c "winget install Ookla.Speedtest -e --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing AnyDesk..." -NoNewline
+cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    Write-Host "Installing Libre Wolf..." -NoNewline
+cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    
+    Write-Host "Installing VLC Media Player..." -NoNewline
+cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing LibreOffice..." -NoNewline
+cmd.exe /c "winget install LibreOffice -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Windows Terminal..." -NoNewline
+$progressPreference = 'silentlyContinue'
+Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v1.12.10982.0/Microsoft.WindowsTerminal_Win10_1.12.10982.0_8wekyb3d8bbwe.msixbundle' -OutFile 'C:\WindowsTerminal.msixbundle'
+Add-AppPackage -path "C:\WindowsTerminal.msixbundle"
+Remove-Item -Path C:\WindowsTerminal.msixbundle -recurse
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+InstallSoftwares
+
+Function Lightshot {
+    Write-Host "Installing Lightshot..." -NoNewline
+    $progressPreference = 'silentlyContinue'
+    Invoke-WebRequest -Uri https://github.com/caglaryalcin/after-format/raw/main/files/Skillbrains.zip -OutFile C:\Skillbrains.zip *>$null
+    $progressPreference = 'silentlyContinue'
+    Expand-Archive -Path 'C:\Skillbrains.zip' -DestinationPath "C:\Program Files (x86)\" -Force *>$null
+    $progressPreference = 'silentlyContinue'
+    cmd.exe /c "C:\Program Files (x86)\Skillbrains\lightshot\Lightshot.exe"
+    $startpath = ((Get-WMIObject -ClassName Win32_ComputerSystem).Username).Split('\')[1]
+    Copy-Item -Path "C:\Program Files (x86)\Skillbrains\lightshot\*.lnk" -Destination "C:\Users\$startpath\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+    Remove-Item C:\Skillbrains.zip -recurse -ErrorAction SilentlyContinue
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+Lightshot
+
+}
+
+else {
+    Write-Host "[The Process Cancelled]" -ForegroundColor Red -BackgroundColor Black
+}
+
+##########
+#endregion Install Software
+##########
+
+##########
 #region Remove Unused Apps/Softwares
 ##########
 
@@ -1877,32 +2024,11 @@ $removeapps = Read-Host
 
 if ($removeapps -match "[Yy]") {
 
-# Disable Edge desktop shortcut creation after certain Windows updates are applied 
-Function UninstallEdge {
-    Write-Host "Do you want " -NoNewline
-    Write-Host "remove Windows Edge?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
-    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-    $input = Read-Host
-    if ($input -match "[Yy]") {
-
-	Write-Host "Removing Microsoft Edge..." -NoNewline
-	cd "C:\Program Files (x86)\Microsoft\Edge\Application\*\Installer\"
-    .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
-}
-
-else {
-    Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
-}
-}
-
-UninstallEdge
-
 # Remove Apps 
 Function UninstallThirdPartyBloat {
     Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Black
-
-	Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
+    
+    Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.WindowsAlarms | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     $progressPreference = 'SilentlyContinue'
@@ -2148,7 +2274,7 @@ Function UninstallMediaPlayer {
 Function UninstallWorkFolders {
 	Write-Host "Uninstalling Work Folders Client..." -NoNewline
     $progressPreference = 'silentlyContinue'
-	Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
+	Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 }
 
@@ -2157,7 +2283,7 @@ UninstallWorkFolders
 # Uninstall Microsoft XPS Document Writer 
 Function UninstallXPSPrinter {
 	Write-Host "Uninstalling Microsoft XPS Document Writer..." -NoNewline
-    Remove-Printer -Name "Microsoft XPS Document Writer" -ErrorAction SilentlyContinue
+    Remove-Printer -Name "Microsoft XPS Document Writer" -ErrorAction SilentlyContinue 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 }
 
@@ -2172,6 +2298,23 @@ Function RemoveFaxPrinter {
 
 RemoveFaxPrinter
 
+# Uninstall Windows Fax and Scan Services - Not applicable to Server
+Function UninstallFaxAndScan {
+	Write-Host "Uninstalling Windows Fax and Scan Services..." -NoNewline
+    $progressPreference = 'silentlyContinue'
+	Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart *>$null
+	Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+}
+
+UninstallFaxAndScan
+
+Write-Host `n"Do you want " -NoNewline
+Write-Host "remove Windows OneDrive?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+$input = Read-Host
+if ($input -match "[Yy]") {
+
 # Disable OneDrive
 Function DisableOneDrive {
 	Write-Host "Disabling & Uninstalling OneDrive..." -NoNewline
@@ -2179,7 +2322,7 @@ Function DisableOneDrive {
 		New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" | Out-Null
 	}
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 }
 
 DisableOneDrive
@@ -2187,7 +2330,7 @@ DisableOneDrive
 Function UninstallOneDrive {
 $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
 $TeamsUpdateExePath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams', 'Update.exe')
-
+cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall"
 try
 {
     if (Test-Path -Path $TeamsUpdateExePath) {
@@ -2212,16 +2355,35 @@ catch
 
 UninstallOneDrive
 
-# Uninstall Windows Fax and Scan Services - Not applicable to Server
-Function UninstallFaxAndScan {
-	Write-Host `n"Uninstalling Windows Fax and Scan Services..." -NoNewline
-    $progressPreference = 'silentlyContinue'
-	Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart | Out-Null
-	Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online | Out-Null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 }
 
-UninstallFaxAndScan
+else {
+    Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+}
+
+# Disable Edge desktop shortcut creation after certain Windows updates are applied 
+Function UninstallEdge {
+    Write-Host `n"Do you want " -NoNewline
+    Write-Host "remove Windows Edge?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+    $input = Read-Host
+    if ($input -match "[Yy]") {
+	Write-Host "Removing Microsoft Edge..." -NoNewline
+	cd "C:\Program Files (x86)\Microsoft\Edge\Application\*\Installer\"
+    .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
+    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
+    $progressPreference = 'SilentlyContinue'
+    Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    Start-Sleep 3
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
+}
+
+else {
+    Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+}
+}
+
+UninstallEdge
 
 }
 else {
@@ -2233,148 +2395,12 @@ else {
 ##########
 
 ##########
-#region Install Softwares
-##########
-
-Write-Host `n"Do you want to " -NoNewline
-Write-Host "install the specified applications on Github?" -ForegroundColor Yellow -NoNewline
-Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-$installapps = Read-Host
-
-if ($installapps -match "[Yy]") {
-
-Function Winget {
-    Write-Host `n"---------Install Softwares" -ForegroundColor Blue -BackgroundColor Black
-
-    Write-Host `n"Installing Winget..." -NoNewline
-    $progressPreference = 'silentlyContinue'
-	Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx *>$null
-    Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-}
-
-Winget
-
-Function InstallSoftwares {
-    Write-Host "Installing 7-Zip..." -NoNewline
-cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Brave Browser..." -NoNewline
-cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Firefox..." -NoNewline
-cmd.exe /c "winget install Mozilla.Firefox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Chrome..." -NoNewline
-cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing PuTTY..." -NoNewline
-cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Notepad++..." -NoNewline
-cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing VMWare Workstation Pro..." -NoNewline
-cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Filezilla..." -NoNewline
-cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    
-    Write-Host "Installing Deluge..." -NoNewline
-cmd.exe /c "winget install DelugeTeam.Deluge -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing HWMonitor..." -NoNewline
-cmd.exe /c "winget install hwmonitor -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Cryptomator..." -NoNewline
-cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing LibreOffice..." -NoNewline
-cmd.exe /c "winget install LibreOffice -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Wireshark..." -NoNewline
-cmd.exe /c "winget install Wireshark -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing VirtualBox..." -NoNewline
-cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Steam..." -NoNewline
-cmd.exe /c "winget install Steam -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Signal Desktop..." -NoNewline
-cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Rufus..." -NoNewline
-cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing K-Lite Codec Pack Mega..." -NoNewline
-cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing TreeSize..." -NoNewline
-cmd.exe /c "winget install TreeSize -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Speedtest..." -NoNewline
-cmd.exe /c "winget install Ookla.Speedtest -e --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing AnyDesk..." -NoNewline
-cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
-    Write-Host "Installing Libre Wolf..." -NoNewline
-cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    
-    Write-Host "Installing VLC Media Player..." -NoNewline
-cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Windows Terminal..." -NoNewline
-$progressPreference = 'silentlyContinue'
-Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v1.12.10982.0/Microsoft.WindowsTerminal_Win10_1.12.10982.0_8wekyb3d8bbwe.msixbundle' -OutFile 'C:\WindowsTerminal.msixbundle'
-Add-AppPackage -path "C:\WindowsTerminal.msixbundle"
-Remove-Item -Path C:\WindowsTerminal.msixbundle -recurse
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-}
-
-InstallSoftwares
-
-}
-
-else {
-    Write-Host "[The Process Cancelled]" -ForegroundColor Red -BackgroundColor Black
-}
-
-
-##########
-#endregion Install Software
-##########
-
-##########
 #region My Custom Drivers
 ##########
 
 Write-Host `n"Do you own " -NoNewline
-Write-Host "this script?(Drivers will be installed):" -ForegroundColor Red -NoNewline -BackgroundColor Black
+Write-Host "this script?" -ForegroundColor Red -NoNewline -BackgroundColor Black
+Write-Host "(Drivers will be installed):" -NoNewline
 $systemset = Read-Host
 
 if ($systemset -match "[Yy]") {
