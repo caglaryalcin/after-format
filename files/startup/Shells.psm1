@@ -198,6 +198,10 @@ Function DisableStartupApps {
     #Disable
     #Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\ -Name "vmware-tray.exe" -Value $DisableValue
 
+    $commonstartup = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\*Any*"
+    Remove-Item $commonstartup -recurse -ErrorAction SilentlyContinue
+
+
     #Remove
     Remove-ItemProperty $StartPaths -Name $removeList *>$null
 
