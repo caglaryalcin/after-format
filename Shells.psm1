@@ -1304,6 +1304,15 @@ Function DisableServices {
     Stop-Service -Name "Bonjour Service" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "Bonjour Service" -StartupType disabled -ErrorAction SilentlyContinue
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    #Google Update Services
+    Stop-Service -Name "gupdate" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "gupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete gupdate *>$null
+    Stop-Service -Name "gupdatem" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "gupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete gupdatem *>$null
+    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem" -Recurse -ErrorAction SilentlyContinue
 }
 
 DisableServices
