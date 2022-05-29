@@ -1182,7 +1182,7 @@ HideRecentlyAddedApps
 
 Function DisableServices {
 	Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-    ##Xbox services
+    ##Xbox Services
     Stop-Service -Name "XblAuthManager" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "XblAuthManager" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     Stop-Service -Name "XblGameSave" -Force -ErrorAction SilentlyContinue
@@ -1191,7 +1191,7 @@ Function DisableServices {
     Set-Service -Name "XboxNetApiSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     Stop-Service -Name "XboxGipSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "XboxGipSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##wallet services
+    ##Wallet Services
     Stop-Service -Name "WalletService" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "WalletService" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     ##RDP services
@@ -1200,60 +1200,60 @@ Function DisableServices {
     ##WMPLayer Share services
     Stop-Service -Name "WMPNetworkSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "WMPNetworkSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##port sharing services
+    ##Port Sharing Services
     Stop-Service -Name "NetTcpPortSharing" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "NetTcpPortSharing" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##akilli cihaz
+    ##Smart Device
     Stop-Service -Name "AJRouter" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "AJRouter" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##ntfs dosya baÃ„Å¸lantisi
+    ##Ntfs File Connection
     Stop-Service -Name "TrkWks" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "TrkWks" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##WAP Push mesaji
+    ##WAP Push message
     Stop-Service -Name "dmwappushservice" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "dmwappushservice" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Bing haritalar
+    ##Bing maps
     Stop-Service -Name "MapsBroker" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "MapsBroker" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Faks
+    ##Fax
     Stop-Service -Name "Fax" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "Fax" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##cevrimdiÃ…Å¸i aÃ„Å¸ klasorleri
+    ##Offline Files
     Stop-Service -Name "CscService" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "CscService" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Ebeveyn denetimleri
+    ##Parental Controls
     Stop-Service -Name "WpcMonSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "WpcMonSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##taÃ…Å¸inabilir cihaz numaralandirma
+    ##Removable Device Numbering
     Stop-Service -Name "WPDBusEnum" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "WPDBusEnum" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Uyumluluk modu
+    ##Compatibility Mode
     Stop-Service -Name "PcaSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "PcaSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##uzak kayit defteri
+    ##Remote Registry
     Stop-Service -Name "RemoteRegistry" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "RemoteRegistry" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##demo modu
+    ##Demo Mode
     Stop-Service -Name "RetailDemo" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "RetailDemo" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##ikincil oturum acma
+    ##Secondary Login
     Stop-Service -Name "seclogon" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "seclogon" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     ##NetBIOS
     Stop-Service -Name "lmhosts" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "lmhosts" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Windows hata gonderme
+    ##Windows Error Sending
     Stop-Service -Name "WerSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "WerSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Insider hizmeti
+    ##Insider service
     Stop-Service -Name "wisvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "wisvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##bluetooth
+    ##Bluetooth
     Stop-Service -Name "BTAGService" -Force -ErrorAction SilentlyContinue
     Stop-Service -Name "bthserv" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "BTAGService" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     Set-Service -Name "bthserv" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Telefon
+    ##Phone
     Stop-Service -Name "PhoneSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "PhoneSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     ##Bitlocker
@@ -1261,29 +1261,29 @@ Function DisableServices {
     Stop-Service -Name "BDESVC" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "EFS" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     Set-Service -Name "BDESVC" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Sertifika
+    ##Cert
     Stop-Service -Name "CertPropSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "CertPropSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Akilli kart
+    ##Smart Cart
     Stop-Service -Name "SCardSvr" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "SCardSvr" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Dosya gecmiÃ…Å¸i
+    ##File history
     Stop-Service -Name "fhsvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "fhsvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Sensor hizmeti
+    ##Sensor services
     Stop-Service -Name "SensorDataService" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "SensorDataService" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     Stop-Service -Name "SensrSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "SensrSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     Stop-Service -Name "SensorService" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "SensorService" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Biometrik servisi
+    ##Biometric services
     Stop-Service -Name "WbioSrvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "WbioSrvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     ##Mobil hotspot
     Stop-Service -Name "icssvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "icssvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    ##Konum
+    ##Location
     Stop-Service -Name "lfsvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "lfsvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     ##NFC
@@ -2388,6 +2388,14 @@ Function UninstallEdge {
     Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
     Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -recurse -ErrorAction SilentlyContinue
     Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -recurse -ErrorAction SilentlyContinue
+    
+    #Edge Services
+    Stop-Service -Name "edgeupdate" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "edgeupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete edgeupdate *>$null
+    Stop-Service -Name "edgeupdatem" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "edgeupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete edgeupdatem *>$null
     Start-Sleep 3
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
