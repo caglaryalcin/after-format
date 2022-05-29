@@ -2385,6 +2385,9 @@ Function UninstallEdge {
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -recurse -ErrorAction SilentlyContinue
     Start-Sleep 3
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
