@@ -1313,6 +1313,8 @@ Function DisableServices {
     sc.exe delete gupdatem *>$null
     Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate" -Recurse -ErrorAction SilentlyContinue
     Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files\Google\Chrome\Application\102.0.5005.63\Installer\chrmstp.exe" -recurse -ErrorAction SilentlyContinue
 }
 
 DisableServices
