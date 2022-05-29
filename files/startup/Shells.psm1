@@ -99,6 +99,7 @@ Function RemoveTasks {
     Get-ScheduledTask "*DmClient*" | Unregister-ScheduledTask -Confirm:$false
     Get-ScheduledTask "*Office*" | Unregister-ScheduledTask -Confirm:$false
     Get-ScheduledTask "*GPU*" | Unregister-ScheduledTask -Confirm:$false
+    Get-ScheduledTask "*Firefox*" | Unregister-ScheduledTask -Confirm:$false
     Get-ScheduledTask -TaskName "*XblGameSaveTask*" | Disable-ScheduledTask -ea 0 | Out-Null
     Get-ScheduledTask -TaskName "*XblGameSaveTaskLogon*" | Disable-ScheduledTask -ea 0 | Out-Null
 }
@@ -192,15 +193,7 @@ Function HideDefenderTrayIcon {
 # Disable Startup App 
 Function DisableStartupApps {
     $StartPaths = @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\")
-    $removeList = @("*Riot*","*IDMan*","*Any*","*Terminal*","*Steam*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*Snagit*")
-    #$DisableValue = ([byte[]](0x03,0x00,0x00,0x00,0x81,0xf4,0xad,0xc9,0xa3,0x48,0xd7,0x01))
-    
-    #Disable
-    #Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\ -Name "vmware-tray.exe" -Value $DisableValue
-
-    $commonstartup = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\*Any*"
-    Remove-Item $commonstartup -recurse -ErrorAction SilentlyContinue
-
+    $removeList = @("*Riot*","*IDMan*","*Steam*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*vmware*")
 
     #Remove
     Remove-ItemProperty $StartPaths -Name $removeList *>$null
