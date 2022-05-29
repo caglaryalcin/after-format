@@ -99,6 +99,12 @@ This script does exactly the following; (Some are optional(y/n))
 - Disabling Windows Update Automatic Restart
 - Disabling Windows Update Automatic Downloads
 </details>
+<details><summary>Install Softwares</summary>&nbsp;
+
+- [Installing WinGet for Windows 10](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
+- Installing 7-zip, Mozilla Firefox, Google Chrome, PuTTY, Notepad++, VMWARE Workstation Pro, Filezilla, Deluge, HWMonitor, Cryptomator, LibreOffice, Wireshark, VirtualBox, Steam, Signal Desktop, Rufus, K-Lite Codec Pack Mega, TreeSize, Speedtest, Windows Terminal, Visual Studio Code, Libre Wolf, VLC Player, Lightshot, Valorant.
+</details>
+
 <details><summary>Remove Unused Apps/Softwares</summary>&nbsp;
   
 - Uninstalling Default Third Party Applications
@@ -110,10 +116,11 @@ This script does exactly the following; (Some are optional(y/n))
 - Removing Microsoft Edge
 - Uninstalling Windows Fax and Scan Services
 </details>
-<details><summary>Install Softwares</summary>&nbsp;
 
-- [Installing WinGet for Windows 10](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
-- Installing 7-zip, Mozilla Firefox, Google Chrome, PuTTY, Notepad++, VMWARE Workstation Pro, Filezilla, Deluge, HWMonitor, Cryptomator, LibreOffice, Wireshark, VirtualBox, Steam, Signal Desktop, Rufus, K-Lite Codec Pack Mega, TreeSize, Speedtest, Windows Terminal, Visual Studio Code, Libre Wolf, VLC Player, Lightshot, Valorant.
+<details><summary>My Custom Drivers</summary>&nbsp;
+  
+When this question is asked, answer by saying 'n'. Because the settings here are specifically my specific settings.
+  
 </details>
   
 > **_NOTE 1:_** Before executing the script, add # at the beginning of the line you don't want from file 'Functions.Preset'.
