@@ -1987,6 +1987,10 @@ cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements -
     Write-Host "Installing Microsoft Visual Studio Code..." -NoNewline
 cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
+cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing LibreOffice..." -NoNewline
 cmd.exe /c "winget install LibreOffice -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
