@@ -1914,7 +1914,11 @@ cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements 
 
     Write-Host "Installing PuTTY..." -NoNewline
 cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    Write-Host "Installing Total Commander..." -NoNewline
+cmd.exe /c "winget install Ghisler.TotalCommander -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Notepad++..." -NoNewline
 cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
