@@ -2403,7 +2403,7 @@ Function UninstallEdge {
     $input = Read-Host
     if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
-	cd "C:\Program Files (x86)\Microsoft\Edge\Application\102*\Installer\" *>$null
+	cd "C:\Program Files (x86)\Microsoft\Edge\Application\102*\Installer\"
     .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     $progressPreference = 'SilentlyContinue'
@@ -2440,6 +2440,47 @@ else {
 ##########
 
 ##########
+#region Taskbar Pins
+##########
+
+Write-Host `n"Do you want to " -NoNewline
+Write-Host "pin applications to taskbar?" -ForegroundColor Red -NoNewline -BackgroundColor Black
+Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+$systemset = Read-Host
+
+if ($systemset -match "[Yy]") {
+
+Function TaskbarPins {
+
+Write-Host `n"Setting apps to taskbar..." -NoNewline
+$progressPreference = 'silentlyContinue'
+Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
+$progressPreference = 'silentlyContinue'
+Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
+$progressPreference = 'silentlyContinue'
+C:\Asus\SetupChipset.exe -s
+Start-Sleep 15
+Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
+Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+}
+
+TaskbarPins
+
+}
+
+else {
+    Write-Host "[The Process Cancelled]" -ForegroundColor Green -BackgroundColor Black
+}
+
+
+##########
+#endregion Taskbar Pins
+##########
+
+
+##########
 #region My Custom Drivers
 ##########
 
@@ -2454,14 +2495,15 @@ Function Drivers {
 
 Write-Host `n"Installing Chipset Driver..." -NoNewline
 $progressPreference = 'silentlyContinue'
-Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
-$progressPreference = 'silentlyContinue'
-Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
-$progressPreference = 'silentlyContinue'
-C:\Asus\SetupChipset.exe -s
-Start-Sleep 15
-Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
-Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
+reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
+reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+taskkill /f /im explorer.exe
+start explorer.exe
+
+
+
+
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 }
