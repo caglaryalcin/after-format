@@ -2440,7 +2440,7 @@ else {
 ##########
 
 ##########
-#region Taskbar Pins
+#region Pins Taskbar
 ##########
 
 Write-Host `n"Do you want to " -NoNewline
@@ -2454,14 +2454,11 @@ Function TaskbarPins {
 
 Write-Host `n"Setting apps to taskbar..." -NoNewline
 $progressPreference = 'silentlyContinue'
-Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
-$progressPreference = 'silentlyContinue'
-Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
-$progressPreference = 'silentlyContinue'
-C:\Asus\SetupChipset.exe -s
-Start-Sleep 15
-Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
-Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
+reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
+reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+taskkill /f /im explorer.exe
+start explorer.exe
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 }
@@ -2476,7 +2473,7 @@ else {
 
 
 ##########
-#endregion Taskbar Pins
+#endregion Pins Taskbar
 ##########
 
 
@@ -2495,15 +2492,14 @@ Function Drivers {
 
 Write-Host `n"Installing Chipset Driver..." -NoNewline
 $progressPreference = 'silentlyContinue'
-reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
-Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
-reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
-taskkill /f /im explorer.exe
-start explorer.exe
-
-
-
-
+Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
+$progressPreference = 'silentlyContinue'
+Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
+$progressPreference = 'silentlyContinue'
+C:\Asus\SetupChipset.exe -s
+Start-Sleep 15
+Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
+Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 }
