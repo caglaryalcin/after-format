@@ -2452,14 +2452,16 @@ if ($systemset -match "[Yy]") {
 
 Function TaskbarPins {
 
-Write-Host `n"Setting apps to taskbar..." -NoNewline
+Write-Host "Setting apps to taskbar..." -NoNewline
 $progressPreference = 'silentlyContinue'
+Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
 reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
 Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
 reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
 taskkill /f /im explorer.exe
-Start-Sleep 2
+Start-Sleep 1
 start explorer.exe
+Start-Sleep 2
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 }
