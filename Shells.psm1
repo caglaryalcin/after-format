@@ -2403,7 +2403,7 @@ Function UninstallEdge {
     $input = Read-Host
     if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
-	cd "C:\Program Files (x86)\Microsoft\Edge\Application\*\Installer\"
+	cd "C:\Program Files (x86)\Microsoft\Edge\Application\102*\Installer\"
     .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     $progressPreference = 'SilentlyContinue'
