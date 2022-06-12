@@ -2444,7 +2444,7 @@ else {
 ##########
 
 Write-Host `n"Do you want to " -NoNewline
-Write-Host "pin applications to taskbar?" -ForegroundColor Red -NoNewline -BackgroundColor Black
+Write-Host "pin applications to taskbar?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
 $systemset = Read-Host
 
@@ -2458,6 +2458,7 @@ reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
 Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
 reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
 taskkill /f /im explorer.exe
+Start-Sleep 2
 start explorer.exe
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
