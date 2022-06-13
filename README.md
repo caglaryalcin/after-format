@@ -117,6 +117,10 @@ This script does exactly the following; (Some are optional(y/n))
 - Uninstalling Windows Fax and Scan Services
 </details>
 
+<details><summary>Taskbar Pins</summary>&nbsp;
+
+  The taskbar pins that I use are set respectively.
+</details>
 <details><summary>My Custom Drivers</summary>&nbsp;
   
 When this question is asked, answer by saying 'n'. Because the settings here are specifically my specific settings.
@@ -126,6 +130,8 @@ When this question is asked, answer by saying 'n'. Because the settings here are
 > **_NOTE 1:_** Before executing the script, add # at the beginning of the line you don't want from file 'Functions.Preset'.
 
 > **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
+
+> **_NOTE 3:_** This script takes about 20 minutes with 100mbps internet.
 
 <p>
 
