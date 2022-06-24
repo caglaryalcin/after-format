@@ -1959,6 +1959,10 @@ cmd.exe /c "winget install Steam -e --silent --accept-source-agreements --accept
     Write-Host "Installing Signal Desktop..." -NoNewline
 cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    
+    Write-Host "Installing Microsoft Teams..." -NoNewline
+cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Rufus..." -NoNewline
 cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
