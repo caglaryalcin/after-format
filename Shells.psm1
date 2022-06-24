@@ -67,7 +67,7 @@ Function SetHostname {
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $input = Read-Host
     if ($input -match "[Yy]") {
-    $hostq = Write-Host "Please enter your hostname:" -ForegroundColor White -BackgroundColor Red -NoNewline
+    $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
     $hostname = Read-Host -Prompt $hostq
     Rename-Computer -NewName "$hostname" *>$null
     Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor Black
@@ -2399,7 +2399,7 @@ Function UninstallEdge {
     $input = Read-Host
     if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
-	cd "C:\Program Files (x86)\Microsoft\Edge\Application\102*\Installer\"
+	cd "C:\Program Files (x86)\Microsoft\Edge\Application\103*\Installer\"
     .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     $progressPreference = 'SilentlyContinue'
@@ -2439,36 +2439,36 @@ else {
 #region Pins Taskbar
 ##########
 
-Write-Host `n"Do you want to " -NoNewline
-Write-Host "pin applications to taskbar?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
-Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-$systemset = Read-Host
-
-if ($systemset -match "[Yy]") {
-
-Function TaskbarPins {
-
-Write-Host "Setting apps to taskbar..." -NoNewline
-$progressPreference = 'silentlyContinue'
-Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
-reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
-Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
-reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
-taskkill /f /im explorer.exe
-Start-Sleep 1
-start explorer.exe
-Start-Sleep 2
-Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-}
-
+#Write-Host `n"Do you want to " -NoNewline
+#Write-Host "pin applications to taskbar?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+#Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+#$systemset = Read-Host
+#
+#if ($systemset -match "[Yy]") {
+#
+#Function TaskbarPins {
+#
+#Write-Host "Setting apps to taskbar..." -NoNewline
+#$progressPreference = 'silentlyContinue'
+#Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
+#reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+#Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
+#reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+#taskkill /f /im explorer.exe
+#Start-Sleep 1
+#start explorer.exe
+#Start-Sleep 2
+#Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+#
+#}
+#
 #TaskbarPins
-
-}
-
-else {
-    Write-Host "[The Process Cancelled]" -ForegroundColor Green -BackgroundColor Black
-}
+#
+#}
+#
+#else {
+#    Write-Host "[The Process Cancelled]" -ForegroundColor Red -BackgroundColor Black
+#}
 
 
 ##########
@@ -2496,9 +2496,9 @@ $progressPreference = 'silentlyContinue'
 Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
 $progressPreference = 'silentlyContinue'
 C:\Asus\SetupChipset.exe -s
-Start-Sleep 20
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
+Start-Sleep 20
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 }
