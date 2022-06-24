@@ -1996,10 +1996,6 @@ cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-sourc
 cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    Write-Host "Installing LibreOffice..." -NoNewline
-cmd.exe /c "winget install LibreOffice -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
     Write-Host "Installing Windows Terminal..." -NoNewline
 $progressPreference = 'silentlyContinue'
 Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v1.12.10982.0/Microsoft.WindowsTerminal_Win10_1.12.10982.0_8wekyb3d8bbwe.msixbundle' -OutFile 'C:\WindowsTerminal.msixbundle'
@@ -2466,7 +2462,7 @@ Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 }
 
-TaskbarPins
+#TaskbarPins
 
 }
 
@@ -2486,7 +2482,7 @@ else {
 
 Write-Host `n"Do you own " -NoNewline
 Write-Host "this script?" -ForegroundColor Red -NoNewline -BackgroundColor Black
-Write-Host "(Drivers will be installed):" -NoNewline
+Write-Host "(Drivers will be installed): " -NoNewline
 $systemset = Read-Host
 
 if ($systemset -match "[Yy]") {
@@ -2500,7 +2496,7 @@ $progressPreference = 'silentlyContinue'
 Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
 $progressPreference = 'silentlyContinue'
 C:\Asus\SetupChipset.exe -s
-Start-Sleep 15
+Start-Sleep 20
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
