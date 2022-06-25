@@ -1342,8 +1342,6 @@ ShowAllIcons
 #Copy Files to Documents
 Function CopyFiles {
 	Write-Host "Copy Files to documents..." -NoNewline
-    Copy-Item -Path "c:\after-format-main\files\Tools\SpaceSniffer.exe" -Destination $env:USERPROFILE\Documents -Force *>$null
-    Copy-Item -Path "c:\after-format-main\files\Tools\speedtest.exe" -Destination $env:USERPROFILE\Documents -Force *>$null
     Set-Itemproperty -path "HKCU:\Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
@@ -1354,6 +1352,8 @@ CopyFiles
 Function ImportStartup {
 	Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
     Copy-Item -Path "C:\after-format-main\files\startup\" -Destination "c:\" -Recurse *>$null
+    Unblock-File -Path C:\startup\Run.cmd
+    Unblock-File -Path C:\startup\Run.vbs
     cmd /c "C:\startup\Default.cmd" *>$null
     Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2373,10 +2373,12 @@ try
         # Uninstall app
         $proc = Start-Process -FilePath $TeamsUpdateExePath -ArgumentList "-uninstall -s" -PassThru
         $proc.WaitForExit()
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     }
     if (Test-Path -Path $TeamsPath) {
         Write-Host "Deleting Teams directory"
         Remove-Item -Path $TeamsPath -Recurse
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     
     }
 }
@@ -2403,14 +2405,20 @@ Function UninstallEdge {
     $input = Read-Host
     if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
-	cd "C:\Program Files (x86)\Microsoft\Edge\Application\103*\Installer\"
-    .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
+    taskkill /f /im msedge.exe *>$null
+	cd "C:\Program Files (x86)\Microsoft\Edge\Application\102*\Installer\" *>$null
+    cmd.exe /c .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall *>$null
+    cd "C:\Program Files (x86)\Microsoft\Edge\Application\103*\Installer\" *>$null
+    cmd.exe /c .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall *>$null
+    cd "C:\Program Files (x86)\Microsoft\Edge\Application\104*\Installer\" *>$null
+    cmd.exe /c .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall *>$null
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
-    Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -recurse -ErrorAction SilentlyContinue
-    Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
     
     #Edge Services
     Stop-Service -Name "edgeupdate" -Force -ErrorAction SilentlyContinue
@@ -2440,47 +2448,6 @@ else {
 ##########
 
 ##########
-#region Pins Taskbar
-##########
-
-#Write-Host `n"Do you want to " -NoNewline
-#Write-Host "pin applications to taskbar?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
-#Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-#$systemset = Read-Host
-#
-#if ($systemset -match "[Yy]") {
-#
-#Function TaskbarPins {
-#
-#Write-Host "Setting apps to taskbar..." -NoNewline
-#$progressPreference = 'silentlyContinue'
-#Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
-#reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
-#Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
-#reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
-#taskkill /f /im explorer.exe
-#Start-Sleep 1
-#start explorer.exe
-#Start-Sleep 2
-#Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-#
-#}
-#
-#TaskbarPins
-#
-#}
-#
-#else {
-#    Write-Host "[The Process Cancelled]" -ForegroundColor Red -BackgroundColor Black
-#}
-
-
-##########
-#endregion Pins Taskbar
-##########
-
-
-##########
 #region My Custom Drivers
 ##########
 
@@ -2491,8 +2458,227 @@ $systemset = Read-Host
 
 if ($systemset -match "[Yy]") {
 
-Function Drivers {
+Function Own {
 
+#Sound Settings
+Get-PnpDevice -FriendlyName "*Microsoft*" | Disable-PnpDevice -confirm:$false *>$null
+
+###Taskbar Pins
+##Create Icons folder
+New-Item -Path 'C:\after-format-main\files\icons' -ItemType Directory *>$null
+
+##Create Shortcuts
+#Firefox
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Firefox = "C:\Program Files\Mozilla Firefox\firefox.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Firefox.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Firefox
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Firefox.lnk
+
+#Librewolf
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Librewolf = "C:\Program Files\LibreWolf\librewolf.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\LibreWolf.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Librewolf
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\LibreWolf.lnk
+
+#Chrome
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Google Chrome.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Chrome
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Google Chrome.lnk
+
+#Brave
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Brave = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Brave.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Brave
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Brave.lnk
+
+#File Explorer was here
+
+#Steam
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Steam = "C:\Program Files (x86)\Steam\Steam.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Steam.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Steam
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Steam.lnk
+
+#HWMonitor
+$WScriptShell = New-Object -ComObject WScript.Shell
+$HW = "C:\Program Files\CPUID\HWMonitor\HWMonitor.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\HWMonitor.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $HW
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\HWMonitor.lnk
+
+#vMware Workstation
+$WScriptShell = New-Object -ComObject WScript.Shell
+$vMware = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\vMware Workstation.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $vMware
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\vMware Workstation.lnk
+
+#VirtualBox
+$WScriptShell = New-Object -ComObject WScript.Shell
+$VirtualBox = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\VirtualBox.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $VirtualBox
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\VirtualBox.lnk
+
+#Signal
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Signal = "C:\Users\m4a1\AppData\Local\Programs\signal-desktop\Signal.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Signal.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Signal
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Signal.lnk
+
+#Sticky Notes was here
+
+#Visual Studio
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Visual = "C:\Users\m4a1\AppData\Local\Programs\Microsoft VS Code\Code.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Visual Studio Code.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Visual
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Visual Studio Code.lnk
+
+#AnyDesk
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Anydesk = "C:\Program Files (x86)\AnyDeskMSI\AnyDeskMSI.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\AnyDesk.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Anydesk
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\AnyDesk.lnk
+
+#Terminal was here
+
+#Speedtest
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Speedtest = "C:\Program Files\Speedtest\Speedtest.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Speedtest.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Speedtest
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Speedtest.lnk
+
+#Notepad++
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Notepad = "C:\Program Files\Notepad++\notepad++.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Notepad++.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Notepad
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Notepad++.lnk
+
+#VLC
+$WScriptShell = New-Object -ComObject WScript.Shell
+$VLC = "C:\Program Files\VideoLAN\VLC\vlc.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\VLC Player.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $VLC
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\VLC Player.lnk
+
+#Calculator was here
+
+#TreeSize
+$WScriptShell = New-Object -ComObject WScript.Shell
+$TreeSize = "C:\Program Files\JAM Software\TreeSize\TreeSize.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\TreeSize.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $TreeSize
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\TreeSize.lnk
+
+#Total Commander
+$WScriptShell = New-Object -ComObject WScript.Shell
+$TCM = "C:\Program Files\totalcmd\TOTALCMD64.EXE"
+$ShortcutFile = "C:\after-format-main\files\icons\Total Commander.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $TCM
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Total Commander.lnk
+
+#Rufus was here
+
+#WireShark
+$WScriptShell = New-Object -ComObject WScript.Shell
+$WireShark = "C:\Program Files\Wireshark\Wireshark.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\WireShark.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $WireShark
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\WireShark.lnk
+
+#Putty
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Putty = "C:\Program Files\PuTTY\putty.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Putty.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Putty
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Putty.lnk
+
+#Filezilla
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Filezilla = "C:\Program Files\FileZilla FTP Client\filezilla.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Filezilla.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Filezilla
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Filezilla.lnk
+
+#Deluge
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Deluge = "C:\Program Files (x86)\Deluge\deluge.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Deluge.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Deluge
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Deluge.lnk
+
+#Cryptomator
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Cryptomator = "C:\Program Files\Cryptomator\Cryptomator.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Cryptomator.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Cryptomator
+$Shortcut.Save()
+Unblock-File -Path C:\after-format-main\files\icons\Cryptomator.lnk
+
+#Set Pin
+$progressPreference = 'silentlyContinue'
+Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
+reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
+reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+taskkill /f /im explorer.exe
+Start-Sleep 1
+start explorer.exe
+Start-Sleep 2
+
+#Drivers
 Write-Host `n"Installing Chipset Driver..." -NoNewline
 $progressPreference = 'silentlyContinue'
 Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
@@ -2503,11 +2689,12 @@ C:\Asus\SetupChipset.exe -s
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
 Start-Sleep 20
+
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 }
 
-Drivers
+Own
 
 }
 
