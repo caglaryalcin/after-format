@@ -2674,10 +2674,8 @@ $progressPreference = 'silentlyContinue'
 Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
 Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
 reg import "C:\after-format-main\files\taskbar_pin.reg" *>$null
-reg import "C:\after-format-main\files\taskbar_pin2.reg" *>$null
 Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
 reg import "C:\after-format-main\files\taskbar_pin.reg" *>$null
-reg import "C:\after-format-main\files\taskbar_pin2.reg" *>$null
 taskkill /f /im explorer.exe
 Start-Sleep 1
 start explorer.exe
