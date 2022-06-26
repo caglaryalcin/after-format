@@ -1356,6 +1356,8 @@ Function ImportStartup {
     Copy-Item -Path "C:\after-format-main\files\startup\" -Destination "c:\" -Recurse *>$null
     Unblock-File -Path C:\startup\Run.cmd *>$null
     Unblock-File -Path C:\startup\Run.vbs *>$null
+    Unblock-File -Path C:\after-format-main\files\startup\upgrade.bat *>$null
+    Unblock-File -Path C:\\startup\upgrade.bat *>$null
     cmd /c "C:\startup\Default.cmd" *>$null
     Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -1966,10 +1968,6 @@ cmd.exe /c "winget install Steam -e --silent --accept-source-agreements --accept
 cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     
-    Write-Host "Installing Microsoft Teams..." -NoNewline
-cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
     Write-Host "Installing Rufus..." -NoNewline
 cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2612,12 +2610,12 @@ Unblock-File -Path "C:\after-format-main\files\icons\VLC media player.lnk" *>$nu
 $WScriptShell = New-Object -ComObject WScript.Shell
 $TreeSize = "C:\Program Files\JAM Software\TreeSize\TreeSize.exe"
 $TreeSizePath = "C:\Program Files\JAM Software\TreeSize"
-$ShortcutFile = "C:\after-format-main\files\icons\TreeSize.lnk"
+$ShortcutFile = "C:\after-format-main\files\icons\TreeSize (2).lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TreeSize
 $Shortcut.WorkingDirectory = $TreeSizePath
 $Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\TreeSize.lnk" *>$null
+Unblock-File -Path "C:\after-format-main\files\icons\TreeSize (2).lnk" *>$null
 
 #Total Commander
 $WScriptShell = New-Object -ComObject WScript.Shell
