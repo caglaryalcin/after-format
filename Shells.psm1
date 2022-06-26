@@ -1352,8 +1352,8 @@ CopyFiles
 Function ImportStartup {
 	Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
     Copy-Item -Path "C:\after-format-main\files\startup\" -Destination "c:\" -Recurse *>$null
-    Unblock-File -Path C:\startup\Run.cmd
-    Unblock-File -Path C:\startup\Run.vbs
+    Unblock-File -Path C:\startup\Run.cmd *>$null
+    Unblock-File -Path C:\startup\Run.vbs *>$null
     cmd /c "C:\startup\Default.cmd" *>$null
     Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2406,12 +2406,9 @@ Function UninstallEdge {
     if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
     taskkill /f /im msedge.exe *>$null
-	cd "C:\Program Files (x86)\Microsoft\Edge\Application\102*\Installer\" *>$null
-    cmd.exe /c .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall *>$null
-    cd "C:\Program Files (x86)\Microsoft\Edge\Application\103*\Installer\" *>$null
-    cmd.exe /c .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall *>$null
-    cd "C:\Program Files (x86)\Microsoft\Edge\Application\104*\Installer\" *>$null
-    cmd.exe /c .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall *>$null
+    cd "C:\Program Files (x86)\Microsoft\Edge\Application\103*\Installer\"
+    .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
+    Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
@@ -2461,7 +2458,7 @@ if ($systemset -match "[Yy]") {
 Function Own {
 
 #Sound Settings
-Get-PnpDevice -FriendlyName "*Microsoft*" | Disable-PnpDevice -confirm:$false *>$null
+#Get-PnpDevice -FriendlyName "*Microsoft*" | Disable-PnpDevice -confirm:$false *>$null
 
 ###Taskbar Pins
 ##Create Icons folder
@@ -2475,7 +2472,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Firefox.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Firefox
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Firefox.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Firefox.lnk" *>$null
 
 #Librewolf
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2484,7 +2481,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\LibreWolf.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Librewolf
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\LibreWolf.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\LibreWolf.lnk" *>$null
 
 #Chrome
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2493,16 +2490,19 @@ $ShortcutFile = "C:\after-format-main\files\icons\Google Chrome.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Chrome
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Google Chrome.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Google Chrome.lnk" *>$null
 
 #Brave
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Brave = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe"
+$BraveDirectory = "C:\Users\m4a1\AppData\Local\BraveSoftware\Brave-Browser\Application"
+$Shortcut.WorkingDirectory = "C:\Users\m4a1\AppData\Local\BraveSoftware\Brave-Browser\Application"
 $ShortcutFile = "C:\after-format-main\files\icons\Brave.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Brave
+$Shortcut.WorkingDirectory = $BraveDirectory
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Brave.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Brave.lnk" *>$null
 
 #File Explorer was here
 
@@ -2513,7 +2513,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Steam.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Steam
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Steam.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Steam.lnk" *>$null
 
 #HWMonitor
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2522,25 +2522,25 @@ $ShortcutFile = "C:\after-format-main\files\icons\HWMonitor.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $HW
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\HWMonitor.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\HWMonitor.lnk" *>$null
 
 #vMware Workstation
 $WScriptShell = New-Object -ComObject WScript.Shell
 $vMware = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\vMware Workstation.lnk"
+$ShortcutFile = "C:\after-format-main\files\icons\VMware Workstation Pro.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $vMware
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\vMware Workstation.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\VMware Workstation Pro.lnk" *>$null
 
 #VirtualBox
 $WScriptShell = New-Object -ComObject WScript.Shell
 $VirtualBox = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\VirtualBox.lnk"
+$ShortcutFile = "C:\after-format-main\files\icons\Oracle VM VirtualBox.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $VirtualBox
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\VirtualBox.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Oracle VM VirtualBox.lnk" *>$null
 
 #Signal
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2549,7 +2549,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Signal.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Signal
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Signal.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Signal.lnk" *>$null
 
 #Sticky Notes was here
 
@@ -2560,7 +2560,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Visual Studio Code.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Visual
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Visual Studio Code.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Visual Studio Code.lnk" *>$null
 
 #AnyDesk
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2569,7 +2569,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\AnyDesk.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Anydesk
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\AnyDesk.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\AnyDesk.lnk" *>$null
 
 #Terminal was here
 
@@ -2580,7 +2580,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Speedtest.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Speedtest
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Speedtest.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Speedtest.lnk" *>$null
 
 #Notepad++
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2589,27 +2589,29 @@ $ShortcutFile = "C:\after-format-main\files\icons\Notepad++.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Notepad
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Notepad++.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Notepad++.lnk" *>$null
 
 #VLC
 $WScriptShell = New-Object -ComObject WScript.Shell
 $VLC = "C:\Program Files\VideoLAN\VLC\vlc.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\VLC Player.lnk"
+$ShortcutFile = "C:\after-format-main\files\icons\VLC media player.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $VLC
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\VLC Player.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\VLC media player.lnk" *>$null
 
 #Calculator was here
 
 #TreeSize
 $WScriptShell = New-Object -ComObject WScript.Shell
 $TreeSize = "C:\Program Files\JAM Software\TreeSize\TreeSize.exe"
+$TreeSizePath = "C:\Program Files\JAM Software\TreeSize"
 $ShortcutFile = "C:\after-format-main\files\icons\TreeSize.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TreeSize
+$Shortcut.WorkingDirectory = $TreeSizePath
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\TreeSize.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\TreeSize.lnk" *>$null
 
 #Total Commander
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2618,7 +2620,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Total Commander.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TCM
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Total Commander.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Total Commander.lnk" *>$null
 
 #Rufus was here
 
@@ -2629,7 +2631,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\WireShark.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $WireShark
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\WireShark.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\WireShark.lnk" *>$null
 
 #Putty
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2638,7 +2640,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Putty.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Putty
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Putty.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Putty.lnk" *>$null
 
 #Filezilla
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2647,7 +2649,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Filezilla.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Filezilla
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Filezilla.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Filezilla.lnk" *>$null
 
 #Deluge
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2656,7 +2658,7 @@ $ShortcutFile = "C:\after-format-main\files\icons\Deluge.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Deluge
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Deluge.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Deluge.lnk" *>$null
 
 #Cryptomator
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2665,14 +2667,17 @@ $ShortcutFile = "C:\after-format-main\files\icons\Cryptomator.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Cryptomator
 $Shortcut.Save()
-Unblock-File -Path C:\after-format-main\files\icons\Cryptomator.lnk
+Unblock-File -Path "C:\after-format-main\files\icons\Cryptomator.lnk" *>$null
 
 #Set Pin
 $progressPreference = 'silentlyContinue'
 Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
-reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
+reg import "C:\after-format-main\files\taskbar_pin.reg" *>$null
+reg import "C:\after-format-main\files\taskbar_pin2.reg" *>$null
 Copy-Item -Path "C:\after-format-main\files\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
-reg import "C:\after-format-main\files\taskbar_bin.reg" *>$null
+reg import "C:\after-format-main\files\taskbar_pin.reg" *>$null
+reg import "C:\after-format-main\files\taskbar_pin2.reg" *>$null
 taskkill /f /im explorer.exe
 Start-Sleep 1
 start explorer.exe
