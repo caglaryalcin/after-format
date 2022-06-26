@@ -2,8 +2,8 @@
 RequireAdmin
 
 ImportTask
-#RemoveENKeyboard
-#AddTRKeyboard
+RemoveENKeyboard
+AddTRKeyboard
 RemoveStickyKeys
 RemoveToggleKeys
 RemoveTasks
