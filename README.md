@@ -140,6 +140,8 @@ When this question is asked, answer by saying 'n'. Because the settings here are
 There is another script called startup in the script.
 
 This script does exactly the following;
+- Remove En-US Keyboard
+- Adding Turkey Keyboard
 - Importing Previously Set Task to Task Scheduler
 - Removing Stick Keys
 - Removing Toggle Keys
