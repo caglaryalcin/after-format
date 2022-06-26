@@ -1918,6 +1918,10 @@ cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements 
 cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     
+    Write-Host "Installing Twinkle-Tray..." -NoNewline
+cmd.exe /c "winget install xanderfrangos.twinkletray -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
     Write-Host "Installing Total Commander..." -NoNewline
 cmd.exe /c "winget install Ghisler.TotalCommander -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
