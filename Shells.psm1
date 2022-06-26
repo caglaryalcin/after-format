@@ -299,8 +299,9 @@ Function DisableVMEthernets {
 
 # Disable Startup App 
 Function DisableStartupApps {
-	Write-Host "Disabling Startup Apps..." -NoNewline
+    Write-Host "Disabling Startup Apps..." -NoNewline
     $StartPaths = @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\")
+    $StartFilePaths = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
     $removeList = @("*Riot*","*IDMan*","*Steam*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*vmware*","*Any*")
     #$DisableValue = ([byte[]](0x03,0x00,0x00,0x00,0x81,0xf4,0xad,0xc9,0xa3,0x48,0xd7,0x01))
     
@@ -309,6 +310,7 @@ Function DisableStartupApps {
 
     #Remove
     Remove-ItemProperty $StartPaths -Name $removeList *>$null
+    Get-ChildItem -Path $StartFilePaths -Recurse | Remove-Item -force -recurse  -ErrorAction SilentlyContinue
 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
