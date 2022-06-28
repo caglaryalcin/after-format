@@ -1,4 +1,4 @@
-![Alt Text](https://github.com/caglaryalcin/after-format/blob/main/files/flux.gif)
+![Alt Text](https://github.com/caglaryalcin/media/blob/main/flux.gif)
 
 ## Description
 
