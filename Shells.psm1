@@ -1893,7 +1893,7 @@ Function Winget {
     Write-Host `n"Installing Winget..." -NoNewline
     $progressPreference = 'silentlyContinue'
 	Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx *>$null
-    Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle *>$null
+    Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
