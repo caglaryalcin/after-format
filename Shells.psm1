@@ -2003,6 +2003,10 @@ cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-sourc
     Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
 cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    Write-Host "Installing HEIC Converter..." -NoNewline
+cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Windows Terminal..." -NoNewline
 $progressPreference = 'silentlyContinue'
