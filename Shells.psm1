@@ -2677,6 +2677,15 @@ $Shortcut.TargetPath = $Cryptomator
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Cryptomator.lnk" *>$null
 
+#HEIC Converter
+$WScriptShell = New-Object -ComObject WScript.Shell
+$HEIC = "C:\Program Files\DigiDNA\iMazing HEIC Converter\iMazing HEIC Converter.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\iMazing HEIC Converter.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $HEIC
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\iMazing HEIC Converter.lnk" *>$null
+
 #Set Pin
 $progressPreference = 'silentlyContinue'
 Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
