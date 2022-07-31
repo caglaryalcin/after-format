@@ -1900,121 +1900,134 @@ Function Winget {
 Winget
 
 Function InstallSoftwares {
-    Write-Host "Installing 7-Zip..." -NoNewline
-cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Brave Browser..." -NoNewline
-cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
     Write-Host "Installing Firefox..." -NoNewline
 cmd.exe /c "winget install Mozilla.Firefox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
+    Write-Host "Installing Opera..." -NoNewline
+cmd.exe /c "winget install Opera.Opera -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
     Write-Host "Installing Chrome..." -NoNewline
-cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
-    Write-Host "Installing PuTTY..." -NoNewline
-cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
-    Write-Host "Installing Twinkle-Tray..." -NoNewline
-cmd.exe /c "winget install xanderfrangos.twinkletray -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
-    Write-Host "Installing Total Commander..." -NoNewline
-cmd.exe /c "winget install Ghisler.TotalCommander -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    Write-Host "Installing Libre Wolf..." -NoNewline
+cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black    
 
-    Write-Host "Installing Notepad++..." -NoNewline
-cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing VMWare Workstation Pro..." -NoNewline
-cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Filezilla..." -NoNewline
-cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    
-    Write-Host "Installing Deluge..." -NoNewline
-cmd.exe /c "winget install DelugeTeam.Deluge -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing HWMonitor..." -NoNewline
-cmd.exe /c "winget install hwmonitor -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Cryptomator..." -NoNewline
-cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Wireshark..." -NoNewline
-cmd.exe /c "winget install Wireshark -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing VirtualBox..." -NoNewline
-cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "Installing Brave Browser..." -NoNewline
+cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Steam..." -NoNewline
 cmd.exe /c "winget install Steam -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
+    Write-Host "Installing HWMonitor..." -NoNewline
+cmd.exe /c "winget install hwmonitor -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Crystal Disk Info..." -NoNewline
+cmd.exe /c "winget install CrystalDewWorld.CrystalDiskInfo -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing VMWare Workstation Pro..." -NoNewline
+cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing VirtualBox..." -NoNewline
+cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
     Write-Host "Installing Signal Desktop..." -NoNewline
 cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    
-    Write-Host "Installing Rufus..." -NoNewline
-cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing K-Lite Codec Pack Mega..." -NoNewline
-cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing TreeSize..." -NoNewline
-cmd.exe /c "winget install TreeSize -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Speedtest..." -NoNewline
-cmd.exe /c "winget install Ookla.Speedtest -e --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing AnyDesk..." -NoNewline
-cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
-    Write-Host "Installing Libre Wolf..." -NoNewline
-cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    
-    Write-Host "Installing VLC Media Player..." -NoNewline
-cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    
+
     Write-Host "Installing Microsoft Visual Studio Code..." -NoNewline
 cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force *>$null
-    
-    Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
-cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
-    Write-Host "Installing HEIC Converter..." -NoNewline
-cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+        
+    Write-Host "Installing AnyDesk..." -NoNewline
+cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Windows Terminal..." -NoNewline
-$progressPreference = 'silentlyContinue'
+    $progressPreference = 'silentlyContinue'
 Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v1.12.10982.0/Microsoft.WindowsTerminal_Win10_1.12.10982.0_8wekyb3d8bbwe.msixbundle' -OutFile 'C:\WindowsTerminal.msixbundle'
 Add-AppPackage -path "C:\WindowsTerminal.msixbundle"
 Remove-Item -Path C:\WindowsTerminal.msixbundle -recurse
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Speedtest..." -NoNewline
+cmd.exe /c "winget install Ookla.Speedtest -e --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Notepad++..." -NoNewline
+cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing VLC Media Player..." -NoNewline
+cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing TreeSize..." -NoNewline
+cmd.exe /c "winget install TreeSize -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Total Commander..." -NoNewline
+cmd.exe /c "winget install Ghisler.TotalCommander -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Rufus..." -NoNewline
+cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Wireshark..." -NoNewline
+cmd.exe /c "winget install Wireshark -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing PuTTY..." -NoNewline
+cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Filezilla..." -NoNewline
+cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Deluge..." -NoNewline
+cmd.exe /c "winget install DelugeTeam.DelugeBeta -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+         
+
+    Write-Host "Installing Cryptomator..." -NoNewline
+cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing HEIC Converter..." -NoNewline
+cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    Start-Sleep 3
+    taskkill /f /im "iMazing HEIC Converter.exe"
+
+    ##
+    
+    Write-Host "Installing 7-Zip..." -NoNewline
+cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            
+    Write-Host "Installing Twinkle-Tray..." -NoNewline
+cmd.exe /c "winget install xanderfrangos.twinkletray -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    Write-Host "Installing K-Lite Codec Pack Mega..." -NoNewline
+cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        
+    Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
+cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        
 }
 
 InstallSoftwares
@@ -2039,9 +2052,10 @@ Function Valorant {
     Write-Host "Installing Valorant..." -NoNewline
     $progressPreference = 'silentlyContinue'
     Invoke-WebRequest -Uri https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.eu.exe -OutFile C:\valo.exe
+    Write-Host "[You are expected to close the installation screen!]" -ForegroundColor Red
     Start-Process C:\valo.exe -NoNewWindow -Wait
     Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    Write-Host "[DONE]" -NoNewline -ForegroundColor Green -BackgroundColor Black
 }
 
 Valorant
@@ -2417,8 +2431,8 @@ Function UninstallEdge {
     taskkill /f /im msedge.exe *>$null
     cd "C:\Program Files (x86)\Microsoft\Edge\Application\103*\Installer\"
     .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
-    Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
-    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ }
+    Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
+    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
@@ -2483,14 +2497,17 @@ $Shortcut.TargetPath = $Firefox
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Firefox.lnk" *>$null
 
-#Librewolf
+#Opera
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Librewolf = "C:\Program Files\LibreWolf\librewolf.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\LibreWolf.lnk"
+$Opera = "$env:USERPROFILE\AppData\Local\Programs\Opera\opera.exe"
+$OperaDirectory = "$env:USERPROFILE\AppData\Local\Local\Programs\Opera"
+$Shortcut.WorkingDirectory = "$env:USERPROFILE\AppData\Local\Programs\Opera"
+$ShortcutFile = "C:\after-format-main\files\icons\Opera Browser.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Librewolf
+$Shortcut.TargetPath = $Opera
+$Shortcut.WorkingDirectory = $OperaDirectory
 $Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\LibreWolf.lnk" *>$null
+Unblock-File -Path "C:\after-format-main\files\icons\Opera Browser.lnk" *>$null
 
 #Chrome
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2501,11 +2518,20 @@ $Shortcut.TargetPath = $Chrome
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Google Chrome.lnk" *>$null
 
+#Librewolf
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Librewolf = "C:\Program Files\LibreWolf\librewolf.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\LibreWolf.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Librewolf
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\LibreWolf.lnk" *>$null
+
 #Brave
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Brave = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe"
-$BraveDirectory = "C:\Users\m4a1\AppData\Local\BraveSoftware\Brave-Browser\Application"
-$Shortcut.WorkingDirectory = "C:\Users\m4a1\AppData\Local\BraveSoftware\Brave-Browser\Application"
+$BraveDirectory = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application"
+$Shortcut.WorkingDirectory = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application"
 $ShortcutFile = "C:\after-format-main\files\icons\Brave.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Brave
@@ -2533,6 +2559,18 @@ $Shortcut.TargetPath = $HW
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\HWMonitor.lnk" *>$null
 
+#Crystal Disk Info
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Crystal = "C:\Program Files\CrystalDiskInfo\DiskInfo64.exe"
+$CrystalDirectory = "C:\Program Files\CrystalDiskInfo"
+$Shortcut.WorkingDirectory = "C:\Program Files\CrystalDiskInfo"
+$ShortcutFile = "C:\after-format-main\files\icons\CrystalDiskInfo (64bit).lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Crystal
+$Shortcut.WorkingDirectory = $CrystalDirectory
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\CrystalDiskInfo (64bit).lnk" *>$null
+
 #vMware Workstation
 $WScriptShell = New-Object -ComObject WScript.Shell
 $vMware = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe"
@@ -2553,7 +2591,7 @@ Unblock-File -Path "C:\after-format-main\files\icons\Oracle VM VirtualBox.lnk" *
 
 #Signal
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Signal = "C:\Users\m4a1\AppData\Local\Programs\signal-desktop\Signal.exe"
+$Signal = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\Signal.exe"
 $ShortcutFile = "C:\after-format-main\files\icons\Signal.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Signal
@@ -2564,7 +2602,7 @@ Unblock-File -Path "C:\after-format-main\files\icons\Signal.lnk" *>$null
 
 #Visual Studio
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Visual = "C:\Users\m4a1\AppData\Local\Programs\Microsoft VS Code\Code.exe"
+$Visual = "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\Code.exe"
 $ShortcutFile = "C:\after-format-main\files\icons\Visual Studio Code.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Visual
