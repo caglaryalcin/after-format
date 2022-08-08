@@ -11,4 +11,5 @@ RemoveTasks
 #DisableDefender
 #HideDefenderTrayIcon
 DisableStartupApps
+RemoveEdgeUpdates
 SyncTime
