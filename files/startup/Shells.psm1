@@ -203,6 +203,13 @@ Function DisableStartupApps {
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
+Function RemoveEdgeUpdates {
+    Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
+
+}
 # Sync Localtime
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
