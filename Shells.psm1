@@ -155,6 +155,10 @@ Function DisableDefender {
     Set-MpPreference -ModerateThreatDefaultAction 6 -ErrorAction Ignore;
     Set-MpPreference -LowThreatDefaultAction 6 -ErrorAction Ignore;
     Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
+    
+    #Exclude github folders for scan
+    Remove-MpPreference -ExclusionPath C:\startup\
+    Remove-MpPreference -ExclusionPath C:\after-format-main\
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
 
