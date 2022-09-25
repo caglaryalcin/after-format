@@ -157,8 +157,8 @@ Function DisableDefender {
     Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
     
     #Exclude github folders for scan
-    Remove-MpPreference -ExclusionPath C:\startup\
-    Remove-MpPreference -ExclusionPath C:\after-format-main\
+    Set-MpPreference -ExclusionPath C:\startup\
+    Set-MpPreference -ExclusionPath C:\after-format-main\
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
 
@@ -185,8 +185,8 @@ HideDefenderTrayIcon
 }
 else {
     #Exclude github folders for scan
-    Remove-MpPreference -ExclusionPath C:\startup\
-    Remove-MpPreference -ExclusionPath C:\after-format-main\
+    Set-MpPreference -ExclusionPath C:\startup\
+    Set-MpPreference -ExclusionPath C:\after-format-main\
     Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
 }
 
