@@ -184,6 +184,9 @@ HideDefenderTrayIcon
 
 }
 else {
+    #Exclude github folders for scan
+    Remove-MpPreference -ExclusionPath C:\startup\
+    Remove-MpPreference -ExclusionPath C:\after-format-main\
     Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
 }
 
