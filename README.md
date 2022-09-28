@@ -102,7 +102,8 @@ This script does exactly the following; (Some are optional(y/n))
 <details><summary>Install Softwares</summary>&nbsp;
 
 - [Installing WinGet for Windows 10](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
-- Installing 7-zip, Mozilla Firefox, Google Chrome, PuTTY, Twinkle-Tray, Total Commander, Notepad++, VMWARE Workstation Pro, Filezilla, Deluge, HWMonitor, Cryptomator, Wireshark, VirtualBox, Steam, Signal Desktop, Microsoft Teams, Rufus, K-Lite Codec Pack Mega, TreeSize, Speedtest, Windows Terminal, Visual Studio Code, Libre Wolf, VLC Player, Lightshot, Valorant, HEIC Converter.
+- Installing  Mozilla Firefox, Opera, Libre Wolf, Google Chrome, Steam, HWMonitor, Crystal Disk Info, VMWare Workstation Pro, VirtualBox, Signal Desktop, Microsoft Visual Studio Code, AnyDesk, Windows Terminal, Speedtest, Notepad++, VLC Media Player, TreeSize Free, Total Commander, Rufus, Wireshark, PuTTY, Filezilla, Deluge, Cryptomator, HEIC Converter, Microsoft Teams, 7-Zip, Twinkle-Tray, K-Lite Codec Pack Mega, Nvidia GeForce Experience, Valorant.
+
 </details>
 
 <details><summary>Remove Unused Apps/Softwares</summary>&nbsp;
@@ -112,7 +113,7 @@ This script does exactly the following; (Some are optional(y/n))
 - Uninstalling Work Folders Client
 - Uninstalling Microsoft XPS Document Writer
 - Removing Default Fax Printer
-- Disabling & Uninstalling OneDrive
+- Uninstalling OneDrive
 - Removing Microsoft Edge
 - Uninstalling Windows Fax and Scan Services
 </details>
