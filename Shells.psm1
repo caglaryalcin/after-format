@@ -6,7 +6,7 @@ New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
 New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
 New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-    
+
 ##########
 #endregion MAP
 ##########
@@ -2032,7 +2032,11 @@ cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreement
     Write-Host "Installing 7-Zip..." -NoNewline
 cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            
+    
+    Write-Host "Installing Lightshot..." -NoNewline
+cmd.exe /c "winget install Skillbrains.Lightshot -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
     Write-Host "Installing Twinkle-Tray..." -NoNewline
 cmd.exe /c "winget install xanderfrangos.twinkletray -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
