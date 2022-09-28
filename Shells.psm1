@@ -6,7 +6,7 @@ New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
 New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
 New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-
+    
 ##########
 #endregion MAP
 ##########
@@ -18,6 +18,14 @@ New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-
 Function Priority {
     $progressPreference = 'silentlyContinue'
     Get-WindowsPackage -Online | Where PackageName -like *QuickAssist*15** | Remove-WindowsPackage -Online -NoRestart -WarningAction SilentlyContinue *>$null
+
+    #Exclude github folders for scan
+    Set-MpPreference -ExclusionPath C:\startup\
+    Set-MpPreference -ExclusionPath C:\after-format-main\
+    Set-MpPreference -ExclusionExtension ".psm1"
+    Set-MpPreference -ExclusionExtension ".bat"
+    Set-MpPreference -ExclusionExtension ".cmd"
+    Set-MpPreference -ExclusionExtension ".ps1"
 }
 
 RequireAdmin
@@ -1914,14 +1922,14 @@ cmd.exe /c "winget install Mozilla.Firefox -e --silent --accept-source-agreement
     Write-Host "Installing Opera..." -NoNewline
 cmd.exe /c "winget install Opera.Opera -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+    
+    Write-Host "Installing Libre Wolf..." -NoNewline
+cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Chrome..." -NoNewline
     cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    Write-Host "Installing Libre Wolf..." -NoNewline
-cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black    
 
     Write-Host "Installing Brave Browser..." -NoNewline
 cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -1960,10 +1968,7 @@ cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --acce
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Windows Terminal..." -NoNewline
-    $progressPreference = 'silentlyContinue'
-Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v1.12.10982.0/Microsoft.WindowsTerminal_Win10_1.12.10982.0_8wekyb3d8bbwe.msixbundle' -OutFile 'C:\WindowsTerminal.msixbundle'
-Add-AppPackage -path "C:\WindowsTerminal.msixbundle"
-Remove-Item -Path C:\WindowsTerminal.msixbundle -recurse
+cmd.exe /c "winget install Microsoft.WindowsTerminal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Speedtest..." -NoNewline
@@ -1978,16 +1983,17 @@ cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --ac
 cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    Write-Host "Installing TreeSize..." -NoNewline
-cmd.exe /c "winget install TreeSize -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "Installing TreeSize Free..." -NoNewline
+cmd.exe /c "winget install JAMSoftware.TreeSize.Free -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Total Commander..." -NoNewline
 cmd.exe /c "winget install Ghisler.TotalCommander -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    #There is problem with Rufus on MS
     Write-Host "Installing Rufus..." -NoNewline
-cmd.exe /c "winget install Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Rufus.Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Wireshark..." -NoNewline
@@ -1998,6 +2004,7 @@ cmd.exe /c "winget install Wireshark -e --silent --accept-source-agreements --ac
 cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    #There is problem with Filezilla on MS
     Write-Host "Installing Filezilla..." -NoNewline
 cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2006,7 +2013,6 @@ cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source
 cmd.exe /c "winget install DelugeTeam.DelugeBeta -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
          
-
     Write-Host "Installing Cryptomator..." -NoNewline
 cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2016,6 +2022,10 @@ cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-sou
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     Start-Sleep 3
     taskkill /f /im "iMazing HEIC Converter.exe"
+
+    Write-Host "Installing Microsoft Teams..." -NoNewline
+cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force"
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     ##
     
@@ -2039,30 +2049,14 @@ cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-
 
 InstallSoftwares
 
-Function Lightshot {
-    Write-Host "Installing Lightshot..." -NoNewline
-    $progressPreference = 'silentlyContinue'
-    Invoke-WebRequest -Uri https://github.com/caglaryalcin/after-format/raw/main/files/Skillbrains.zip -OutFile C:\Skillbrains.zip *>$null
-    $progressPreference = 'silentlyContinue'
-    Expand-Archive -Path 'C:\Skillbrains.zip' -DestinationPath "C:\Program Files (x86)\" -Force *>$null
-    $progressPreference = 'silentlyContinue'
-    cmd.exe /c "C:\Program Files (x86)\Skillbrains\lightshot\Lightshot.exe"
-    $startpath = ((Get-WMIObject -ClassName Win32_ComputerSystem).Username).Split('\')[1]
-    Copy-Item -Path "C:\Program Files (x86)\Skillbrains\lightshot\*.lnk" -Destination "C:\Users\$startpath\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-    Remove-Item C:\Skillbrains.zip -recurse -ErrorAction SilentlyContinue
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-}
-
-Lightshot
-
 Function Valorant {
     Write-Host "Installing Valorant..." -NoNewline
     $progressPreference = 'silentlyContinue'
     Invoke-WebRequest -Uri https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.eu.exe -OutFile C:\valo.exe
-    Write-Host "[You are expected to close the installation screen!]" -ForegroundColor Red
+    Write-Host "[You are expected to close the installation screen!]" -NoNewline -ForegroundColor Red
     Start-Process C:\valo.exe -NoNewWindow -Wait
     Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
-    Write-Host "[DONE]" -NoNewline -ForegroundColor Green -BackgroundColor Black
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
 Valorant
@@ -2373,59 +2367,26 @@ Function UninstallFaxAndScan {
 
 UninstallFaxAndScan
 
-Write-Host `n"Do you want " -NoNewline
-Write-Host "remove Windows OneDrive?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
-Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-$input = Read-Host
-if ($input -match "[Yy]") {
-
-# Disable OneDrive
-Function DisableOneDrive {
-	Write-Host "Disabling & Uninstalling OneDrive..." -NoNewline
-	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
-		New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" | Out-Null
-	}
-	Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
-     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-}
-
-DisableOneDrive
-
+# Uninstall OneDrive
 Function UninstallOneDrive {
-$TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
-$TeamsUpdateExePath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams', 'Update.exe')
-cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall"
-try
-{
-    if (Test-Path -Path $TeamsUpdateExePath) {
-        Write-Host "Uninstalling Teams process"
-
-        # Uninstall app
-        $proc = Start-Process -FilePath $TeamsUpdateExePath -ArgumentList "-uninstall -s" -PassThru
-        $proc.WaitForExit()
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    }
-    if (Test-Path -Path $TeamsPath) {
-        Write-Host "Deleting Teams directory"
-        Remove-Item -Path $TeamsPath -Recurse
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    
-    }
-}
-catch
-{
-    Write-Error -ErrorRecord $_
-    exit /b 1
-}
-}
-
-UninstallOneDrive
-
+	Write-Host `n"Do you want " -NoNewline
+    Write-Host "remove Windows OneDrive?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+    $input = Read-Host
+    if ($input -match "[Yy]") {
+    Write-Host "Removing Microsoft OneDrive..." -NoNewline
+    $progressPreference = 'silentlyContinue'
+    taskkill /f /im onedrive.exe *>$null
+    cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
 else {
     Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor Black
 }
+}
+
+UninstallOneDrive
 
 # Disable Edge desktop shortcut creation after certain Windows updates are applied 
 Function UninstallEdge {
@@ -2436,7 +2397,18 @@ Function UninstallEdge {
     if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
     taskkill /f /im msedge.exe *>$null
-    cd "C:\Program Files (x86)\Microsoft\Edge\Application\103*\Installer\"
+    #Edge Services
+    Stop-Service -Name "edgeupdate" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "edgeupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete edgeupdate *>$null
+    Stop-Service -Name "edgeupdatem" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "edgeupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete edgeupdatem *>$null
+    Start-Sleep 3
+    
+    $progressPreference = 'SilentlyContinue'
+    cd "C:\Program Files (x86)\Microsoft\Edge\Application\9*\Installer\" *>$null
+    $progressPreference = 'SilentlyContinue'
     .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
     Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
@@ -2446,16 +2418,8 @@ Function UninstallEdge {
     Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction SilentlyContinue
     Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction SilentlyContinue
     Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
-    
-    #Edge Services
-    Stop-Service -Name "edgeupdate" -Force -ErrorAction SilentlyContinue
-    Set-Service -Name "edgeupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    sc.exe delete edgeupdate *>$null
-    Stop-Service -Name "edgeupdatem" -Force -ErrorAction SilentlyContinue
-    Set-Service -Name "edgeupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    sc.exe delete edgeupdatem *>$null
-    Start-Sleep 3
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
 }
 
 else {
@@ -2518,7 +2482,8 @@ Unblock-File -Path "C:\after-format-main\files\icons\Opera Browser.lnk" *>$null
 
 #Chrome
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+$Chrome = "$env:USERPROFILE\AppData\Local\Google\Chrome\Application\chrome.exe"
+$Shortcut.WorkingDirectory = "$env:USERPROFILE\AppData\Local\Google\Chrome\Application"
 $ShortcutFile = "C:\after-format-main\files\icons\Google Chrome.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Chrome
@@ -2658,14 +2623,14 @@ Unblock-File -Path "C:\after-format-main\files\icons\VLC media player.lnk" *>$nu
 
 #TreeSize
 $WScriptShell = New-Object -ComObject WScript.Shell
-$TreeSize = "C:\Program Files\JAM Software\TreeSize\TreeSize.exe"
-$TreeSizePath = "C:\Program Files\JAM Software\TreeSize"
-$ShortcutFile = "C:\after-format-main\files\icons\TreeSize (2).lnk"
+$TreeSize = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe"
+$TreeSizePath = "C:\Program Files\JAM Software\TreeSize Free"
+$ShortcutFile = "C:\after-format-main\files\icons\TreeSize Free (Administrator).lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TreeSize
 $Shortcut.WorkingDirectory = $TreeSizePath
 $Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\TreeSize (2).lnk" *>$null
+Unblock-File -Path "C:\after-format-main\files\icons\TreeSize Free (Administrator)" *>$null
 
 #Total Commander
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2732,6 +2697,16 @@ $Shortcut.TargetPath = $HEIC
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\iMazing HEIC Converter.lnk" *>$null
 
+#MS Teams
+$WScriptShell = New-Object -ComObject WScript.Shell
+$MSTeams = "C:\Users\m4a1\AppData\Local\Microsoft\Teams\Update.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Microsoft Teams.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
+$Shortcut.Arguments = "--processStart Teams.exe"
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\Microsoft Teams.lnk" *>$null
+
 #Set Pin
 $progressPreference = 'silentlyContinue'
 Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
@@ -2752,9 +2727,9 @@ $progressPreference = 'silentlyContinue'
 Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
 $progressPreference = 'silentlyContinue'
 C:\Asus\SetupChipset.exe -s
+Start-Sleep 20
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
-Start-Sleep 20
 
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
@@ -2774,6 +2749,15 @@ else {
 ##########
 
 Function Restart {
+
+    #Exclude github folders for scan
+    Set-MpPreference -ExclusionPath C:\startup\
+    Set-MpPreference -ExclusionPath C:\after-format-main\
+    Set-MpPreference -ExclusionExtension ".psm1"
+    Set-MpPreference -ExclusionExtension ".bat"
+    Set-MpPreference -ExclusionExtension ".cmd"
+    Set-MpPreference -ExclusionExtension ".ps1"
+
 cmd.exe /c "shutdown /r /t 0"
 }
 
