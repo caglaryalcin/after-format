@@ -14,6 +14,14 @@ New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-
 # Remove secondary en-US keyboard
 Function ImportTask {
 	Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
+
+    #Exclude github folders for scan
+    Set-MpPreference -ExclusionPath C:\startup\
+    Set-MpPreference -ExclusionPath C:\after-format-main\
+    Set-MpPreference -ExclusionExtension ".psm1"
+    Set-MpPreference -ExclusionExtension ".bat"
+    Set-MpPreference -ExclusionExtension ".cmd"
+    Set-MpPreference -ExclusionExtension ".ps1"
 }
 
 # Remove secondary en-US keyboard
@@ -194,7 +202,7 @@ Function HideDefenderTrayIcon {
 Function DisableStartupApps {
     $StartPaths = @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\")
     $StartFilePaths = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
-    $removeList = @("*npcap*","*Edge*","*Brave*","*Riot*","*IDMan*","*Steam*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*vmware*","*Any*")
+    $removeList = @("*NV*","*npcap*","*Edge*","*Brave*","*Riot*","*IDMan*","*Steam*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*vmware*","*Any*")
     
     #Remove
     Remove-ItemProperty $StartPaths -Name $removeList *>$null
