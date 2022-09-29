@@ -16,12 +16,8 @@ Function ImportTask {
 	Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
 
     #Exclude github folders for scan
-    Set-MpPreference -ExclusionPath C:\startup\
-    Set-MpPreference -ExclusionPath C:\after-format-main\
-    Set-MpPreference -ExclusionExtension ".psm1"
-    Set-MpPreference -ExclusionExtension ".bat"
-    Set-MpPreference -ExclusionExtension ".cmd"
-    Set-MpPreference -ExclusionExtension ".ps1"
+    Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
+    Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
 }
 
 # Remove secondary en-US keyboard
