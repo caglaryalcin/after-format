@@ -6,7 +6,7 @@ New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
 New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
 New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-
+    
 ##########
 #endregion MAP
 ##########
@@ -34,6 +34,14 @@ Priority
 ##########
 #endregion Priority
 ##########
+
+Function testconnection {
+    $pingtest = Test-NetConnection google.com  | Select-Object PingSucceeded 
+    $comp = hostname
+    
+    if($pingtest.PingSucceeded)
+{
+    Write-Host("DNS resolve is up") -ForegroundColor Green
 
 ##########
 #region System Settings
@@ -1307,8 +1315,8 @@ Function DisableServices {
     Stop-Service -Name "SEMgrSvc" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "SEMgrSvc" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     ##Notification
-    Stop-Service -Name "WpnService" -Force -ErrorAction SilentlyContinue
-    Set-Service -Name "WpnService" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name "WpnService" -Force -ErrorAction SilentlyContinue *>$null
+    Set-Service -Name "WpnService" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue *>$null
     Stop-Service -Name "SENS" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "SENS" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
     ##Backup Service
@@ -1455,7 +1463,7 @@ Function DisableTelemetry {
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE" -Name "DisablePrivacyExperience" -Type Dword -Value "1"
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Deny"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\MdmCommon\SettingValues" -Name "LocationSyncEnabled" -Type Dword -Value "0"
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\MdmCommon\SettingValues" -Name "LocationSyncEnabled" -Type Dword -Value "0" *>$null
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type Dword -Value "0" 
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "MaxTelemetryAllowed" -Type Dword -Value "0"
     If (!(Test-Path "HKCU:\Software\Microsoft\Speech_OneCore\Settings")) {
@@ -2032,11 +2040,7 @@ cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreement
     Write-Host "Installing 7-Zip..." -NoNewline
 cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    
-    Write-Host "Installing Lightshot..." -NoNewline
-cmd.exe /c "winget install Skillbrains.Lightshot -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
+            
     Write-Host "Installing Twinkle-Tray..." -NoNewline
 cmd.exe /c "winget install xanderfrangos.twinkletray -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2766,3 +2770,12 @@ cmd.exe /c "shutdown /r /t 0"
 }
 
 Restart
+
+}
+else{
+        Write-Host("DNS not resolved, this script will be closed") -ForegroundColor Red
+        Start-Sleep -Seconds 10
+     }
+     
+}
+testconnection
