@@ -20,12 +20,8 @@ Function Priority {
     Get-WindowsPackage -Online | Where PackageName -like *QuickAssist*15** | Remove-WindowsPackage -Online -NoRestart -WarningAction SilentlyContinue *>$null
 
     #Exclude github folders for scan
-    Set-MpPreference -ExclusionPath C:\startup\
-    Set-MpPreference -ExclusionPath C:\after-format-main\
-    Set-MpPreference -ExclusionExtension ".psm1"
-    Set-MpPreference -ExclusionExtension ".bat"
-    Set-MpPreference -ExclusionExtension ".cmd"
-    Set-MpPreference -ExclusionExtension ".ps1"
+    Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
+    Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
 }
 
 RequireAdmin
@@ -173,8 +169,8 @@ Function DisableDefender {
     Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
     
     #Exclude github folders for scan
-    Set-MpPreference -ExclusionPath C:\startup\
-    Set-MpPreference -ExclusionPath C:\after-format-main\
+    Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
+    Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
 
@@ -2759,12 +2755,8 @@ else {
 Function Restart {
 
     #Exclude github folders for scan
-    Set-MpPreference -ExclusionPath C:\startup\
-    Set-MpPreference -ExclusionPath C:\after-format-main\
-    Set-MpPreference -ExclusionExtension ".psm1"
-    Set-MpPreference -ExclusionExtension ".bat"
-    Set-MpPreference -ExclusionExtension ".cmd"
-    Set-MpPreference -ExclusionExtension ".ps1"
+    Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
+    Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
 
 cmd.exe /c "shutdown /r /t 0"
 }
