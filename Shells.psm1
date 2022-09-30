@@ -1325,17 +1325,6 @@ Function DisableServices {
     Stop-Service -Name "Bonjour Service" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "Bonjour Service" -StartupType disabled -ErrorAction SilentlyContinue
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    #Google Update Services
-    Stop-Service -Name "gupdate" -Force -ErrorAction SilentlyContinue
-    Set-Service -Name "gupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    sc.exe delete gupdate *>$null
-    Stop-Service -Name "gupdatem" -Force -ErrorAction SilentlyContinue
-    Set-Service -Name "gupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    sc.exe delete gupdatem *>$null
-    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item "C:\Program Files\Google\Chrome\Application\102.0.5005.63\Installer\chrmstp.exe" -recurse -ErrorAction SilentlyContinue
 }
 
 DisableServices
@@ -1935,6 +1924,18 @@ cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agree
     cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
+    #Google Update Services
+    Stop-Service -Name "gupdate" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "gupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete gupdate *>$null
+    Stop-Service -Name "gupdatem" -Force -ErrorAction SilentlyContinue
+    Set-Service -Name "gupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+    sc.exe delete gupdatem *>$null
+    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -recurse -ErrorAction SilentlyContinue
+
     Write-Host "Installing Brave Browser..." -NoNewline
 cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2410,9 +2411,7 @@ Function UninstallEdge {
     sc.exe delete edgeupdatem *>$null
     Start-Sleep 3
     
-    $progressPreference = 'SilentlyContinue'
-    cd "C:\Program Files (x86)\Microsoft\Edge\Application\9*\Installer\" *>$null
-    $progressPreference = 'SilentlyContinue'
+    cd "C:\Program Files (x86)\Microsoft\Edge\Application\10*\Installer\" *>$null
     .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
     Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
@@ -2486,8 +2485,8 @@ Unblock-File -Path "C:\after-format-main\files\icons\Opera Browser.lnk" *>$null
 
 #Chrome
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Chrome = "$env:USERPROFILE\AppData\Local\Google\Chrome\Application\chrome.exe"
-$Shortcut.WorkingDirectory = "$env:USERPROFILE\AppData\Local\Google\Chrome\Application"
+$Chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+$Shortcut.WorkingDirectory = "C:\Program Files\Google\Chrome\Application\"
 $ShortcutFile = "C:\after-format-main\files\icons\Google Chrome.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Chrome
@@ -2731,9 +2730,9 @@ $progressPreference = 'silentlyContinue'
 Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
 $progressPreference = 'silentlyContinue'
 C:\Asus\SetupChipset.exe -s
-Start-Sleep 20
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
+Start-Sleep 20
 
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
