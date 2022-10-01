@@ -2527,6 +2527,15 @@ Unblock-File -Path "C:\after-format-main\files\icons\Brave.lnk" *>$null
 
 #File Explorer was here
 
+#Kdenlive
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Kdenlive = "C:\Program Files\kdenlive\bin\kdenlive.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Kdenlive.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Kdenlive
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\Kdenlive.lnk" *>$null
+
 #Steam
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Steam = "C:\Program Files (x86)\Steam\Steam.exe"
