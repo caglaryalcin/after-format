@@ -232,7 +232,15 @@ DisableNews
 #Default Photo Viewer Old
 Function DefaultPhotoViewer {
     Write-Host "Default Old Photo Viewer..." -NoNewline
-    reg import "C:\after-format-main\files\default_foto.reg" *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".bmp" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".dng" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".ico" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".jpeg" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".jpg" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".png" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".tif" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".tiff" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name ".raw" -Type String -Value PhotoViewer.FileAssoc.Tiff *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
@@ -2467,7 +2475,20 @@ if ($systemset -match "[Yy]") {
 Function Own {
 
 #Sound Settings
-#Get-PnpDevice -FriendlyName "*Microsoft*" | Disable-PnpDevice -confirm:$false *>$null
+Write-Host "Setting sound devices..." -NoNewline
+reg import "C:\after-format-main\files\disable_devices.reg" *>$null
+Install-PackageProvider -Name NuGet -Force *>$null
+Install-Module -Name AudioDeviceCmdlets -Force *>$null
+Get-AudioDevice -List | where Type -like "Playback" | where name -like "278" | Set-AudioDevice -Verbose *>$null
+Get-AudioDevice -List | where Type -like "Recording" | where name -like "Hyper" | Set-AudioDevice -Verbose *>$null
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+#Set Monitor Hertz
+Write-Host "Select the hertz values of monitors..." -NoNewline
+Write-Host "(It doesn't continue without a choice)" -ForegroundColor Red -NoNewline -BackgroundColor Black
+cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
+cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 ###Taskbar Pins
 ##Create Icons folder
