@@ -1966,7 +1966,8 @@ cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source
     Write-Host "Installing Microsoft Visual Studio Code..." -NoNewline
 cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        
+    
+    #There is problem with Filezilla on MS
     Write-Host "Installing AnyDesk..." -NoNewline
 cmd.exe /c "winget install AnyDeskSoftwareGmbH.AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
