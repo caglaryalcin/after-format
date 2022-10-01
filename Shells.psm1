@@ -2052,7 +2052,11 @@ cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-
     Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
 cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        
+    
+    Write-Host "Installing Kdenlive..." -NoNewline
+cmd.exe /c "winget install KDE.Kdenlive -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
 }
 
 InstallSoftwares
