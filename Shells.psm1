@@ -21,7 +21,6 @@ Function Priority {
 
     #Exclude github folders for scan
     Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
-    Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
 }
 
 RequireAdmin
@@ -32,12 +31,14 @@ Priority
 ##########
 
 Function testconnection {
+    $OriginalProgressPreference = $Global:ProgressPreference
+    $Global:ProgressPreference = 'SilentlyContinue'
     $pingtest = Test-NetConnection google.com  | Select-Object PingSucceeded 
     $comp = hostname
     
     if($pingtest.PingSucceeded)
 {
-    Write-Host("DNS resolve is up") -ForegroundColor Green
+    Write-Host("Internet connection and DNS is up") -ForegroundColor Green
 
 ##########
 #region System Settings
@@ -170,7 +171,6 @@ Function DisableDefender {
     
     #Exclude github folders for scan
     Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
-    Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
 }
 
@@ -197,7 +197,6 @@ HideDefenderTrayIcon
 }
 else {
     #Exclude github folders for scan
-    Set-MpPreference -ExclusionPath C:\startup\
     Set-MpPreference -ExclusionPath C:\after-format-main\
     Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
 }
@@ -2037,6 +2036,10 @@ cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreement
     Write-Host "Installing 7-Zip..." -NoNewline
 cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
+    Write-Host "Installing Lightshot..." -NoNewline
+cmd.exe /c "winget install Skillbrains.Lightshot -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             
     Write-Host "Installing Twinkle-Tray..." -NoNewline
 cmd.exe /c "winget install xanderfrangos.twinkletray -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -2402,6 +2405,11 @@ Function UninstallEdge {
     if ($input -match "[Yy]") {
 	Write-Host "Removing Microsoft Edge..." -NoNewline
     taskkill /f /im msedge.exe *>$null
+
+    cmd.exe /c "C:\after-format-main\files\remove_edge.bat"
+    Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
+    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
+
     #Edge Services
     Stop-Service -Name "edgeupdate" -Force -ErrorAction SilentlyContinue
     Set-Service -Name "edgeupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
@@ -2411,18 +2419,17 @@ Function UninstallEdge {
     sc.exe delete edgeupdatem *>$null
     Start-Sleep 3
     
-    cd "C:\Program Files (x86)\Microsoft\Edge\Application\10*\Installer\" *>$null
-    .\setup.exe -uninstall -system-level -verbose-logging -force-uninstall
-    Get-ChildItem C:\users\Public\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
-    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk|ForEach-Object { Remove-Item $_ } *>$null
     $progressPreference = 'SilentlyContinue'
     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
     Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
     Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction SilentlyContinue
     Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction SilentlyContinue
     Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
+
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    #Because Opera as auto pinned to start menu
+    UnpinStartMenuTiles
 }
 
 else {
@@ -2447,7 +2454,7 @@ else {
 
 Write-Host `n"Do you own " -NoNewline
 Write-Host "this script?" -ForegroundColor Red -NoNewline -BackgroundColor Black
-Write-Host "(Drivers will be installed): " -NoNewline
+Write-Host "(Drivers and taskbar settings will be made): " -NoNewline
 $systemset = Read-Host
 
 if ($systemset -match "[Yy]") {
@@ -2724,14 +2731,18 @@ Start-Sleep 2
 
 #Drivers
 Write-Host `n"Installing Chipset Driver..." -NoNewline
-$progressPreference = 'silentlyContinue'
+$OriginalProgressPreference = $Global:ProgressPreference
+$Global:ProgressPreference = 'SilentlyContinue'
 Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
-$progressPreference = 'silentlyContinue'
+$OriginalProgressPreference = $Global:ProgressPreference
+$Global:ProgressPreference = 'SilentlyContinue'
 Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
-$progressPreference = 'silentlyContinue'
-C:\Asus\SetupChipset.exe -s
-Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
+$OriginalProgressPreference = $Global:ProgressPreference
+$Global:ProgressPreference = 'SilentlyContinue'
+C:\Asus\SetupChipset.exe -s -NoNewWindow -Wait
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
+Start-Sleep 1
+Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Start-Sleep 20
 
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2756,6 +2767,8 @@ Function Restart {
     #Exclude github folders for scan
     Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
     Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
+
+    Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 
 cmd.exe /c "shutdown /r /t 0"
 }
