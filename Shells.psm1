@@ -1968,7 +1968,7 @@ cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-sourc
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         
     Write-Host "Installing AnyDesk..." -NoNewline
-cmd.exe /c "winget install AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install AnyDeskSoftwareGmbH.AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Windows Terminal..." -NoNewline
