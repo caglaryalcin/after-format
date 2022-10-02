@@ -2484,7 +2484,7 @@ Get-AudioDevice -List | where Type -like "Recording" | where name -like "Hyper" 
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 #Set Monitor Hertz
-Write-Host "Select the hertz values of monitors..." -NoNewline
+Write-Host "Select the hertz rate of monitors..." -NoNewline
 Write-Host "(It doesn't continue without a choice)" -ForegroundColor Red -NoNewline -BackgroundColor Black
 cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
 cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
