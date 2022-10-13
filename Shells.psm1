@@ -1927,21 +1927,22 @@ cmd.exe /c "winget install Opera.Opera -e --silent --accept-source-agreements --
 cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    #Google Chrome
     Write-Host "Installing Chrome..." -NoNewline
-    cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-
-    #Google Update Services
-    Stop-Service -Name "gupdate" -Force -ErrorAction SilentlyContinue
-    Set-Service -Name "gupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    sc.exe delete gupdate *>$null
-    Stop-Service -Name "gupdatem" -Force -ErrorAction SilentlyContinue
-    Set-Service -Name "gupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-    sc.exe delete gupdatem *>$null
-    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -recurse -ErrorAction SilentlyContinue
+cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    
+    #Disable Chrome Tasks
+Stop-Service -Name "gupdate" -Force -ErrorAction SilentlyContinue
+Set-Service -Name "gupdate" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+sc.exe delete gupdate *>$null
+Stop-Service -Name "gupdatem" -Force -ErrorAction SilentlyContinue
+Set-Service -Name "gupdatem" -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+sc.exe delete gupdatem *>$null
+Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate" -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem" -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}" -Recurse -ErrorAction SilentlyContinue
+Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -recurse -ErrorAction SilentlyContinue
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Brave Browser..." -NoNewline
 cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -1971,9 +1972,54 @@ cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreeme
 cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    #VSCode
     Write-Host "Installing Microsoft Visual Studio Code..." -NoNewline
 cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    #VSCode extensions
+    Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
+code --install-extension ms-azuretools.vscode-docker *>$null
+code --install-extension emin.vscode-react-native-kit *>$null
+code --install-extension msjsdiag.vscode-react-native *>$null
+code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools *>$null
+code --install-extension lunuan.kubernetes-templates *>$null
+code --install-extension redhat.vscode-yaml *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    #Softwares for developers
+    Write-Host "Installing software for developers..." -NoNewline
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine *>$null
+cmd.exe /c "winget install Microsoft.WindowsSDK -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Python.Python.3.10 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Microsoft.VisualStudio.2022.Community -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Microsoft.VisualStudio.2022.BuildTools -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install --id Git.Git -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install HeidiSQL.HeidiSQL -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    #Docker / Kubernetes
+    Write-Host "Installing Docker Desktop..." -NoNewline
+cmd.exe /c "winget install Docker.DockerDesktop -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Chocolatey..." -NoNewline
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) *>$null
+choco install kubernetes-cli *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    #Windows Subsystem Linux
+    Write-Host "Installing WSL(Windows Subsystem Linux)..." -NoNewline
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart *>$null
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart *>$null
+wsl --set-default-version 2 *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Minikube..." -NoNewline
+cmd.exe /c "winget install Kubernetes.minikube -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
     
     #There is problem with Filezilla on MS
     Write-Host "Installing AnyDesk..." -NoNewline
@@ -2040,8 +2086,11 @@ cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-sou
 cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    ##
-    
+    Write-Host "Installing iTunes..." -NoNewline
+cmd.exe /c "winget install Apple.iTunes -e --silent --accept-source-agreements --accept-package-agreements --force"
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    #other softwares
     Write-Host "Installing 7-Zip..." -NoNewline
 cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2062,10 +2111,6 @@ cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-
 cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     
-    Write-Host "Installing Kdenlive..." -NoNewline
-cmd.exe /c "winget install KDE.Kdenlive -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
 }
 
 InstallSoftwares
@@ -2549,14 +2594,9 @@ Unblock-File -Path "C:\after-format-main\files\icons\Brave.lnk" *>$null
 
 #File Explorer was here
 
-#Kdenlive
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Kdenlive = "C:\Program Files\kdenlive\bin\kdenlive.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\Kdenlive.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Kdenlive
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Kdenlive.lnk" *>$null
+#Photoshop was here
+
+#Premiere Pro was here
 
 #Steam
 $WScriptShell = New-Object -ComObject WScript.Shell
