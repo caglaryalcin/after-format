@@ -2727,6 +2727,15 @@ $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Total Commander.lnk" *>$null
 
 #Rufus was here
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Rufus = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\Rufus.Rufus_Microsoft.Winget.Source_8wekyb3d8bbwe\rufus-3.20p.exe"
+$RufusPath = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\Rufus.Rufus_Microsoft.Winget.Source_8wekyb3d8bbwe"
+$ShortcutFile = "C:\after-format-main\files\icons\Rufus.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Rufus
+$Shortcut.WorkingDirectory = $RufusPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\Rufus.lnk" *>$null
 
 #WireShark
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2746,7 +2755,7 @@ $Shortcut.TargetPath = $Putty
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Putty.lnk" *>$null
 
-#Filezilla
+#Filezilla PROBLEM
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Filezilla = "C:\Program Files\FileZilla FTP Client\filezilla.exe"
 $ShortcutFile = "C:\after-format-main\files\icons\Filezilla.lnk"
@@ -2782,15 +2791,46 @@ $Shortcut.TargetPath = $HEIC
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\iMazing HEIC Converter.lnk" *>$null
 
+#iTunes
+$WScriptShell = New-Object -ComObject WScript.Shell
+$iTunes = "C:\Program Files\iTunes\iTunes.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\iTunes.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $iTunes
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\iTunes.lnk" *>$null
+
 #MS Teams
 $WScriptShell = New-Object -ComObject WScript.Shell
-$MSTeams = "C:\Users\m4a1\AppData\Local\Microsoft\Teams\Update.exe"
+$MSTeams = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
 $ShortcutFile = "C:\after-format-main\files\icons\Microsoft Teams.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
 $Shortcut.Arguments = "--processStart Teams.exe"
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Microsoft Teams.lnk" *>$null
+
+#HeidiSQL
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Heidi = "C:\Program Files\HeidiSQL\heidisql.exe"
+$HeidiPath = "C:\Program Files\HeidiSQL\"
+$ShortcutFile = "C:\after-format-main\files\icons\HeidiSQL.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Heidi
+$Shortcut.WorkingDirectory = $HeidiPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\HeidiSQL.lnk" *>$null
+
+#Docker Desktop
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Docker = "C:\Program Files\Docker\Docker\frontend\Docker Desktop.exe"
+$DockerPath = "C:\Program Files\Docker\Docker\frontend"
+$ShortcutFile = "C:\after-format-main\files\icons\Docker Desktop.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Docker
+$Shortcut.WorkingDirectory = $DockerPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\Docker Desktop.lnk" *>$null
 
 #Set Pin
 $progressPreference = 'silentlyContinue'
