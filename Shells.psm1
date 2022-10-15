@@ -1945,7 +1945,7 @@ Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.ex
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Brave Browser..." -NoNewline
-cmd.exe /c "winget install BraveSoftware.BraveBrowser -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Brave.Brave -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing Steam..." -NoNewline
@@ -1972,43 +1972,43 @@ cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreeme
 cmd.exe /c "winget install OpenWhisperSystems.Signal -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    #VSCode
-    Write-Host "Installing Microsoft Visual Studio Code..." -NoNewline
+    #Softwares for developers
+    Write-Host "Installing software for developers..." -NoNewline
+    #$OriginalProgressPreference = $Global:ProgressPreference
+    #$Global:ProgressPreference = 'SilentlyContinue'
+    #Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force | Out-Null
 cmd.exe /c "winget install Microsoft.VisualStudioCode -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Microsoft.VisualStudio.2022.Community -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Microsoft.VisualStudio.2022.BuildTools -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Microsoft.WindowsSDK -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Python.Python.3.10 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install --id Git.Git -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install dbeaver.dbeaver -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+Start-Sleep -Seconds 10
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Chocolatey..." -NoNewline
+$Global:ProgressPreference = 'SilentlyContinue'
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) *>$null
+choco install kubernetes-cli -y -f *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     #VSCode extensions
     Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
-code --install-extension ms-azuretools.vscode-docker *>$null
-code --install-extension emin.vscode-react-native-kit *>$null
-code --install-extension msjsdiag.vscode-react-native *>$null
-code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools *>$null
-code --install-extension lunuan.kubernetes-templates *>$null
-code --install-extension redhat.vscode-yaml *>$null
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension emin.vscode-react-native-kit
+code --install-extension msjsdiag.vscode-react-native
+code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
+code --install-extension lunuan.kubernetes-templates
+code --install-extension redhat.vscode-yaml
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    #Softwares for developers
-    Write-Host "Installing software for developers..." -NoNewline
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine *>$null
-cmd.exe /c "winget install Microsoft.WindowsSDK -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-cmd.exe /c "winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-cmd.exe /c "winget install Python.Python.3.10 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-cmd.exe /c "winget install Microsoft.VisualStudio.2022.Community -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-cmd.exe /c "winget install Microsoft.VisualStudio.2022.BuildTools -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-cmd.exe /c "winget install --id Git.Git -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-cmd.exe /c "winget install HeidiSQL.HeidiSQL -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    #Docker / Kubernetes
+    #Docker
     Write-Host "Installing Docker Desktop..." -NoNewline
 cmd.exe /c "winget install Docker.DockerDesktop -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    Write-Host "Installing Chocolatey..." -NoNewline
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) *>$null
-choco install kubernetes-cli *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
+    
     #Windows Subsystem Linux
     Write-Host "Installing WSL(Windows Subsystem Linux)..." -NoNewline
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart *>$null
@@ -2021,7 +2021,7 @@ cmd.exe /c "winget install Kubernetes.minikube -e --silent --accept-source-agree
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     
-    #There is problem with Filezilla on MS
+    #There is problem with Anydesk on MS
     Write-Host "Installing AnyDesk..." -NoNewline
 cmd.exe /c "winget install AnyDeskSoftwareGmbH.AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2061,11 +2061,6 @@ cmd.exe /c "winget install Wireshark -e --silent --accept-source-agreements --ac
 
     Write-Host "Installing PuTTY..." -NoNewline
 cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    #There is problem with Filezilla on MS
-    Write-Host "Installing Filezilla..." -NoNewline
-cmd.exe /c "winget install TimKosse.FileZilla.Client -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Deluge..." -NoNewline
@@ -2378,6 +2373,9 @@ Function UninstallThirdPartyBloat {
 	Get-AppxPackage "ThumbmunkeysLtd.PhototasticCollage" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
 	Get-AppxPackage "WinZipComputing.WinZipUniversal" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
 	Get-AppxPackage "XINGAG.XING" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+    $progressPreference = 'silentlyContinue'
+    taskkill /f /im PCHealthCheck.exe *>$null
+cmd.exe /c "winget uninstall Microsoft.WindowsPCHealthCheck --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
@@ -2755,15 +2753,6 @@ $Shortcut.TargetPath = $Putty
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Putty.lnk" *>$null
 
-#Filezilla PROBLEM
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Filezilla = "C:\Program Files\FileZilla FTP Client\filezilla.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\Filezilla.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Filezilla
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Filezilla.lnk" *>$null
-
 #Deluge
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Deluge = "C:\Program Files (x86)\Deluge\deluge.exe"
@@ -2810,16 +2799,16 @@ $Shortcut.Arguments = "--processStart Teams.exe"
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Microsoft Teams.lnk" *>$null
 
-#HeidiSQL
+#DBeaver
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Heidi = "C:\Program Files\HeidiSQL\heidisql.exe"
-$HeidiPath = "C:\Program Files\HeidiSQL\"
-$ShortcutFile = "C:\after-format-main\files\icons\HeidiSQL.lnk"
+$DBeaver = "$env:USERPROFILE\AppData\Local\DBeaver\dbeaver.exe"
+$DBeaverPath = "$env:USERPROFILE\AppData\Local\DBeaver"
+$ShortcutFile = "C:\after-format-main\files\icons\DBeaver.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Heidi
-$Shortcut.WorkingDirectory = $HeidiPath
+$Shortcut.TargetPath = $DBeaver
+$Shortcut.WorkingDirectory = $DBeaverPath
 $Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\HeidiSQL.lnk" *>$null
+Unblock-File -Path "C:\after-format-main\files\icons\DBeaver.lnk" *>$null
 
 #Docker Desktop
 $WScriptShell = New-Object -ComObject WScript.Shell
