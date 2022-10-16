@@ -2,12 +2,23 @@
 
 ## Description
 
+> **_NOTE 1:_** Before running the script, you only need to turn off the real-time protection setting of Windows defender once.
+Windows Security Settings / Virus and threat protection / Manage settings / Real-time protection. 
+![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
+
+> **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
+![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
+
+> **_NOTE 3:_** This script takes about 35 minutes with 100mbps internet.
+
 If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
 
-After downloading the [zip](https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip) file, move the 'after-format-main' folder inside the zip to 'C:\'. Then double click(don't right click and 'run as administrator') on 'Run.cmd' confirm User Account Control prompt. Make sure your account is a member of Administrators group as the script attempts to run with elevated privileges.
 ```
 curl -o $env:userprofile\Desktop\after-format.zip https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip
 ```
+
+After downloading the [zip](https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip) file, move the 'after-format-main' folder inside the zip to 'C:\'. Then double click(don't right click and 'run as administrator') on 'Run.cmd' confirm User Account Control prompt. Make sure your account is a member of Administrators group as the script attempts to run with elevated privileges.
+
 This script does exactly the following; (Some are optional(y/n))
 
 <details><summary>System Settings</summary>&nbsp;
@@ -103,7 +114,7 @@ This script does exactly the following; (Some are optional(y/n))
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
 
-- Installing  Winget for Windows 10, Mozilla Firefox, Opera, Google Chrome, Libre Wolf, Brave Browser, Steam, HWMonitor, Crystal Disk Info, VMWare Workstation Pro, VirtualBox, Signal Desktop, Microsoft Visual Studio Code (with extensions), Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git), Chocolatey, AnyDesk, Windows Terminal, Speedtest, Notepad++, VLC Media Player, TreeSize Free, Total Commander, Rufus, Wireshark, PuTTY, Deluge, DBeaver, HEIC Converter, Cryptomator, Docker Desktop, WSL, Minikube, MS Teams, iTunes, 7-Zip (with terminal), Lightshot, Twinkle-Tray, K-Lite Codec Pack Mega, Nvidia GeForce Experience and Valorant.
+- Installing  Winget for Windows 10, Mozilla Firefox, Opera, Google Chrome, Libre Wolf, Brave Browser, Steam, Epic Games, HWMonitor, Crystal Disk Info, VMWare Workstation Pro, VirtualBox, Signal Desktop, Microsoft Visual Studio Code (with extensions), Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git), Chocolatey, AnyDesk, Windows Terminal, Speedtest, Notepad++, VLC Media Player, TreeSize Free, Total Commander, Rufus, Wireshark, PuTTY, Deluge, DBeaver, HEIC Converter, Cryptomator, Docker Desktop, WSL, Minikube, MS Teams, iTunes, 7-Zip (with terminal), Lightshot, Twinkle-Tray, K-Lite Codec Pack Mega, Nvidia GeForce Experience and Valorant.
 - [Installing startup script](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
 
 </details>
@@ -126,23 +137,14 @@ This script does exactly the following; (Some are optional(y/n))
 </details>
 <details><summary>My Custom Drivers</summary>&nbsp;
   
-When this question is asked, answer by saying 'n'. Because the settings here are specifically my specific settings.
-  
+- ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) `When this question is asked, answer by saying 'n'. Because the settings here are specifically my specific settings.`
 </details>
-  
-> **_NOTE 1:_** Before executing the script, add # at the beginning of the line you don't want from file 'Functions.Preset'.
-
-> **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
-
-> **_NOTE 3:_** This script takes about 35 minutes with 100mbps internet.
-
 <p>
 
 ### Startup Script
   
-There is another script called startup in the script.
+There is another script called startup in the script. This script does exactly the following;
 
-This script does exactly the following;
 - Remove En-US Keyboard
 - Adding Turkey Keyboard
 - Importing Previously Set Task to Task Scheduler
