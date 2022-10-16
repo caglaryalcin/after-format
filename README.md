@@ -132,7 +132,7 @@ When this question is asked, answer by saying 'n'. Because the settings here are
 
 > **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
 
-> **_NOTE 3:_** This script takes about 20 minutes with 100mbps internet.
+> **_NOTE 3:_** This script takes about 35 minutes with 100mbps internet.
 
 <p>
 
