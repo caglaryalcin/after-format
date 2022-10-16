@@ -101,7 +101,7 @@ This script does exactly the following; (Some are optional(y/n))
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
 
-- Installing  Winget for Windows 10, Mozilla Firefox, Opera, Libre Wolf, Google Chrome, Brave Browser, Steam, HWMonitor, Crystal Disk Info, VMWare Workstation Pro, VirtualBox, Signal Desktop, Microsoft Visual Studio Code (with extensions), Softwares for developers(WindowsSDK, NodeJS, Phyton 3.10, MSVS Community, MSVS BuildTools, Git and HeidiSQL ), Docker Desktop, Chocolatey, WSL, Minikube, AnyDesk, Windows Terminal, Speedtest, Notepad++, VLC Media Player, TreeSize Free, Total Commander, Rufus, Wireshark, PuTTY, Filezilla, Deluge, Cryptomator, HEIC Converter, MS Teams, iTunes, 7-Zip, Lightshot, Twinkle-Tray, K-Lite Codec Pack Mega, Nvidia GeForce Experience and Valorant.
+- Installing  Winget for Windows 10, Mozilla Firefox, Opera, Google Chrome, Libre Wolf, Brave Browser, Steam, HWMonitor, Crystal Disk Info, VMWare Workstation Pro, VirtualBox, Signal Desktop, Microsoft Visual Studio Code (with extensions), Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git), Chocolatey, AnyDesk, Windows Terminal, Speedtest, Notepad++, VLC Media Player, TreeSize Free, Total Commander, Rufus, Wireshark, PuTTY, Deluge, DBeaver, HEIC Converter, Cryptomator, Docker Desktop, WSL, Minikube, MS Teams, iTunes, 7-Zip (with terminal), Lightshot, Twinkle-Tray, K-Lite Codec Pack Mega, Nvidia GeForce Experience and Valorant.
 - [Installing startup script](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
 
 </details>
