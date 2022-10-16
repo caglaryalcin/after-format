@@ -2531,11 +2531,11 @@ Function Own {
 $user = Write-Host "Please enter NAS username?: " -ForegroundColor Green -NoNewline
 $username = Read-Host -Prompt $user
 Write-Host "Username is set to $username"
-
+Write-host "`n"
 $pass = Write-Host "Please enter password?: " -ForegroundColor Green -NoNewline
 $password = Read-Host -Prompt $pass
 Write-Host "Password is set to $password"
-
+Write-host "`n"
 CMDKEY /add:10.0.0.200 /user:$username /pass:$password
 Start-Sleep -Seconds 1
 #A
@@ -2933,7 +2933,7 @@ start explorer.exe
 Start-Sleep 2
 
 #Drivers
-Write-Host `n"Installing Chipset Driver..." -NoNewline
+Write-Host "Installing Chipset Driver..." -NoNewline
 $OriginalProgressPreference = $Global:ProgressPreference
 $Global:ProgressPreference = 'SilentlyContinue'
 Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
