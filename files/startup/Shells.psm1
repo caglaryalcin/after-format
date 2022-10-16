@@ -104,6 +104,7 @@ Function RemoveTasks {
     Get-ScheduledTask "*Office*" | Unregister-ScheduledTask -Confirm:$false
     Get-ScheduledTask "*GPU*" | Unregister-ScheduledTask -Confirm:$false
     Get-ScheduledTask "*Firefox*" | Unregister-ScheduledTask -Confirm:$false
+    Get-ScheduledTask "*Post*" | Unregister-ScheduledTask -Confirm:$false
     Get-ScheduledTask -TaskName "*XblGameSaveTask*" | Disable-ScheduledTask -ea 0 | Out-Null
     Get-ScheduledTask -TaskName "*XblGameSaveTaskLogon*" | Disable-ScheduledTask -ea 0 | Out-Null
 }
