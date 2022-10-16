@@ -1952,6 +1952,10 @@ cmd.exe /c "winget install Brave.Brave -e --silent --accept-source-agreements --
 cmd.exe /c "winget install Steam -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
+    Write-Host "Installing Epic Games..." -NoNewline
+cmd.exe /c "winget install EpicGames.EpicGamesLauncher -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
     Write-Host "Installing HWMonitor..." -NoNewline
 cmd.exe /c "winget install hwmonitor -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2703,6 +2707,15 @@ $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Steam
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Steam.lnk" *>$null
+
+#Epic Games
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Epic = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\EpicGamesLauncher.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Epic
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\EpicGamesLauncher.lnk" *>$null
 
 #HWMonitor
 $WScriptShell = New-Object -ComObject WScript.Shell
