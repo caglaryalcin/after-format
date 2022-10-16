@@ -328,7 +328,7 @@ Function DisableStartupApps {
     Write-Host "Disabling Startup Apps..." -NoNewline
     $StartPaths = @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\")
     $StartFilePaths = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
-    $removeList = @("*Riot*","*IDMan*","*Steam*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*vmware*","*Any*")
+    $removeList = @("*Docker*","*Riot*","*IDMan*","*Steam*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*vmware*","*Any*")
     #$DisableValue = ([byte[]](0x03,0x00,0x00,0x00,0x81,0xf4,0xad,0xc9,0xa3,0x48,0xd7,0x01))
     
     #Disable
@@ -1923,10 +1923,6 @@ cmd.exe /c "winget install Mozilla.Firefox -e --silent --accept-source-agreement
 cmd.exe /c "winget install Opera.Opera -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     
-    Write-Host "Installing Libre Wolf..." -NoNewline
-cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
     #Google Chrome
     Write-Host "Installing Chrome..." -NoNewline
 cmd.exe /c "winget install Google.Chrome -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -1942,6 +1938,10 @@ Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate" -Recurse -Er
 Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem" -Recurse -ErrorAction SilentlyContinue
 Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}" -Recurse -ErrorAction SilentlyContinue
 Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -recurse -ErrorAction SilentlyContinue
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Libre Wolf..." -NoNewline
+cmd.exe /c "winget install LibreWolf.LibreWolf -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Brave Browser..." -NoNewline
@@ -1984,7 +1984,6 @@ cmd.exe /c "winget install Microsoft.WindowsSDK -e --silent --accept-source-agre
 cmd.exe /c "winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 cmd.exe /c "winget install Python.Python.3.10 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 cmd.exe /c "winget install --id Git.Git -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-cmd.exe /c "winget install dbeaver.dbeaver -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 Start-Sleep -Seconds 10
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
@@ -2002,25 +2001,9 @@ code --install-extension msjsdiag.vscode-react-native
 code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
 code --install-extension lunuan.kubernetes-templates
 code --install-extension redhat.vscode-yaml
+code --install-extension ms-vscode.powershell
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    #Docker
-    Write-Host "Installing Docker Desktop..." -NoNewline
-cmd.exe /c "winget install Docker.DockerDesktop -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
-    #Windows Subsystem Linux
-    Write-Host "Installing WSL(Windows Subsystem Linux)..." -NoNewline
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart *>$null
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart *>$null
-wsl --set-default-version 2 *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    Write-Host "Installing Minikube..." -NoNewline
-cmd.exe /c "winget install Kubernetes.minikube -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    
     #There is problem with Anydesk on MS
     Write-Host "Installing AnyDesk..." -NoNewline
 cmd.exe /c "winget install AnyDeskSoftwareGmbH.AnyDesk -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -2050,7 +2033,6 @@ cmd.exe /c "winget install JAMSoftware.TreeSize.Free -e --silent --accept-source
 cmd.exe /c "winget install Ghisler.TotalCommander -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    #There is problem with Rufus on MS
     Write-Host "Installing Rufus..." -NoNewline
 cmd.exe /c "winget install Rufus.Rufus -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2066,16 +2048,36 @@ cmd.exe /c "winget install PuTTY -e --silent --accept-source-agreements --accept
     Write-Host "Installing Deluge..." -NoNewline
 cmd.exe /c "winget install DelugeTeam.DelugeBeta -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-         
-    Write-Host "Installing Cryptomator..." -NoNewline
-cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing DBeaver..." -NoNewline
+cmd.exe /c "winget install dbeaver.dbeaver -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
     Write-Host "Installing HEIC Converter..." -NoNewline
 cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     Start-Sleep 3
     taskkill /f /im "iMazing HEIC Converter.exe"
+         
+    Write-Host "Installing Cryptomator..." -NoNewline
+cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    #Docker
+    Write-Host "Installing Docker Desktop..." -NoNewline
+cmd.exe /c "winget install Docker.DockerDesktop -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    #Windows Subsystem Linux
+    Write-Host "Installing WSL(Windows Subsystem Linux)..." -NoNewline
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart *>$null
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart *>$null
+wsl --set-default-version 2 *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Minikube..." -NoNewline
+cmd.exe /c "winget install Kubernetes.minikube -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Microsoft Teams..." -NoNewline
 cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force"
@@ -2086,9 +2088,16 @@ cmd.exe /c "winget install Apple.iTunes -e --silent --accept-source-agreements -
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     #other softwares
+    #7-Zip
     Write-Host "Installing 7-Zip..." -NoNewline
 cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+     
+    #7-Zip on PS
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+    Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
+    Install-Module -Name 7Zip4PowerShell -Force
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Lightshot..." -NoNewline
 cmd.exe /c "winget install Skillbrains.Lightshot -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -2508,14 +2517,86 @@ else {
 #region My Custom Drivers
 ##########
 
-Write-Host `n"Do you own " -NoNewline
-Write-Host "this script?" -ForegroundColor Red -NoNewline -BackgroundColor Black
-Write-Host "(Drivers and taskbar settings will be made): " -NoNewline
+Write-Host `n"Do you " -NoNewline
+Write-Host "own this script?" -NoNewline -ForegroundColor Red -BackgroundColor Black
+Write-Host "(Settings, downloads and installations of the script owner will be made):" -NoNewline -ForegroundColor Red -BackgroundColor Black
+Write-Host "(y/n): " -NoNewline
 $systemset = Read-Host
 
 if ($systemset -match "[Yy]") {
 
 Function Own {
+
+##Map Network Drive
+$user = Write-Host "Please enter NAS username?: " -ForegroundColor Green -NoNewline
+$username = Read-Host -Prompt $user
+Write-Host "Username is set to $username"
+
+$pass = Write-Host "Please enter password?: " -ForegroundColor Green -NoNewline
+$password = Read-Host -Prompt $pass
+Write-Host "Password is set to $password"
+
+CMDKEY /add:10.0.0.200 /user:$username /pass:$password
+Start-Sleep -Seconds 1
+#A
+New-Item -Path HKCU:\Network\A
+New-ItemProperty -Path HKCU:\Network\A -Name "ConnectionType" -Value "1" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\A -Name "DeferFlags" -Value "4" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\A -Name "ProviderName" -Value "Microsoft Windows Network" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\A -Name "ProviderType" -Value "20000" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\A -Name "RemotePath" -Value "\\10.0.0.200\homes\AlphaLimaParis\Photos" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\A -Name "UserName" -Value "0" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\A -Name "UseOptions" -PropertyType Binary -Force *>$null
+
+#B
+New-Item -Path HKCU:\Network\B
+New-ItemProperty -Path HKCU:\Network\B -Name "ConnectionType" -Value "1" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\B -Name "DeferFlags" -Value "4" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\B -Name "ProviderName" -Value "Microsoft Windows Network" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\B -Name "ProviderType" -Value "20000" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\B -Name "RemotePath" -Value "\\10.0.0.200\Backup" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\B -Name "UserName" -Value "0" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\B -Name "UseOptions" -PropertyType Binary -Force *>$null
+
+
+#S
+New-Item -Path HKCU:\Network\S
+New-ItemProperty -Path HKCU:\Network\S -Name "ConnectionType" -Value "1" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\S -Name "DeferFlags" -Value "4" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\S -Name "ProviderName" -Value "Microsoft Windows Network" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\S -Name "ProviderType" -Value "20000" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\S -Name "RemotePath" -Value "\\10.0.0.200\Software" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\S -Name "UserName" -Value "0" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\S -Name "UseOptions" -PropertyType Binary -Force *>$null
+
+#S
+New-Item -Path HKCU:\Network\M
+New-ItemProperty -Path HKCU:\Network\M -Name "ConnectionType" -Value "1" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\M -Name "DeferFlags" -Value "4" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\M -Name "ProviderName" -Value "Microsoft Windows Network" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\M -Name "ProviderType" -Value "20000" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\M -Name "RemotePath" -Value "\\10.0.0.200\Multimedia" -PropertyType String -Force *>$null
+New-ItemProperty -Path HKCU:\Network\M -Name "UserName" -Value "0" -PropertyType DWORD -Force *>$null
+New-ItemProperty -Path HKCU:\Network\M -Name "UseOptions" -PropertyType Binary -Force *>$null
+
+#netuse
+net use A: \\10.0.0.200\homes\AlphaLimaParis\Photos /persistent:yes *>$null
+net use B: \\10.0.0.200\Backup /persistent:yes *>$null
+net use S: \\10.0.0.200\Software /persistent:yes *>$null
+net use M: \\10.0.0.200\Multimedia /persistent:yes *>$null
+
+#Adobe
+Write-Host "Exporing Adobe files from zip..." -NoNewline
+$OriginalProgressPreference = $Global:ProgressPreference
+$Global:ProgressPreference = 'SilentlyContinue'
+Expand-7Zip -ArchiveFileName 'S:\Adobe\Adobe Creative Cloud Collection 2020.7z' -TargetPath 'C:\Adobe\'
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+Write-Host "Installing Adobe Softwares..." -NoNewline
+Write-Host "[You are expected to close the installation screen!]" -NoNewline -ForegroundColor Red -BackgroundColor Black
+Start-Process "C:\Adobe\Adobe Creative Cloud Collection 2020\Set-up.exe" -NoNewWindow -Wait
+Start-Sleep -Seconds 5
+Remove-Item C:\Adobe -recurse -ErrorAction SilentlyContinue
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
 #Sound Settings
 Write-Host "Setting sound devices..." -NoNewline
@@ -2592,9 +2673,27 @@ Unblock-File -Path "C:\after-format-main\files\icons\Brave.lnk" *>$null
 
 #File Explorer was here
 
-#Photoshop was here
+#Adobe Photoshop
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Photoshop = "C:\Program Files\Adobe\Adobe Photoshop 2020\Photoshop.exe"
+$PhotoshopPath = "C:\Program Files\Adobe\Adobe Photoshop 2020"
+$ShortcutFile = "C:\after-format-main\files\icons\Adobe Photoshop 2020.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Photoshop
+$Shortcut.WorkingDirectory = $PhotoshopPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\Adobe Photoshop 2020.lnk" *>$null
 
-#Premiere Pro was here
+#Adobe Premiere Pro
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Premiere = "C:\Program Files\Adobe\Adobe Premiere Pro 2020\Adobe Premiere Pro.exe"
+$PremierePath = "C:\Program Files\Adobe\Adobe Premiere Pro 2020"
+$ShortcutFile = "C:\after-format-main\files\icons\Adobe Premiere Pro 2020.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Premiere
+$Shortcut.WorkingDirectory = $PremierePath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\Adobe Premiere Pro 2020.lnk" *>$null
 
 #Steam
 $WScriptShell = New-Object -ComObject WScript.Shell
