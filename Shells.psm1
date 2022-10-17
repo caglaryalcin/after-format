@@ -2945,6 +2945,9 @@ Start-Sleep 1
 start explorer.exe
 Start-Sleep 2
 
+#Default Apps
+dism /online /Import-DefaultAppAssociations:"C:\after-format-main\files\DefaultApps.xml” *>$null
+
 #Drivers
 Write-Host "Installing Chipset Driver..." -NoNewline
 $OriginalProgressPreference = $Global:ProgressPreference
