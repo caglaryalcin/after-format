@@ -1373,7 +1373,6 @@ Function ImportStartup {
     Unblock-File -Path C:\startup\Run.vbs *>$null
     Unblock-File -Path C:\after-format-main\files\startup\upgrade.bat *>$null
     Unblock-File -Path C:\\startup\upgrade.bat *>$null
-    cmd /c "C:\startup\Default.cmd" *>$null
     Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 }
