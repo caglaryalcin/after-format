@@ -64,6 +64,13 @@ Function TRFormats {
     Set-TimeZone -Name "Turkey Standard Time"
     Set-Culture tr-TR
     Set-ItemProperty -Path "HKCU:\Control Panel\International" -name ShortDate -value "dd/MM/yyyy"
+    
+    #sync time
+    Set-Service -Name "W32Time" -StartupType Automatic
+    net stop W32Time *>$null
+    net start W32Time *>$null
+    w32tm /resync /force *>$null
+    w32tm /config /manualpeerlist:time.windows.com,0x1 /syncfromflags:manual /reliable:yes /update *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 else {
