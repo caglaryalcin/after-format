@@ -2589,6 +2589,12 @@ net use B: \\10.0.0.200\Backup /persistent:yes *>$null
 net use S: \\10.0.0.200\Software /persistent:yes *>$null
 net use M: \\10.0.0.200\Multimedia /persistent:yes *>$null
 
+#Windows Explorer Restart
+taskkill /f /im explorer.exe
+Start-Sleep 1
+start explorer.exe
+Start-Sleep 2
+
 #Adobe
 Write-Host "Exporing Adobe files from zip..." -NoNewline
 $OriginalProgressPreference = $Global:ProgressPreference
