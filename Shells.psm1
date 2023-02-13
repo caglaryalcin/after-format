@@ -2117,8 +2117,8 @@ cmd.exe /c "winget install Skillbrains.Lightshot -e --silent --accept-source-agr
 cmd.exe /c "winget install xanderfrangos.twinkletray -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     
-    Write-Host "Installing K-Lite Codec Pack Mega..." -NoNewline
-cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Mega -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "Installing K-Lite Codec Pack Full..." -NoNewline
+cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Full -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         
     Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
