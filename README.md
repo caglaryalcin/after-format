@@ -4,9 +4,11 @@
 
 > **_NOTE 1:_** Before running the script, you only need to turn off the real-time protection setting of Windows defender once.
 Windows Security Settings / Virus and threat protection / Manage settings / Real-time protection. 
+
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
 
 > **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
+
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
 
 > **_NOTE 3:_** This script takes about 35 minutes with 100mbps internet.
