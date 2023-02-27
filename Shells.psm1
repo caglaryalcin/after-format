@@ -2012,6 +2012,8 @@ code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
 code --install-extension lunuan.kubernetes-templates
 code --install-extension redhat.vscode-yaml
 code --install-extension ms-vscode.powershell
+code --install-extension pkief.material-icon-theme
+
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     #There is problem with Anydesk on MS
