@@ -1973,6 +1973,8 @@ cmd.exe /c "winget install CrystalDewWorld.CrystalDiskInfo -e --silent --accept-
     Write-Host "Installing VMWare Workstation Pro..." -NoNewline
 cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    #workstation key
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\License.ws.17.0.e5.202208" -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
 
     Write-Host "Installing VirtualBox..." -NoNewline
 cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
