@@ -1902,7 +1902,7 @@ else {
 ##########
 
 Write-Host `n"Do you want to " -NoNewline
-Write-Host "install the specified applications on Github?" -ForegroundColor Yellow -NoNewline
+Write-Host "install applications that are written on github?" -ForegroundColor Yellow -NoNewline
 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
 $installapps = Read-Host
 
@@ -1974,7 +1974,7 @@ cmd.exe /c "winget install CrystalDewWorld.CrystalDiskInfo -e --silent --accept-
 cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     #workstation key
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\License.ws.17.0.e5.202208" -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Domant\License.ws.17.0.e5.202208" -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
 
     Write-Host "Installing VirtualBox..." -NoNewline
 cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -2028,7 +2028,7 @@ cmd.exe /c "winget install Microsoft.WindowsTerminal -e --silent --accept-source
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Speedtest..." -NoNewline
-cmd.exe /c "winget install Ookla.Speedtest -e --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Ookla.Speedtest.Desktop -e --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Notepad++..." -NoNewline
@@ -2127,6 +2127,14 @@ cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Full -e --silent --accept-
         
     Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
 cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Powertoys..." -NoNewline
+cmd.exe /c "winget install Microsoft.PowerToys -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing Malwarebytes..." -NoNewline
+cmd.exe /c "winget install Malwarebytes.Malwarebytes -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     
 }
@@ -2540,19 +2548,6 @@ $systemset = Read-Host
 if ($systemset -match "[Yy]") {
 
 Function Own {
-#Adobe
-Write-Host "Exporing Adobe files from zip..." -NoNewline
-$OriginalProgressPreference = $Global:ProgressPreference
-$Global:ProgressPreference = 'SilentlyContinue'
-Expand-7Zip -ArchiveFileName 'S:\Adobe\Adobe Creative Cloud Collection 2020.7z' -TargetPath 'C:\Adobe\'
-Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-Write-Host "Installing Adobe Softwares..." -NoNewline
-Write-Host "[You are expected to close the installation screen!]" -NoNewline -ForegroundColor Red -BackgroundColor Black
-Start-Process "C:\Adobe\Adobe Creative Cloud Collection 2020\Set-up.exe" -NoNewWindow -Wait
-Start-Sleep -Seconds 5
-Remove-Item C:\Adobe -recurse -ErrorAction SilentlyContinue
-Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
 #Sound Settings
 Write-Host "Setting sound devices..." -NoNewline
 reg import "C:\after-format-main\files\disable_devices.reg" *>$null
@@ -2899,7 +2894,8 @@ Start-Sleep 2
 #Default Apps
 dism /online /Import-DefaultAppAssociations:"C:\after-format-main\files\DefaultApps.xml" *>$null
 
-#Drivers
+##Drivers
+#Chipset
 Write-Host "Installing Chipset Driver..." -NoNewline
 $OriginalProgressPreference = $Global:ProgressPreference
 $Global:ProgressPreference = 'SilentlyContinue'
@@ -2914,6 +2910,128 @@ Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
 Start-Sleep 1
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 Start-Sleep 20
+
+#NVidia driver
+# Installer options
+param (
+    [switch]$clean = $false, # Will delete old drivers and install the new ones
+    [string]$folder = "$env:temp"   # Downloads and extracts the driver here
+)
+
+# Check 7zip install path on registry
+$7zipinstalled = $false 
+
+# Checking currently installed driver version
+Write-Host "Attempting to detect currently installed driver version..."
+try {
+    $VideoController = Get-WmiObject -ClassName Win32_VideoController | Where-Object { $_.Name -match "NVIDIA" }
+    $ins_version = ($VideoController.DriverVersion.Replace('.', '')[-5..-1] -join '').insert(3, '.')
+}
+catch {
+    Write-Host -ForegroundColor Yellow "Unable to detect a compatible Nvidia device."
+    Write-Host "Press any key to exit..."
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    exit
+}
+Write-Host "Installed version `t$ins_version"
+
+# Checking latest driver version
+$uri = 'https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php' +
+'?func=DriverManualLookup' +
+'&psid=120' + # Geforce RTX 30 Series
+'&pfid=929' +  # RTX 3080
+'&osID=57' + # Windows 10 64bit
+'&languageCode=1033' + # en-US; seems to be "Windows Locale ID"[1] in decimal
+'&isWHQL=1' + # WHQL certified
+'&dch=1' + # DCH drivers (the new standard)
+'&sort1=0' + # sort: most recent first(?)
+'&numberOfResults=1' # single, most recent result is enough
+
+$response = Invoke-WebRequest -Uri $uri -Method GET -UseBasicParsing
+$payload = $response.Content | ConvertFrom-Json
+$version =  $payload.IDS[0].downloadInfo.Version
+Write-Output "Latest version `t`t$version"
+
+# Comparing installed driver version to latest driver version from Nvidia
+if (!$clean -and ($version -eq $ins_version)) {
+    Write-Host "The installed version is the same as the latest version."
+    Write-Host "Press any key to exit..."
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    exit
+}
+
+# Checking Windows version
+if ([Environment]::OSVersion.Version -ge (new-object 'Version' 9, 1)) {
+    $windowsVersion = "win10-win11"
+}
+else {
+    $windowsVersion = "win8-win7"
+}
+
+# Checking Windows bitness
+if ([Environment]::Is64BitOperatingSystem) {
+    $windowsArchitecture = "64bit"
+}
+else {
+    $windowsArchitecture = "32bit"
+}
+
+# Create a new temp folder NVIDIA
+$nvidiaTempFolder = "$folder\NVIDIA"
+New-Item -Path $nvidiaTempFolder -ItemType Directory 2>&1 | Out-Null
+
+# Generating the download link
+$url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-dch-whql.exe"
+$rp_url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-dch-whql-rp.exe"
+
+# Downloading the installer
+$dlFile = "$nvidiaTempFolder\$version.exe"
+Write-Host "Downloading the latest version to $dlFile"
+Start-BitsTransfer -Source $url -Destination $dlFile
+
+if ($?) {
+    Write-Host "Proceed..."
+}
+else {
+    Write-Host "Download failed, trying alternative RP package now..."
+    Start-BitsTransfer -Source $rp_url -Destination $dlFile
+}
+
+# Extracting setup files
+$extractFolder = "$nvidiaTempFolder\$version"
+$filesToExtract = "Display.Driver HDAudio NVI2 PhysX EULA.txt ListDevices.txt setup.cfg setup.exe"
+Write-Host "Download finished, extracting the files now..."
+
+if ($7zipinstalled) {
+    Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList "x -bso0 -bsp1 -bse1 -aoa $dlFile $filesToExtract -o""$extractFolder""" -wait
+}
+elseif ($archiverProgram -eq $winrarpath) {
+    Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList 'x $dlFile $extractFolder -IBCK $filesToExtract' -wait
+}
+else {
+    Write-Host "Something went wrong. No archive program detected. This should not happen."
+    Write-Host "Press any key to exit..."
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    exit
+}
+
+# Remove unneeded dependencies from setup.cfg
+(Get-Content "$extractFolder\setup.cfg") | Where-Object { $_ -notmatch 'name="\${{(EulaHtmlFile|FunctionalConsentFile|PrivacyPolicyFile)}}' } | Set-Content "$extractFolder\setup.cfg" -Encoding UTF8 -Force
+
+# Installing drivers
+Write-Host "Installing Nvidia drivers now..."
+$install_args = "-passive -noreboot -noeula -nofinish -s"
+if ($clean) {
+    $install_args = $install_args + " -clean"
+}
+Start-Process -FilePath "$extractFolder\setup.exe" -ArgumentList $install_args -wait
+
+# Cleaning up downloaded files
+Write-Host "Deleting downloaded files"
+Remove-Item $nvidiaTempFolder -Recurse -Force
+
+# Driver installed, requesting a reboot
+Write-Host -ForegroundColor Green "Driver installed."
 
 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
