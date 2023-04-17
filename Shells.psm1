@@ -1974,7 +1974,7 @@ cmd.exe /c "winget install CrystalDewWorld.CrystalDiskInfo -e --silent --accept-
 cmd.exe /c "winget install VMware.WorkstationPro -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     #workstation key
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Domant\License.ws.17.0.e5.202208" -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208" -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
 
     Write-Host "Installing VirtualBox..." -NoNewline
 cmd.exe /c "winget install Oracle.VirtualBox -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -1997,12 +1997,6 @@ cmd.exe /c "winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreeme
 cmd.exe /c "winget install Python.Python.3.10 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 cmd.exe /c "winget install --id Git.Git -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 Start-Sleep -Seconds 10
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    Write-Host "Installing Chocolatey..." -NoNewline
-$Global:ProgressPreference = 'SilentlyContinue'
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) *>$null
-choco install kubernetes-cli -y -f *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     #VSCode extensions
@@ -2077,11 +2071,6 @@ cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-sou
 cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    #Docker
-    Write-Host "Installing Docker Desktop..." -NoNewline
-cmd.exe /c "winget install Docker.DockerDesktop -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
     #Windows Subsystem Linux
     Write-Host "Installing WSL(Windows Subsystem Linux)..." -NoNewline
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart *>$null
@@ -2132,6 +2121,10 @@ cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-
     Write-Host "Installing Powertoys..." -NoNewline
 cmd.exe /c "winget install Microsoft.PowerToys -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Start-Sleep 5
+    $progressPreference = 'silentlyContinue'
+    taskkill /f /im Powertoys.exe *>$null
 
     Write-Host "Installing Malwarebytes..." -NoNewline
 cmd.exe /c "winget install Malwarebytes.Malwarebytes -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
@@ -2549,7 +2542,7 @@ if ($systemset -match "[Yy]") {
 
 Function Own {
 #Sound Settings
-Write-Host "Setting sound devices..." -NoNewline
+Write-Host "`nSetting sound devices..." -NoNewline
 reg import "C:\after-format-main\files\disable_devices.reg" *>$null
 Install-PackageProvider -Name NuGet -Force *>$null
 Install-Module -Name AudioDeviceCmdlets -Force *>$null
@@ -2909,20 +2902,56 @@ C:\Asus\SetupChipset.exe -s -NoNewWindow -Wait
 Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
 Start-Sleep 1
 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
-Start-Sleep 20
+Start-Sleep 5
+Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-#NVidia driver
-# Installer options
-param (
-    [switch]$clean = $false, # Will delete old drivers and install the new ones
-    [string]$folder = "$env:temp"   # Downloads and extracts the driver here
-)
+#Nvidia driver
+Write-Host "Installing latest version Nvidia Drivers..." -NoNewline
 
 # Check 7zip install path on registry
 $7zipinstalled = $false 
-
+if ((Test-path HKLM:\SOFTWARE\7-Zip\) -eq $true) {
+    $7zpath = Get-ItemProperty -path  HKLM:\SOFTWARE\7-Zip\ -Name Path
+    $7zpath = $7zpath.Path
+    $7zpathexe = $7zpath + "7z.exe"
+    if ((Test-Path $7zpathexe) -eq $true) {
+        $archiverProgram = $7zpathexe
+        $7zipinstalled = $true 
+    }    
+}
+elseif ($7zipinstalled -eq $false) {
+    if ((Test-path HKLM:\SOFTWARE\WinRAR) -eq $true) {
+        $winrarpath = Get-ItemProperty -Path HKLM:\SOFTWARE\WinRAR -Name exe64 
+        $winrarpath = $winrarpath.exe64
+        if ((Test-Path $winrarpath) -eq $true) {
+            $archiverProgram = $winrarpath
+        }
+    }
+}
+else {
+    Write-Host "Sorry, but it looks like you don't have a supported archiver."
+    Write-Host ""
+    while ($choice -notmatch "[y|n]") {
+        $choice = read-host "Would you like to install 7-Zip now? (Y/N)"
+    }
+    if ($choice -eq "y") {
+        # Download and silently install 7-zip if the user presses y
+        $7zip = "https://www.7-zip.org/a/7z1900-x64.exe"
+        $output = "$PSScriptRoot\7Zip.exe"
+        (New-Object System.Net.WebClient).DownloadFile($7zip, $output)
+       
+        Start-Process "7Zip.exe" -Wait -ArgumentList "/S"
+        # Delete the installer once it completes
+        Remove-Item "$PSScriptRoot\7Zip.exe"
+    }
+    else {
+        Write-Host "Press any key to exit..."
+        $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        exit
+    }
+}
+   
 # Checking currently installed driver version
-Write-Host "Attempting to detect currently installed driver version..."
 try {
     $VideoController = Get-WmiObject -ClassName Win32_VideoController | Where-Object { $_.Name -match "NVIDIA" }
     $ins_version = ($VideoController.DriverVersion.Replace('.', '')[-5..-1] -join '').insert(3, '.')
@@ -2933,7 +2962,6 @@ catch {
     $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     exit
 }
-Write-Host "Installed version `t$ins_version"
 
 # Checking latest driver version
 $uri = 'https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php' +
@@ -2947,18 +2975,12 @@ $uri = 'https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/
 '&sort1=0' + # sort: most recent first(?)
 '&numberOfResults=1' # single, most recent result is enough
 
+#[1]: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
+
 $response = Invoke-WebRequest -Uri $uri -Method GET -UseBasicParsing
 $payload = $response.Content | ConvertFrom-Json
 $version =  $payload.IDS[0].downloadInfo.Version
 Write-Output "Latest version `t`t$version"
-
-# Comparing installed driver version to latest driver version from Nvidia
-if (!$clean -and ($version -eq $ins_version)) {
-    Write-Host "The installed version is the same as the latest version."
-    Write-Host "Press any key to exit..."
-    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit
-}
 
 # Checking Windows version
 if ([Environment]::OSVersion.Version -ge (new-object 'Version' 9, 1)) {
@@ -2977,30 +2999,24 @@ else {
 }
 
 # Create a new temp folder NVIDIA
-$nvidiaTempFolder = "$folder\NVIDIA"
+$nvidiaTempFolder = "$env:temp\NVIDIA"
 New-Item -Path $nvidiaTempFolder -ItemType Directory 2>&1 | Out-Null
+
 
 # Generating the download link
 $url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-dch-whql.exe"
 $rp_url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-dch-whql-rp.exe"
 
+
 # Downloading the installer
 $dlFile = "$nvidiaTempFolder\$version.exe"
-Write-Host "Downloading the latest version to $dlFile"
-Start-BitsTransfer -Source $url -Destination $dlFile
-
-if ($?) {
-    Write-Host "Proceed..."
-}
-else {
-    Write-Host "Download failed, trying alternative RP package now..."
-    Start-BitsTransfer -Source $rp_url -Destination $dlFile
-}
+$OriginalProgressPreference = $Global:ProgressPreference
+$Global:ProgressPreference = 'SilentlyContinue'
+Invoke-WebRequest -Uri $url -OutFile $dlFile
 
 # Extracting setup files
 $extractFolder = "$nvidiaTempFolder\$version"
 $filesToExtract = "Display.Driver HDAudio NVI2 PhysX EULA.txt ListDevices.txt setup.cfg setup.exe"
-Write-Host "Download finished, extracting the files now..."
 
 if ($7zipinstalled) {
     Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList "x -bso0 -bsp1 -bse1 -aoa $dlFile $filesToExtract -o""$extractFolder""" -wait
@@ -3019,21 +3035,14 @@ else {
 (Get-Content "$extractFolder\setup.cfg") | Where-Object { $_ -notmatch 'name="\${{(EulaHtmlFile|FunctionalConsentFile|PrivacyPolicyFile)}}' } | Set-Content "$extractFolder\setup.cfg" -Encoding UTF8 -Force
 
 # Installing drivers
-Write-Host "Installing Nvidia drivers now..."
 $install_args = "-passive -noreboot -noeula -nofinish -s"
-if ($clean) {
-    $install_args = $install_args + " -clean"
-}
 Start-Process -FilePath "$extractFolder\setup.exe" -ArgumentList $install_args -wait
 
 # Cleaning up downloaded files
 Write-Host "Deleting downloaded files"
 Remove-Item $nvidiaTempFolder -Recurse -Force
-
-# Driver installed, requesting a reboot
-Write-Host -ForegroundColor Green "Driver installed."
-
-Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+Remove-Item C:\NVIDIA -Recurse -Force
+Start-Sleep 5
 
 }
 
