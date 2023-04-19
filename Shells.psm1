@@ -2887,6 +2887,9 @@ Start-Sleep 2
 #Default Apps
 dism /online /Import-DefaultAppAssociations:"C:\after-format-main\files\DefaultApps.xml" *>$null
 
+#Powertoys backup
+Copy-Item C:\after-format-main\files\settings_133264013067260668.ptb $env:UserProfile\Documents\PowerToys\Backup\
+
 ##Drivers
 #Chipset
 Write-Host "Installing Chipset Driver..." -NoNewline
