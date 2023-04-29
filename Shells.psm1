@@ -1996,7 +1996,6 @@ cmd.exe /c "winget install Microsoft.WindowsSDK -e --silent --accept-source-agre
 cmd.exe /c "winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 cmd.exe /c "winget install Python.Python.3.10 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 cmd.exe /c "winget install --id Git.Git -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-Start-Sleep -Seconds 20
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     #VSCode extensions
