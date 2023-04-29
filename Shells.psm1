@@ -670,7 +670,7 @@ DisableStorageSense
 # Unpin all Start Menu tiles
 # Note: This function has no counterpart. You have to pin the tiles back manually. NOT 
 Function UnpinStartMenuTiles {
-	Write-Host "Unpinning all Start Menu tiles..." -NoNewline
+	Write-Host "Unpinning all Start Menu tiles..."
         $progressPreference = 'silentlyContinue'
 	If ([System.Environment]::OSVersion.Version.Build -ge 15063 -And [System.Environment]::OSVersion.Version.Build -le 16299) {
 		Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Include "*.group" -Recurse | ForEach-Object {
@@ -1996,19 +1996,19 @@ cmd.exe /c "winget install Microsoft.WindowsSDK -e --silent --accept-source-agre
 cmd.exe /c "winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 cmd.exe /c "winget install Python.Python.3.10 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
 cmd.exe /c "winget install --id Git.Git -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 20
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     #VSCode extensions
     Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
-code --install-extension ms-azuretools.vscode-docker
-code --install-extension emin.vscode-react-native-kit
-code --install-extension msjsdiag.vscode-react-native
-code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
-code --install-extension lunuan.kubernetes-templates
-code --install-extension redhat.vscode-yaml
-code --install-extension ms-vscode.powershell
-code --install-extension pkief.material-icon-theme
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension ms-azuretools.vscode-docker
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension emin.vscode-react-native-kit
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension msjsdiag.vscode-react-native
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension lunuan.kubernetes-templates
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension redhat.vscode-yaml
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension ms-vscode.powershell
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension pkief.material-icon-theme
 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
@@ -2098,8 +2098,8 @@ cmd.exe /c "winget install 7-Zip -e --silent --accept-source-agreements --accept
     #7-Zip on PS
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-    Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
-    Install-Module -Name 7Zip4PowerShell -Force
+    Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
+    Install-Module -Name 7Zip4PowerShell -Force *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Lightshot..." -NoNewline
@@ -2617,26 +2617,26 @@ Unblock-File -Path "C:\after-format-main\files\icons\Brave.lnk" *>$null
 #File Explorer was here
 
 #Adobe Photoshop
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Photoshop = "C:\Program Files\Adobe\Adobe Photoshop 2020\Photoshop.exe"
-$PhotoshopPath = "C:\Program Files\Adobe\Adobe Photoshop 2020"
-$ShortcutFile = "C:\after-format-main\files\icons\Adobe Photoshop 2020.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Photoshop
-$Shortcut.WorkingDirectory = $PhotoshopPath
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Adobe Photoshop 2020.lnk" *>$null
+#$WScriptShell = New-Object -ComObject WScript.Shell
+#$Photoshop = "C:\Program Files\Adobe\Adobe Photoshop 2020\Photoshop.exe"
+#$PhotoshopPath = "C:\Program Files\Adobe\Adobe Photoshop 2020"
+#$ShortcutFile = "C:\after-format-main\files\icons\Adobe Photoshop 2020.lnk"
+#$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+#$Shortcut.TargetPath = $Photoshop
+#$Shortcut.WorkingDirectory = $PhotoshopPath
+#$Shortcut.Save()
+#Unblock-File -Path "C:\after-format-main\files\icons\Adobe Photoshop 2020.lnk" *>$null
 
 #Adobe Premiere Pro
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Premiere = "C:\Program Files\Adobe\Adobe Premiere Pro 2020\Adobe Premiere Pro.exe"
-$PremierePath = "C:\Program Files\Adobe\Adobe Premiere Pro 2020"
-$ShortcutFile = "C:\after-format-main\files\icons\Adobe Premiere Pro 2020.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Premiere
-$Shortcut.WorkingDirectory = $PremierePath
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Adobe Premiere Pro 2020.lnk" *>$null
+#$WScriptShell = New-Object -ComObject WScript.Shell
+#$Premiere = "C:\Program Files\Adobe\Adobe Premiere Pro 2020\Adobe Premiere Pro.exe"
+#$PremierePath = "C:\Program Files\Adobe\Adobe Premiere Pro 2020"
+#$ShortcutFile = "C:\after-format-main\files\icons\Adobe Premiere Pro 2020.lnk"
+#$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+#$Shortcut.TargetPath = $Premiere
+#$Shortcut.WorkingDirectory = $PremierePath
+#$Shortcut.Save()
+#Unblock-File -Path "C:\after-format-main\files\icons\Adobe Premiere Pro 2020.lnk" *>$null
 
 #Steam
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2872,6 +2872,17 @@ $Shortcut.WorkingDirectory = $DockerPath
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Docker Desktop.lnk" *>$null
 
+#PowerToys
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Powertoys = "$env:USERPROFILE\AppData\Local\PowerToys\PowerToys.exe"
+$PowertoysPath = "$env:USERPROFILE\AppData\Local\PowerToys"
+$ShortcutFile = "C:\after-format-main\files\icons\PowerToys (Preview).lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Powertoys
+$Shortcut.WorkingDirectory = $PowertoysPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\PowerToys (Preview)" *>$null
+
 #Set Pin
 $progressPreference = 'silentlyContinue'
 Get-ChildItem $env:USERPROFILE\Desktop\*|ForEach-Object { Remove-Item $_ }
@@ -2888,6 +2899,8 @@ Start-Sleep 2
 dism /online /Import-DefaultAppAssociations:"C:\after-format-main\files\DefaultApps.xml" *>$null
 
 #Powertoys backup
+New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
+New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
 Copy-Item C:\after-format-main\files\settings_133264013067260668.ptb $env:UserProfile\Documents\PowerToys\Backup\
 
 ##Drivers
