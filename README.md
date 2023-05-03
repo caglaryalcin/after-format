@@ -3,7 +3,7 @@
 ## Description
 
 > **_NOTE 1:_** Before running the script, you only need to turn off the real-time protection setting of Windows defender once.
-Windows Security Settings / Virus and threat protection / Manage settings / Real-time protection. 
+Windows Security Settings / Virus and threat protection / Manage settings / Real-time protection. The reason is that windows detects its own code as harmful.
 
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
 

@@ -2028,6 +2028,10 @@ cmd.exe /c "winget install Ookla.Speedtest.Desktop -e --accept-source-agreements
 cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    Write-Host "Installing GitHub.GitHubDesktop..." -NoNewline
+cmd.exe /c "winget install GitHub.GitHubDesktop -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
     Write-Host "Installing VLC Media Player..." -NoNewline
 cmd.exe /c "winget install VideoLAN.VLC -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2070,23 +2074,20 @@ cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-sou
 cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    #Windows Subsystem Linux
-    Write-Host "Installing WSL(Windows Subsystem Linux)..." -NoNewline
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart *>$null
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart *>$null
-wsl --set-default-version 2 *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    Write-Host "Installing Minikube..." -NoNewline
-cmd.exe /c "winget install Kubernetes.minikube -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "Installing iTunes..." -NoNewline
+cmd.exe /c "winget install Apple.iTunes -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Microsoft Teams..." -NoNewline
 cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    Write-Host "Installing Powertoys..." -NoNewline
+cmd.exe /c "winget install Microsoft.PowerToys -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    Write-Host "Installing iTunes..." -NoNewline
-cmd.exe /c "winget install Apple.iTunes -e --silent --accept-source-agreements --accept-package-agreements --force"
+    Write-Host "Installing DupeGuru..." -NoNewline
+cmd.exe /c "winget install DupeGuru.DupeGuru -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     #other softwares
@@ -2116,11 +2117,7 @@ cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Full -e --silent --accept-
     Write-Host "Installing Nvidia GeForce Experience..." -NoNewline
 cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-    Write-Host "Installing Powertoys..." -NoNewline
-cmd.exe /c "winget install Microsoft.PowerToys -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
+    
     Start-Sleep 5
     $progressPreference = 'silentlyContinue'
     taskkill /f /im Powertoys.exe *>$null
@@ -2128,7 +2125,10 @@ cmd.exe /c "winget install Microsoft.PowerToys -e --silent --accept-source-agree
     Write-Host "Installing Malwarebytes..." -NoNewline
 cmd.exe /c "winget install Malwarebytes.Malwarebytes -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
+
+    Write-Host "Installing Internet Download Manager..." -NoNewline
+cmd.exe /c "winget install Tonec.InternetDownloadManager -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
 InstallSoftwares
@@ -2592,15 +2592,6 @@ $Shortcut.TargetPath = $Chrome
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Google Chrome.lnk" *>$null
 
-#Librewolf
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Librewolf = "C:\Program Files\LibreWolf\librewolf.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\LibreWolf.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Librewolf
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\LibreWolf.lnk" *>$null
-
 #Brave
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Brave = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe"
@@ -2612,6 +2603,15 @@ $Shortcut.TargetPath = $Brave
 $Shortcut.WorkingDirectory = $BraveDirectory
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Brave.lnk" *>$null
+
+#Librewolf
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Librewolf = "C:\Program Files\LibreWolf\librewolf.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\LibreWolf.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Librewolf
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\LibreWolf.lnk" *>$null
 
 #File Explorer was here
 
@@ -2743,6 +2743,17 @@ $Shortcut.TargetPath = $Notepad
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Notepad++.lnk" *>$null
 
+#Github Desktop
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Github = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe"
+$GithubPath = "$env:USERPROFILE\AppData\Local\GitHubDesktop\"
+$ShortcutFile = "C:\after-format-main\files\icons\Github.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Github
+$Shortcut.WorkingDirectory = $GithubPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\GitHub Desktop.lnk" *>$null
+
 #VLC
 $WScriptShell = New-Object -ComObject WScript.Shell
 $VLC = "C:\Program Files\VideoLAN\VLC\vlc.exe"
@@ -2774,7 +2785,7 @@ $Shortcut.TargetPath = $TCM
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Total Commander.lnk" *>$null
 
-#Rufus was here
+#Rufus was here (it's problematic right now)
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Rufus = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\Rufus.Rufus_Microsoft.Winget.Source_8wekyb3d8bbwe\rufus-3.20p.exe"
 $RufusPath = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\Rufus.Rufus_Microsoft.Winget.Source_8wekyb3d8bbwe"
@@ -2812,14 +2823,16 @@ $Shortcut.TargetPath = $Deluge
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Deluge.lnk" *>$null
 
-#Cryptomator
+#DBeaver
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Cryptomator = "C:\Program Files\Cryptomator\Cryptomator.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\Cryptomator.lnk"
+$DBeaver = "$env:USERPROFILE\AppData\Local\DBeaver\dbeaver.exe"
+$DBeaverPath = "$env:USERPROFILE\AppData\Local\DBeaver"
+$ShortcutFile = "C:\after-format-main\files\icons\DBeaver.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Cryptomator
+$Shortcut.TargetPath = $DBeaver
+$Shortcut.WorkingDirectory = $DBeaverPath
 $Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Cryptomator.lnk" *>$null
+Unblock-File -Path "C:\after-format-main\files\icons\DBeaver.lnk" *>$null
 
 #HEIC Converter
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2829,6 +2842,15 @@ $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $HEIC
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\iMazing HEIC Converter.lnk" *>$null
+
+#Cryptomator
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Cryptomator = "C:\Program Files\Cryptomator\Cryptomator.exe"
+$ShortcutFile = "C:\after-format-main\files\icons\Cryptomator.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $Cryptomator
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\Cryptomator.lnk" *>$null
 
 #iTunes
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -2849,28 +2871,6 @@ $Shortcut.Arguments = "--processStart Teams.exe"
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Microsoft Teams.lnk" *>$null
 
-#DBeaver
-$WScriptShell = New-Object -ComObject WScript.Shell
-$DBeaver = "$env:USERPROFILE\AppData\Local\DBeaver\dbeaver.exe"
-$DBeaverPath = "$env:USERPROFILE\AppData\Local\DBeaver"
-$ShortcutFile = "C:\after-format-main\files\icons\DBeaver.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $DBeaver
-$Shortcut.WorkingDirectory = $DBeaverPath
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\DBeaver.lnk" *>$null
-
-#Docker Desktop
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Docker = "C:\Program Files\Docker\Docker\frontend\Docker Desktop.exe"
-$DockerPath = "C:\Program Files\Docker\Docker\frontend"
-$ShortcutFile = "C:\after-format-main\files\icons\Docker Desktop.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Docker
-$Shortcut.WorkingDirectory = $DockerPath
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Docker Desktop.lnk" *>$null
-
 #PowerToys
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Powertoys = "$env:USERPROFILE\AppData\Local\PowerToys\PowerToys.exe"
@@ -2880,7 +2880,18 @@ $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Powertoys
 $Shortcut.WorkingDirectory = $PowertoysPath
 $Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\PowerToys (Preview)" *>$null
+Unblock-File -Path "C:\after-format-main\files\icons\PowerToys (Preview).lnk" *>$null
+
+#dupeGuru
+$WScriptShell = New-Object -ComObject WScript.Shell
+$dupeGuru = "$env:USERPROFILE\AppData\Local\Programs\Hardcoded Software\dupeGuru\dupeguru-win64.exe"
+$dupeGuruPath = "$env:USERPROFILE\AppData\Local\Programs\Hardcoded Software\dupeGuru"
+$ShortcutFile = "C:\after-format-main\files\icons\dupeGuru.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $dupeGuru
+$Shortcut.WorkingDirectory = $dupeGuruPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\dupeGuru.lnk" *>$null
 
 #Set Pin
 $progressPreference = 'silentlyContinue'
@@ -2960,9 +2971,7 @@ else {
         Remove-Item "$PSScriptRoot\7Zip.exe"
     }
     else {
-        Write-Host "Press any key to exit..."
-        $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        exit
+        Write-Host "Fail..."
     }
 }
    
@@ -2973,9 +2982,6 @@ try {
 }
 catch {
     Write-Host -ForegroundColor Yellow "Unable to detect a compatible Nvidia device."
-    Write-Host "Press any key to exit..."
-    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit
 }
 
 # Checking latest driver version
@@ -3041,9 +3047,6 @@ elseif ($archiverProgram -eq $winrarpath) {
 }
 else {
     Write-Host "Something went wrong. No archive program detected. This should not happen."
-    Write-Host "Press any key to exit..."
-    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit
 }
 
 # Remove unneeded dependencies from setup.cfg
@@ -3054,10 +3057,63 @@ $install_args = "-passive -noreboot -noeula -nofinish -s"
 Start-Process -FilePath "$extractFolder\setup.exe" -ArgumentList $install_args -wait
 
 # Cleaning up downloaded files
-Write-Host "Deleting downloaded files"
+Write-Host "Deleting downloaded files" -NoNewline
 Remove-Item $nvidiaTempFolder -Recurse -Force
 Remove-Item C:\NVIDIA -Recurse -Force
 Start-Sleep 5
+
+#Restore browser settings and extensions
+
+function installLibreWolfWithAddIn()
+{
+    Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
+    
+    $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
+    Copy-Item -Path "c:\after-format-main\files\user.js" -Destination $dest -Force
+
+    $instdir = "C:\Program Files\LibreWolf"
+    $distribution = $instdir + '\distribution'
+    $extensions = $instdir + '\distribution\extensions'
+
+    $bitwarden = "https://addons.mozilla.org/firefox/downloads/file/4093799/bitwarden_password_manager-2023.3.1.xpi"
+    $bitwardenuid = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
+
+    $ublockorigin = "https://addons.mozilla.org/firefox/downloads/file/4099143/ublock_origin-1.49.0.xpi"
+    $ublockoriginuid = 'uBlock0@raymondhill.net'
+
+    $privacybadger = "https://addons.mozilla.org/firefox/downloads/file/4064595/privacy_badger17-2023.1.31.xpi"
+    $privacybadgeruid = 'jid1-MnnxcxisBPnSXQ@jetpack'
+
+    $darkreader = "https://addons.mozilla.org/firefox/downloads/file/4095037/darkreader-4.9.63.xpi"
+    $darkreaderuid = 'addon@darkreader.org'
+
+    $ublacklist = "https://addons.mozilla.org/firefox/downloads/file/4095141/ublacklist-8.3.0.xpi"
+    $ublacklistuid = '@ublacklist'
+    
+    $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
+    $ublockoriginpath = $extensions + '\' + $ublockoriginuid + '.xpi'
+    $privacybadgerpath = $extensions + '\' + $privacybadgeruid + '.xpi'
+    $darkreaderpath = $extensions + '\' + $darkreaderuid + '.xpi'
+    $ublacklistpath = $extensions + '\' + $ublacklistuid + '.xpi'
+
+    #Download XPI file of AddIn
+    If(-Not(Test-Path $distribution)){
+        New-Item $distribution -ItemType Container | Out-Null
+    }
+    If(-Not(Test-Path $extensions)){
+        New-Item $extensions -ItemType Container | Out-Null
+    }
+    
+    Invoke-WebRequest $bitwarden -Outfile $bitwardenpath
+    Invoke-WebRequest $ublockorigin -Outfile $ublockoriginpath
+    Invoke-WebRequest $privacybadger -Outfile $privacybadgerpath
+    Invoke-WebRequest $darkreader -Outfile $darkreaderpath
+    Invoke-WebRequest $ublacklist -Outfile $ublacklistpath
+
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+installLibreWolfWithAddIn("");
 
 }
 
