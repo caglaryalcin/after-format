@@ -2648,10 +2648,12 @@ Unblock-File -Path "C:\after-format-main\files\icons\Steam.lnk" *>$null
 
 #Epic Games
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Epic = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe"
+$Epic = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"
+$EpicPath = "C:\Program Files (x86)\Epic Games\"
 $ShortcutFile = "C:\after-format-main\files\icons\EpicGamesLauncher.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Epic
+$Shortcut.WorkingDirectory = $EpicPath
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\EpicGamesLauncher.lnk" *>$null
 
@@ -2717,9 +2719,11 @@ Unblock-File -Path "C:\after-format-main\files\icons\Visual Studio Code.lnk" *>$
 #AnyDesk
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Anydesk = "C:\Program Files (x86)\AnyDeskMSI\AnyDeskMSI.exe"
+$AnydeskPath = "C:\Program Files (x86)\AnyDeskMSI"
 $ShortcutFile = "C:\after-format-main\files\icons\AnyDesk.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Anydesk
+$Shortcut.WorkingDirectory = $AnydeskPath
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\AnyDesk.lnk" *>$null
 
@@ -2747,7 +2751,7 @@ Unblock-File -Path "C:\after-format-main\files\icons\Notepad++.lnk" *>$null
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Github = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe"
 $GithubPath = "$env:USERPROFILE\AppData\Local\GitHubDesktop\"
-$ShortcutFile = "C:\after-format-main\files\icons\Github.lnk"
+$ShortcutFile = "C:\after-format-main\files\icons\GitHub Desktop.lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Github
 $Shortcut.WorkingDirectory = $GithubPath
@@ -3058,7 +3062,7 @@ Start-Process -FilePath "$extractFolder\setup.exe" -ArgumentList $install_args -
 
 # Cleaning up downloaded files
 Write-Host "Deleting downloaded files" -NoNewline
-Remove-Item $nvidiaTempFolder -Recurse -Force
+Remove-Item $nvidiaTempFolder -Recurse -Force *>$null
 Remove-Item C:\NVIDIA -Recurse -Force
 Start-Sleep 5
 
@@ -3068,8 +3072,11 @@ function installLibreWolfWithAddIn()
 {
     Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
     
-    $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
-    Copy-Item -Path "c:\after-format-main\files\user.js" -Destination $dest -Force
+    #it is necessary to formation of a profile
+    cd "C:\Program Files\LibreWolf\"
+    .\librewolf.exe
+    Start-Sleep 4
+    taskkill /f /im "librewolf.exe" *>$null
 
     $instdir = "C:\Program Files\LibreWolf"
     $distribution = $instdir + '\distribution'
@@ -3077,16 +3084,12 @@ function installLibreWolfWithAddIn()
 
     $bitwarden = "https://addons.mozilla.org/firefox/downloads/file/4093799/bitwarden_password_manager-2023.3.1.xpi"
     $bitwardenuid = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
-
     $ublockorigin = "https://addons.mozilla.org/firefox/downloads/file/4099143/ublock_origin-1.49.0.xpi"
     $ublockoriginuid = 'uBlock0@raymondhill.net'
-
     $privacybadger = "https://addons.mozilla.org/firefox/downloads/file/4064595/privacy_badger17-2023.1.31.xpi"
     $privacybadgeruid = 'jid1-MnnxcxisBPnSXQ@jetpack'
-
     $darkreader = "https://addons.mozilla.org/firefox/downloads/file/4095037/darkreader-4.9.63.xpi"
     $darkreaderuid = 'addon@darkreader.org'
-
     $ublacklist = "https://addons.mozilla.org/firefox/downloads/file/4095141/ublacklist-8.3.0.xpi"
     $ublacklistuid = '@ublacklist'
     
@@ -3109,6 +3112,9 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $privacybadger -Outfile $privacybadgerpath
     Invoke-WebRequest $darkreader -Outfile $darkreaderpath
     Invoke-WebRequest $ublacklist -Outfile $ublacklistpath
+
+    $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
+    Copy-Item -Path "c:\after-format-main\files\user.js" -Destination $dest -Force
 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
