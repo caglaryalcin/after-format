@@ -3084,6 +3084,7 @@ function installLibreWolfWithAddIn()
 
     $bitwarden = "https://addons.mozilla.org/firefox/downloads/file/4093799/bitwarden_password_manager-2023.3.1.xpi"
     $bitwardenuid = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
+
     $ublockorigin = "https://addons.mozilla.org/firefox/downloads/file/4099143/ublock_origin-1.49.0.xpi"
     $ublockoriginuid = 'uBlock0@raymondhill.net'
     $privacybadger = "https://addons.mozilla.org/firefox/downloads/file/4064595/privacy_badger17-2023.1.31.xpi"
@@ -3092,12 +3093,18 @@ function installLibreWolfWithAddIn()
     $darkreaderuid = 'addon@darkreader.org'
     $ublacklist = "https://addons.mozilla.org/firefox/downloads/file/4095141/ublacklist-8.3.0.xpi"
     $ublacklistuid = '@ublacklist'
-    
+    $returnytdl = 'https://addons.mozilla.org/firefox/downloads/file/4072734/return_youtube_dislikes-3.0.0.8.xpi'
+    $returnytdluid = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}'
+    $skipredirect = 'https://addons.mozilla.org/firefox/downloads/file/3920533/skip_redirect-2.3.6.xpi'
+    $skipredirectuid = 'skipredirect@sblask'
+
     $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
     $ublockoriginpath = $extensions + '\' + $ublockoriginuid + '.xpi'
     $privacybadgerpath = $extensions + '\' + $privacybadgeruid + '.xpi'
     $darkreaderpath = $extensions + '\' + $darkreaderuid + '.xpi'
     $ublacklistpath = $extensions + '\' + $ublacklistuid + '.xpi'
+    $returnytdlpath = $extensions + '\' + $returnytdluid + '.xpi'
+    $skipredirectpath = $extensions + '\' + $skipredirectuid + '.xpi'
 
     #Download XPI file of AddIn
     If(-Not(Test-Path $distribution)){
@@ -3112,6 +3119,8 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $privacybadger -Outfile $privacybadgerpath
     Invoke-WebRequest $darkreader -Outfile $darkreaderpath
     Invoke-WebRequest $ublacklist -Outfile $ublacklistpath
+    Invoke-WebRequest $returnytdl -Outfile $returnytdlpath
+    Invoke-WebRequest $skipredirect -Outfile $skipredirectpath
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
     Copy-Item -Path "c:\after-format-main\files\user.js" -Destination $dest -Force
