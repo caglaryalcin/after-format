@@ -2877,8 +2877,8 @@ Unblock-File -Path "C:\after-format-main\files\icons\Microsoft Teams.lnk" *>$nul
 
 #PowerToys
 $WScriptShell = New-Object -ComObject WScript.Shell
-$Powertoys = "$env:USERPROFILE\AppData\Local\PowerToys\PowerToys.exe"
-$PowertoysPath = "$env:USERPROFILE\AppData\Local\PowerToys"
+$Powertoys = "$env:USERPROFILE\AppData\Local\PowerToys\Settings\PowerToys.Settings.exe"
+$PowertoysPath = "$env:USERPROFILE\AppData\Local\PowerToys\Settings"
 $ShortcutFile = "C:\after-format-main\files\icons\PowerToys (Preview).lnk"
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $Powertoys
