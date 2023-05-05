@@ -67,7 +67,7 @@
 /* Changes Minimum Hight For Tabs [Do Not Touch] */
 #TabsToolbar,
 #tabbrowser-tabs {
-    --tab-min-height: 30px !important;
+    --tab-min-height: 35px !important;
 }
 
 /* Adds's Brave "Like" Tab Dividers */
