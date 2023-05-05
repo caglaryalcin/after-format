@@ -3123,7 +3123,11 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $skipredirect -Outfile $skipredirectpath
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
-    Copy-Item -Path "c:\after-format-main\files\user.js" -Destination $dest -Force
+    Copy-Item -Path "c:\after-format-main\files\librewolf-config\user.js" -Destination $dest -Force
+    Copy-Item -Path "c:\after-format-main\files\librewolf-config\Tab Shapes.css" -Destination $dest\chrome -Force
+    Copy-Item -Path "c:\after-format-main\files\librewolf-config\Toolbar.css" -Destination $dest\chrome -Force
+    Copy-Item -Path "c:\after-format-main\files\librewolf-config\userChrome.css" -Destination $dest\chrome -Force
+    Copy-Item -Path "c:\after-format-main\files\librewolf-config\userContent.css" -Destination $dest\chrome -Force
 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }

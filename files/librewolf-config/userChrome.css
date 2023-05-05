@@ -1,0 +1,9 @@
+/*--------------------------------------------- Brave Fox --------------------------------------------*/
+@import url("Toolbar.css");
+@import url("Tab Shapes.css");
+/*----------------------------------------------------------------------------------------------------*/
+/* remove 'open all in tabs' from bookmarks inside folder  */
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* only needed once */
+#PlacesToolbarItems .openintabs-menuitem,
+#placesContext>menuitem[id="placesContext_openContainer:tabs"],
+#placesContext>menuitem[id="placesContext_openContainer:tabs"]:not([hidden])+menuitem+#placesContext_openSeparator {visibility:collapse!important}

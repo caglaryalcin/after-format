@@ -17,7 +17,7 @@ user_pref("signon.rememberSignons", false);
 user_pref("browser.urlbar.trimURLs", false);
 
 // sync firefox account
-user_pref("identity.fxaccounts.enabled", false); 
+user_pref("identity.fxaccounts.enabled", true); 
 
 //disable history cache
 user_pref("privacy.clearOnShutdown.cookies", false);
@@ -55,6 +55,7 @@ user_pref("string.showQuitwarning", true);
 
 //Open New Tab for the Search Box Results
 user_pref("browser.search.openintab", true);
+user_pref("browser.link.open_newwindow", 3);
 
 //Lower Memory Usage When Minimized
 user_pref("config.trim_on_minimize", true);
@@ -73,6 +74,28 @@ user_pref("browser.urlbar.maxRichResults", 1);
 
 //enable custom css
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+user_pref("layers.acceleration.force-enabled", false);
+user_pref("gfx.webrender.all", false);
+user_pref("svg.context-properties.content.enabled", false);
 
 //enable auto play videos
 user_pref("media.autoplay.default", 0);
+
+//top bar size
+user_pref("layout.css.devPixelsPerPx", "0.97");
+
+//customization layout
+user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"unified-extensions-area\":[],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"urlbar-container\",\"save-to-pocket-button\",\"downloads-button\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"_ublacklist-browser-action\",\"addon_darkreader_org-browser-action\",\"skipredirect_sblask-browser-action\",\"_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action\",\"fxa-toolbar-menu-button\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"],\"PersonalToolbar\":[\"personal-bookmarks\"]},\"seen\":[\"_ublacklist-browser-action\",\"addon_darkreader_org-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"skipredirect_sblask-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action\",\"_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action\",\"developer-button\"],\"dirtyAreaCache\":[\"unified-extensions-area\",\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\",\"PersonalToolbar\"],\"currentVersion\":19,\"newElementCount\":4}");
+
+
+//disable pocket-button
+user_pref("extensions.pocket.enabled", false);
+
+//firefox 120hz
+user_pref("layout.frame_rate", 144);
+
+//Changing the default processor allocation from a maximum of 8 to 12
+user_pref("dom.ipc.processCount", 12);
+
+//Bookmark icon size
+user_pref("layout.css.devPixelsPerPx", "1");
