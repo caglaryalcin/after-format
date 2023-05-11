@@ -96,3 +96,9 @@ user_pref("dom.ipc.processCount", 12);
 
 //top bar size
 user_pref("layout.css.devPixelsPerPx", "1");
+
+//disable multiple tabs before open warn
+user_pref("browser.tabs.maxOpenBeforeWarn", 15);
+
+//disable ssl require safe negotiation for pay sites
+user_pref("security.ssl.require_safe_negotiation", false);
