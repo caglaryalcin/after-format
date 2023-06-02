@@ -82,8 +82,7 @@ user_pref("svg.context-properties.content.enabled", false);
 user_pref("media.autoplay.default", 0);
 
 //customization layout
-user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"unified-extensions-area\":[],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"urlbar-container\",\"save-to-pocket-button\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"_ublacklist-browser-action\",\"addon_darkreader_org-browser-action\",\"skipredirect_sblask-browser-action\",\"_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action\",\"fxa-toolbar-menu-button\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"],\"PersonalToolbar\":[\"personal-bookmarks\"]},\"seen\":[\"_ublacklist-browser-action\",\"addon_darkreader_org-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"skipredirect_sblask-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action\",\"_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action\",\"developer-button\"],\"dirtyAreaCache\":[\"unified-extensions-area\",\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\",\"PersonalToolbar\"],\"currentVersion\":19,\"newElementCount\":4}");
-
+user_pref("browser.uiCustomization.state", {"placements":{"widget-overflow-fixed-list":[],"unified-extensions-area":[],"nav-bar":["back-button","forward-button","stop-reload-button","urlbar-container","save-to-pocket-button","downloads-button","jid1-mnnxcxisbpnsxq_jetpack-browser-action","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action","ublock0_raymondhill_net-browser-action","_ublacklist-browser-action","addon_darkreader_org-browser-action","skipredirect_sblask-browser-action","_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action","fxa-toolbar-menu-button","unified-extensions-button"],"toolbar-menubar":["menubar-items"],"TabsToolbar":["tabbrowser-tabs","new-tab-button","alltabs-button"],"PersonalToolbar":["personal-bookmarks"]},"seen":["_ublacklist-browser-action","addon_darkreader_org-browser-action","jid1-mnnxcxisbpnsxq_jetpack-browser-action","skipredirect_sblask-browser-action","ublock0_raymondhill_net-browser-action","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action","_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action","developer-button"],"dirtyAreaCache":["unified-extensions-area","nav-bar","toolbar-menubar","TabsToolbar","PersonalToolbar"],"currentVersion":19,"newElementCount":5}
 
 //disable pocket-button
 user_pref("extensions.pocket.enabled", false);
@@ -102,3 +101,6 @@ user_pref("browser.tabs.maxOpenBeforeWarn", 15);
 
 //disable ssl require safe negotiation for pay sites
 user_pref("security.ssl.require_safe_negotiation", false);
+
+//disable reader view
+user_pref("reader.parse-on-load.enabled", false);
