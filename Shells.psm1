@@ -3131,9 +3131,13 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $skipredirect -Outfile $skipredirectpath
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
-    Copy-Item -Path "c:\after-format-main\files\librewolf-config\user.js" -Destination $dest -Force
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/user.js" -Outfile $dest\user.js
     New-Item $dest -Name chrome -ItemType "directory"
-    Copy-Item -Path "c:\after-format-main\files\librewolf-config\Tab Shapes.css" -Destination $dest\chrome -Force
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userContent.css" -Outfile "$dest\chrome\userContent.css"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
+
     Copy-Item -Path "c:\after-format-main\files\librewolf-config\Toolbar.css" -Destination $dest\chrome -Force
     Copy-Item -Path "c:\after-format-main\files\librewolf-config\userChrome.css" -Destination $dest\chrome -Force
     Copy-Item -Path "c:\after-format-main\files\librewolf-config\userContent.css" -Destination $dest\chrome -Force
