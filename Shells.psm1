@@ -2090,6 +2090,10 @@ cmd.exe /c "winget install Microsoft.PowerToys -e --silent --accept-source-agree
 cmd.exe /c "winget install DupeGuru.DupeGuru -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    Start-Sleep 5
+    $progressPreference = 'silentlyContinue'
+    taskkill /f /im Powertoys.exe *>$null
+
     #other softwares
     #7-Zip
     Write-Host "Installing 7-Zip..." -NoNewline
@@ -2118,10 +2122,6 @@ cmd.exe /c "winget install CodecGuide.K-LiteCodecPack.Full -e --silent --accept-
 cmd.exe /c "winget install Nvidia.GeForceExperience -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     
-    Start-Sleep 5
-    $progressPreference = 'silentlyContinue'
-    taskkill /f /im Powertoys.exe *>$null
-
     Write-Host "Installing Malwarebytes..." -NoNewline
 cmd.exe /c "winget install Malwarebytes.Malwarebytes -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -3067,7 +3067,7 @@ Start-Process -FilePath "$extractFolder\setup.exe" -ArgumentList $install_args -
 # Cleaning up downloaded files
 Write-Host "Deleting downloaded files" -NoNewline
 Remove-Item $nvidiaTempFolder -Recurse -Force *>$null
-Remove-Item C:\NVIDIA -Recurse -Force
+Remove-Item C:\NVIDIA -Recurse -Force *>$null
 Start-Sleep 5
 
 #Restore browser settings and extensions
@@ -3128,6 +3128,7 @@ function installLibreWolfWithAddIn()
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
     Copy-Item -Path "c:\after-format-main\files\librewolf-config\user.js" -Destination $dest -Force
+    New-Item $dest -Name chrome -ItemType "directory"
     Copy-Item -Path "c:\after-format-main\files\librewolf-config\Tab Shapes.css" -Destination $dest\chrome -Force
     Copy-Item -Path "c:\after-format-main\files\librewolf-config\Toolbar.css" -Destination $dest\chrome -Force
     Copy-Item -Path "c:\after-format-main\files\librewolf-config\userChrome.css" -Destination $dest\chrome -Force
