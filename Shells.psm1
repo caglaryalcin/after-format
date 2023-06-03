@@ -3137,11 +3137,6 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userContent.css" -Outfile "$dest\chrome\userContent.css"
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
-
-    Copy-Item -Path "c:\after-format-main\files\librewolf-config\Toolbar.css" -Destination $dest\chrome -Force
-    Copy-Item -Path "c:\after-format-main\files\librewolf-config\userChrome.css" -Destination $dest\chrome -Force
-    Copy-Item -Path "c:\after-format-main\files\librewolf-config\userContent.css" -Destination $dest\chrome -Force
-
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
