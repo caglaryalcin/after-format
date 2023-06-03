@@ -2064,12 +2064,6 @@ cmd.exe /c "winget install DelugeTeam.DelugeBeta -e --silent --accept-source-agr
 cmd.exe /c "winget install dbeaver.dbeaver -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
-    Write-Host "Installing HEIC Converter..." -NoNewline
-cmd.exe /c "winget install DigiDNA.iMazingHEICConverter -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    Start-Sleep 3
-    taskkill /f /im "iMazing HEIC Converter.exe"
-         
     Write-Host "Installing Cryptomator..." -NoNewline
 cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
