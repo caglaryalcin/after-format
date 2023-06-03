@@ -3073,6 +3073,7 @@ Start-Sleep 5
 #Import CloudFlare Certificates
 Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile C:\Cloudflare_CA.crt *>$null
 Get-Item "C:\Cloudflare_CA.crt" | Import-Certificate -CertStoreLocation "cert:\LocalMachine\Root" *>$null
+Remove-Item C:\Cloudflare_CA.crt -recurse -ErrorAction SilentlyContinue
 
 #Restore browser settings and extensions
 
