@@ -1,5 +1,3 @@
-![Alt Text](https://github.com/caglaryalcin/caglaryalcin/blob/main/flx.gif)
-
 ## Description
 
 > **_NOTE 1:_** Before running the script, you only need to turn off the real-time protection setting of Windows defender once.
