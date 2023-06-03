@@ -3,7 +3,7 @@
 user_pref("privacy.item.offlineApps", false);
 
 //New tab auto open
-user_pref("browser.tabs.loadInBackground", false);
+user_pref("browser.tabs.loadInBackground", true);
 user_pref("browser.tabs.loadDivertedInBackground", true);
 user_pref("browser.tabs.loadBookmarksInBackground", true);
 
