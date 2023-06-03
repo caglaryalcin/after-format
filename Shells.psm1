@@ -2129,6 +2129,10 @@ cmd.exe /c "winget install Malwarebytes.Malwarebytes -e --silent --accept-source
     Write-Host "Installing Internet Download Manager..." -NoNewline
 cmd.exe /c "winget install Tonec.InternetDownloadManager -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    Write-Host "Installing CloudFlare WARP..." -NoNewline
+cmd.exe /c "winget install Cloudflare.Warp -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
 InstallSoftwares
