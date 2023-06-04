@@ -2084,6 +2084,10 @@ cmd.exe /c "winget install Microsoft.PowerToys -e --silent --accept-source-agree
 cmd.exe /c "winget install DupeGuru.DupeGuru -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
+    Write-Host "Installing WinFsp for Cryptomator..." -NoNewline
+cmd.exe /c "winget install WinFsp.WinFsp -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
     Start-Sleep 5
     $progressPreference = 'silentlyContinue'
     taskkill /f /im Powertoys.exe *>$null
@@ -3087,7 +3091,6 @@ function installLibreWolfWithAddIn()
 
     $bitwarden = "https://addons.mozilla.org/firefox/downloads/file/4093799/bitwarden_password_manager-2023.3.1.xpi"
     $bitwardenuid = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
-
     $ublockorigin = "https://addons.mozilla.org/firefox/downloads/file/4099143/ublock_origin-1.49.0.xpi"
     $ublockoriginuid = 'uBlock0@raymondhill.net'
     $privacybadger = "https://addons.mozilla.org/firefox/downloads/file/4064595/privacy_badger17-2023.1.31.xpi"
@@ -3100,6 +3103,9 @@ function installLibreWolfWithAddIn()
     $returnytdluid = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}'
     $skipredirect = 'https://addons.mozilla.org/firefox/downloads/file/3920533/skip_redirect-2.3.6.xpi'
     $skipredirectuid = 'skipredirect@sblask'
+    $chatgpt = 'https://addons.mozilla.org/firefox/downloads/file/4079848/chatgpt_for_google-2.1.1.xpi'
+    $chatgptuid = '{4b726fbc-aba9-4fa7-97fd-a42c2511ddf7}'
+
 
     $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
     $ublockoriginpath = $extensions + '\' + $ublockoriginuid + '.xpi'
@@ -3108,6 +3114,7 @@ function installLibreWolfWithAddIn()
     $ublacklistpath = $extensions + '\' + $ublacklistuid + '.xpi'
     $returnytdlpath = $extensions + '\' + $returnytdluid + '.xpi'
     $skipredirectpath = $extensions + '\' + $skipredirectuid + '.xpi'
+    $chatgptpath = $extensions + '\' + $chatgptuid + '.xpi'
 
     #Download XPI file of AddIn
     If(-Not(Test-Path $distribution)){
@@ -3124,6 +3131,7 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $ublacklist -Outfile $ublacklistpath
     Invoke-WebRequest $returnytdl -Outfile $returnytdlpath
     Invoke-WebRequest $skipredirect -Outfile $skipredirectpath
+    Invoke-WebRequest $chatgpt -Outfile $chatgptpath
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/user.js" -Outfile $dest\user.js
