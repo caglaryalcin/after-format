@@ -3105,8 +3105,9 @@ function installLibreWolfWithAddIn()
     $skipredirectuid = 'skipredirect@sblask'
     $chatgpt = 'https://addons.mozilla.org/firefox/downloads/file/4079848/chatgpt_for_google-2.1.1.xpi'
     $chatgptuid = '{4b726fbc-aba9-4fa7-97fd-a42c2511ddf7}'
-
-
+    $idm = 'https://addons.mozilla.org/firefox/downloads/file/4083976/tonec_idm_integration_module-6.41.8.xpi'
+    $idmuid = 'mozilla_cc3@internetdownloadmanager.com'
+    
     $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
     $ublockoriginpath = $extensions + '\' + $ublockoriginuid + '.xpi'
     $privacybadgerpath = $extensions + '\' + $privacybadgeruid + '.xpi'
@@ -3115,6 +3116,7 @@ function installLibreWolfWithAddIn()
     $returnytdlpath = $extensions + '\' + $returnytdluid + '.xpi'
     $skipredirectpath = $extensions + '\' + $skipredirectuid + '.xpi'
     $chatgptpath = $extensions + '\' + $chatgptuid + '.xpi'
+    $idmpath = $extensions + '\' + $idmuid + '.xpi'
 
     #Download XPI file of AddIn
     If(-Not(Test-Path $distribution)){
@@ -3132,6 +3134,7 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $returnytdl -Outfile $returnytdlpath
     Invoke-WebRequest $skipredirect -Outfile $skipredirectpath
     Invoke-WebRequest $chatgpt -Outfile $chatgptpath
+    Invoke-WebRequest $idm -Outfile $idmpath
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/user.js" -Outfile $dest\user.js
