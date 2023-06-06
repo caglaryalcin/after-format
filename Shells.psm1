@@ -3107,7 +3107,9 @@ function installLibreWolfWithAddIn()
     $chatgptuid = '{4b726fbc-aba9-4fa7-97fd-a42c2511ddf7}'
     $idm = 'https://addons.mozilla.org/firefox/downloads/file/4083976/tonec_idm_integration_module-6.41.8.xpi'
     $idmuid = 'mozilla_cc3@internetdownloadmanager.com'
-    
+    $bing = 'https://addons.mozilla.org/firefox/downloads/file/4019173/bing_search_engine-1.0.3.8.xpi'
+    $binguid = '{8d8ca802-6b23-43ed-9445-e05d48579542}'
+           
     $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
     $ublockoriginpath = $extensions + '\' + $ublockoriginuid + '.xpi'
     $privacybadgerpath = $extensions + '\' + $privacybadgeruid + '.xpi'
@@ -3117,6 +3119,7 @@ function installLibreWolfWithAddIn()
     $skipredirectpath = $extensions + '\' + $skipredirectuid + '.xpi'
     $chatgptpath = $extensions + '\' + $chatgptuid + '.xpi'
     $idmpath = $extensions + '\' + $idmuid + '.xpi'
+    $bingpath = $extensions + '\' + $binguid + '.xpi'
 
     #Download XPI file of AddIn
     If(-Not(Test-Path $distribution)){
@@ -3135,6 +3138,7 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $skipredirect -Outfile $skipredirectpath
     Invoke-WebRequest $chatgpt -Outfile $chatgptpath
     Invoke-WebRequest $idm -Outfile $idmpath
+    Invoke-WebRequest $bing -Outfile $bingpath
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/user.js" -Outfile $dest\user.js
