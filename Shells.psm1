@@ -34,11 +34,47 @@ Function testconnection {
     $OriginalProgressPreference = $Global:ProgressPreference
     $Global:ProgressPreference = 'SilentlyContinue'
     $pingtest = Test-NetConnection google.com  | Select-Object PingSucceeded 
-    $comp = hostname
     
     if($pingtest.PingSucceeded)
 {
     Write-Host("Internet connection and DNS is up") -ForegroundColor Green
+
+##########
+#region Windows Update
+##########
+
+Write-Host `n"Do you want " -NoNewline
+Write-Host "Windows Updates? " -ForegroundColor Yellow -NoNewline
+Write-Host "it may take a long time depending on the internet speed." -ForegroundColor Red -NoNewline
+Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+$systemset = Read-Host
+
+if ($systemset -match "[Yy]") {
+
+# Install Windows Update
+Function InstallUpdates {
+	Write-Host "Installing Windows Updates..." -NoNewline
+    $progressPreference = 'silentlyContinue'
+    $Global:ProgressPreference = 'SilentlyContinue'
+    Install-PackageProvider NuGet -Force *>$null
+    Install-Module PSWindowsUpdate -Force *>$null
+    Set-ExecutionPolicy Bypass -Scope Process -Force *>$null
+    $progressPreference = 'silentlyContinue'
+    $Global:ProgressPreference = 'SilentlyContinue'
+    Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+InstallUpdates
+
+}
+else {
+    Write-Host "[Windows Updates Cancelled]" -ForegroundColor Red -BackgroundColor Black
+}
+
+##########
+#endregion Windows Update
+##########
 
 ##########
 #region System Settings
@@ -2024,8 +2060,8 @@ cmd.exe /c "winget install Microsoft.WindowsTerminal -e --silent --accept-source
 cmd.exe /c "winget install Ookla.Speedtest.Desktop -e --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    Write-Host "Installing Notepad++..." -NoNewline
-cmd.exe /c "winget install Notepad++ -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
+    Write-Host "Installing Sublime Text 4..." -NoNewline
+cmd.exe /c "winget install SublimeHQ.SublimeText.4 -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing GitHub.GitHubDesktop..." -NoNewline
@@ -2740,14 +2776,7 @@ $Shortcut.TargetPath = $Speedtest
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Speedtest.lnk" *>$null
 
-#Notepad++
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Notepad = "C:\Program Files\Notepad++\notepad++.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\Notepad++.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Notepad
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Notepad++.lnk" *>$null
+#SublimeText
 
 #Github Desktop
 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -3141,16 +3170,29 @@ function installLibreWolfWithAddIn()
     Invoke-WebRequest $bing -Outfile $bingpath
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/user.js" -Outfile $dest\user.js
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
     New-Item $dest -Name chrome -ItemType "directory"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userContent.css" -Outfile "$dest\chrome\userContent.css"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/browser-config/main/config/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css" -Outfile "$dest\chrome\userContent.css"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
 installLibreWolfWithAddIn("");
+
+Function sublime-text {
+    #settings and theme
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User\Preferences.sublime-settings"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User\cy.sublime-color-scheme"
+    Invoke-WebRequest -Uri "https://packagecontrol.io/Package%20Control.sublime-package" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages\Package Control.sublime-package"
+
+    #packages
+    Invoke-WebRequest -Uri "https://github.com/caglaryalcin/my-configs/raw/main/sublime-text/package/Hide%20Menu.sublime-package" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages\Hide Menu.sublime-package"
+    Invoke-WebRequest -Uri "https://github.com/caglaryalcin/my-configs/raw/main/sublime-text/package/PowerShell.sublime-package" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages\PowerShell.sublime-package"
+}
+
+sublime-text
 
 }
 
