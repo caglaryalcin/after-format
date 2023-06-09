@@ -3171,7 +3171,7 @@ function installLibreWolfWithAddIn()
 
     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
-    New-Item $dest -Name chrome -ItemType "directory"
+    New-Item $dest -Name chrome -ItemType "directory" *>$null
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css" -Outfile "$dest\chrome\userContent.css"
@@ -3182,14 +3182,20 @@ function installLibreWolfWithAddIn()
 installLibreWolfWithAddIn("");
 
 Function sublime-text {
+    $userconf= "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User"
+    $userpackage= "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages"
+
+    #create directory
+    New-Item $userconf -ItemType "directory" *>$null
+    New-Item $userpackage -ItemType "directory" *>$null
+
     #settings and theme
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User\Preferences.sublime-settings"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User\cy.sublime-color-scheme"
-    Invoke-WebRequest -Uri "https://packagecontrol.io/Package%20Control.sublime-package" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages\Package Control.sublime-package"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings" -Outfile "$userconf\Preferences.sublime-settings"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme" -Outfile "$userconf\cy.sublime-color-scheme"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Default%20(Windows).sublime-mousemap" -Outfile "$userconf\Default (Windows).sublime-mousemap"
 
     #packages
-    Invoke-WebRequest -Uri "https://github.com/caglaryalcin/my-configs/raw/main/sublime-text/package/Hide%20Menu.sublime-package" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages\Hide Menu.sublime-package"
-    Invoke-WebRequest -Uri "https://github.com/caglaryalcin/my-configs/raw/main/sublime-text/package/PowerShell.sublime-package" -Outfile "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages\PowerShell.sublime-package"
+    Invoke-WebRequest -Uri "https://packagecontrol.io/Package%20Control.sublime-package" -Outfile "$userpackage\Package Control.sublime-package"
 }
 
 sublime-text
