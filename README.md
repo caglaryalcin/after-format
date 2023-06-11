@@ -173,13 +173,7 @@ It asks if you want to install the following softwares or not.
 
   The taskbar pins that I use are set respectively.
 </details>
-<details><summary>My Custom Drivers</summary>&nbsp;
-  
-- ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) `When this question is asked, you must answer by saying 'n'. Because the settings here are my specific settings.`
-</details>
-<p>
-
-### Startup Script
+<details><summary>Startup Script</summary>&nbsp;
   
 There is another script called startup in the script. This script does exactly the following;
 
@@ -192,7 +186,8 @@ There is another script called startup in the script. This script does exactly t
 - Sync Windows Localtime
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
   
-  If you don't want to use startup updates, you can as below edit 'run.vbs' file in 'C:\after-format-main\files\startup' folder.
+  If you don't want to use startup updates, you can as below edit 'run.vbs' file in 'C:\after-format-main\files\startup' folder. Also you can put '#' at the beginning of the functions you want to add or remove in the functions.preset file in 
+'C:\after-format-main\files\startup' folder.
 ```vbs
 Set WshShell = CreateObject("WScript.Shell") 
 WshShell.Run chr(34) & "C:\startup\Run.cmd" & Chr(34), 0
@@ -200,24 +195,26 @@ Set WshShell = Nothing
 ```
 </details>
 
+My Custom Drivers
+
 ```json
-NOTE: 
-You can put '#' at the beginning of the functions you want to add or remove in the functions.preset file in 
-'C:\after-format-main\files\startup' folder.
+When this question is asked, you must answer by saying 'n'. Because the settings here are my specific settings.`
 ```
-```json
+&nbsp;
+&nbsp;
+
+
+```diff
 NOTE 1: 
-Before running the script, you only need to turn off the real-time protection setting of Windows defender once. 
+! Before running the script, you only need to turn off the real-time protection setting of Windows defender once. 
 ```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
-
-```json
+```diff
 NOTE 2:
-All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.
+! All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.
 ```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
-
-```json
+```diff
 NOTE 3:
-This script takes about 35 minutes with 100mbps internet.
+! This script takes about 35 minutes with 100mbps internet.
 ```
