@@ -2104,10 +2104,6 @@ cmd.exe /c "winget install dbeaver.dbeaver -e --silent --accept-source-agreement
 cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-    Write-Host "Installing iTunes..." -NoNewline
-cmd.exe /c "winget install Apple.iTunes -e --silent --accept-source-agreements --accept-package-agreements --force"
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
     Write-Host "Installing Microsoft Teams..." -NoNewline
 cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force"
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2495,7 +2491,7 @@ UninstallFaxAndScan
 # Uninstall OneDrive
 Function UninstallOneDrive {
 	Write-Host `n"Do you want " -NoNewline
-    Write-Host "remove Windows OneDrive?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host "uninstall Windows OneDrive?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $input = Read-Host
     if ($input -match "[Yy]") {
@@ -2516,7 +2512,7 @@ UninstallOneDrive
 # Disable Edge desktop shortcut creation after certain Windows updates are applied 
 Function UninstallEdge {
     Write-Host `n"Do you want " -NoNewline
-    Write-Host "remove Windows Edge?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host "uninstall Windows Edge?" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $input = Read-Host
     if ($input -match "[Yy]") {
