@@ -1,6 +1,9 @@
 ## Description
 This script does exactly the following; (Some are optional(y/n))
 
+<details><summary>Windows Updates</summary>&nbsp;
+-It asks if you want to make windows updates.
+  </details>
 <details><summary>System Settings</summary>&nbsp;
   
 - Date format is set to turkey
@@ -93,10 +96,51 @@ This script does exactly the following; (Some are optional(y/n))
 - Disabling Windows Update Automatic Downloads
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
-
-- Installing  Winget for Windows 10, Mozilla Firefox, Opera, Google Chrome, Libre Wolf, Brave Browser, Steam, Epic Games, HWMonitor, Crystal Disk Info, VMWare Workstation Pro, VirtualBox, Signal Desktop, Microsoft Visual Studio Code (with extensions), Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git), Chocolatey, AnyDesk, Windows Terminal, Speedtest, Notepad++, VLC Media Player, TreeSize Free, Total Commander, Rufus, Wireshark, PuTTY, Deluge, DBeaver, HEIC Converter, Cryptomator, Docker Desktop, WSL, Minikube, MS Teams, iTunes, 7-Zip (with terminal), Lightshot, Twinkle-Tray, K-Lite Codec Pack Mega, Nvidia GeForce Experience and Valorant.
-- [Installing startup script](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
-
+  
+It asks if you want to install the following softwares or not.
+- Winget for Windows 10
+- Mozilla Firefox
+- Opera
+- Google Chrome
+- Libre Wolf
+- Brave Browser
+- Steam
+- Epic Games
+- HWMonitor
+- Crystal Disk Info
+- VMWare Workstation Pro
+- VirtualBox
+- Signal Desktop
+- Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git)
+- Microsoft Visual Studio Code (with extensions)
+- AnyDesk
+- Windows Terminal
+- Speedtest
+- Sublime Text 4
+- Github Desktop
+- VLC Media Player
+- TreeSize Free
+- Total Commander
+- Rufus
+- Wireshark
+- PuTTY
+- Deluge
+- DBeaver
+- Cryptomator
+- Microsoft Teams
+- Powertoys
+- DupeGuru
+- WinFsp for Cryptomator
+- 7-Zip
+- Lightshot
+- Twinkle-Tray
+- K-Lite Codec Pack Mega
+- Nvidia GeForce Experience
+- Malwarebytes
+- Internet Download Manager
+- CloudFlare WARP
+- Valorant
+- Installing startup script](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
 </details>
 
 <details><summary>Remove Unused Apps/Softwares</summary>&nbsp;
