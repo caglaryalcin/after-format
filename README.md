@@ -1,26 +1,16 @@
 ## Description
-
-> **_NOTE 1:_** Before running the script, you only need to turn off the real-time protection setting of Windows defender once.
-Windows Security Settings / Virus and threat protection / Manage settings / Real-time protection. The reason is that windows detects its own code as harmful.
-
-![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
-
-> **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
-
-![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
-
-> **_NOTE 3:_** This script takes about 35 minutes with 100mbps internet.
-
-If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
-
-```
-curl -o $env:userprofile\Desktop\after-format.zip https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip; Expand-Archive -Path $env:userprofile\Desktop\after-format.zip -DestinationPath C:\ -Force *>$null; Remove-Item $env:userprofile\Desktop\after-format.zip -recurse -ErrorAction SilentlyContinue ; cd C:\after-format-main\ ; .\Run.cmd
-```
-
 This script does exactly the following; (Some are optional(y/n))
 
+<details><summary>Windows Updates</summary>&nbsp;
+
+  - It asks if you want to make windows updates.
+  </details>
+ 
 <details><summary>System Settings</summary>&nbsp;
-  
+
+- It asks if you want Region change to Turkey.  
+- It asks if you want change your hostname.
+- It asks if you want disable Windows Defender.
 - Date format is set to turkey
 - Getting the Old Classic Right-Click Context Menu (For Windows 11)
 - Disabling News and Interes on Taskbar
@@ -79,6 +69,7 @@ This script does exactly the following; (Some are optional(y/n))
 - Copy Files to Documents
 - Importing Startup task in Task Scheduler
 </details>
+
 <details><summary>Privacy Settings</summary>&nbsp;
   
 - Disabling Telemetry
@@ -111,10 +102,51 @@ This script does exactly the following; (Some are optional(y/n))
 - Disabling Windows Update Automatic Downloads
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
-
-- Installing  Winget for Windows 10, Mozilla Firefox, Opera, Google Chrome, Libre Wolf, Brave Browser, Steam, Epic Games, HWMonitor, Crystal Disk Info, VMWare Workstation Pro, VirtualBox, Signal Desktop, Microsoft Visual Studio Code (with extensions), Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git), Chocolatey, AnyDesk, Windows Terminal, Speedtest, Notepad++, VLC Media Player, TreeSize Free, Total Commander, Rufus, Wireshark, PuTTY, Deluge, DBeaver, HEIC Converter, Cryptomator, Docker Desktop, WSL, Minikube, MS Teams, iTunes, 7-Zip (with terminal), Lightshot, Twinkle-Tray, K-Lite Codec Pack Mega, Nvidia GeForce Experience and Valorant.
-- [Installing startup script](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
-
+  
+It asks if you want to install the following softwares or not.
+- Winget for Windows 10
+- Mozilla Firefox
+- Opera
+- Google Chrome
+- Libre Wolf
+- Brave Browser
+- Steam
+- Epic Games
+- HWMonitor
+- Crystal Disk Info
+- VMWare Workstation Pro
+- VirtualBox
+- Signal Desktop
+- Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git)
+- Microsoft Visual Studio Code (with extensions)
+- AnyDesk
+- Windows Terminal
+- Speedtest
+- Sublime Text 4
+- Github Desktop
+- VLC Media Player
+- TreeSize Free
+- Total Commander
+- Rufus
+- Wireshark
+- PuTTY
+- Deluge
+- DBeaver
+- Cryptomator
+- Microsoft Teams
+- Powertoys
+- DupeGuru
+- WinFsp for Cryptomator
+- 7-Zip
+- Lightshot
+- Twinkle-Tray
+- K-Lite Codec Pack Mega
+- Nvidia GeForce Experience
+- Malwarebytes
+- Internet Download Manager
+- CloudFlare WARP
+- Valorant
+- Installing startup script](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
 </details>
 
 <details><summary>Remove Unused Apps/Softwares</summary>&nbsp;
@@ -127,6 +159,8 @@ This script does exactly the following; (Some are optional(y/n))
 - Uninstalling OneDrive
 - Removing Microsoft Edge
 - Uninstalling Windows Fax and Scan Services
+- It asks if you want uninstall Windows OneDrive.
+- It asks if you want uninstall Windows Edge.
 </details>
 
 <details><summary>Taskbar Pins</summary>&nbsp;
@@ -135,7 +169,7 @@ This script does exactly the following; (Some are optional(y/n))
 </details>
 <details><summary>My Custom Drivers</summary>&nbsp;
   
-- ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) `When this question is asked, answer by saying 'n'. Because the settings here are specifically my specific settings.`
+- ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) `When this question is asked, you must answer by saying 'n'. Because the settings here are my specific settings.`
 </details>
 <p>
 
@@ -161,3 +195,21 @@ WshShell.Run chr(34) & "C:\startup\Run.cmd" & Chr(34), 0
 Set WshShell = Nothing
 ```
 </details>
+
+
+> **_NOTE 1:_** Before running the script, you only need to turn off the real-time protection setting of Windows defender once.
+Windows Security Settings / Virus and threat protection / Manage settings / Real-time protection. The reason is that windows detects its own code as harmful.
+
+![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
+
+> **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
+
+![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
+
+> **_NOTE 3:_** This script takes about 35 minutes with 100mbps internet.
+
+If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
+
+```
+curl -o $env:userprofile\Desktop\after-format.zip https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip; Expand-Archive -Path $env:userprofile\Desktop\after-format.zip -DestinationPath C:\ -Force *>$null; Remove-Item $env:userprofile\Desktop\after-format.zip -recurse -ErrorAction SilentlyContinue ; cd C:\after-format-main\ ; .\Run.cmd
+```
