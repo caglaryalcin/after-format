@@ -1,7 +1,7 @@
 ### Require administrator privileges ###
 RequireAdmin
 
-ImportTask
+#ImportTask
 RemoveENKeyboard
 AddTRKeyboard
 RemoveStickyKeys
