@@ -2,10 +2,15 @@
 This script does exactly the following; (Some are optional(y/n))
 
 <details><summary>Windows Updates</summary>&nbsp;
--It asks if you want to make windows updates.
+
+  - It asks if you want to make windows updates.
   </details>
+ 
 <details><summary>System Settings</summary>&nbsp;
-  
+
+- It asks if you want Region change to Turkey.  
+- It asks if you want change your hostname.
+- It asks if you want disable Windows Defender.
 - Date format is set to turkey
 - Getting the Old Classic Right-Click Context Menu (For Windows 11)
 - Disabling News and Interes on Taskbar
@@ -64,6 +69,7 @@ This script does exactly the following; (Some are optional(y/n))
 - Copy Files to Documents
 - Importing Startup task in Task Scheduler
 </details>
+
 <details><summary>Privacy Settings</summary>&nbsp;
   
 - Disabling Telemetry
@@ -153,6 +159,8 @@ It asks if you want to install the following softwares or not.
 - Uninstalling OneDrive
 - Removing Microsoft Edge
 - Uninstalling Windows Fax and Scan Services
+- It asks if you want uninstall Windows OneDrive.
+- It asks if you want uninstall Windows Edge.
 </details>
 
 <details><summary>Taskbar Pins</summary>&nbsp;
@@ -161,7 +169,7 @@ It asks if you want to install the following softwares or not.
 </details>
 <details><summary>My Custom Drivers</summary>&nbsp;
   
-- ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) `When this question is asked, answer by saying 'n'. Because the settings here are specifically my specific settings.`
+- ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) `When this question is asked, you must answer by saying 'n'. Because the settings here are my specific settings.`
 </details>
 <p>
 
