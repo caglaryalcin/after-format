@@ -2773,6 +2773,15 @@ $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Speedtest.lnk" *>$null
 
 #SublimeText
+$WScriptShell = New-Object -ComObject WScript.Shell
+$SublimeText = "C:\Program Files\Sublime Text\sublime_text.exe"
+$SublimeTextPath = "C:\Program Files\Sublime Text\"
+$ShortcutFile = "C:\after-format-main\files\icons\Sublime Text.lnk"
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $SublimeText
+$Shortcut.WorkingDirectory = $SublimeTextPath
+$Shortcut.Save()
+Unblock-File -Path "C:\after-format-main\files\icons\dupeGuru.lnk" *>$null
 
 #Github Desktop
 $WScriptShell = New-Object -ComObject WScript.Shell
