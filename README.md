@@ -1,4 +1,10 @@
 ## Description
+If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
+
+```
+curl -o $env:userprofile\Desktop\after-format.zip https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip; Expand-Archive -Path $env:userprofile\Desktop\after-format.zip -DestinationPath C:\ -Force *>$null; Remove-Item $env:userprofile\Desktop\after-format.zip -recurse -ErrorAction SilentlyContinue ; cd C:\after-format-main\ ; .\Run.cmd
+```
+
 This script does exactly the following; (Some are optional(y/n))
 
 <details><summary>Windows Updates</summary>&nbsp;
@@ -186,8 +192,6 @@ There is another script called startup in the script. This script does exactly t
 - Sync Windows Localtime
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
   
-> **_NOTE 1:_** You can put '#' at the beginning of the functions you want to add or remove in the functions.preset file in 'C:\after-format-main\files\startup' folder.
-  
   If you don't want to use startup updates, you can as below edit 'run.vbs' file in 'C:\after-format-main\files\startup' folder.
 ```vbs
 Set WshShell = CreateObject("WScript.Shell") 
@@ -196,20 +200,24 @@ Set WshShell = Nothing
 ```
 </details>
 
-
-> **_NOTE 1:_** Before running the script, you only need to turn off the real-time protection setting of Windows defender once.
-Windows Security Settings / Virus and threat protection / Manage settings / Real-time protection. The reason is that windows detects its own code as harmful.
-
+```json
+NOTE: 
+You can put '#' at the beginning of the functions you want to add or remove in the functions.preset file in 
+'C:\after-format-main\files\startup' folder.
+```
+```json
+NOTE 1: 
+Before running the script, you only need to turn off the real-time protection setting of Windows defender once. 
+```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
 
-> **_NOTE 2:_** All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.  
-
+```json
+NOTE 2:
+All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.
+```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
 
-> **_NOTE 3:_** This script takes about 35 minutes with 100mbps internet.
-
-If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
-
-```
-curl -o $env:userprofile\Desktop\after-format.zip https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip; Expand-Archive -Path $env:userprofile\Desktop\after-format.zip -DestinationPath C:\ -Force *>$null; Remove-Item $env:userprofile\Desktop\after-format.zip -recurse -ErrorAction SilentlyContinue ; cd C:\after-format-main\ ; .\Run.cmd
+```json
+NOTE 3:
+This script takes about 35 minutes with 100mbps internet.
 ```
