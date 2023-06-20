@@ -25,7 +25,6 @@ This script does exactly the following; (Some are optional(y/n))
 - Setting Dark Mode for System
 - Setting Control Panel View to Large Icons
 - Enabling NumLock After Startup
-- Hostname is set to 'm4a1'
 - Disabling Windows Beep Sound
 - Disabling IPv6 stack
 - Disabling Startup Apps
