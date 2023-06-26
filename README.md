@@ -197,7 +197,8 @@ Set WshShell = Nothing
 My Custom Drivers
 
 ```json
-When this question is asked, you must answer by saying 'n'. Because the settings here are my specific settings.`
+When this question is asked, you must answer by saying 'n'. Because the settings here 
+are my specific settings.`
 ```
 &nbsp;
 &nbsp;
@@ -205,7 +206,8 @@ When this question is asked, you must answer by saying 'n'. Because the settings
 
 ```diff
 NOTE 1: 
-! Before running the script, you only need to turn off the real-time protection setting of Windows defender once. 
+! Before running the script, you only need to turn off the real-time protection setting 
+of Windows defender once. 
 ```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
 ```diff
