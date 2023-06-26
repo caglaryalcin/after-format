@@ -196,26 +196,26 @@ Set WshShell = Nothing
 
 My Custom Drivers
 
-```json
-When this question is asked, you must answer by saying 'n'. Because the settings here 
-are my specific settings.`
+```diff
+🟠 When this question is asked, you must answer by saying 'n'. Because the settings here 
+are my specific settings.
 ```
 &nbsp;
 &nbsp;
 
 
-```diff
+```json
 NOTE 1: 
 ! Before running the script, you only need to turn off the real-time protection setting 
 of Windows defender once. 
 ```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
-```diff
+```json
 NOTE 2:
 ! All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.
 ```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
-```diff
+```json
 NOTE 3:
 ! This script takes about 35 minutes with 100mbps internet.
 ```
