@@ -2105,7 +2105,7 @@ cmd.exe /c "winget install Cryptomator -e --silent --accept-source-agreements --
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Microsoft Teams..." -NoNewline
-cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force"
+cmd.exe /c "winget install Microsoft.Teams -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     
     Write-Host "Installing Powertoys..." -NoNewline
