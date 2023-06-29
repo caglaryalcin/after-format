@@ -194,7 +194,7 @@ Set WshShell = Nothing
 ```
 </details>
 
-My Custom Drivers
+<details><summary>My Custom Drivers</summary>&nbsp;
 
 ```diff
 🟠 When this question is asked, you must answer by saying 'n'. Because the settings here 
@@ -202,7 +202,7 @@ are my specific settings.
 ```
 &nbsp;
 &nbsp;
-
+</details>
 
 ```json
 NOTE 1: 
@@ -215,7 +215,6 @@ NOTE 2:
 ! All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.
 ```
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
-```json
-NOTE 3:
+```diff
 ! This script takes about 35 minutes with 100mbps internet.
 ```
