@@ -2044,6 +2044,14 @@ cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.c
 cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension redhat.vscode-yaml
 cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension ms-vscode.powershell
 cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension pkief.material-icon-theme
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension formulahendry.auto-close-tag
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension formulahendry.auto-rename-tag
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension pranaygp.vscode-css-peek
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension rodrigovallades.es7-react-js-snippets
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension dsznajder.es7-react-js-snippets
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension dbaeumer.vscode-eslint
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension christian-kohler.path-intellisense
+cmd.exe /c "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --install-extension esbenp.prettier-vscode
 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
@@ -2057,7 +2065,7 @@ cmd.exe /c "winget install Microsoft.WindowsTerminal -e --silent --accept-source
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Speedtest..." -NoNewline
-cmd.exe /c "winget install Ookla.Speedtest.Desktop -e --accept-source-agreements --accept-package-agreements --force" *>$null
+cmd.exe /c "winget install Ookla.Speedtest.CLI -e --accept-source-agreements --accept-package-agreements --force" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
     Write-Host "Installing Sublime Text 4..." -NoNewline
@@ -2763,15 +2771,6 @@ Unblock-File -Path "C:\after-format-main\files\icons\AnyDesk.lnk" *>$null
 
 #Terminal was here
 
-#Speedtest
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Speedtest = "C:\Program Files\Speedtest\Speedtest.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\Speedtest.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $Speedtest
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\Speedtest.lnk" *>$null
-
 #SublimeText
 $WScriptShell = New-Object -ComObject WScript.Shell
 $SublimeText = "C:\Program Files\Sublime Text\sublime_text.exe"
@@ -2892,14 +2891,14 @@ $Shortcut.TargetPath = $Cryptomator
 $Shortcut.Save()
 Unblock-File -Path "C:\after-format-main\files\icons\Cryptomator.lnk" *>$null
 
-#iTunes
-$WScriptShell = New-Object -ComObject WScript.Shell
-$iTunes = "C:\Program Files\iTunes\iTunes.exe"
-$ShortcutFile = "C:\after-format-main\files\icons\iTunes.lnk"
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $iTunes
-$Shortcut.Save()
-Unblock-File -Path "C:\after-format-main\files\icons\iTunes.lnk" *>$null
+#iTunes (problematic)
+#$WScriptShell = New-Object -ComObject WScript.Shell
+#$iTunes = "C:\Program Files\iTunes\iTunes.exe"
+#$ShortcutFile = "C:\after-format-main\files\icons\iTunes.lnk"
+#$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+#$Shortcut.TargetPath = $iTunes
+#$Shortcut.Save()
+#Unblock-File -Path "C:\after-format-main\files\icons\iTunes.lnk" *>$null
 
 #MS Teams
 $WScriptShell = New-Object -ComObject WScript.Shell
