@@ -1,1 +1,1 @@
-"eamodio.gitlens","davidanson.vscode-markdownlint"
+'eamodio.gitlens','davidanson.vscode-markdownlint'
