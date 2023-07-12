@@ -1,0 +1,41 @@
+{
+    "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+    "CreationDate": "2023-07-01",
+    "Sources": [
+        {
+            "Packages": [
+                {
+                    "PackageIdentifier": "7zip.7zip"
+                },
+                {
+                    "PackageIdentifier": "Skillbrains.Lightshot"
+                },
+                {
+                    "PackageIdentifier": "xanderfrangos.twinkletray"
+                },
+                {
+                    "PackageIdentifier": "CodecGuide.K-LiteCodecPack.Full"
+                },
+                {
+                    "PackageIdentifier": "Nvidia.GeForceExperience"
+                },
+                {
+                    "PackageIdentifier": "Malwarebytes.Malwarebytes"
+                },
+                {
+                    "PackageIdentifier": "Tonec.InternetDownloadManager"
+                },
+                {
+                    "PackageIdentifier": "Cloudflare.Warp"
+                }
+            ],
+            "SourceDetails": {
+                "Argument": "https://winget.azureedge.net/cache",
+                "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+                "Name": "winget",
+                "Type": "Microsoft.PreIndexed.Package"
+            }
+        }
+    ],
+    "WinGetVersion": "1.1.12653"
+}
