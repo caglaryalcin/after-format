@@ -2,10 +2,12 @@
 #region Set MAP
 ##########
 
+$ErrorActionPreference = 'SilentlyContinue'
 New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
 New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
 New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+$ErrorActionPreference = 'Continue'
     
 ##########
 #endregion MAP
@@ -23,7 +25,6 @@ Function Priority {
     Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
 }
 
-RequireAdmin
 Priority
 
 ##########
@@ -1285,8 +1286,8 @@ Function testconnection {
                 Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" | Out-Null -ErrorAction SilentlyContinue
                 Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\ProgramDataUpdater" | Out-Null -ErrorAction SilentlyContinue
                 Disable-ScheduledTask -TaskName "Microsoft\Windows\Autochk\Proxy" | Out-Null -ErrorAction SilentlyContinue
-                Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\Consolidator" -ErrorAction SilentlyContinue
-                Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" -ErrorAction SilentlyContinue
+                Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\Consolidator" Out-Null -ErrorAction SilentlyContinue
+                Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" Out-Null -ErrorAction SilentlyContinue
                 Disable-ScheduledTask -TaskName "Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" | Out-Null -ErrorAction SilentlyContinue
                 # Office 2016 / 2019
                 Disable-ScheduledTask -TaskName "Microsoft\Office\Office ClickToRun Service Monitor" -ErrorAction SilentlyContinue
@@ -1809,7 +1810,7 @@ Function testconnection {
 
                 #7-Zip on PS
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
                 Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
                 Install-Module -Name 7Zip4PowerShell -Force *>$null
     
@@ -2026,7 +2027,6 @@ Function testconnection {
                             if (Test-Path -Path $installerPath) {
                                 Set-Location -Path $installerPath | Out-Null
                                 if (Test-Path -Path "setup.exe") {
-                                    Write-Output "Removing Microsoft Edge"
                                     Start-Process -FilePath "setup.exe" -ArgumentList "--uninstall --system-level --force-uninstall" -Wait
                                 }
                             }
@@ -2040,7 +2040,6 @@ Function testconnection {
                         foreach ($edgeWebViewFolder in $edgeWebViewFolders) {
                             $installerPath = Join-Path -Path $edgeWebViewFolder.FullName -ChildPath "Installer"
                             if (Test-Path -Path $installerPath) {
-                                Write-Output "Removing EdgeWebView"
                                 Start-Process -FilePath "setup.exe" -ArgumentList "--uninstall --msedgewebview --system-level --force-uninstall" -Wait
                             }
                         }
@@ -2059,8 +2058,6 @@ Function testconnection {
                         }
                     }
 
-
-
                     Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
                     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
 
@@ -2072,9 +2069,6 @@ Function testconnection {
                         sc.exe delete $service *>$null
                     }
 
-
-                    Start-Sleep 3
-    
                     $progressPreference = 'SilentlyContinue'
                     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
                     Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
@@ -2105,7 +2099,7 @@ Function testconnection {
         ##########
         #region My Custom Drivers
         ##########
-        Write-Host `n"---------Do not accept---------" -ForegroundColor Red -BackgroundColor Black
+        Write-Host `n"---------DO NOT ACCEPT---------" -ForegroundColor Red -BackgroundColor Black
 
         Write-Host `n"Do you " -NoNewline
         Write-Host "own this script?" -NoNewline -ForegroundColor Red -BackgroundColor Black
@@ -2449,7 +2443,7 @@ Function testconnection {
                 reg import "C:\taskbar_pin.reg" *>$null
                 Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
                 reg import "C:\taskbar_pin.reg" *>$null
-                taskkill /f /im explorer.exe
+                taskkill /f /im explorer.exe *>$null
                 Start-Sleep 1
                 start explorer.exe
                 Start-Sleep 2
@@ -2457,8 +2451,9 @@ Function testconnection {
                 #Powertoys backup
                 New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
                 New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
-                Copy-Item C:\settings_133264013067260668.ptb $env:UserProfile\Documents\PowerToys\Backup\
-
+                $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
+                Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/settings_133264013067260668.ptb" -Outfile $powertoysbackup
+                
                 ##Drivers
                 #Chipset
                 Write-Host "Installing Chipset Driver..." -NoNewline
