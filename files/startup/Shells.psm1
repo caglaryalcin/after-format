@@ -27,7 +27,7 @@ Function RemoveENKeyboard {
  	Write-Host Test
   	Start-Sleep 10
 }
-
+RemoveENKeyboard
 # Add TR Keyboard
 Function AddTRKeyboard {
 	$langs = Get-WinUserLanguageList
