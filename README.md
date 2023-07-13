@@ -1,17 +1,15 @@
 ## Description
-If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
 
-```
-curl -o $env:userprofile\Desktop\after-format.zip https://github.com/caglaryalcin/after-format/archive/refs/heads/main.zip; Expand-Archive -Path $env:userprofile\Desktop\after-format.zip -DestinationPath C:\ -Force *>$null; Remove-Item $env:userprofile\Desktop\after-format.zip -recurse -ErrorAction SilentlyContinue ; cd C:\after-format-main\ ; .\Run.cmd
-```
+If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
 
 This script does exactly the following; (Some are optional(y/n))
 
 <details><summary>Windows Updates</summary>&nbsp;
 
-  - It asks if you want to make windows updates.
+- It asks if you want to make windows updates.
+
   </details>
- 
+
 <details><summary>System Settings</summary>&nbsp;
 
 - It asks if you want Region change to Turkey.  
@@ -73,6 +71,7 @@ This script does exactly the following; (Some are optional(y/n))
 - Show All Icons on Taskbar
 - Copy Files to Documents
 - Importing Startup task in Task Scheduler
+
 </details>
 
 <details><summary>Privacy Settings</summary>&nbsp;
@@ -105,10 +104,12 @@ This script does exactly the following; (Some are optional(y/n))
 - Disabling Automatic Maps Updates
 - Disabling Windows Update Automatic Restart
 - Disabling Windows Update Automatic Downloads
+
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
   
 It asks if you want to install the following softwares or not.
+
 - Winget for Windows 10
 - Mozilla Firefox
 - Opera
@@ -151,7 +152,7 @@ It asks if you want to install the following softwares or not.
 - Internet Download Manager
 - CloudFlare WARP
 - Valorant
-- Installing startup script](https://github.com/caglaryalcin/after-format/blob/main/README.md#startup-script).
+
 </details>
 
 <details><summary>Remove Unused Apps/Softwares</summary>&nbsp;
@@ -166,15 +167,12 @@ It asks if you want to install the following softwares or not.
 - Uninstalling Windows Fax and Scan Services
 - It asks if you want uninstall Windows OneDrive.
 - It asks if you want uninstall Windows Edge.
+
 </details>
 
-<details><summary>Taskbar Pins</summary>&nbsp;
-
-  The taskbar pins that I use are set respectively.
-</details>
 <details><summary>Startup Script</summary>&nbsp;
   
-There is another script called startup in the script. This script does exactly the following;
+This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
 
 - Remove En-US Keyboard
 - Adding Turkey Keyboard
@@ -185,13 +183,12 @@ There is another script called startup in the script. This script does exactly t
 - Sync Windows Localtime
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
   
-  If you don't want to use startup updates, you can as below edit 'run.vbs' file in 'C:\after-format-main\files\startup' folder. Also you can put '#' at the beginning of the functions you want to add or remove in the functions.preset file in 
-'C:\after-format-main\files\startup' folder.
 ```vbs
 Set WshShell = CreateObject("WScript.Shell") 
 WshShell.Run chr(34) & "C:\startup\Run.cmd" & Chr(34), 0
 Set WshShell = Nothing
 ```
+
 </details>
 
 <details><summary>My Custom Drivers</summary>&nbsp;
@@ -200,21 +197,40 @@ Set WshShell = Nothing
 🟠 When this question is asked, you must answer by saying 'n'. Because the settings here 
 are my specific settings.
 ```
+
 &nbsp;
 &nbsp;
 </details>
 
 ```json
-NOTE 1: 
-! Before running the script, you only need to turn off the real-time protection setting 
-of Windows defender once. 
+NOTE:
+! Before running the script, you need to turn off Windows defender's real-time protection setting once.
 ```
+
 ![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
-```json
-NOTE 2:
-! All the script is all set to path 'C:\', so file 'after-format-main' must be inside 'C:\'.
-```
-![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/C.jpg)
+
 ```diff
 ! This script takes about 35 minutes with 100mbps internet.
+```
+
+## Start the script
+
+####
+
+If IE is never started after the PC is formatted, the script will not run because the config files are not created. To ignore it, this command must be executed first.
+
+```
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize"
+```
+
+#### Defines the link of the script as a variable
+
+```
+$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/caglaryalcin/after-format/main/Shells.psm1
+```
+
+#### Starts the script
+
+```
+Invoke-Expression $($ScriptFromGitHub.Content)
 ```

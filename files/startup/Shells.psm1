@@ -19,6 +19,7 @@ Function ImportTask {
     Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
     Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
 }
+ImportTask
 
 # Remove secondary en-US keyboard
 Function RemoveENKeyboard {
@@ -26,6 +27,7 @@ Function RemoveENKeyboard {
 	Set-WinUserLanguageList ($langs | Where-Object {$_.LanguageTag -ne "en-US"}) -Force *>$null
 }
 RemoveENKeyboard
+
 # Add TR Keyboard
 Function AddTRKeyboard {
 	$langs = Get-WinUserLanguageList
@@ -48,6 +50,7 @@ Function AddTRKeyboard {
     Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "4" *>$null
     Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Type String -Value 0000041f *>$null
 }
+AddTRKeyboard
 
 # Remove Sticky Keys
 Function RemoveStickyKeys {
@@ -56,6 +59,7 @@ Function RemoveStickyKeys {
     Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\Keyboard Response" -Name "Flags" -Type String -Value 122 *>$null #122 Off 126 On
     Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\ToggleKeys" -Name "Flags" -Type String -Value 58 *>$null #58 Off 62 On
 }
+RemoveStickyKeys
 
 # Remove Sticky Keys
 Function RemoveToggleKeys {
@@ -64,6 +68,7 @@ Function RemoveToggleKeys {
     New-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Toggle" -Name "Language HotKey" -Type String -Value 3 *>$null
     New-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Toggle" -Name "Layout HotKey" -Type String -Value 3 *>$null
 }
+RemoveToggleKeys
 
 # Remove Tasks in Task Scheduler
 Function RemoveTasks {
@@ -108,11 +113,13 @@ Function RemoveTasks {
     Get-ScheduledTask -TaskName "*XblGameSaveTask*" | Disable-ScheduledTask -ea 0 | Out-Null
     Get-ScheduledTask -TaskName "*XblGameSaveTaskLogon*" | Disable-ScheduledTask -ea 0 | Out-Null
 }
+RemoveTasks
 
 # Delete WindowsDefender History
 Function DefenderHistory { 
     Remove-Item 'C:\programdata\Microsoft\Windows Defender\Scans\History\Store\' -Recurse -Force -Verbose *>$null
 }
+DefenderHistory
 
 Function DisableDefender {
     # Disable Defender Cloud
@@ -182,6 +189,7 @@ Function DisableDefender {
     Set-MpPreference -LowThreatDefaultAction 6 -ErrorAction Ignore;
     Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
 }
+DisableDefender
 
 Function HideDefenderTrayIcon {
 	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray")) {
@@ -194,6 +202,7 @@ Function HideDefenderTrayIcon {
 		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "SecurityHealth" -ErrorAction SilentlyContinue
 	}
 }
+HideDefenderTrayIcon
 
 # Disable Startup App 
 Function DisableStartupApps {
@@ -207,6 +216,7 @@ Function DisableStartupApps {
 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
+DisableStartupApps
 
 Function RemoveEdgeUpdates {
     Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
@@ -215,6 +225,8 @@ Function RemoveEdgeUpdates {
     Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
 
 }
+RemoveEdgeUpdates
+
 # Sync Localtime
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
@@ -223,3 +235,4 @@ Function SyncTime {
     w32tm /resync /force *>$null
     w32tm /config /manualpeerlist:time.windows.com,0x1 /syncfromflags:manual /reliable:yes /update *>$null
 }
+SyncTime
