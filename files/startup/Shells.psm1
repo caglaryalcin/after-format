@@ -24,8 +24,6 @@ Function ImportTask {
 Function RemoveENKeyboard {
 	$langs = Get-WinUserLanguageList
 	Set-WinUserLanguageList ($langs | Where-Object {$_.LanguageTag -ne "en-US"}) -Force *>$null
- 	Write-Host Test
-  	Start-Sleep 10
 }
 RemoveENKeyboard
 # Add TR Keyboard
