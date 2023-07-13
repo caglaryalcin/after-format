@@ -42,6 +42,7 @@ Function testconnection {
         ##########
         #region Windows Update
         ##########
+        Write-Host "---------Windows Updates" -ForegroundColor Blue -BackgroundColor Black
 
         Write-Host `n"Do you want " -NoNewline
         Write-Host "Windows Updates? " -ForegroundColor Yellow -NoNewline
@@ -79,6 +80,7 @@ Function testconnection {
         ##########
         #region System Settings
         ##########
+        Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Black
 
         Write-Host `n"Do you want " -NoNewline
         Write-Host "System Settings?" -ForegroundColor Yellow -NoNewline
@@ -86,8 +88,6 @@ Function testconnection {
         $systemset = Read-Host
 
         if ($systemset -match "[Yy]") {
-
-            Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Black
 
             #Set TR Formats
             Function TRFormats {
@@ -2582,9 +2582,11 @@ Function testconnection {
 
                 if ($7zipinstalled) {
                     Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList "x -bso0 -bsp1 -bse1 -aoa $dlFile $filesToExtract -o""$extractFolder""" -wait
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 elseif ($archiverProgram -eq $winrarpath) {
                     Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList 'x $dlFile $extractFolder -IBCK $filesToExtract' -wait
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
                     Write-Host "Something went wrong. No archive program detected. This should not happen."
