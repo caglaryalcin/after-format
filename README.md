@@ -223,13 +223,13 @@ If IE is never started after the PC is formatted, the script will not run becaus
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize"
 ```
 
-#### Defines the link of the script as a variable
+Defines the link of the script as a variable
 
 ```
 $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/caglaryalcin/after-format/main/Shells.psm1
 ```
 
-#### Starts the script
+Starts the script
 
 ```
 Invoke-Expression $($ScriptFromGitHub.Content)
