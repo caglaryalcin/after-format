@@ -1027,7 +1027,6 @@ Function testconnection {
             #Set Wallpaper
             Function SetWallpaper {
                 Write-Host "Setting Desktop Wallpaper..." -NoNewline
-                #recheck
                 $url = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/hello.png"
                 $filePath = "$HOME\Documents\hello.png"
                 $wc = New-Object System.Net.WebClient
@@ -1210,15 +1209,12 @@ Function testconnection {
             #Import Batch to Startup
             Function ImportStartup {
                 Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
-                #recheck
-
-                #check shells.psm1 link in startup.xml on github                
 
                 #import remote xml file into task scheduler
-                $downloadUrl = "https://raw.githubusercontent.com/username/repository/main/yourTask.xml"
-                $taskXmlPath = "$env:TEMP\yourTask.xml"
+                $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Startup.xml"
+                $taskXmlPath = "$env:TEMP\startup.xml"
                 Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath
-                $taskName = "YourTaskName"
+                $taskName = "startup"
                 $taskXmlContent = Get-Content $taskXmlPath -Raw
                 SCHTASKS /Create /XML $taskXmlPath /TN $taskName
 
@@ -1757,8 +1753,7 @@ Function testconnection {
 
             Function InstallSoftwares {
                 #Softwares
-                #recheck json link
-                $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/apps.json'
+                $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json'
 
                 $jsonContent = Invoke-RestMethod -Uri $appsUrl
                 $packages = $jsonContent.Sources[0].Packages
@@ -1800,8 +1795,7 @@ Function testconnection {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
                 #other softwares
-                #recheck json link
-                $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/othapps.json'
+                $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/othapps.json'
 
                 $jsonContent = Invoke-RestMethod -Uri $otherappsUrl
                 $packages = $jsonContent.Sources[0].Packages
@@ -2124,7 +2118,6 @@ Function testconnection {
             Function Own {
                 #Sound Settings
                 Write-Host "`nSetting sound devices..." -NoNewline
-                #recheck
                 $regContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/disable_devices.reg"
                 Set-Content -Path "$env:TEMP\disable_devices.reg" -Value $regContent
                 Start-Process -FilePath "regedit.exe" -ArgumentList "/s $env:TEMP\dosya.reg" -Wait
