@@ -220,7 +220,7 @@ NOTE:
 If IE is never started after the PC is formatted, the script will not run because the config files are not created. To ignore it, this command must be executed first.
 
 ```
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 2
 ```
 
 Defines the link of the script as a variable

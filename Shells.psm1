@@ -232,7 +232,6 @@ Function testconnection {
             Function Defaultps1 {
                 New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
                 Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\Open\Command" -Name "(Default)" -Value '"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "%1"'
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 2 #Igrone IE First Settings
             }
 
             Defaultps1
