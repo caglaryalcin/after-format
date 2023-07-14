@@ -2018,32 +2018,40 @@ Function testconnection {
                     Write-Host "Removing Microsoft Edge..." -NoNewline
                     taskkill /f /im msedge.exe *>$null
     
-                    # Uninstall - Edge
-                    $edgePath = "C:\Program Files (x86)\Microsoft\Edge\Application\"
-                    if (Test-Path -Path $edgePath) {
-                        $edgeFolders = Get-ChildItem -Path $edgePath -Directory
-                        foreach ($edgeFolder in $edgeFolders) {
-                            $installerPath = Join-Path -Path $edgeFolder.FullName -ChildPath "Installer"
-                            if (Test-Path -Path $installerPath) {
-                                Set-Location -Path $installerPath | Out-Null
-                                if (Test-Path -Path "setup.exe") {
-                                    Start-Process -FilePath "setup.exe" -ArgumentList "--uninstall --system-level --force-uninstall" -Wait
-                                }
-                            }
-                        }
+                    #Edge Services
+                    $edgeservices = "edgeupdate", "edgeupdatem"
+                    foreach ($service in $edgeservices) {
+                        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                        Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+                        sc.exe delete $service *>$null
                     }
 
-                    # Uninstall - EdgeWebView
-                    $edgeWebViewPath = "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\"
-                    if (Test-Path -Path $edgeWebViewPath) {
-                        $edgeWebViewFolders = Get-ChildItem -Path $edgeWebViewPath -Directory
-                        foreach ($edgeWebViewFolder in $edgeWebViewFolders) {
-                            $installerPath = Join-Path -Path $edgeWebViewFolder.FullName -ChildPath "Installer"
-                            if (Test-Path -Path $installerPath) {
-                                Start-Process -FilePath "setup.exe" -ArgumentList "--uninstall --msedgewebview --system-level --force-uninstall" -Wait
-                            }
-                        }
+                    # Uninstall - Edge
+                    $regView = [Microsoft.Win32.RegistryView]::Registry32
+                    $microsoft = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $regView).
+                    OpenSubKey('SOFTWARE\Microsoft', $true)
+
+                    $edgeClient = $microsoft.OpenSubKey('EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}', $true)
+                    if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
+                        $edgeClient.DeleteValue('experiment_control_labels')
                     }
+
+                    $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
+
+                    $uninstallRegKey = $microsoft.OpenSubKey('Windows\CurrentVersion\Uninstall\Microsoft Edge')
+                    $uninstallString = $uninstallRegKey.GetValue('UninstallString') + ' --force-uninstall'
+                    Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
+
+                    $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
+                    $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
+                    $key = (Get-Item -Path $pattern).PSChildName
+                    reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
+
+                    $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
+
+                    New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
+                    Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage
+                    Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" *>$null
 
                     # Delete additional files
                     $additionalFilesPath = "C:\Windows\System32\MicrosoftEdgeCP.exe"
@@ -2058,16 +2066,14 @@ Function testconnection {
                         }
                     }
 
+                    #do not update edge
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                    taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
+                    Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory | Remove-Item -Force -Recurse *>$null
+
+                    #delete shortcuts
                     Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
                     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
-
-                    #Edge Services
-                    $edgeservices = "edgeupdate", "edgeupdatem"
-                    foreach ($service in $edgeservices) {
-                        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-                        Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-                        sc.exe delete $service *>$null
-                    }
 
                     $progressPreference = 'SilentlyContinue'
                     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
