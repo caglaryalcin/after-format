@@ -1215,9 +1215,18 @@ Function testconnection {
                 $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Startup.xml"
                 $taskXmlPath = "$env:TEMP\startup.xml"
                 Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath
+
                 $taskName = "startup"
                 $taskXmlContent = Get-Content $taskXmlPath -Raw
-                SCHTASKS /Create /XML $taskXmlPath /TN $taskName
+
+                $taskService = New-Object -ComObject "Schedule.Service"
+                $taskService.Connect()
+
+                $taskFolder = $taskService.GetFolder("\")
+                $taskDefinition = $taskService.NewTask(0)
+                $taskDefinition.XmlText = $taskXmlContent
+
+                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
@@ -2074,6 +2083,9 @@ Function testconnection {
                     #delete shortcuts
                     Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
                     Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
+
+                    #delete startup apps
+                    Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force
 
                     $progressPreference = 'SilentlyContinue'
                     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
