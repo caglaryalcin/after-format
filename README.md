@@ -182,12 +182,6 @@ This script adds a task named 'startup' to the task scheduler. This task does ex
 - Remove Unnecessary Tasks(update and such) in Task Scheduler.(It also adds task to delete Unnecessary Tasks on every boot)
 - Sync Windows Localtime
 - Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
-  
-```vbs
-Set WshShell = CreateObject("WScript.Shell") 
-WshShell.Run chr(34) & "C:\startup\Run.cmd" & Chr(34), 0
-Set WshShell = Nothing
-```
 
 </details>
 

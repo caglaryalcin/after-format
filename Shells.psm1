@@ -21,8 +21,6 @@ Function Priority {
     $progressPreference = 'silentlyContinue'
     Get-WindowsPackage -Online | Where PackageName -like *QuickAssist*15** | Remove-WindowsPackage -Online -NoRestart -WarningAction SilentlyContinue *>$null
 
-    #Exclude github folders for scan
-    Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
 }
 
 Priority
@@ -42,7 +40,7 @@ Function testconnection {
         ##########
         #region Windows Update
         ##########
-        Write-Host "---------Windows Updates" -ForegroundColor Blue -BackgroundColor Black
+        Write-Host `n"---------Windows Updates" -ForegroundColor Blue -BackgroundColor Black
 
         Write-Host `n"Do you want " -NoNewline
         Write-Host "Windows Updates? " -ForegroundColor Yellow -NoNewline
@@ -2454,14 +2452,19 @@ Function testconnection {
                 $Shortcut.Save()
                 Unblock-File -Path "C:\icons\dupeGuru.lnk" *>$null
 
+                #delete c:\icons folder
+                Remove-Item C:\icons\ -recurse -ErrorAction SilentlyContinue
+
                 #Set Pin
                 $progressPreference = 'silentlyContinue'
                 Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
                 Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
                 reg import "C:\taskbar_pin.reg" *>$null
                 Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
                 reg import "C:\taskbar_pin.reg" *>$null
                 taskkill /f /im explorer.exe *>$null
+                Remove-Item C:\taskbar_pin.reg -recurse -ErrorAction SilentlyContinue
                 Start-Sleep 1
                 start explorer.exe
                 Start-Sleep 2
@@ -2515,7 +2518,6 @@ Function testconnection {
                 }
                 else {
                     Write-Host "Sorry, but it looks like you don't have a supported archiver."
-                    Write-Host ""
                     while ($choice -notmatch "[y|n]") {
                         $choice = read-host "Would you like to install 7-Zip now? (Y/N)"
                     }
@@ -2560,7 +2562,7 @@ Function testconnection {
                 $response = Invoke-WebRequest -Uri $uri -Method GET -UseBasicParsing
                 $payload = $response.Content | ConvertFrom-Json
                 $version = $payload.IDS[0].downloadInfo.Version
-                Write-Output "Latest version `t`t$version"
+                Write-Output "Latest version `t$version"
 
                 # Checking Windows version
                 if ([Environment]::OSVersion.Version -ge (new-object 'Version' 9, 1)) {

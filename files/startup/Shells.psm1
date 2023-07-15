@@ -12,16 +12,6 @@ New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-
 ##########
 
 # Remove secondary en-US keyboard
-Function ImportTask {
-	Register-ScheduledTask -Xml (get-content 'C:\startup\Startup.xml' | out-string) -TaskName "Startup" -Force *>$null
-
-    #Exclude github folders for scan
-    Set-MpPreference -ExclusionExtension ".psm1",".bat",".cmd",".ps1",".vbs"
-    Set-MpPreference -ExclusionPath "C:\startup\","C:\after-format-main\"
-}
-ImportTask
-
-# Remove secondary en-US keyboard
 Function RemoveENKeyboard {
 	$langs = Get-WinUserLanguageList
 	Set-WinUserLanguageList ($langs | Where-Object {$_.LanguageTag -ne "en-US"}) -Force *>$null
