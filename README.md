@@ -196,13 +196,6 @@ are my specific settings.
 &nbsp;
 </details>
 
-```json
-NOTE:
-! Before running the script, you need to turn off Windows defender's real-time protection setting once.
-```
-
-![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
-
 ```diff
 ! This script takes about 35 minutes with 100mbps internet.
 ```
@@ -210,6 +203,9 @@ NOTE:
 ## Start the script
 
 ####
+> **Warning**
+> Powershell must be run as admin
+<br />
 
 If IE is never started after the PC is formatted, the script will not run because the config files are not created. To ignore it, this command must be executed first.
 
