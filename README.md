@@ -204,20 +204,6 @@ are my specific settings.
 > Powershell must be run as admin
 <br />
 
-If IE is never started after the PC is formatted, the script will not run because the config files are not created. To ignore it, this command must be executed first.
-
 ```
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 2
-```
-
-Defines the link of the script as a variable
-
-```
-$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/caglaryalcin/after-format/main/Shells.psm1
-```
-
-Starts the script
-
-```
-Invoke-Expression $($ScriptFromGitHub.Content)
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 2 ; $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/caglaryalcin/after-format/main/Shells.psm1 ; Invoke-Expression $($ScriptFromGitHub.Content)
 ```
