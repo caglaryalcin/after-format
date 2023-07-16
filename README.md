@@ -185,46 +185,25 @@ This script adds a task named 'startup' to the task scheduler. This task does ex
 
 </details>
 
-<details><summary>My Custom Drivers</summary>&nbsp;
+My Custom Drivers
 
 ```diff
 🟠 When this question is asked, you must answer by saying 'n'. Because the settings here 
 are my specific settings.
 ```
 
-&nbsp;
-&nbsp;
-</details>
 
-```json
-NOTE:
-! Before running the script, you need to turn off Windows defender's real-time protection setting once.
-```
+> **Note**
+> This script takes about 35 minutes with 100mbps internet.
 
-![alt text](https://github.com/caglaryalcin/caglaryalcin/blob/main/win-def.jpg)
-
-```diff
-! This script takes about 35 minutes with 100mbps internet.
-```
 
 ## Start the script
 
 ####
-
-If IE is never started after the PC is formatted, the script will not run because the config files are not created. To ignore it, this command must be executed first.
-
-```
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 2
-```
-
-Defines the link of the script as a variable
+> **Warning**
+> Powershell must be run as admin
+<br />
 
 ```
-$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/caglaryalcin/after-format/main/Shells.psm1
-```
-
-Starts the script
-
-```
-Invoke-Expression $($ScriptFromGitHub.Content)
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 2 ; $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/caglaryalcin/after-format/main/Shells.psm1 ; Invoke-Expression $($ScriptFromGitHub.Content)
 ```
