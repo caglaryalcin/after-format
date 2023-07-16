@@ -18,9 +18,8 @@ $ErrorActionPreference = 'Continue'
 ##########
 
 Function Priority {
-    $progressPreference = 'silentlyContinue'
-    Get-WindowsPackage -Online | Where PackageName -like *QuickAssist*15** | Remove-WindowsPackage -Online -NoRestart -WarningAction SilentlyContinue *>$null
-
+    $checkQuickAssist = Get-WindowsCapability -online | where-object { $_.name -like "*QuickAssist*" }
+    Remove-WindowsCapability -online -name $checkQuickAssist.name -ErrorAction Stop *>$null
 }
 
 Priority
