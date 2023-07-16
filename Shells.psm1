@@ -2451,9 +2451,6 @@ Function testconnection {
                 $Shortcut.Save()
                 Unblock-File -Path "C:\icons\dupeGuru.lnk" *>$null
 
-                #delete c:\icons folder
-                Remove-Item C:\icons\ -recurse -ErrorAction SilentlyContinue
-
                 #Set Pin
                 $progressPreference = 'silentlyContinue'
                 Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
@@ -2467,6 +2464,9 @@ Function testconnection {
                 Start-Sleep 1
                 start explorer.exe
                 Start-Sleep 2
+
+                #delete c:\icons folder
+                Remove-Item C:\icons\ -recurse -ErrorAction SilentlyContinue
 
                 #Powertoys backup
                 New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
