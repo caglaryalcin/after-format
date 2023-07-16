@@ -185,20 +185,17 @@ This script adds a task named 'startup' to the task scheduler. This task does ex
 
 </details>
 
-<details><summary>My Custom Drivers</summary>&nbsp;
+My Custom Drivers
 
 ```diff
 🟠 When this question is asked, you must answer by saying 'n'. Because the settings here 
 are my specific settings.
 ```
 
-&nbsp;
-&nbsp;
-</details>
 
-```diff
-! This script takes about 35 minutes with 100mbps internet.
-```
+> **Note**
+> This script takes about 35 minutes with 100mbps internet.
+
 
 ## Start the script
 
