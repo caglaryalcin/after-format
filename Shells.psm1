@@ -2561,7 +2561,7 @@ Function testconnection {
                 $response = Invoke-WebRequest -Uri $uri -Method GET -UseBasicParsing
                 $payload = $response.Content | ConvertFrom-Json
                 $version = $payload.IDS[0].downloadInfo.Version
-                Write-Output "Latest version `t$version"
+                Write-Output "Latest version `t$version" -NoNewline
 
                 # Checking Windows version
                 if ([Environment]::OSVersion.Version -ge (new-object 'Version' 9, 1)) {
@@ -2619,7 +2619,7 @@ Function testconnection {
                 Start-Process -FilePath "$extractFolder\setup.exe" -ArgumentList $install_args -wait
 
                 # Cleaning up downloaded files
-                Write-Host "Deleting downloaded files" -NoNewline
+                Write-Host "Deleting downloaded files"
                 Remove-Item $nvidiaTempFolder -Recurse -Force *>$null
                 Remove-Item C:\NVIDIA -Recurse -Force *>$null
                 Start-Sleep 5

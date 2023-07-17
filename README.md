@@ -194,7 +194,7 @@ are my specific settings.
 
 
 > **Note**
-> This script takes about 35 minutes with 100mbps internet.
+> This script takes about 40 minutes with 100mbps internet.
 
 
 ## Start the script
