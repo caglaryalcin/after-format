@@ -1,12 +1,12 @@
 ##########
 #region Set MAP
 ##########
-
+$ErrorActionPreference = 'SilentlyContinue'
 New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER
 New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE
 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
 New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-
+$ErrorActionPreference = 'Continue'
 ##########
 #endregion MAP
 ##########
