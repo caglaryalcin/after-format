@@ -128,6 +128,13 @@ Function DisableStartupApps {
     Remove-ItemProperty $StartPaths -Name $removeList *>$null
     Get-ChildItem -Path $StartFilePaths -Recurse | Remove-Item -force -recurse  -ErrorAction SilentlyContinue
 
+    #delete files
+    $shellstartup = "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
+    $shellcommonstartup = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
+
+    Remove-Item $shellstartup -recurse -ErrorAction SilentlyContinue
+    Remove-Item $shellcommonstartup -recurse -ErrorAction SilentlyContinue
+
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 DisableStartupApps
