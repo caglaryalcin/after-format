@@ -378,6 +378,7 @@ Function testconnection {
                 Write-Host "Expanding for File Explorer..." -NoNewline
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon" -ErrorAction SilentlyContinue | Out-Null
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon" -Name "MinimizedStateTabletModeOff" -Type DWord -Value 0
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon" -Name "Minimized" -Type DWord -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
             }
 
@@ -2134,6 +2135,10 @@ Function testconnection {
                 Remove-Item -Path "$env:TEMP\disable_devices.reg"
 
                 #voicemeeter backup
+                cd "C:\Program Files (x86)\VB\Voicemeeter\"
+                .\voicemeeterpro.exe
+                Start-Sleep 2
+                taskkill /f /im voicemeeterpro.exe *>$null
                 $voicebackup = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/voicemeeter.xml" -OutFile $env:USERPROFILE\Documents\Voicemeeter\voicemeeter.xml
 
                 Install-PackageProvider -Name NuGet -Force *>$null
@@ -2455,6 +2460,17 @@ Function testconnection {
                 $Shortcut.Save()
                 Unblock-File -Path "C:\icons\dupeGuru.lnk" *>$null
 
+                #Voicemeeter
+                $WScriptShell = New-Object -ComObject WScript.Shell
+                $Voicemeeter = "C:\Program Files (x86)\VB\Voicemeeter\voicemeeterpro.exe"
+                $VoicemeeterPath = "C:\Program Files (x86)\VB\Voicemeeter"
+                $ShortcutFile = "C:\icons\Voicemeeter Banana.lnk"
+                $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+                $Shortcut.TargetPath = $Voicemeeter
+                $Shortcut.WorkingDirectory = $VoicemeeterPath
+                $Shortcut.Save()
+                Unblock-File -Path "C:\icons\Voicemeeter Banana.lnk" *>$null
+
                 #Set Pin
                 $progressPreference = 'silentlyContinue'
                 Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
@@ -2528,7 +2544,7 @@ Function testconnection {
                         # Download and silently install 7-zip if the user presses y
                         $7zip = "https://www.7-zip.org/a/7z1900-x64.exe"
                         $output = "$PSScriptRoot\7Zip.exe"
-        (New-Object System.Net.WebClient).DownloadFile($7zip, $output)
+                        (New-Object System.Net.WebClient).DownloadFile($7zip, $output)
        
                         Start-Process "7Zip.exe" -Wait -ArgumentList "/S"
                         # Delete the installer once it completes
@@ -2565,7 +2581,7 @@ Function testconnection {
                 $response = Invoke-WebRequest -Uri $uri -Method GET -UseBasicParsing
                 $payload = $response.Content | ConvertFrom-Json
                 $version = $payload.IDS[0].downloadInfo.Version
-                Write-Output "Latest version `t$version" -NoNewline
+                Write-Output "Latest version `t$version"
 
                 # Checking Windows version
                 if ([Environment]::OSVersion.Version -ge (new-object 'Version' 9, 1)) {
@@ -2616,7 +2632,7 @@ Function testconnection {
                 }
 
                 # Remove unneeded dependencies from setup.cfg
-(Get-Content "$extractFolder\setup.cfg") | Where-Object { $_ -notmatch 'name="\${{(EulaHtmlFile|FunctionalConsentFile|PrivacyPolicyFile)}}' } | Set-Content "$extractFolder\setup.cfg" -Encoding UTF8 -Force
+                (Get-Content "$extractFolder\setup.cfg") | Where-Object { $_ -notmatch 'name="\${{(EulaHtmlFile|FunctionalConsentFile|PrivacyPolicyFile)}}' } | Set-Content "$extractFolder\setup.cfg" -Encoding UTF8 -Force
 
                 # Installing drivers
                 $install_args = "-passive -noreboot -noeula -nofinish -s"
@@ -2640,15 +2656,19 @@ Function testconnection {
                 Get-Item "C:\Cloudflare_CA.crt" | Import-Certificate -CertStoreLocation "cert:\LocalMachine\Root" *>$null
                 Remove-Item C:\Cloudflare_CA.crt -recurse -ErrorAction SilentlyContinue
 
-                #Restore browser settings and extensions
+                #download configs to desktop
+                curl -o $env:userprofile\Desktop\uBlock.txt https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt
+                curl -o $env:userprofile\Desktop\dark-reader.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/darkreader.json
+                curl -o $env:userprofile\Desktop\bookmarks.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json
 
+                #Restore browser settings and extensions
                 function installLibreWolfWithAddIn() {
                     Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
     
                     #it is necessary to formation of a profile
                     cd "C:\Program Files\LibreWolf\"
                     .\librewolf.exe
-                    Start-Sleep 4
+                    Start-Sleep 2
                     taskkill /f /im "librewolf.exe" *>$null
 
                     $instdir = "C:\Program Files\LibreWolf"
