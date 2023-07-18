@@ -2127,31 +2127,10 @@ Function testconnection {
         if ($systemset -match "[Yy]") {
 
             Function Own {
-                #Sound Settings
-                Write-Host "`nSetting sound devices..." -NoNewline
-                $regContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/disable_devices.reg"
-                Set-Content -Path "$env:TEMP\disable_devices.reg" -Value $regContent
-                Start-Process -FilePath "regedit.exe" -ArgumentList "/s $env:TEMP\dosya.reg" -Wait
-                Remove-Item -Path "$env:TEMP\disable_devices.reg"
-
-                #voicemeeter backup
-                cd "C:\Program Files (x86)\VB\Voicemeeter\"
-                .\voicemeeterpro.exe
-                Start-Sleep 2
-                taskkill /f /im voicemeeterpro.exe *>$null
-                $voicebackup = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/voicemeeter.xml" -OutFile $env:USERPROFILE\Documents\Voicemeeter\voicemeeter.xml
-
-                Install-PackageProvider -Name NuGet -Force *>$null
-                Install-Module -Name AudioDeviceCmdlets -Force *>$null
-                Get-AudioDevice -List | where Type -like "Playback" | where name -like "278" | Set-AudioDevice -Verbose *>$null
-                Get-AudioDevice -List | where Type -like "Recording" | where name -like "Hyper" | Set-AudioDevice -Verbose *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-                ###Taskbar Pins
+                Function SetPins {
                 ##Create Icons folder
                 New-Item -Path 'C:\icons' -ItemType Directory *>$null
 
-                ##Create Shortcuts
                 #Opera
                 $WScriptShell = New-Object -ComObject WScript.Shell
                 $Opera = "$env:USERPROFILE\AppData\Local\Programs\Opera\launcher.exe"
@@ -2488,14 +2467,12 @@ Function testconnection {
                 #delete c:\icons folder
                 Remove-Item C:\icons\ -recurse -ErrorAction SilentlyContinue
 
-                #Powertoys backup
-                New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
-                New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
-                $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
-                Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
+                }
+
+                SetPins
                 
-                ##Drivers
-                #Chipset
+                Function Drivers {
+                    #Chipset
                 Write-Host "Installing Chipset Driver..." -NoNewline
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
@@ -2642,26 +2619,12 @@ Function testconnection {
                 Write-Host "Deleting downloaded files"
                 Remove-Item $nvidiaTempFolder -Recurse -Force *>$null
                 Remove-Item C:\NVIDIA -Recurse -Force *>$null
-                Start-Sleep 5
+                Start-Sleep 3
+                }
+                
+                Drivers
 
-                #Set Monitor Hertz
-                Write-Host "Select the hertz rate of monitors..." -NoNewline
-                Write-Host "(It doesn't continue without a choice)" -ForegroundColor Red -NoNewline -BackgroundColor Black
-                cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
-                cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-                #Import CloudFlare Certificates
-                Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile C:\Cloudflare_CA.crt *>$null
-                Get-Item "C:\Cloudflare_CA.crt" | Import-Certificate -CertStoreLocation "cert:\LocalMachine\Root" *>$null
-                Remove-Item C:\Cloudflare_CA.crt -recurse -ErrorAction SilentlyContinue
-
-                #download configs to desktop
-                curl -o $env:userprofile\Desktop\uBlock.txt https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt
-                curl -o $env:userprofile\Desktop\dark-reader.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/darkreader.json
-                curl -o $env:userprofile\Desktop\bookmarks.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json
-
-                #Restore browser settings and extensions
+                #restore browser settings and extensions
                 function installLibreWolfWithAddIn() {
                     Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
     
@@ -2737,8 +2700,10 @@ Function testconnection {
                 }
 
                 installLibreWolfWithAddIn("");
-
-                Function sublime-text {
+                
+                #sublime text
+                Function configs {
+                    ##sublimetext
                     $userconf = "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User"
                     $userpackage = "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages"
 
@@ -2753,9 +2718,51 @@ Function testconnection {
 
                     #packages
                     Invoke-WebRequest -Uri "https://packagecontrol.io/Package%20Control.sublime-package" -Outfile "$userpackage\Package Control.sublime-package"
+
+                    #voicemeeter backup
+                    cd "C:\Program Files (x86)\VB\Voicemeeter\"
+                    .\voicemeeterpro.exe
+                    Start-Sleep 2
+                    taskkill /f /im voicemeeterpro.exe *>$null
+                    $voicebackup = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/voicemeeter.xml" -OutFile $env:USERPROFILE\Documents\Voicemeeter\voicemeeter.xml      
+                    
+                    #powertoys backup
+                    New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
+                    New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
+                    $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
+                    Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
                 }
 
-                sublime-text
+                configs
+
+                #startup twinkle tray
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
+                
+                #sound Settings
+                Write-Host "`nSetting sound devices..." -NoNewline
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -PropertyType DWORD -Value "0" *>$null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWORD -Value "0" *>$null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 *>$null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -PropertyType DWORD -Value 1 *>$null
+
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+                #set monitor hertz
+                Write-Host "Select the hertz rate of monitors..." -NoNewline
+                Write-Host "(It doesn't continue without a choice)" -ForegroundColor Red -NoNewline -BackgroundColor Black
+                cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
+                cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+                #import cloudflare certificates
+                Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile C:\Cloudflare_CA.crt *>$null
+                Get-Item "C:\Cloudflare_CA.crt" | Import-Certificate -CertStoreLocation "cert:\LocalMachine\Root" *>$null
+                Remove-Item C:\Cloudflare_CA.crt -recurse -ErrorAction SilentlyContinue
+
+                #download configs to desktop
+                curl -o $env:userprofile\Desktop\uBlock.txt https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt
+                curl -o $env:userprofile\Desktop\dark-reader.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/darkreader.json
+                curl -o $env:userprofile\Desktop\bookmarks.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json
 
             }
 
