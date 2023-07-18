@@ -2439,17 +2439,6 @@ Function testconnection {
                 $Shortcut.Save()
                 Unblock-File -Path "C:\icons\dupeGuru.lnk" *>$null
 
-                #Voicemeeter
-                $WScriptShell = New-Object -ComObject WScript.Shell
-                $Voicemeeter = "C:\Program Files (x86)\VB\Voicemeeter\voicemeeterpro.exe"
-                $VoicemeeterPath = "C:\Program Files (x86)\VB\Voicemeeter"
-                $ShortcutFile = "C:\icons\Voicemeeter Banana.lnk"
-                $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-                $Shortcut.TargetPath = $Voicemeeter
-                $Shortcut.WorkingDirectory = $VoicemeeterPath
-                $Shortcut.Save()
-                Unblock-File -Path "C:\icons\Voicemeeter Banana.lnk" *>$null
-
                 #Set Pin
                 $progressPreference = 'silentlyContinue'
                 Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
@@ -2719,13 +2708,6 @@ Function testconnection {
                     #packages
                     Invoke-WebRequest -Uri "https://packagecontrol.io/Package%20Control.sublime-package" -Outfile "$userpackage\Package Control.sublime-package"
 
-                    #voicemeeter backup
-                    cd "C:\Program Files (x86)\VB\Voicemeeter\"
-                    .\voicemeeterpro.exe
-                    Start-Sleep 2
-                    taskkill /f /im voicemeeterpro.exe *>$null
-                    $voicebackup = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/voicemeeter.xml" -OutFile $env:USERPROFILE\Documents\Voicemeeter\voicemeeter.xml      
-                    
                     #powertoys backup
                     New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
                     New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
