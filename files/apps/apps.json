@@ -110,6 +110,12 @@
             "PackageIdentifier": "DupeGuru.DupeGuru"
           },
           {
+            "PackageIdentifier": "SteelSeries.GG"
+          },
+          {
+            "PackageIdentifier": "VB-Audio.Voicemeeter.Banana"
+          },
+          {
             "PackageIdentifier": "Microsoft.PowerToys"
           }
         ],

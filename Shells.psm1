@@ -1026,7 +1026,7 @@ Function testconnection {
             #Set Wallpaper
             Function SetWallpaper {
                 Write-Host "Setting Desktop Wallpaper..." -NoNewline
-                $url = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/hello.png"
+                $url = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/hello.png"
                 $filePath = "$HOME\Documents\hello.png"
                 $wc = New-Object System.Net.WebClient
                 $wc.DownloadFile($url, $filePath)
@@ -2128,10 +2128,13 @@ Function testconnection {
             Function Own {
                 #Sound Settings
                 Write-Host "`nSetting sound devices..." -NoNewline
-                $regContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/disable_devices.reg"
+                $regContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/disable_devices.reg"
                 Set-Content -Path "$env:TEMP\disable_devices.reg" -Value $regContent
                 Start-Process -FilePath "regedit.exe" -ArgumentList "/s $env:TEMP\dosya.reg" -Wait
                 Remove-Item -Path "$env:TEMP\disable_devices.reg"
+
+                #voicemeeter backup
+                $voicebackup = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/voicemeeter.xml" -OutFile $env:USERPROFILE\Documents\Voicemeeter\voicemeeter.xml
 
                 Install-PackageProvider -Name NuGet -Force *>$null
                 Install-Module -Name AudioDeviceCmdlets -Force *>$null
@@ -2456,7 +2459,7 @@ Function testconnection {
                 $progressPreference = 'silentlyContinue'
                 Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
                 Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
                 reg import "C:\taskbar_pin.reg" *>$null
                 Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
                 reg import "C:\taskbar_pin.reg" *>$null
@@ -2473,7 +2476,7 @@ Function testconnection {
                 New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
                 New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
                 $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
-                Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/settings_133264013067260668.ptb" -Outfile $powertoysbackup
+                Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
                 
                 ##Drivers
                 #Chipset
