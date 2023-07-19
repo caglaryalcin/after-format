@@ -18,9 +18,11 @@ $ErrorActionPreference = 'Continue'
 ##########
 
 Function Priority {
+    $ErrorActionPreference = 'SilentlyContinue'
     $checkQuickAssist = Get-WindowsCapability -online | where-object { $_.name -like "*QuickAssist*" }
     Remove-WindowsCapability -online -name $checkQuickAssist.name -ErrorAction Stop *>$null
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+    $ErrorActionPreference = 'Continue'
 }
 
 Priority
