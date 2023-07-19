@@ -207,5 +207,5 @@ are my specific settings.
 <br />
 
 ```
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 2 ; $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/caglaryalcin/after-format/main/Shells.psm1 ; Invoke-Expression $($ScriptFromGitHub.Content)
+iwr "run.caglaryalcin.com" -UseB | iex
 ```
