@@ -116,6 +116,9 @@
             "PackageIdentifier": "VB-Audio.Voicemeeter.Banana"
           },
           {
+            "PackageIdentifier": "Oracle.JavaRuntimeEnvironment"
+          },
+          {
             "PackageIdentifier": "Microsoft.PowerToys"
           }
         ],
