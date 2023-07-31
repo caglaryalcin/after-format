@@ -40,44 +40,6 @@ Function testconnection {
         Write-Host("Internet connection and DNS is up") -ForegroundColor Green
 
         ##########
-        #region Windows Update
-        ##########
-        Write-Host `n"---------Windows Updates" -ForegroundColor Blue -BackgroundColor Black
-
-        Write-Host `n"Do you want " -NoNewline
-        Write-Host "Windows Updates? " -ForegroundColor Yellow -NoNewline
-        Write-Host "it may take a long time depending on the internet speed." -ForegroundColor Red -NoNewline
-        Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-        $systemset = Read-Host
-
-        if ($systemset -match "[Yy]") {
-
-            # Install Windows Update
-            Function InstallUpdates {
-                Write-Host "Installing Windows Updates..." -NoNewline
-                $progressPreference = 'silentlyContinue'
-                $Global:ProgressPreference = 'SilentlyContinue'
-                Install-PackageProvider NuGet -Force *>$null
-                Install-Module PSWindowsUpdate -Force *>$null
-                Set-ExecutionPolicy Bypass -Scope Process -Force *>$null
-                $progressPreference = 'silentlyContinue'
-                $Global:ProgressPreference = 'SilentlyContinue'
-                Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-
-            InstallUpdates
-
-        }
-        else {
-            Write-Host "[Windows Updates Cancelled]" -ForegroundColor Red -BackgroundColor Black
-        }
-
-        ##########
-        #endregion Windows Update
-        ##########
-
-        ##########
         #region System Settings
         ##########
         Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Black
@@ -2060,7 +2022,7 @@ Function testconnection {
                     $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
 
                     New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
-                    Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage
+                    Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage *>$null
                     Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" *>$null
 
                     # Delete additional files
