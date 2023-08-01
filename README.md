@@ -6,12 +6,6 @@ If you new formatted your computer on Windows 10 Pro, Windows 11, you can run th
 
 This script does exactly the following; (Some are optional(y/n))
 
-<details><summary>Windows Updates</summary>&nbsp;
-
-- It asks if you want to make windows updates.
-
-  </details>
-
 <details><summary>System Settings</summary>&nbsp;
 
 - It asks if you want Region change to Turkey.  
