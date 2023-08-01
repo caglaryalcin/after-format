@@ -2707,7 +2707,6 @@ Function testconnection {
 
                 #download configs to desktop
                 curl -o $env:userprofile\Desktop\uBlock.txt https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt
-                curl -o $env:userprofile\Desktop\dark-reader.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/darkreader.json
                 curl -o $env:userprofile\Desktop\bookmarks.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json
 
             }
