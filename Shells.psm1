@@ -199,26 +199,6 @@ Function testconnection {
 
             Defaultps1
 
-            #Get the Old Classic Right-Click Context Menu for Windows 11
-            Function RightClickMenu {
-                Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" *>$null
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" *>$null
-                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value $null *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-
-            RightClickMenu
-
-            # Hide Taskbar Start button alignment left for Windows 11
-            Function TaskbarAlignLeft {
-                Write-Host "Taskbar Aligns Left..." -NoNewline
-                New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-
-            TaskbarAlignLeft
-
             #Default Photo Viewer Old
             Function DefaultPhotoViewer {
                 Write-Host "Default Old Photo Viewer..." -NoNewline
