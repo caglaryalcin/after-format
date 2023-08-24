@@ -201,5 +201,5 @@ are my specific settings.
 <br />
 
 ```
-iwr "run.caglaryalcin.com" -UseB | iex
+iwr "w10.caglaryalcin.com" -UseB | iex
 ```
