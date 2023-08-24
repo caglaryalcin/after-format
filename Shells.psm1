@@ -54,11 +54,11 @@ Function testconnection {
             #Set TR Formats
             Function TRFormats {
                 Write-Host `n"Do you want to " -NoNewline
-                Write-Host "change the region settings to Türkiye?" -ForegroundColor Yellow -NoNewline
+                Write-Host "change the region settings to Turkiye?" -ForegroundColor Yellow -NoNewline
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
                 $input = Read-Host
                 if ($input -match "[Yy]") {
-                    Write-Host "Setting date format of Türkiye..." -NoNewline
+                    Write-Host "Setting date format of Turkiye..." -NoNewline
                     Set-TimeZone -Name "Turkey Standard Time"
                     Set-Culture tr-TR
                     Set-ItemProperty -Path "HKCU:\Control Panel\International" -name ShortDate -value "dd/MM/yyyy"
