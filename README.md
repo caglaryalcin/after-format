@@ -2,7 +2,7 @@
 
 ## Description
 
-If you new formatted your computer on Windows 10 Pro, Windows 11, you can run this script.
+If you new formatted your computer on Windows 10(all versions) you can run this script.
 
 This script does exactly the following; (Some are optional(y/n))
 
