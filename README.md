@@ -12,7 +12,6 @@ This script does exactly the following; (Some are optional(y/n))
 - It asks if you want change your hostname.
 - It asks if you want disable Windows Defender.
 - Date format is set to turkey
-- Getting the Old Classic Right-Click Context Menu (For Windows 11)
 - Disabling News and Interes on Taskbar
 - Default Old Photo Viewer
 - Setting Dark Mode for Applications
@@ -30,7 +29,6 @@ This script does exactly the following; (Some are optional(y/n))
 - Hiding Taskbar Search
 - Removing Chat from Taskbar
 - Removing Widgets from Taskbar
-- Taskbar Aligns Left (For Windows 11)
 - Hiding Recycle Bin Shortcut from Desktop
 - Disabling hiberfil.sys
 - Disabling Display and Sleep Mode Timeouts
