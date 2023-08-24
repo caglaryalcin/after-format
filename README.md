@@ -183,10 +183,8 @@ This script adds a task named 'startup' to the task scheduler. This task does ex
 
 My Custom Drivers
 
-```diff
 🟠 When this question is asked, you must answer by saying 'n'. Because the settings here 
 are my specific settings.
-```
 
 
 > **Note**
