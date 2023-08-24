@@ -971,7 +971,7 @@ Function testconnection {
             #Set Wallpaper
             Function SetWallpaper {
                 Write-Host "Setting Desktop Wallpaper..." -NoNewline
-                $url = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/hello.png"
+                $url = "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/own/hello.png"
                 $filePath = "$HOME\Documents\hello.png"
                 $wc = New-Object System.Net.WebClient
                 $wc.DownloadFile($url, $filePath)
@@ -1155,7 +1155,7 @@ Function testconnection {
                 Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
 
                 #import remote xml file into task scheduler
-                $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Startup.xml"
+                $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/startup/Startup.xml"
                 $taskXmlPath = "$env:TEMP\startup.xml"
                 Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath
 
@@ -1706,7 +1706,7 @@ Function testconnection {
 
             Function InstallSoftwares {
                 #Softwares
-                $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json'
+                $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/apps.json'
 
                 $jsonContent = Invoke-RestMethod -Uri $appsUrl
                 $packages = $jsonContent.Sources[0].Packages
@@ -1748,7 +1748,7 @@ Function testconnection {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
                 #other softwares
-                $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/othapps.json'
+                $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/othapps.json'
 
                 $jsonContent = Invoke-RestMethod -Uri $otherappsUrl
                 $packages = $jsonContent.Sources[0].Packages
@@ -2387,7 +2387,7 @@ Function testconnection {
                 $progressPreference = 'silentlyContinue'
                 Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
                 Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
                 reg import "C:\taskbar_pin.reg" *>$null
                 Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
                 reg import "C:\taskbar_pin.reg" *>$null
@@ -2656,7 +2656,7 @@ Function testconnection {
                     New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
                     New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
                     $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
-                    Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
+                    Invoke-WebRequest -Uri "https://github.com/caglaryalcin/post-wpe-w10/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
                 }
 
                 configs
