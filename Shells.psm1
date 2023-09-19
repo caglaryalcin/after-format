@@ -2583,14 +2583,8 @@ Function testconnection {
                     $ublacklistuid = '@ublacklist'
                     $returnytdl = 'https://addons.mozilla.org/firefox/downloads/file/4072734/return_youtube_dislikes-3.0.0.8.xpi'
                     $returnytdluid = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}'
-                    $skipredirect = 'https://addons.mozilla.org/firefox/downloads/file/3920533/skip_redirect-2.3.6.xpi'
-                    $skipredirectuid = 'skipredirect@sblask'
-                    $chatgpt = 'https://addons.mozilla.org/firefox/downloads/file/4079848/chatgpt_for_google-2.1.1.xpi'
-                    $chatgptuid = '{4b726fbc-aba9-4fa7-97fd-a42c2511ddf7}'
                     $idm = 'https://addons.mozilla.org/firefox/downloads/file/4083976/tonec_idm_integration_module-6.41.8.xpi'
                     $idmuid = 'mozilla_cc3@internetdownloadmanager.com'
-                    $bing = 'https://addons.mozilla.org/firefox/downloads/file/4019173/bing_search_engine-1.0.3.8.xpi'
-                    $binguid = '{8d8ca802-6b23-43ed-9445-e05d48579542}'
            
                     $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
                     $ublockoriginpath = $extensions + '\' + $ublockoriginuid + '.xpi'
@@ -2598,10 +2592,7 @@ Function testconnection {
                     $darkreaderpath = $extensions + '\' + $darkreaderuid + '.xpi'
                     $ublacklistpath = $extensions + '\' + $ublacklistuid + '.xpi'
                     $returnytdlpath = $extensions + '\' + $returnytdluid + '.xpi'
-                    $skipredirectpath = $extensions + '\' + $skipredirectuid + '.xpi'
-                    $chatgptpath = $extensions + '\' + $chatgptuid + '.xpi'
                     $idmpath = $extensions + '\' + $idmuid + '.xpi'
-                    $bingpath = $extensions + '\' + $binguid + '.xpi'
 
                     #Download XPI file of AddIn
                     If (-Not(Test-Path $distribution)) {
@@ -2617,10 +2608,7 @@ Function testconnection {
                     Invoke-WebRequest $darkreader -Outfile $darkreaderpath
                     Invoke-WebRequest $ublacklist -Outfile $ublacklistpath
                     Invoke-WebRequest $returnytdl -Outfile $returnytdlpath
-                    Invoke-WebRequest $skipredirect -Outfile $skipredirectpath
-                    Invoke-WebRequest $chatgpt -Outfile $chatgptpath
                     Invoke-WebRequest $idm -Outfile $idmpath
-                    Invoke-WebRequest $bing -Outfile $bingpath
 
                     $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
                     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
