@@ -2315,7 +2315,7 @@ Function testconnection {
 
                 #Deluge
                 $WScriptShell = New-Object -ComObject WScript.Shell
-                $Deluge = "C:\Program Files (x86)\Deluge\deluge.exe"
+                $Deluge = "C:\Program Files\Deluge\deluge.exe"
                 $ShortcutFile = "C:\icons\Deluge.lnk"
                 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
                 $Shortcut.TargetPath = $Deluge
