@@ -1698,6 +1698,7 @@ Function testconnection {
                 Write-Host `n"Installing Winget..." -NoNewline
                 $progressPreference = 'silentlyContinue'
                 iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.psm1" -UseB | iex *>$null
+                Start-Sleep 5
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
