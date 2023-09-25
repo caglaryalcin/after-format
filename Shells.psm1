@@ -1697,8 +1697,7 @@ Function testconnection {
             Function Winget {
                 Write-Host `n"Installing Winget..." -NoNewline
                 $progressPreference = 'silentlyContinue'
-                Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx *>$null
-                Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle *>$null
+                iwr "https://raw.githubusercontent.com/asheroto/winget-install/master/winget-install.ps1" -UseB | iex *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
@@ -1714,7 +1713,7 @@ Function testconnection {
                 foreach ($package in $packages) {
                     $packageIdentifier = $package.PackageIdentifier
                     Write-Host "Installing '$packageIdentifier'..." -NoNewline
-                    iwr "https://raw.githubusercontent.com/asheroto/winget-install/master/winget-install.ps1" -UseB | iex *>$null
+		    Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 Start-Sleep 5
