@@ -1695,7 +1695,7 @@ Function testconnection {
         if ($installapps -match "[Yy]") {
 
             Function Winget {
-                Write-Host `n"Installing Winget..." -NoNewline
+                #Write-Host `n"Installing Winget..." -NoNewline
                 $progressPreference = 'silentlyContinue'
                 iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.psm1" -UseB | iex *>$null
                 Start-Sleep 15
@@ -1710,8 +1710,7 @@ Function testconnection {
 
                 $jsonContent = Invoke-RestMethod -Uri $appsUrl
                 $packages = $jsonContent.Sources[0].Packages
-                winget --version
-                Start-Sleep 15
+
                 foreach ($package in $packages) {
                     $packageIdentifier = $package.PackageIdentifier
                     Write-Host "Installing '$packageIdentifier'..." -NoNewline
