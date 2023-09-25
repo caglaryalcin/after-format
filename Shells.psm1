@@ -1715,8 +1715,8 @@ Function testconnection {
                     Write-Host "Installing '$packageIdentifier'..." -NoNewline
                     $OriginalProgressPreference = $Global:ProgressPreference
                     $Global:ProgressPreference = 'SilentlyContinue'
-                    psexec -s -i powershell -command "& { Start-Process -FilePath 'winget' -ArgumentList 'install', '$packageIdentifier', '-e', '--silent', '--accept-source-agreements', '--accept-package-agreements', '--force' -WindowStyle Hidden -Wait }"
                     #Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
+                    winget install $packageIdentifier -e --silent --accept-source-agreements --accept-package-agreements --force -WindowStyle Hidden -Wait *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 Start-Sleep 5
