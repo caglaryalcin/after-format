@@ -2232,8 +2232,8 @@ Function testconnection {
 
                     #AnyDesk
                     $WScriptShell = New-Object -ComObject WScript.Shell
-                    $Anydesk = "C:\Program Files (x86)\AnyDeskMSI\AnyDeskMSI.exe"
-                    $AnydeskPath = "C:\Program Files (x86)\AnyDeskMSI"
+                    $Anydesk = "C:\Program Files (x86)\AnyDesk\AnyDesk.exe"
+                    $AnydeskPath = "C:\Program Files (x86)\AnyDesk"
                     $ShortcutFile = "C:\icons\AnyDesk.lnk"
                     $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
                     $Shortcut.TargetPath = $Anydesk
