@@ -1,8 +1,6 @@
 ﻿[CmdletBinding()]
 param (
     [switch]$Version,
-    [switch]$Help,
-    [switch]$CheckForUpdate,
     [switch]$DisableCleanup,
     [switch]$DebugMode,
     [switch]$Force
