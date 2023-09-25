@@ -1697,7 +1697,10 @@ Function testconnection {
             Function Winget {
                 Write-Host `n"Installing Winget..." -NoNewline
                 $progressPreference = 'silentlyContinue'
-                iwr "https://raw.githubusercontent.com/asheroto/winget-install/master/winget-install.ps1" -UseB | iex *>$null
+                iwr "https://raw.githubusercontent.com/asheroto/winget-install/master/winget-install.ps1" -UseB | iex
+		while ($true) {
+    		Start-Sleep -Seconds 1
+		}
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
