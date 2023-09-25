@@ -1697,7 +1697,7 @@ Function testconnection {
             Function Winget {
                 Write-Host `n"Installing Winget..." -NoNewline
                 $progressPreference = 'silentlyContinue'
-                iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.ps1" -UseB | iex
+                iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.ps1" -UseB | iex *>$null
 		while ($true) {
     		Start-Sleep -Seconds 1
 		}
