@@ -1698,6 +1698,7 @@ Function testconnection {
                 Write-Host `n"Installing Winget..." -NoNewline
                 $progressPreference = 'silentlyContinue'
                 iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.psm1" -UseB | iex *>$null
+                Start-Sleep 15
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
@@ -1713,6 +1714,8 @@ Function testconnection {
                 foreach ($package in $packages) {
                     $packageIdentifier = $package.PackageIdentifier
                     Write-Host "Installing '$packageIdentifier'..." -NoNewline
+                    winget --version
+                    Start-Sleep 15
                     Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
