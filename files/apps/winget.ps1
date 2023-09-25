@@ -15,12 +15,6 @@ $PowerShellGalleryName = 'winget-install'
 $ProgressPreference = 'SilentlyContinue' # Suppress progress bar (makes downloading super fast)
 $ConfirmPreference = 'None' # Suppress confirmation prompts
 
-# Display full help if -Help is specified
-if ($Help) {
-    Get-Help -Name $MyInvocation.MyCommand.Source -Full
-    exit 0
-}
-
 # Display $PSVersionTable and Get-Host if -Verbose is specified
 if ($PSBoundParameters.ContainsKey('Verbose') -and $PSBoundParameters['Verbose']) {
     $PSVersionTable
@@ -126,7 +120,6 @@ function Get-OSInfo {
         return $result
     } catch {
         Write-Error "Unable to get OS version details.`nError: $_"
-        exit 1
     }
 }
 
@@ -153,7 +146,6 @@ function Get-GitHubRelease {
         }
     } catch {
         Write-Error "Unable to check for updates.`nError: $_"
-        exit 1
     }
 }
 
@@ -644,26 +636,22 @@ $arch = $osVersion.Architecture
 # If it's a workstation, make sure it is Windows 10+
 if ($osVersion.Type -eq "Workstation" -and $osVersion.NumericVersion -lt 10) {
     Write-Error "winget is only compatible with Windows 10 or greater."
-    exit 1
 }
 
 # If it's a workstation with Windows 10, make sure it's version 1809 or greater
 if ($osVersion.Type -eq "Workstation" -and $osVersion.NumericVersion -eq 10 -and $osVersion.ReleaseId -lt 1809) {
     Write-Error "winget is only compatible with Windows 10 version 1809 or greater."
-    exit 1
 }
 
 # If it's a server, it needs to be 2022+
 if ($osVersion.Type -eq "Server" -and $osVersion.NumericVersion -lt 2022) {
     Write-Error "winget is only compatible with Windows Server 2022+."
-    exit 1
 }
 
 # Check if winget is already installed
 if (Get-WingetStatus) {
     if ($Force -eq $false) {
         Write-Output "winget is already installed, exiting..."
-        exit 0
     }
 }
 
