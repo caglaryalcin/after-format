@@ -1715,7 +1715,7 @@ Function testconnection {
                     Write-Host "Installing '$packageIdentifier'..." -NoNewline
                     $OriginalProgressPreference = $Global:ProgressPreference
                     $Global:ProgressPreference = 'SilentlyContinue'
-                    iex (Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null)
+                    iex (Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait) *>$null
                     #Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
