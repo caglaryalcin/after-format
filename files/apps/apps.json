@@ -5,6 +5,15 @@
     {
       "Packages": [
         {
+          "PackageIdentifier": "Opera.Opera"
+        },
+        {
+          "PackageIdentifier": "Google.Chrome"
+        },
+        {
+          "PackageIdentifier": "Brave.Brave"
+        },
+        {
           "PackageIdentifier": "Mozilla.Firefox"
         },
         {
