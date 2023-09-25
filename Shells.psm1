@@ -1713,7 +1713,7 @@ Function testconnection {
                 foreach ($package in $packages) {
                     $packageIdentifier = $package.PackageIdentifier
                     Write-Host "Installing '$packageIdentifier'..." -NoNewline
-                    Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
+                    Invoke-Expression -Command "winget install $packageIdentifier -e --silent --accept-source-agreements --accept-package-agreements --force" *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 Start-Sleep 5
