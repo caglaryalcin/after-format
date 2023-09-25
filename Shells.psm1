@@ -1698,7 +1698,6 @@ Function testconnection {
                 Write-Host `n"Installing Winget..." -NoNewline
                 $progressPreference = 'silentlyContinue'
                 iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.psm1" -UseB | iex *>$null
-                Start-Sleep 5
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
@@ -1716,7 +1715,8 @@ Function testconnection {
                     Write-Host "Installing '$packageIdentifier'..." -NoNewline
                     $OriginalProgressPreference = $Global:ProgressPreference
                     $Global:ProgressPreference = 'SilentlyContinue'
-                    Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
+                    psexec -s -i powershell -command "& { Start-Process -FilePath 'winget' -ArgumentList 'install', '$packageIdentifier', '-e', '--silent', '--accept-source-agreements', '--accept-package-agreements', '--force' -WindowStyle Hidden -Wait }"
+                    #Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 Start-Sleep 5
