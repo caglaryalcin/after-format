@@ -1704,7 +1704,7 @@ Function testconnection {
             Winget
 
             Function InstallSoftwares {
-                Start-Sleep 15
+                Start-Sleep 10
                 #Softwares
                 $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/apps.json'
 
