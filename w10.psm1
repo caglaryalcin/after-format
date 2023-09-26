@@ -85,7 +85,7 @@ Function SystemSettings {
                 $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
                 $hostname = Read-Host -Prompt $hostq
                 Rename-Computer -NewName "$hostname" *>$null
-                Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor White
+                Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
@@ -974,7 +974,7 @@ Function SystemSettings {
         #Set Wallpaper
         Function SetWallpaper {
             Write-Host "Setting Desktop Wallpaper..." -NoNewline
-            $url = "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/own/hello.png"
+            $url = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/hello.png"
             $filePath = "$HOME\Documents\hello.png"
             $wc = New-Object System.Net.WebClient
             $wc.DownloadFile($url, $filePath)
@@ -1158,7 +1158,7 @@ Function SystemSettings {
             Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
 
             #import remote xml file into task scheduler
-            $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/startup/Startup.xml"
+            $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Startup.xml"
             $taskXmlPath = "$env:TEMP\startup.xml"
             Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath
 
@@ -1715,7 +1715,7 @@ Function GithubSoftwares {
         Function Winget {
             Write-Host `n"Installing Winget..." -NoNewline
             $progressPreference = 'silentlyContinue'
-            iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.psm1" -UseB | iex *>$null
+            iwr "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.psm1" -UseB | iex *>$null
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
@@ -1724,7 +1724,7 @@ Function GithubSoftwares {
         Function InstallSoftwares {
             Start-Sleep 10
             #Softwares
-            $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/apps.json'
+            $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json'
 
             $jsonContent = Invoke-RestMethod -Uri $appsUrl
             $packages = $jsonContent.Sources[0].Packages
@@ -1766,7 +1766,7 @@ Function GithubSoftwares {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
             #other softwares
-            $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/othapps.json'
+            $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/othapps.json'
 
             $jsonContent = Invoke-RestMethod -Uri $otherappsUrl
             $packages = $jsonContent.Sources[0].Packages
