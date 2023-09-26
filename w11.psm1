@@ -1732,17 +1732,8 @@ Function GithubSoftwares {
     $response = Read-Host
 
     if ($response -eq 'y' -or $response -eq 'Y') {
-        Function Winget {
-            Write-Host `n"Installing Winget..." -NoNewline
-            $progressPreference = 'silentlyContinue'
-            iwr "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.psm1" -UseB | iex *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        Winget
-
         Function InstallSoftwares {
-            Start-Sleep 10
+
             #Softwares
             $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json'
 
