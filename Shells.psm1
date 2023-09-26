@@ -47,9 +47,9 @@ Function testconnection {
         Write-Host `n"Do you want " -NoNewline
         Write-Host "System Settings?" -ForegroundColor Yellow -NoNewline
         Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-        $systemset = Read-Host
+        $response = Read-Host
 
-        if ($systemset -match "[Yy]") {
+        if ($response -eq 'y' -or $response -eq 'Y') {
 
             #Set TR Formats
             Function TRFormats {
@@ -57,7 +57,7 @@ Function testconnection {
                 Write-Host "change the region settings to Turkiye?" -ForegroundColor Yellow -NoNewline
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
                 $input = Read-Host
-                if ($input -match "[Yy]") {
+                if ($input -eq 'y' -or $response -eq 'Y') {
                     Write-Host "Setting date format of Turkiye..." -NoNewline
                     Set-TimeZone -Name "Turkey Standard Time"
                     Set-Culture tr-TR
@@ -71,8 +71,11 @@ Function testconnection {
                     w32tm /config /manualpeerlist:time.windows.com, 0x1 /syncfromflags:manual /reliable:yes /update *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-                else {
+                elseif ($response -eq 'n' -or $response -eq 'N') {
                     Write-Host "[Turkish region format adjustment has been canceled]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 }
             }
 
@@ -84,14 +87,17 @@ Function testconnection {
                 Write-Host "change your hostname?" -ForegroundColor Yellow -NoNewline
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
                 $input = Read-Host
-                if ($input -match "[Yy]") {
+                if ($input -eq 'y' -or $response -eq 'Y') {
                     $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
                     $hostname = Read-Host -Prompt $hostq
                     Rename-Computer -NewName "$hostname" *>$null
                     Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor Black
                 }
-                else {
+                elseif ($response -eq 'n' -or $response -eq 'N') {
                     Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 }
             }
 
@@ -102,9 +108,9 @@ Function testconnection {
                 Write-Host `n"Do you want " -NoNewline
                 Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-                $systemset = Read-Host
+                $response = Read-Host
 
-                if ($systemset -match "[Yy]") {
+                if ($response -eq 'y' -or $response -eq 'Y') {
                     Write-Host "Disabling Windows Defender..." -NoNewline
                     # Disable Defender Cloud
                     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")) {
@@ -183,9 +189,12 @@ Function testconnection {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
                 }
 
-                else {
+                elseif ($response -eq 'n' -or $response -eq 'N') {
                     #Exclude github folders for scan
                     Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 }
             }
 
@@ -1177,8 +1186,11 @@ Function testconnection {
             ImportStartup
 
         }
-        else {
+        elseif ($response -eq 'n' -or $response -eq 'N') {
             Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
         }
 
         ##########
@@ -1195,7 +1207,7 @@ Function testconnection {
         Write-Host "(y/n): " -ForegroundColor Green -NoNewline
         $privacyset = Read-Host
 
-        if ($privacyset -match "[Yy]") {
+        if ($privacyset -eq 'y' -or $response -eq 'Y') {
 
             # Disable Telemetry 
             Function DisableTelemetry {
@@ -1674,8 +1686,11 @@ Function testconnection {
             DisableUpdateAutoDownload
 
         }
-        else {
+        elseif ($response -eq 'n' -or $response -eq 'N') {
             Write-Host "[Privacy Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
         }
 
         ##########
@@ -1692,7 +1707,7 @@ Function testconnection {
         Write-Host "(y/n): " -ForegroundColor Green -NoNewline
         $installapps = Read-Host
 
-        if ($installapps -match "[Yy]") {
+        if ($installapps -eq 'y' -or $response -eq 'Y') {
 
             Function Winget {
                 Write-Host `n"Installing Winget..." -NoNewline
@@ -1788,7 +1803,7 @@ Function testconnection {
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
                 $installapps = Read-Host
 
-                if ($installapps -match "[Yy]") {
+                if ($installapps -eq 'y' -or $response -eq 'Y') {
 
                     Write-Host "Installing Valorant..." -NoNewline
                     $progressPreference = 'silentlyContinue'
@@ -1798,8 +1813,11 @@ Function testconnection {
                     Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-                else {
+                elseif ($response -eq 'n' -or $response -eq 'N') {
                     Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 }
    
             }
@@ -1808,8 +1826,11 @@ Function testconnection {
 
         }
 
-        else {
+        elseif ($response -eq 'n' -or $response -eq 'N') {
             Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
         }
 
         ##########
@@ -1826,7 +1847,7 @@ Function testconnection {
         Write-Host "(y/n): " -ForegroundColor Green -NoNewline
         $removeapps = Read-Host
 
-        if ($removeapps -match "[Yy]") {
+        if ($removeapps -eq 'y' -or $response -eq 'Y') {
 
             # Remove Apps 
             Function UninstallThirdPartyBloat {
@@ -1945,7 +1966,7 @@ Function testconnection {
                 Write-Host "uninstall Windows OneDrive?" -ForegroundColor Yellow -NoNewline
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
                 $input = Read-Host
-                if ($input -match "[Yy]") {
+                if ($input -eq 'y' -or $response -eq 'Y') {
                     Write-Host "Removing Microsoft OneDrive..." -NoNewline
                     $progressPreference = 'silentlyContinue'
                     taskkill /f /im onedrive.exe *>$null
@@ -1953,8 +1974,11 @@ Function testconnection {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
 
-                else {
+                elseif ($response -eq 'n' -or $response -eq 'N') {
                     Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 }
             }
 
@@ -1966,7 +1990,7 @@ Function testconnection {
                 Write-Host "uninstall Windows Edge?" -ForegroundColor Yellow -NoNewline
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
                 $input = Read-Host
-                if ($input -match "[Yy]") {
+                if ($input -eq 'y' -or $response -eq 'Y') {
                     Write-Host "Removing Microsoft Edge..." -NoNewline
                     taskkill /f /im msedge.exe *>$null
     
@@ -2041,16 +2065,22 @@ Function testconnection {
 
                 }
 
-                else {
+                elseif ($response -eq 'n' -or $response -eq 'N') {
                     Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 }
             }
 
             UninstallEdge
 
         }
-        else {
+        elseif ($response -eq 'n' -or $response -eq 'N') {
             Write-Host "[Unnecessary apps will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
         }
 
         ##########
@@ -2066,9 +2096,9 @@ Function testconnection {
         Write-Host "own this script?" -NoNewline -ForegroundColor Red -BackgroundColor Black
         Write-Host "(Settings, downloads and installations of the script owner will be made):" -NoNewline -ForegroundColor Red -BackgroundColor Black
         Write-Host "(y/n): " -NoNewline
-        $systemset = Read-Host
+        $response = Read-Host
 
-        if ($systemset -match "[Yy]") {
+        if ($response -eq 'y' -or $response -eq 'Y') {
 
             Function Own {
                 Function SetPins {
@@ -2558,7 +2588,7 @@ Function testconnection {
                 Drivers
 
                 #restore browser settings and extensions
-                function installLibreWolfWithAddIn() {
+                function installLibreWolfAddIn() {
                     Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
     
                     #it is necessary to formation of a profile
@@ -2620,7 +2650,7 @@ Function testconnection {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
 
-                installLibreWolfWithAddIn("");
+                installLibreWolfAddIn("");
                 
                 #sublime text
                 Function configs {
@@ -2645,46 +2675,60 @@ Function testconnection {
                     New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
                     $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
                     Invoke-WebRequest -Uri "https://github.com/caglaryalcin/post-wpe-w10/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
+
+                    #startup twinkle tray
+                    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
+                
+                    #sound Settings
+                    Write-Host "`nSetting sound devices..." -NoNewline
+                    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -PropertyType DWORD -Value "0" *>$null
+                    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWORD -Value "0" *>$null
+                    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 *>$null
+                    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -PropertyType DWORD -Value 1 *>$null
+
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+                    #set monitor hertz
+                    Write-Host "Select the hertz rate of monitors..." -NoNewline
+                    Write-Host "(It doesn't continue without a choice)" -ForegroundColor Red -NoNewline -BackgroundColor Black
+                    cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
+                    cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+                    #import cloudflare certificates
+                    Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile C:\Cloudflare_CA.crt *>$null
+                    Get-Item "C:\Cloudflare_CA.crt" | Import-Certificate -CertStoreLocation "cert:\LocalMachine\Root" *>$null
+                    Remove-Item C:\Cloudflare_CA.crt -recurse -ErrorAction SilentlyContinue
+
+                    #download configs to desktop
+                    curl -o $env:userprofile\Desktop\uBlock.txt https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt
+                    curl -o $env:userprofile\Desktop\bookmarks.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json
+
                 }
 
                 configs
-
-                #startup twinkle tray
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
+                function MediaFeaturePack {
+                    # check new version
+                    $newVersion = (DISM /Online /Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~').ToString().Trim()
+                    $newVersion = $newVersion -replace 'Capability Identity : ', '' -replace '\s', ''
                 
-                #sound Settings
-                Write-Host "`nSetting sound devices..." -NoNewline
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -PropertyType DWORD -Value "0" *>$null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWORD -Value "0" *>$null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 *>$null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -PropertyType DWORD -Value 1 *>$null
-
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-                #set monitor hertz
-                Write-Host "Select the hertz rate of monitors..." -NoNewline
-                Write-Host "(It doesn't continue without a choice)" -ForegroundColor Red -NoNewline -BackgroundColor Black
-                cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
-                cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-                #import cloudflare certificates
-                Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile C:\Cloudflare_CA.crt *>$null
-                Get-Item "C:\Cloudflare_CA.crt" | Import-Certificate -CertStoreLocation "cert:\LocalMachine\Root" *>$null
-                Remove-Item C:\Cloudflare_CA.crt -recurse -ErrorAction SilentlyContinue
-
-                #download configs to desktop
-                curl -o $env:userprofile\Desktop\uBlock.txt https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt
-                curl -o $env:userprofile\Desktop\bookmarks.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json
-
+                    cmd.exe /c DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
+                
+                    Write-Host "Update completed."
+                }
+                
+                MediaFeaturePack
             }
 
             Own
 
         }
 
-        else {
+        elseif ($response -eq 'n' -or $response -eq 'N') {
             Write-Host "[The Process Cancelled]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
         }
 
 
@@ -2696,15 +2740,18 @@ Function testconnection {
             Write-Host `n"Do you " -NoNewline
             Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor Black
             Write-Host "(y/n): " -NoNewline
-            $systemset = Read-Host
+            $response = Read-Host
 
-            if ($systemset -match "[Yy]") {
+            if ($response -eq 'y' -or $response -eq 'Y') {
                 Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
 
                 cmd.exe /c "shutdown /r /t 0"
             }
-            else {
+            elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host("Cancel restart process") -ForegroundColor Red
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
             }
  
         }
