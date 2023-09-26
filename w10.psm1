@@ -2115,7 +2115,7 @@ UnusedApps
 ##########
 
 Function MySettings {
-
+    iwr "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/mysettings.psm1" -UseB | iex
 }
 
 ##########
