@@ -1847,251 +1847,251 @@ GithubSoftwares
 #region Remove Unused Apps/Softwares
 ##########
 Function UnusedApps {
-Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
 
-Write-Host `n"Do you want " -NoNewline
-Write-Host "Uninstall Unused Apps & Softwares?" -ForegroundColor Yellow -NoNewline
-Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-$response = Read-Host
+    Write-Host `n"Do you want " -NoNewline
+    Write-Host "Uninstall Unused Apps & Softwares?" -ForegroundColor Yellow -NoNewline
+    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+    $response = Read-Host
 
-if ($response -eq 'y' -or $response -eq 'Y') {
+    if ($response -eq 'y' -or $response -eq 'Y') {
 
-    # Remove Apps 
-    Function UninstallThirdPartyBloat {
-        Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
+        # Remove Apps 
+        Function UninstallThirdPartyBloat {
+            Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
     
-        $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
-        "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
-        "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
-        "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-        "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "Microsoft.XboxApp", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
-        "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
-        "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
-        "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*", "Microsoft.XboxGamingOverlay"
+            $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
+            "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
+            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
+            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "Microsoft.XboxApp", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
+            "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
+            "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*", "Microsoft.XboxGamingOverlay"
     
-        $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
-        "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
-        "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
-        "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
-        "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
-        "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
-        "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
+            $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
+            "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
+            "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
+            "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
+            "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
+            "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
+            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
 
-        $Uninstall3Party | ForEach-Object {
-            Get-AppxPackage -AllUsers $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
-        }
+            $Uninstall3Party | ForEach-Object {
+                Get-AppxPackage -AllUsers $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
+            }
 
-        $UninstallAppxPackages | ForEach-Object {
-            Get-AppxPackage $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
-        }
+            $UninstallAppxPackages | ForEach-Object {
+                Get-AppxPackage $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
+            }
 
 
-        # Uninstall Health Check
-        $progressPreference = 'silentlyContinue'
-        taskkill /f /im PCHealthCheck.exe *>$null
-        cmd.exe /c "winget uninstall Microsoft.WindowsPCHealthCheck --force" *>$null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    }
-
-    UninstallThirdPartyBloat
-
-    # Uninstall Windows Media Player
-    Function UninstallMediaPlayer {
-        Write-Host "Uninstalling Windows Media Player..." -NoNewline
-        $progressPreference = 'silentlyContinue'
-        Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WindowsMediaPlayer" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
-        Get-WindowsCapability -Online | Where-Object { $_.Name -like "Media.WindowsMediaPlayer*" } | Remove-WindowsCapability -Online | Out-Null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    }
-
-    # Uninstall Work Folders Client - Not applicable to Server
-    Function UninstallWorkFolders {
-        Write-Host "Uninstalling Work Folders Client..." -NoNewline
-        $progressPreference = 'silentlyContinue'
-        Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue *>$null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    }
-
-    UninstallWorkFolders
-
-    # Uninstall Microsoft XPS Document Writer 
-    Function UninstallXPSPrinter {
-        Write-Host "Uninstalling Microsoft XPS Document Writer..." -NoNewline
-        Remove-Printer -Name "Microsoft XPS Document Writer" -ErrorAction SilentlyContinue 
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    }
-
-    UninstallXPSPrinter
-
-    # Remove Default Fax Printer 
-    Function RemoveFaxPrinter {
-        Write-Host "Removing Default Fax Printer..." -NoNewline
-        Remove-Printer -Name "Fax" -ErrorAction SilentlyContinue
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    }
-
-    RemoveFaxPrinter
-
-    # Uninstall Windows Fax and Scan Services - Not applicable to Server
-    Function UninstallFaxAndScan {
-        Write-Host "Uninstalling Windows Fax and Scan Services..." -NoNewline
-        $progressPreference = 'silentlyContinue'
-        Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart *>$null
-        Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online *>$null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    }
-
-    UninstallFaxAndScan
-
-    # Remove 3D Folders
-    Function Remove3D {
-        Write-Host "Removing 3D Folders..." -NoNewline
-        Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
-        Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    }
-    
-    Remove3D
-
-    # Remove Tasks in Task Scheduler
-    Function RemoveTasks {
-        Write-Host "Removing Unnecessary Tasks..." -NoNewline
-
-        $RemoveTasks = "OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*",
-        "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*"
-  
-        Get-ScheduledTask  $RemoveTasks | Unregister-ScheduledTask -Confirm:$false    
-
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-    }
-
-    RemoveTasks
-
-    # Uninstall OneDrive
-    Function UninstallOneDrive {
-        Write-Host `n"Do you want " -NoNewline
-        Write-Host "uninstall Windows OneDrive?" -ForegroundColor Yellow -NoNewline
-        Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-        $response = Read-Host
-        if ($response -eq 'y' -or $response -eq 'Y') {
-            Write-Host "Removing Microsoft OneDrive..." -NoNewline
+            # Uninstall Health Check
             $progressPreference = 'silentlyContinue'
-            taskkill /f /im onedrive.exe *>$null
-            cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null
+            taskkill /f /im PCHealthCheck.exe *>$null
+            cmd.exe /c "winget uninstall Microsoft.WindowsPCHealthCheck --force" *>$null
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
-        elseif ($response -eq 'n' -or $response -eq 'N') {
-            Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor Black
-        }
-        else {
-            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-            UninstallOneDrive
-        }
-    }
+        UninstallThirdPartyBloat
 
-    UninstallOneDrive
+        # Uninstall Windows Media Player
+        Function UninstallMediaPlayer {
+            Write-Host "Uninstalling Windows Media Player..." -NoNewline
+            $progressPreference = 'silentlyContinue'
+            Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WindowsMediaPlayer" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
+            Get-WindowsCapability -Online | Where-Object { $_.Name -like "Media.WindowsMediaPlayer*" } | Remove-WindowsCapability -Online | Out-Null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        }
 
-    # Disable Edge desktop shortcut creation after certain Windows updates are applied 
-    Function UninstallEdge {
-        Write-Host `n"Do you want " -NoNewline
-        Write-Host "uninstall Windows Edge?" -ForegroundColor Yellow -NoNewline
-        Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-        $response = Read-Host
-        if ($response -eq 'y' -or $response -eq 'Y') {
-            Write-Host "Removing Microsoft Edge..." -NoNewline
-            taskkill /f /im msedge.exe *>$null
+        # Uninstall Work Folders Client - Not applicable to Server
+        Function UninstallWorkFolders {
+            Write-Host "Uninstalling Work Folders Client..." -NoNewline
+            $progressPreference = 'silentlyContinue'
+            Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue *>$null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        }
+
+        UninstallWorkFolders
+
+        # Uninstall Microsoft XPS Document Writer 
+        Function UninstallXPSPrinter {
+            Write-Host "Uninstalling Microsoft XPS Document Writer..." -NoNewline
+            Remove-Printer -Name "Microsoft XPS Document Writer" -ErrorAction SilentlyContinue 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        }
+
+        UninstallXPSPrinter
+
+        # Remove Default Fax Printer 
+        Function RemoveFaxPrinter {
+            Write-Host "Removing Default Fax Printer..." -NoNewline
+            Remove-Printer -Name "Fax" -ErrorAction SilentlyContinue
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        }
+
+        RemoveFaxPrinter
+
+        # Uninstall Windows Fax and Scan Services - Not applicable to Server
+        Function UninstallFaxAndScan {
+            Write-Host "Uninstalling Windows Fax and Scan Services..." -NoNewline
+            $progressPreference = 'silentlyContinue'
+            Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart *>$null
+            Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online *>$null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        }
+
+        UninstallFaxAndScan
+
+        # Remove 3D Folders
+        Function Remove3D {
+            Write-Host "Removing 3D Folders..." -NoNewline
+            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
+            Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        }
     
-            #Edge Services
-            $edgeservices = "edgeupdate", "edgeupdatem"
-            foreach ($service in $edgeservices) {
-                Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-                Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-                sc.exe delete $service *>$null
+        Remove3D
+
+        # Remove Tasks in Task Scheduler
+        Function RemoveTasks {
+            Write-Host "Removing Unnecessary Tasks..." -NoNewline
+
+            $RemoveTasks = "OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*",
+            "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*"
+  
+            Get-ScheduledTask  $RemoveTasks | Unregister-ScheduledTask -Confirm:$false    
+
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        }
+
+        RemoveTasks
+
+        # Uninstall OneDrive
+        Function UninstallOneDrive {
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "uninstall Windows OneDrive?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Removing Microsoft OneDrive..." -NoNewline
+                $progressPreference = 'silentlyContinue'
+                taskkill /f /im onedrive.exe *>$null
+                cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
-            # Uninstall - Edge
-            $regView = [Microsoft.Win32.RegistryView]::Registry32
-            $microsoft = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $regView).
-            OpenSubKey('SOFTWARE\Microsoft', $true)
-
-            $edgeClient = $microsoft.OpenSubKey('EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}', $true)
-            if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
-                $edgeClient.DeleteValue('experiment_control_labels')
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor Black
             }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                UninstallOneDrive
+            }
+        }
 
-            $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
+        UninstallOneDrive
 
-            $uninstallRegKey = $microsoft.OpenSubKey('Windows\CurrentVersion\Uninstall\Microsoft Edge')
-            $uninstallString = $uninstallRegKey.GetValue('UninstallString') + ' --force-uninstall'
-            Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
-
-            $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
-            $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
-            $key = (Get-Item -Path $pattern).PSChildName
-            reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
-
-            $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
-
-            New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
-            Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage *>$null
-            Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" *>$null
-
-            # Delete additional files
-            $additionalFilesPath = "C:\Windows\System32\MicrosoftEdgeCP.exe"
-            if (Test-Path -Path $additionalFilesPath) {
-                $additionalFiles = Get-ChildItem -Path "C:\Windows\System32\MicrosoftEdge*" -File
-                foreach ($file in $additionalFiles) {
-                    $takeownArgs = "/f $($file.FullName)"
-                    Start-Process -FilePath "takeown.exe" -ArgumentList $takeownArgs -Wait | Out-Null
-                    $icaclsArgs = "`"$($file.FullName)`" /inheritance:e /grant `"$($env:UserName)`":(OI)(CI)F /T /C"
-                    Start-Process -FilePath "icacls.exe" -ArgumentList $icaclsArgs -Wait | Out-Null
-                    Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
+        # Disable Edge desktop shortcut creation after certain Windows updates are applied 
+        Function UninstallEdge {
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "uninstall Windows Edge?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Removing Microsoft Edge..." -NoNewline
+                taskkill /f /im msedge.exe *>$null
+    
+                #Edge Services
+                $edgeservices = "edgeupdate", "edgeupdatem"
+                foreach ($service in $edgeservices) {
+                    Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                    Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+                    sc.exe delete $service *>$null
                 }
+
+                # Uninstall - Edge
+                $regView = [Microsoft.Win32.RegistryView]::Registry32
+                $microsoft = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $regView).
+                OpenSubKey('SOFTWARE\Microsoft', $true)
+
+                $edgeClient = $microsoft.OpenSubKey('EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}', $true)
+                if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
+                    $edgeClient.DeleteValue('experiment_control_labels')
+                }
+
+                $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
+
+                $uninstallRegKey = $microsoft.OpenSubKey('Windows\CurrentVersion\Uninstall\Microsoft Edge')
+                $uninstallString = $uninstallRegKey.GetValue('UninstallString') + ' --force-uninstall'
+                Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
+
+                $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
+                $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
+                $key = (Get-Item -Path $pattern).PSChildName
+                reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
+
+                $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
+
+                New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
+                Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage *>$null
+                Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" *>$null
+
+                # Delete additional files
+                $additionalFilesPath = "C:\Windows\System32\MicrosoftEdgeCP.exe"
+                if (Test-Path -Path $additionalFilesPath) {
+                    $additionalFiles = Get-ChildItem -Path "C:\Windows\System32\MicrosoftEdge*" -File
+                    foreach ($file in $additionalFiles) {
+                        $takeownArgs = "/f $($file.FullName)"
+                        Start-Process -FilePath "takeown.exe" -ArgumentList $takeownArgs -Wait | Out-Null
+                        $icaclsArgs = "`"$($file.FullName)`" /inheritance:e /grant `"$($env:UserName)`":(OI)(CI)F /T /C"
+                        Start-Process -FilePath "icacls.exe" -ArgumentList $icaclsArgs -Wait | Out-Null
+                        Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
+                    }
+                }
+
+                #do not update edge
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
+                Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory | Remove-Item -Force -Recurse *>$null
+
+                #delete shortcuts
+                Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
+                Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
+
+                #delete startup apps
+                Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force
+
+                $progressPreference = 'SilentlyContinue'
+                Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
+                Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
+                Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction SilentlyContinue
+                Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction SilentlyContinue
+                Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
+
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
             }
 
-            #do not update edge
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-            taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
-            Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory | Remove-Item -Force -Recurse *>$null
-
-            #delete shortcuts
-            Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
-            Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ } *>$null
-
-            #delete startup apps
-            Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force
-
-            $progressPreference = 'SilentlyContinue'
-            Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue *>$null
-            Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction SilentlyContinue
-            Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction SilentlyContinue
-            Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction SilentlyContinue
-            Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
-
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                UninstallEdge
+            }
         }
 
-        elseif ($response -eq 'n' -or $response -eq 'N') {
-            Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
-        }
-        else {
-            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-            UninstallEdge
-        }
+        UninstallEdge
+
     }
-
-    UninstallEdge
-
-}
-elseif ($response -eq 'n' -or $response -eq 'N') {
-    Write-Host "[Unnecessary apps will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-}
-else {
-    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-    UnusedApps
-}
+    elseif ($response -eq 'n' -or $response -eq 'N') {
+        Write-Host "[Unnecessary apps will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
+    }
+    else {
+        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+        UnusedApps
+    }
 }
 
 UnusedApps
