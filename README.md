@@ -198,10 +198,12 @@ are my specific settings.
 > Powershell must be run as admin
 <br />
 
+for Windows 10
 ```
 iwr "w10.caglaryalcin.com" -UseB | iex
 ```
 
+for Windows 11
 ```
 iwr "w11.caglaryalcin.com" -UseB | iex
 ```
