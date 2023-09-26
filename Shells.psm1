@@ -63,10 +63,10 @@ Function SystemSettings {
                 net start W32Time *>$null
                 w32tm /resync /force *>$null
                 w32tm /config /manualpeerlist:time.windows.com, 0x1 /syncfromflags:manual /reliable:yes /update *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Turkish region format adjustment has been canceled]" -ForegroundColor Red -BackgroundColor White
+                Write-Host "[Turkish region format adjustment has been canceled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -181,7 +181,7 @@ Function SystemSettings {
                 
                 #Exclude github folders for scan
                 Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
@@ -211,7 +211,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name $extension -Type String -Value "PhotoViewer.FileAssoc.Tiff" -ErrorAction SilentlyContinue
             }
 
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         DefaultPhotoViewer
@@ -220,7 +220,7 @@ Function SystemSettings {
         Function SetAppsDarkMode {
             Write-Host "Setting Dark Mode for Applications..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         SetAppsDarkMode
@@ -229,7 +229,7 @@ Function SystemSettings {
         Function SetSystemDarkMode {
             Write-Host "Setting Dark Mode for System..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         SetSystemDarkMode
@@ -242,7 +242,7 @@ Function SystemSettings {
             }
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" -Name "StartupPage" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" -Name "AllItemsIconView" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         SetControlPanelLargeIcons
@@ -259,7 +259,7 @@ Function SystemSettings {
                 $wsh = New-Object -ComObject WScript.Shell
                 $wsh.SendKeys('{NUMLOCK}')
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         EnableNumlock
@@ -269,7 +269,7 @@ Function SystemSettings {
             Write-Host "Disabling Windows Beep Sound..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Control Panel\Sound" -Name "Beep" -Type String -Value no
             Set-Service beep -StartupType disabled *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         DisableBeepSound
@@ -278,7 +278,7 @@ Function SystemSettings {
         Function DisableIPv6 {
             Write-Host "Disabling IPv6 stack..." -NoNewline
             Disable-NetAdapterBinding -Name "*" -ComponentID "ms_tcpip6"
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         DisableIPv6
@@ -288,7 +288,7 @@ Function SystemSettings {
             Write-Host "Disabling Virtual Ethernet Adapters..." -NoNewline
             Disable-NetAdapter -Name "*VMware*" -Confirm:$false *>$null
             Disable-NetAdapter -Name "*Virtual*" -Confirm:$false *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         #DisableVMEthernets
@@ -299,7 +299,7 @@ Function SystemSettings {
             $interfaces = "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"
             Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses ("1.1.1.1", "1.0.0.1") -ErrorAction SilentlyContinue
 
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black        
         }
 
         SetCFDNS
@@ -315,7 +315,7 @@ Function SystemSettings {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "HideSCAMeetNow" -Value 1  -ErrorAction SilentlyContinue #HideSCAMeetNow
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "NavPaneExpandToCurrentFolder" -Type DWord -Value 0 #expand all folders
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "NavPaneShowAllFolders" -Type DWord -Value 0 #expand all folders
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         hidequickaccess
@@ -326,7 +326,7 @@ Function SystemSettings {
             New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon" -ErrorAction SilentlyContinue | Out-Null
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon" -Name "MinimizedStateTabletModeOff" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon" -Name "Minimized" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         FileExplorerExpandRibbon
@@ -342,7 +342,7 @@ Function SystemSettings {
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" -Name "{645FF040-5081-101B-9F08-00AA002F954E}" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         HideRecycleBinFromDesktop
@@ -351,7 +351,7 @@ Function SystemSettings {
         Function DisableHiberfil {
             Write-Host "Disabling hiberfil.sys..." -NoNewline
             powercfg -h off
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black        
         }
 
         DisableHiberfil
@@ -367,7 +367,7 @@ Function SystemSettings {
             powercfg /X standby-timeout-ac 0
             powercfg -change -disk-timeout-dc 0
             powercfg -change -disk-timeout-ac 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableSleepTimeout
@@ -378,7 +378,7 @@ Function SystemSettings {
             If ((New-Object -ComObject Microsoft.Update.ServiceManager).Services | Where-Object { $_.ServiceID -eq "7971f918-a847-4430-9279-4a52d1efe18d" }) {
 		(New-Object -ComObject Microsoft.Update.ServiceManager).RemoveService("7971f918-a847-4430-9279-4a52d1efe18d") | Out-Null
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableUpdateMSProducts
@@ -408,7 +408,7 @@ Function SystemSettings {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization" -Name "AllowInputPersonalization" -Type DWord -Value 0
             $progressPreference = 'silentlyContinue'
             Get-AppxPackage "Microsoft.549981C3F5F10" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableCortana
@@ -422,7 +422,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "DisableWebSearch" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableWebSearch
@@ -435,7 +435,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableSmartScreen
@@ -447,7 +447,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableSensors" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableSensors
@@ -459,7 +459,7 @@ Function SystemSettings {
                 New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\CloudContent" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableTailoredExperiences
@@ -474,7 +474,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableXboxFeatures
@@ -486,7 +486,7 @@ Function SystemSettings {
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "SaveZoneInformation" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableDownloadBlocking
@@ -498,7 +498,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\Maintenance" -Name "WakeUp" -Type DWord -Value 0 | Out-Null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableMaintenanceWakeUp
@@ -507,7 +507,7 @@ Function SystemSettings {
         Function DisableStorageSense {
             Write-Host "Disabling Storage Sense..." -NoNewline
             Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableStorageSense
@@ -523,7 +523,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Addons" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Addons" -Name "FlashPlayerEnabled" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableAdobeFlash
@@ -539,7 +539,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" -Name "AllowTabPreloading" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableEdgePreload
@@ -551,7 +551,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableIEFirstRun
@@ -572,7 +572,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\WMDRM" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WMDRM" -Name "DisableOnline" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableMediaOnlineAccess
@@ -585,7 +585,7 @@ Function SystemSettings {
             }
             Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableActionCenter
@@ -603,7 +603,7 @@ Function SystemSettings {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "DisableConfig" -Type DWord -Value 1
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "DisableSR" -Type DWord -Value 1
             schtasks /Change /TN "\Microsoft\Windows\SystemRestore\SR" /disable  | Out-Null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         DisableRestorePoints
@@ -613,7 +613,7 @@ Function SystemSettings {
             Write-Host "Setting Low UAC Level..." -NoNewline
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         SetUACLow
@@ -623,7 +623,7 @@ Function SystemSettings {
             Write-Host "Fixing System Files..." -NoNewline
             DISM.exe /Online /Cleanup-image /Restorehealth
             Start-Process -FilePath "${env:Windir}\System32\SFC.EXE" -ArgumentList '/scannow' -Wait -NoNewWindow -ErrorAction SilentlyContinue
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         #Sfc
@@ -655,7 +655,7 @@ Function SystemSettings {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\User file versions" -Name "StateFlags0077" -Type DWord -Value 2
             cleanmgr.exe /sagerun:77
             Start-Sleep -Seconds 15
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
    
             ## Deletes the contents of windows software distribution.
             $progressPreference = 'silentlyContinue'
@@ -665,26 +665,26 @@ Function SystemSettings {
             $progressPreference = 'silentlyContinue'
             Get-ChildItem "C:\Windows\Temp\*" -Recurse -Force  -ErrorAction SilentlyContinue | Remove-Item -recurse -ErrorAction SilentlyContinue 
             Write-host "Windows Temp have been removing." -NoNewline
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     
             ## Deletes all files and folders in user's Temp folder older then $DaysToDelete
             $progressPreference = 'silentlyContinue'
             Get-ChildItem "$env:userprofile\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -force -recurse -ErrorAction SilentlyContinue 
             Write-Host "TEMP have been removing." -NoNewline
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
             ## Removes all files and folders in user's Temporary Internet Files older then $DaysToDelete
             $progressPreference = 'silentlyContinue'
             Get-ChildItem "$env:userprofile\AppData\Local\Microsoft\Windows\Temporary Internet Files\*" -Recurse -Force  -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue 
             Write-Host "All Temporary Internet Files have been removing." -NoNewline
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
             ## Removes *.log from C:\windows\CBS
             if (Test-Path C:\Windows\logs\CBS\) {
                 Get-ChildItem "C:\Windows\logs\CBS\*.log" -Recurse -Force -ErrorAction SilentlyContinue |
                 remove-item -force -recurse -ErrorAction SilentlyContinue 
                 Write-Host "All CBS logs have been removing." -NoNewline
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
                 Write-Host "C:\inetpub\logs\LogFiles\ does not exist, there is nothing to cleanup." -NoNewline -ForegroundColor DarkGray
@@ -695,7 +695,7 @@ Function SystemSettings {
             if (Test-Path C:\inetpub\logs\LogFiles\) {
                 Get-ChildItem "C:\inetpub\logs\LogFiles\*" -Recurse -Force -ErrorAction SilentlyContinue  | Remove-Item -Force  -Recurse -ErrorAction SilentlyContinue
                 Write-Host "All IIS Logfiles over $DaysToDelete days old have been removing" -NoNewline
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
                 Write-Host "C:\Windows\logs\CBS\ does not exist, there is nothing to cleanup." -NoNewline -ForegroundColor DarkGray
@@ -742,7 +742,7 @@ Function SystemSettings {
             if (test-path C:\ProgramData\Microsoft\Windows\WER) {
                 Get-ChildItem -Path C:\ProgramData\Microsoft\Windows\WER -Recurse | Remove-Item -force -recurse  -ErrorAction SilentlyContinue
                 Write-host "Deleting Windows Error Reporting files!" -NoNewline
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
                 Write-Host "C:\ProgramData\Microsoft\Windows\WER does not exist, there is nothing to cleanup." -NoNewline -ForegroundColor DarkGray
@@ -859,7 +859,7 @@ Function SystemSettings {
             }
 
             Write-host "Removing System and User Temp Files." -NoNewline
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
             ## Removes the hidden recycling bin.
             if (Test-path 'C:\$Recycle.Bin') {
@@ -883,14 +883,14 @@ Function SystemSettings {
                     ## If PowerShell version 4 or bewlow is installed the following will process
                     Remove-Item -Include $_.path -Force -Recurse 
                     Write-Host "The recycling bin has been cleaned up successfully!" -NoNewline
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
             }
             elseif ($PSVersionTable.PSVersion.Major -ge 5) {
                 ## If PowerShell version 5 is running on the machine the following will process
                 Clear-RecycleBin -DriveLetter C:\ -Force 
                 Write-Host "The recycling bin has been cleaned up successfully!" -NoNewline
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
         }
 
@@ -901,7 +901,7 @@ Function SystemSettings {
             Write-Host "Disabling Scheduled Defragmentation..." -NoNewline
             $progressPreference = 'silentlyContinue'
             Schtasks /Delete /TN "\Microsoft\Windows\Defrag\ScheduledDefrag" /F *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         #DisableDefragmentation
@@ -913,7 +913,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "ClearRecentDocsOnExit" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         EnableClearRecentFiles
@@ -925,7 +925,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoRecentDocsHistory" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableRecentFiles
@@ -937,7 +937,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "NoUseStoreOpenWith" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableSearchAppInStore
@@ -949,7 +949,7 @@ Function SystemSettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         HideRecentlyAddedApps
@@ -966,7 +966,7 @@ Function SystemSettings {
                 Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
             }
 
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableServices
@@ -979,7 +979,7 @@ Function SystemSettings {
             $wc = New-Object System.Net.WebClient
             $wc.DownloadFile($url, $filePath)
             Set-Itemproperty -path "HKCU:Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         SetWallpaper
@@ -993,7 +993,7 @@ Function SystemSettings {
             Write-Host "Disabling News and Interes on Taskbar..." -NoNewline
             New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" *>$null
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         DisableNews
@@ -1005,7 +1005,7 @@ Function SystemSettings {
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         HideTaskbarPeopleIcon
@@ -1014,7 +1014,7 @@ Function SystemSettings {
         Function HideTaskbarTaskviewIcon {
             Write-Host "Hiding Taskview Icon from Taskbar..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         HideTaskbarTaskviewIcon
@@ -1030,7 +1030,7 @@ Function SystemSettings {
             }
             New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "AllUpView" -Type DWord -Value 0  *>$null
             New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "Remove TaskView" -Type DWord -Value 0  *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         HideTaskbarMultiTaskviewIcon
@@ -1039,7 +1039,7 @@ Function SystemSettings {
         Function ShowSmallTaskbarIcons {
             Write-Host "Showing Small Icons in Taskbar..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSmallIcons" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         ShowSmallTaskbarIcons
@@ -1048,7 +1048,7 @@ Function SystemSettings {
         Function HideTaskbarSearch {
             Write-Host "Hiding Taskbar Search Icon / Box..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         HideTaskbarSearch
@@ -1057,7 +1057,7 @@ Function SystemSettings {
         Function RemoveTaskbarChat {
             Write-Host "Removing Chat from Taskbar..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarMn" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         RemoveTaskbarChat
@@ -1066,7 +1066,7 @@ Function SystemSettings {
         Function RemoeTaskbarWidgets {
             Write-Host "Removing Widgets from Taskbar..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarDa" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         RemoeTaskbarWidgets
@@ -1087,7 +1087,7 @@ Function SystemSettings {
                 $data = $key.Data[0..25] + ([byte[]](202, 50, 0, 226, 44, 1, 1, 0, 0))
                 Set-ItemProperty -Path $key.PSPath -Name "Data" -Type Binary -Value $data -ErrorAction SilentlyContinue
                 Stop-Process -Name "ShellExperienceHost" -Force -ErrorAction SilentlyContinue
-                #Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                #Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
         }
 
@@ -1131,7 +1131,7 @@ Function SystemSettings {
         function Configure-TaskbarPinningApp([string]$AppName, [string]$Verb) {
             $myProcessName = Get-Process | where { $_.ID -eq $pid } | % { $_.ProcessName }
             if (-not ($myProcessName -like "explorer")) { 
-                #Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+                #Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
 
             $apps = Get-ExplorerApps($AppName)
@@ -1174,7 +1174,7 @@ Function SystemSettings {
 
             $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
 
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         ImportStartup
@@ -1282,7 +1282,7 @@ Function PrivacySettings {
                 New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\EdgeUI" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\EdgeUI" -Name "DisableMFUTracking" -Type Dword -Value "1"
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableTelemetry
@@ -1337,7 +1337,7 @@ Function PrivacySettings {
 127.0.0.1 www.bingads.microsoft.com
     ## END Windows 10 Privacy Settings ##"
             Set-Content -Path $file -Value $hostfile -Force *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         AddTelemetryHost
@@ -1352,7 +1352,7 @@ Function PrivacySettings {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 1
             Disable-ScheduledTask -TaskName "Microsoft\Windows\Feedback\Siuf\DmClient" -ErrorAction SilentlyContinue | Out-Null
             Disable-ScheduledTask -TaskName "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" -ErrorAction SilentlyContinue | Out-Null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableFeedback
@@ -1363,7 +1363,7 @@ Function PrivacySettings {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableActivityHistory
@@ -1372,7 +1372,7 @@ Function PrivacySettings {
         Function DisableWebLangList {
             Write-Host "Disabling Website Access to Language List..." -NoNewline
             Set-ItemProperty -Path "HKCU:\Control Panel\International\User Profile" -Name "HttpAcceptLanguageOptOut" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableWebLangList
@@ -1382,7 +1382,7 @@ Function PrivacySettings {
             Write-Host "Stopping and Disabling Connected User Experiences and Telemetry Service..." -NoNewline
             Stop-Service "DiagTrack" -WarningAction SilentlyContinue
             Set-Service "DiagTrack" -StartupType Disabled
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableDiagTrack
@@ -1394,7 +1394,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 1
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableAdvertisingID
@@ -1415,7 +1415,7 @@ Function PrivacySettings {
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedOEM" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "WiFISenseAllowed" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableWiFiSense
@@ -1445,7 +1445,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path $key.PSPath -Name "Data" -Type Binary -Value $key.Data[0..15]
                 Stop-Process -Name "ShellExperienceHost" -Force -ErrorAction SilentlyContinue
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableAppSuggestions
@@ -1465,7 +1465,7 @@ Function PrivacySettings {
                     Set-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -Type DWord -Value 1
                 }
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPBackgroundApps
@@ -1478,7 +1478,7 @@ Function PrivacySettings {
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsActivateWithVoice" -Type DWord -Value 2
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsActivateWithVoiceAboveLock" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPVoiceActivation
@@ -1490,7 +1490,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessNotifications" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPNotifications
@@ -1502,7 +1502,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessAccountInfo" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPAccountInfo
@@ -1514,7 +1514,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessContacts" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPContacts
@@ -1526,7 +1526,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessCalendar" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPCalendar
@@ -1538,7 +1538,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessPhone" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPPhoneCalls
@@ -1550,7 +1550,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessCallHistory" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPCallHistory
@@ -1562,7 +1562,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessEmail" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPEmail
@@ -1574,7 +1574,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessTasks" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPTasks
@@ -1586,7 +1586,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessMessaging" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPMessaging
@@ -1598,7 +1598,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessRadios" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPRadios
@@ -1610,7 +1610,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsSyncWithDevices" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPOtherDevices
@@ -1622,7 +1622,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsGetDiagnosticInfo" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPDiagInfo
@@ -1634,7 +1634,7 @@ Function PrivacySettings {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\picturesLibrary" -Name "Value" -Type String -Value "Deny"
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\videosLibrary" -Name "Value" -Type String -Value "Deny"
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\broadFileSystemAccess" -Name "Value" -Type String -Value "Deny"
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPFileSystem
@@ -1644,7 +1644,7 @@ Function PrivacySettings {
         Function DisableUWPSwapFile {
             Write-Host "Disabling UWP Apps Swap File..." -NoNewline
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "SwapfileControl" -Type Dword -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUWPSwapFile
@@ -1653,7 +1653,7 @@ Function PrivacySettings {
         Function DisableMapUpdates {
             Write-Host "Disabling Automatic Maps Updates..." -NoNewline
             Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableMapUpdates
@@ -1667,7 +1667,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MusNotification.exe" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MusNotification.exe" -Name "Debugger" -Type String -Value "cmd.exe"
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUpdateRestart
@@ -1679,7 +1679,7 @@ Function PrivacySettings {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 2
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         DisableUpdateAutoDownload
@@ -1716,7 +1716,7 @@ Function GithubSoftwares {
             Write-Host `n"Installing Winget..." -NoNewline
             $progressPreference = 'silentlyContinue'
             iwr "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/winget.psm1" -UseB | iex *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         Winget
@@ -1733,7 +1733,7 @@ Function GithubSoftwares {
                 $packageIdentifier = $package.PackageIdentifier
                 Write-Host "Installing '$packageIdentifier'..." -NoNewline
                 Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             Start-Sleep 5
             $progressPreference = 'silentlyContinue'
@@ -1763,7 +1763,7 @@ Function GithubSoftwares {
                 }
             }
 
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
             #other softwares
             $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/apps/othapps.json'
@@ -1775,7 +1775,7 @@ Function GithubSoftwares {
                 $packageIdentifier = $package.PackageIdentifier
                 Write-Host "Installing '$packageIdentifier'..." -NoNewline
                 Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
             #7-Zip on PS
@@ -1814,7 +1814,7 @@ Function GithubSoftwares {
                 Write-Host "[You are expected to close the installation screen!]" -NoNewline -ForegroundColor Red
                 Start-Process C:\valo.exe -NoNewWindow -Wait
                 Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor White
@@ -1890,7 +1890,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         $progressPreference = 'silentlyContinue'
         taskkill /f /im PCHealthCheck.exe *>$null
         cmd.exe /c "winget uninstall Microsoft.WindowsPCHealthCheck --force" *>$null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     }
 
     UninstallThirdPartyBloat
@@ -1901,7 +1901,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         $progressPreference = 'silentlyContinue'
         Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WindowsMediaPlayer" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
         Get-WindowsCapability -Online | Where-Object { $_.Name -like "Media.WindowsMediaPlayer*" } | Remove-WindowsCapability -Online | Out-Null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     }
 
     # Uninstall Work Folders Client - Not applicable to Server
@@ -1909,7 +1909,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         Write-Host "Uninstalling Work Folders Client..." -NoNewline
         $progressPreference = 'silentlyContinue'
         Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue *>$null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     }
 
     UninstallWorkFolders
@@ -1918,7 +1918,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
     Function UninstallXPSPrinter {
         Write-Host "Uninstalling Microsoft XPS Document Writer..." -NoNewline
         Remove-Printer -Name "Microsoft XPS Document Writer" -ErrorAction SilentlyContinue 
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     }
 
     UninstallXPSPrinter
@@ -1927,7 +1927,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
     Function RemoveFaxPrinter {
         Write-Host "Removing Default Fax Printer..." -NoNewline
         Remove-Printer -Name "Fax" -ErrorAction SilentlyContinue
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     }
 
     RemoveFaxPrinter
@@ -1938,7 +1938,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         $progressPreference = 'silentlyContinue'
         Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart *>$null
         Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online *>$null
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     }
 
     UninstallFaxAndScan
@@ -1948,7 +1948,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         Write-Host "Removing 3D Folders..." -NoNewline
         Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
         Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     }
     
     Remove3D
@@ -1962,7 +1962,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
   
         Get-ScheduledTask  $RemoveTasks | Unregister-ScheduledTask -Confirm:$false    
 
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White 
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
     }
 
     RemoveTasks
@@ -1978,7 +1978,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
             $progressPreference = 'silentlyContinue'
             taskkill /f /im onedrive.exe *>$null
             cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         elseif ($response -eq 'n' -or $response -eq 'N') {
@@ -2068,7 +2068,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
             Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction SilentlyContinue
             Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction SilentlyContinue
 
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
         }
 
