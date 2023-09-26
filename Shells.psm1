@@ -1852,9 +1852,9 @@ Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -Back
 Write-Host `n"Do you want " -NoNewline
 Write-Host "Uninstall Unused Apps & Softwares?" -ForegroundColor Yellow -NoNewline
 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-$removeapps = Read-Host
+$response = Read-Host
 
-if ($removeapps -eq 'y' -or $response -eq 'Y') {
+if ($response -eq 'y' -or $response -eq 'Y') {
 
     # Remove Apps 
     Function UninstallThirdPartyBloat {
