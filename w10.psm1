@@ -1817,7 +1817,7 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor White
+                Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
