@@ -49,8 +49,9 @@ Function SystemSettings {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "change the region settings to Turkiye?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $input = Read-Host
-            if ($input -eq 'y' -or $response -eq 'Y') {
+            $response = Read-Host
+
+            if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Setting date format of Turkiye..." -NoNewline
                 Set-TimeZone -Name "Turkey Standard Time"
                 Set-Culture tr-TR
@@ -79,8 +80,8 @@ Function SystemSettings {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "change your hostname?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $input = Read-Host
-            if ($input -eq 'y' -or $response -eq 'Y') {
+            $response = Read-Host
+            if ($response -eq 'y' -or $response -eq 'Y') {
                 $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
                 $hostname = Read-Host -Prompt $hostq
                 Rename-Computer -NewName "$hostname" *>$null
