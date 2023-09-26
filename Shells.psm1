@@ -1972,8 +1972,8 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         Write-Host `n"Do you want " -NoNewline
         Write-Host "uninstall Windows OneDrive?" -ForegroundColor Yellow -NoNewline
         Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-        $input = Read-Host
-        if ($input -eq 'y' -or $response -eq 'Y') {
+        $response = Read-Host
+        if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host "Removing Microsoft OneDrive..." -NoNewline
             $progressPreference = 'silentlyContinue'
             taskkill /f /im onedrive.exe *>$null
@@ -1986,6 +1986,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         }
         else {
             Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+            UninstallOneDrive
         }
     }
 
@@ -1996,8 +1997,8 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         Write-Host `n"Do you want " -NoNewline
         Write-Host "uninstall Windows Edge?" -ForegroundColor Yellow -NoNewline
         Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-        $input = Read-Host
-        if ($input -eq 'y' -or $response -eq 'Y') {
+        $response = Read-Host
+        if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host "Removing Microsoft Edge..." -NoNewline
             taskkill /f /im msedge.exe *>$null
     
@@ -2077,6 +2078,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         }
         else {
             Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+            UninstallEdge
         }
     }
 
@@ -2100,7 +2102,7 @@ UnusedApps
 
 Function Restart {
     Write-Host `n"Do you " -NoNewline
-    Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor White
+    Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor Black
     Write-Host "(y/n): " -NoNewline
     $response = Read-Host
 
