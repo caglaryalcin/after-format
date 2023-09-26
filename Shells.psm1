@@ -69,6 +69,28 @@ Function SystemSettings {
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                TRFormats
+            }
+        }
+
+        TRFormats
+
+        Function SetHostname {
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "change your hostname?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $input = Read-Host
+            if ($input -eq 'y' -or $response -eq 'Y') {
+                $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
+                $hostname = Read-Host -Prompt $hostq
+                Rename-Computer -NewName "$hostname" *>$null
+                Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 SetHostname
             }
         }
