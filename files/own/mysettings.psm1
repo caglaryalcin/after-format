@@ -336,7 +336,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $progressPreference = 'silentlyContinue'
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
             Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/post-wpe-w10/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
             reg import "C:\taskbar_pin.reg" *>$null
             Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
             reg import "C:\taskbar_pin.reg" *>$null
@@ -593,7 +593,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
             New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
             $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
-            Invoke-WebRequest -Uri "https://github.com/caglaryalcin/post-wpe-w10/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
+            Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
 
             #startup twinkle tray
             New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
