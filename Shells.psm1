@@ -1983,7 +1983,7 @@ Function UnusedApps {
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Microsoft OneDrive..." -NoNewline
                 $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
+                $Global:ProgressPreference = 'SilentlyContinue'
                 taskkill /f /im onedrive.exe *>$null
                 cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2108,6 +2108,18 @@ UnusedApps
 
 ##########
 #endregion Remove Unused Apps/Softwares
+##########
+
+##########
+#region My Settings
+##########
+
+Function MySettings {
+
+}
+
+##########
+#endregion My Settings
 ##########
 
 Function Restart {
