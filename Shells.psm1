@@ -178,12 +178,11 @@ Function SystemSettings {
                 Set-MpPreference -ModerateThreatDefaultAction 6 -ErrorAction Ignore;
                 Set-MpPreference -LowThreatDefaultAction 6 -ErrorAction Ignore;
                 Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
-    
+                
                 #Exclude github folders for scan
                 Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
             }
-
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
             }
@@ -205,7 +204,7 @@ Function SystemSettings {
 
         #Default Photo Viewer Old
         Function DefaultPhotoViewer {
-            Write-Host "Default Old Photo Viewer..." -NoNewline
+            Write-Host `n"Default Old Photo Viewer..." -NoNewline
             $OldPhotoViewer = ".bmp", ".dng", ".ico", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".raw"
 
             foreach ($extension in $OldPhotoViewer) {
