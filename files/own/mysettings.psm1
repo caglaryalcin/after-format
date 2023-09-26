@@ -520,19 +520,19 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $distribution = $instdir + '\distribution'
             $extensions = $instdir + '\distribution\extensions'
 
-            $bitwarden = "https://addons.mozilla.org/firefox/downloads/file/4093799/bitwarden_password_manager-2023.3.1.xpi"
+            $bitwarden = "https://addons.mozilla.org/firefox/downloads/file/4164440/bitwarden_password_manager-2023.8.3.xpi"
             $bitwardenuid = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
-            $ublockorigin = "https://addons.mozilla.org/firefox/downloads/file/4099143/ublock_origin-1.49.0.xpi"
+            $ublockorigin = "https://addons.mozilla.org/firefox/downloads/file/4171020/ublock_origin-1.52.2.xpi"
             $ublockoriginuid = 'uBlock0@raymondhill.net'
-            $privacybadger = "https://addons.mozilla.org/firefox/downloads/file/4064595/privacy_badger17-2023.1.31.xpi"
+            $privacybadger = "https://addons.mozilla.org/firefox/downloads/file/4167070/privacy_badger17-2023.9.12.xpi"
             $privacybadgeruid = 'jid1-MnnxcxisBPnSXQ@jetpack'
-            $darkreader = "https://addons.mozilla.org/firefox/downloads/file/4095037/darkreader-4.9.63.xpi"
+            $darkreader = "https://addons.mozilla.org/firefox/downloads/file/4151368/darkreader-4.9.65.xpi"
             $darkreaderuid = 'addon@darkreader.org'
-            $ublacklist = "https://addons.mozilla.org/firefox/downloads/file/4095141/ublacklist-8.3.0.xpi"
+            $ublacklist = "https://addons.mozilla.org/firefox/downloads/file/4169526/ublacklist-8.3.4.xpi"
             $ublacklistuid = '@ublacklist'
-            $returnytdl = 'https://addons.mozilla.org/firefox/downloads/file/4072734/return_youtube_dislikes-3.0.0.8.xpi'
+            $returnytdl = 'https://addons.mozilla.org/firefox/downloads/file/4147411/return_youtube_dislikes-3.0.0.10.xpi'
             $returnytdluid = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}'
-            $idm = 'https://addons.mozilla.org/firefox/downloads/file/4083976/tonec_idm_integration_module-6.41.8.xpi'
+            $idm = 'https://addons.mozilla.org/firefox/downloads/file/4167725/tonec_idm_integration_module-6.41.20.xpi'
             $idmuid = 'mozilla_cc3@internetdownloadmanager.com'
            
             $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
