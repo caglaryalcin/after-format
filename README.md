@@ -186,7 +186,7 @@ are my specific settings.
 
 
 > **Note**
-> This script takes about 40 minutes with 100mbps internet.
+> This script takes about 40-60 minutes with 100mbps internet.
 
 
 ## Start the script
@@ -198,4 +198,8 @@ are my specific settings.
 
 ```
 iwr "w10.caglaryalcin.com" -UseB | iex
+```
+
+```
+iwr "w11.caglaryalcin.com" -UseB | iex
 ```
