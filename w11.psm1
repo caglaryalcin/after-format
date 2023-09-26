@@ -1889,13 +1889,11 @@ Function UnusedApps {
             "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
 
             $Uninstall3Party | ForEach-Object {
-                $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
                 Get-AppxPackage -AllUsers $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
             }
 
             $UninstallAppxPackages | ForEach-Object {
-                $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
                 Get-AppxPackage $_ | Remove-AppxPackage -ErrorAction SilentlyContinue
             }
