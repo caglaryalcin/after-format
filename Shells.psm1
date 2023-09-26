@@ -88,7 +88,7 @@ Function SystemSettings {
                 Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor White
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor White
+                Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -184,7 +184,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor White  
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor White
+                Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -1181,7 +1181,7 @@ Function SystemSettings {
 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor White
+        Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
     }
     else {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -1686,7 +1686,7 @@ Function PrivacySettings {
 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host "[Privacy Settings Cancelled]" -ForegroundColor Red -BackgroundColor White
+        Write-Host "[Privacy Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
     }
     else {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -1829,7 +1829,7 @@ Function GithubSoftwares {
 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor White
+        Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
     }
     else {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -1846,6 +1846,7 @@ GithubSoftwares
 ##########
 #region Remove Unused Apps/Softwares
 ##########
+Function UnusedApps {
 Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
 
 Write-Host `n"Do you want " -NoNewline
@@ -1981,7 +1982,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         }
 
         elseif ($response -eq 'n' -or $response -eq 'N') {
-            Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor White
+            Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor Black
         }
         else {
             Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -2072,7 +2073,7 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
         }
 
         elseif ($response -eq 'n' -or $response -eq 'N') {
-            Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor White
+            Write-Host "[Windows Edge will not be deleted]" -ForegroundColor Red -BackgroundColor Black
         }
         else {
             Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -2083,11 +2084,15 @@ if ($removeapps -eq 'y' -or $response -eq 'Y') {
 
 }
 elseif ($response -eq 'n' -or $response -eq 'N') {
-    Write-Host "[Unnecessary apps will not be uninstalled]" -ForegroundColor Red -BackgroundColor White
+    Write-Host "[Unnecessary apps will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
 }
 else {
     Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+    UnusedApps
 }
+}
+
+UnusedApps
 
 ##########
 #endregion Remove Unused Apps/Softwares
