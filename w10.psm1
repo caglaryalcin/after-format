@@ -1712,11 +1712,62 @@ Function GithubSoftwares {
     $response = Read-Host
 
     if ($response -eq 'y' -or $response -eq 'Y') {
+
         Function Winget {
-            Write-Host `n"Installing Winget..." -NoNewline
-            $progressPreference = 'silentlyContinue'
-            iwr "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.psm1" -UseB | iex *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            function Winget-Alternative {
+                [CmdletBinding()]
+                param (
+                    [Parameter(Mandatory = $true)]
+                    [string]$Match
+                )
+            
+                $uri = "https://api.github.com/repos/microsoft/winget-cli/releases"
+                Write-Debug "Getting information from $uri"
+                $releases = Invoke-RestMethod -uri $uri -Method Get -ErrorAction stop
+            
+                Write-Debug "Getting latest release..."
+                foreach ($release in $releases) {
+                    if ($release.name -match "preview") {
+                        continue
+                    }
+                    $data = $release.assets | Where-Object name -Match $Match
+                    if ($data) {
+                        return $data.browser_download_url
+                    }
+                }
+            
+                Write-Debug "Falling back to the latest release..."
+                $latestRelease = $releases | Select-Object -First 1
+                $data = $latestRelease.assets | Where-Object name -Match $Match
+                return $data.browser_download_url
+            }
+            
+            $wingetUrl = Winget-Alternative -Match "msixbundle"
+            
+            mkdir c:\temp *>$null
+            
+            $wingetPath = Join-Path -Path c:\temp -ChildPath "winget.msixbundle"
+            
+            $Global:ProgressPreference = 'SilentlyContinue'
+            $ErrorActionPreference = 'SilentlyContinue'
+            
+            Invoke-WebRequest -Uri $wingetUrl -OutFile $wingetPath
+            
+            Invoke-Item "C:\temp\winget.msixbundle"
+            
+            Start-Sleep 2
+            [System.Windows.Forms.SendKeys]::SendWait("{ALT}")
+            [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+            
+            Start-Sleep 2
+            
+            [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+            
+            Start-Sleep 40
+            
+            taskkill /f /im AppInstaller.exe *>$null
+            
+            Remove-Item C:\temp -Recurse -Force *>$null
         }
 
         Winget
