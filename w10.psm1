@@ -1764,7 +1764,7 @@ Function GithubSoftwares {
             
             [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
             
-            Start-Sleep 40
+            Start-Sleep 100
             
             taskkill /f /im AppInstaller.exe *>$null
             
