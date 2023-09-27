@@ -1713,7 +1713,16 @@ Function GithubSoftwares {
 
     if ($response -eq 'y' -or $response -eq 'Y') {
 
-        Function Winget {
+        Function Winget-Fullauto {
+            Write-Host `n"Installing Winget..." -NoNewline
+            $progressPreference = 'silentlyContinue'
+            iwr "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.psm1" -UseB | iex *>$null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        
+        Winget-Fullauto
+
+        Function Winget-Manual {
             
             function Winget-Alternative {
                 [CmdletBinding()]
@@ -1764,7 +1773,7 @@ Function GithubSoftwares {
             
             [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
             
-            Start-Sleep 80
+            Start-Sleep 50
             
             taskkill /f /im AppInstaller.exe *>$null
             
@@ -1773,7 +1782,7 @@ Function GithubSoftwares {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
-        Winget
+        #Winget-Manual
 
         Function InstallSoftwares {
             Start-Sleep 15
