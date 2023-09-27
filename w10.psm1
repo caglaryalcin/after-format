@@ -1714,6 +1714,7 @@ Function GithubSoftwares {
     if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function Winget {
+            Write-Host "Installing Winget..." -NoNewline
             function Winget-Alternative {
                 [CmdletBinding()]
                 param (
@@ -1768,6 +1769,8 @@ Function GithubSoftwares {
             taskkill /f /im AppInstaller.exe *>$null
             
             Remove-Item C:\temp -Recurse -Force *>$null
+
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
         Winget
