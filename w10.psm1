@@ -1722,7 +1722,7 @@ Function GithubSoftwares {
         Winget
 
         Function InstallSoftwares {
-            Start-Sleep 10
+            Start-Sleep 15
             #Softwares
             $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json'
 
