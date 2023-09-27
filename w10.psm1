@@ -1714,7 +1714,7 @@ Function GithubSoftwares {
     if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function Winget {
-            Write-Host "Installing Winget..." -NoNewline
+            
             function Winget-Alternative {
                 [CmdletBinding()]
                 param (
@@ -1748,7 +1748,7 @@ Function GithubSoftwares {
             mkdir c:\temp *>$null
             
             $wingetPath = Join-Path -Path c:\temp -ChildPath "winget.msixbundle"
-            
+            Write-Host "Installing Winget..." -NoNewline
             $Global:ProgressPreference = 'SilentlyContinue'
             $ErrorActionPreference = 'SilentlyContinue'
             
@@ -1764,7 +1764,7 @@ Function GithubSoftwares {
             
             [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
             
-            Start-Sleep 100
+            Start-Sleep 80
             
             taskkill /f /im AppInstaller.exe *>$null
             
