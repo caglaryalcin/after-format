@@ -199,11 +199,11 @@ are my specific settings.
 <br />
 
 for **Windows 10**
-```
+```powershell
 iwr "w10.caglaryalcin.com" -UseB | iex
 ```
 
 for **Windows 11**
-```
+```powershell
 iwr "w11.caglaryalcin.com" -UseB | iex
 ```
