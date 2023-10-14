@@ -350,6 +350,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.WorkingDirectory = $fanControlPath
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\FanControl.lnk" *>$null
+            #copy to startup folder
+            Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
 
             #Set Pin
             $progressPreference = 'silentlyContinue'
