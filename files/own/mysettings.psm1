@@ -332,6 +332,25 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\dupeGuru.lnk" *>$null
 
+            #fan control manual installation
+            Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile C:\fan_control.zip *>$null
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
+            Expand-Archive -Path 'C:\fan_control.zip' -DestinationPath C:\fan_control\ -Force *>$null
+            Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
+            taskkill /f /im FanControl.exe *>$null
+
+            #fan control
+            $WScriptShell = New-Object -ComObject WScript.Shell
+            $fanControl = "C:\fan_control\FanControl.exe"
+            $fanControlPath = "C:\fan_control"
+            $ShortcutFile = "C:\icons\FanControl.lnk"
+            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+            $Shortcut.TargetPath = $fanControl
+            $Shortcut.WorkingDirectory = $fanControlPath
+            $Shortcut.Save()
+            Unblock-File -Path "C:\icons\FanControl.lnk" *>$null
+
             #Set Pin
             $progressPreference = 'silentlyContinue'
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
@@ -348,7 +367,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #delete c:\icons folder
             Remove-Item C:\icons\ -recurse -ErrorAction SilentlyContinue
-
         }
 
         SetPins
@@ -626,14 +644,10 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $text = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
             $text | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
-            #fan control
-            Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile C:\fan_control.zip *>$null
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            Expand-Archive -Path 'C:\fan_control.zip' -DestinationPath C:\fan_control\ -Force *>$null
-            Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
-            taskkill /f /im FanControl.exe *>$null
-            
+            #fan & rgb config download
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json -Outfile C:\fan_control\Configurations\my_fan_config.json *>$null
+            Invoke-WebRequest -Uri "https://github.com/caglaryalcin/my-configs/raw/main/my_led_config.orp" -Outfile $env:USERPROFILE\Appdata\Roaming\Openrgb\my_led_config.orp *>$null
+
         }
 
         configs
