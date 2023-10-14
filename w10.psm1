@@ -1720,8 +1720,6 @@ Function GithubSoftwares {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
-        Winget-Fullauto
-
         Function Winget-Manual {
             
             function Winget-Alternative {
@@ -1782,7 +1780,19 @@ Function GithubSoftwares {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
-        #Winget-Manual
+        Winget-Fullauto
+
+        Start-Sleep -Seconds 60
+
+        try {
+            $version = winget --version 2>&1
+            if ($version -like "*is not recognized*") {
+                throw
+            }
+        }
+        catch {
+            Winget-Manual
+        }
 
         Function InstallSoftwares {
             Start-Sleep 15
