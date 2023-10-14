@@ -647,7 +647,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $text | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             #fan & rgb config download
-            Invoke-WebRequest -Uri https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json -Outfile C:\fan_control\Configurations\my_fan_config.json *>$null
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json -Outfile C:\fan_control\Configurations\userConfig.json *>$null
             Invoke-WebRequest -Uri "https://github.com/caglaryalcin/my-configs/raw/main/my_led_config.orp" -Outfile $env:USERPROFILE\Appdata\Roaming\Openrgb\my_led_config.orp *>$null
 
         }
