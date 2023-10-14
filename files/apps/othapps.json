@@ -17,9 +17,6 @@
                     "PackageIdentifier": "CodecGuide.K-LiteCodecPack.Full"
                 },
                 {
-                    "PackageIdentifier": "Nvidia.GeForceExperience"
-                },
-                {
                     "PackageIdentifier": "Malwarebytes.Malwarebytes"
                 },
                 {
@@ -27,6 +24,9 @@
                 },
                 {
                     "PackageIdentifier": "Cloudflare.Warp"
+                },
+                {
+                    "PackageIdentifier": "CalcProgrammer1.OpenRGB"
                 }
             ]
         }

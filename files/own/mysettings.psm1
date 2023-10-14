@@ -626,6 +626,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $text = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
             $text | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
+            #fan control
+            Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile C:\fan_control.zip *>$null
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
+            Expand-Archive -Path 'C:\fan_control.zip' -DestinationPath C:\fan_control\ -Force *>$null
+            Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
+            taskkill /f /im FanControl.exe *>$null
+            
         }
 
         configs
