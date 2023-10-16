@@ -246,9 +246,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             #Putty
             $WScriptShell = New-Object -ComObject WScript.Shell
             $Putty = "C:\ProgramData\chocolatey\lib\putty.portable\tools\PUTTY.EXE"
+            $PuttyPath = "C:\ProgramData\chocolatey\lib\putty.portable\tools\"
             $ShortcutFile = "C:\icons\Putty.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Putty
+            $Shortcut.WorkingDirectory = $PuttyPath
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\Putty.lnk" *>$null
 

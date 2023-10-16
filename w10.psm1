@@ -1784,6 +1784,7 @@ Function GithubSoftwares {
             #close the github desktop window
             taskkill /f /im GithubDesktop.exe *>$null
             taskkill /f /im PowerToys.exe *>$null
+            taskkill /f /im "Cloudflare WARP.exe" *>$null
 
             #delete the config file
             Remove-Item $configPath -Force -Recurse -ErrorAction SilentlyContinue
