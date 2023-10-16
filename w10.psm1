@@ -1720,6 +1720,8 @@ Function GithubSoftwares {
             #eliminates the -y requirement
             choco feature enable -n allowGlobalConfirmation *>$null
         }
+
+        choco-install
         Function InstallSoftwares {
             # Downloading the config file
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
@@ -1853,7 +1855,7 @@ Function UnusedApps {
             # Uninstall Health Check
             $progressPreference = 'silentlyContinue'
             taskkill /f /im PCHealthCheck.exe *>$null
-            cmd.exe /c "winget uninstall Microsoft.WindowsPCHealthCheck --force" *>$null
+            Get-CimInstance -ClassName Win32_Product -Filter "Name = 'Microsoft.WindowsPCHealthCheck'" | ForEach-Object { $_.Uninstall() } *>$null
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
