@@ -1741,6 +1741,9 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
+            #close the github desktop window
+            taskkill /f /im GithubDesktop.exe *>$null
+
             #delete the config file
             Remove-Item $configPath -Force -Recurse -ErrorAction SilentlyContinue
 

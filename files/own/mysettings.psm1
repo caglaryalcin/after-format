@@ -26,8 +26,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #Opera
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $Opera = "$env:USERPROFILE\AppData\Local\Programs\Opera\launcher.exe"
-            $OperaDirectory = "$env:USERPROFILE\AppData\Local\Local\Programs\Opera"
+            $Opera = "C:\Program Files\Opera\Launcher.exe"
+            $OperaDirectory = "C:\Program Files\Opera\"
             $ShortcutFile = "C:\icons\Opera Browser.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Opera
@@ -130,15 +130,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #Crystal Disk Info
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $Crystal = "C:\Program Files\CrystalDiskInfo\DiskInfo64.exe"
-            $CrystalDirectory = "C:\Program Files\CrystalDiskInfo"
-            $Shortcut.WorkingDirectory = "C:\Program Files\CrystalDiskInfo"
-            $ShortcutFile = "C:\icons\CrystalDiskInfo (64bit).lnk"
+            $Crystal = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\DiskInfo64.exe"
+            $CrystalDirectory = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\"
+            $ShortcutFile = "C:\icons\CrystalDiskInfo.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Crystal
             $Shortcut.WorkingDirectory = $CrystalDirectory
             $Shortcut.Save()
-            Unblock-File -Path "C:\icons\CrystalDiskInfo (64bit).lnk" *>$null
+            Unblock-File -Path "C:\icons\CrystalDiskInfo.lnk" *>$null
 
             #vMware Workstation
             $WScriptShell = New-Object -ComObject WScript.Shell
@@ -171,7 +170,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #Visual Studio
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $Visual = "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\Code.exe"
+            $Visual = "C:\Program Files\Microsoft VS Code\Code.exe"
             $ShortcutFile = "C:\icons\Visual Studio Code.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Visual
@@ -180,8 +179,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #AnyDesk
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $Anydesk = "C:\Program Files (x86)\AnyDesk\AnyDesk.exe"
-            $AnydeskPath = "C:\Program Files (x86)\AnyDesk"
+            $Anydesk = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe"
+            $AnydeskPath = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\"
             $ShortcutFile = "C:\icons\AnyDesk.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Anydesk
@@ -193,8 +192,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #SublimeText
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $SublimeText = "C:\Program Files\Sublime Text\sublime_text.exe"
-            $SublimeTextPath = "C:\Program Files\Sublime Text\"
+            $SublimeText = "C:\Program Files\Sublime Text 3\sublime_text.exe"
+            $SublimeTextPath = "C:\Program Files\Sublime Text 3\"
             $ShortcutFile = "C:\icons\Sublime Text.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $SublimeText
@@ -255,7 +254,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #Putty
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $Putty = "C:\Program Files\PuTTY\putty.exe"
+            $Putty = "C:\ProgramData\chocolatey\lib\putty.portable\tools\PUTTY.EXE"
             $ShortcutFile = "C:\icons\Putty.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Putty
@@ -273,8 +272,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #DBeaver
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $DBeaver = "$env:USERPROFILE\AppData\Local\DBeaver\dbeaver.exe"
-            $DBeaverPath = "$env:USERPROFILE\AppData\Local\DBeaver"
+            $DBeaver = "C:\Program Files\DBeaver\dbeaver.exe"
+            $DBeaverPath = "C:\Program Files\DBeaver\"
             $ShortcutFile = "C:\icons\DBeaver.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $DBeaver
@@ -323,8 +322,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #dupeGuru
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $dupeGuru = "$env:USERPROFILE\AppData\Local\Programs\Hardcoded Software\dupeGuru\dupeguru-win64.exe"
-            $dupeGuruPath = "$env:USERPROFILE\AppData\Local\Programs\Hardcoded Software\dupeGuru"
+            $dupeGuru = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe"
+            $dupeGuruPath = "C:\Program Files\Hardcoded Software\dupeGuru\"
             $ShortcutFile = "C:\icons\dupeGuru.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $dupeGuru
@@ -353,6 +352,19 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             #copy to startup folder
             Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
 
+            #openrgb
+            $WScriptShell = New-Object -ComObject WScript.Shell
+            $openrgb = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Links\openrgb.exe"
+            $openrgbpath = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Links\"
+            $ShortcutFile = "C:\icons\openrgb.lnk"
+            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+            $Shortcut.TargetPath = $openrgb
+            $Shortcut.WorkingDirectory = $openrgbpath
+            $Shortcut.Save()
+            Unblock-File -Path "C:\icons\openrgb.lnk" *>$null
+            #copy openrgb to startup folder
+            Copy-Item C:\icons\openrgb.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\openrgb.lnk" -Force
+
             #Set Pin
             $progressPreference = 'silentlyContinue'
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
@@ -375,7 +387,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 
         Function Drivers {
             #Chipset
-            Write-Host "Installing Chipset Driver..." -NoNewline
+            Write-Host `n"Installing Chipset Driver..." -NoNewline
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
