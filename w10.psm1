@@ -965,14 +965,29 @@ Function SystemSettings {
                 $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
                 if ($serviceObject -and $serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
                     Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-                    Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+        
+                    # Service stopping, wait for a maximum of 10 seconds
+                    $timeout = 10
+                    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+                    while (($serviceObject.Status -eq 'Running') -and ($stopwatch.Elapsed.Seconds -lt $timeout)) {
+                        Start-Sleep -Seconds 1
+                        $serviceObject.Refresh()
+                    }
+                    $stopwatch.Stop()
+        
+                    if ($serviceObject.Status -eq 'Stopped') {
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+                    }
+                    else {
+                        Write-Host "Could not stop service $service in a timely manner" -ForegroundColor Red
+                    }
                 }
             }
         
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
-        DisableServices        
+        DisableServices             
 
         #Set Wallpaper
         Function SetWallpaper {
