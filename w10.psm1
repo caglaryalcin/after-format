@@ -1759,10 +1759,8 @@ Function GithubSoftwares {
             #install vscode extensions
             #VSCode extensions
             Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
-            Start-Sleep 15
-            Start-Process "C:\Program Files\Microsoft VS Code\Code.exe"
-            taskkill.exe /f /im Code.exe *>$null
-            $vsCodePath = "$env:LOCALAPPDATA\Programs\Microsoft VS Code\bin\code.cmd"
+            Start-Sleep 5
+            $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
 
             $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
             $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
