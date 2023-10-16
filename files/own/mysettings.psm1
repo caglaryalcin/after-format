@@ -354,8 +354,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #openrgb
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $openrgb = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Links\openrgb.exe"
-            $openrgbpath = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Links\"
+            $openrgb = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe"
+            $openrgbpath = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\"
             $ShortcutFile = "C:\icons\openrgb.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $openrgb
