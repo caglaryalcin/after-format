@@ -212,15 +212,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\GitHub Desktop.lnk" *>$null
 
-            #VLC
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $VLC = "C:\Program Files\VideoLAN\VLC\vlc.exe"
-            $ShortcutFile = "C:\icons\VLC media player.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $VLC
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\VLC media player.lnk" *>$null
-
             #Calculator was here
 
             #TreeSize
@@ -311,8 +302,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #PowerToys
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $Powertoys = "$env:USERPROFILE\AppData\Local\PowerToys\PowerToys.exe"
-            $PowertoysPath = "$env:USERPROFILE\AppData\Local\PowerToys\Settings"
+            $Powertoys = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe"
+            $PowertoysPath = "C:\Program Files\PowerToys\WinUI3Apps\"
             $ShortcutFile = "C:\icons\PowerToys.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Powertoys
@@ -337,6 +328,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Global:ProgressPreference = 'SilentlyContinue'
             Expand-Archive -Path 'C:\fan_control.zip' -DestinationPath C:\fan_control\ -Force *>$null
             Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
+            Start-Process C:\fan_control\FanControl.exe
+            Start-Sleep 5
             taskkill /f /im FanControl.exe *>$null
 
             #fan control
@@ -364,6 +357,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Unblock-File -Path "C:\icons\openrgb.lnk" *>$null
             #copy openrgb to startup folder
             Copy-Item C:\icons\openrgb.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\openrgb.lnk" -Force
+
+            #create config folder
+            Start-Process "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null
+            Start-Sleep 5
+            taskkill.exe /f /im OpenRGB.exe *>$null
 
             #Set Pin
             $progressPreference = 'silentlyContinue'
