@@ -1213,7 +1213,6 @@ Function PrivacySettings {
 
         # Disable Telemetry 
         Function DisableTelemetry {
-                
 
             Write-Host `n"Disabling Telemetry..." -NoNewline
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
@@ -1713,7 +1712,7 @@ Function GithubSoftwares {
     Write-Host "install applications that are written on github?" -ForegroundColor Yellow -NoNewline
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $response = Read-Host
-
+    Write-Host ""
     if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function choco-install {
