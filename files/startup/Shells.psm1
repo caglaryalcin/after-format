@@ -132,8 +132,12 @@ Function DisableStartupApps {
     $shellstartup = "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
     $shellcommonstartup = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
 
-    Remove-Item $shellstartup -recurse -ErrorAction SilentlyContinue
-    Remove-Item $shellcommonstartup -recurse -ErrorAction SilentlyContinue
+    # Exclude list
+    $excludeItems = @("FanControl.lnk")
+
+    # Startup Folder Delete Files
+    Get-ChildItem -Path $shellstartup -Exclude $excludeItems -Recurse | Remove-Item -Recurse -ErrorAction SilentlyContinue
+    Get-ChildItem -Path $shellcommonstartup -Exclude $excludeItems -Recurse | Remove-Item -Recurse -ErrorAction SilentlyContinue
 
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
