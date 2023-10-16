@@ -956,20 +956,23 @@ Function SystemSettings {
 
         Function DisableServices {
             Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-
+        
             $disableservices = "XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
             "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service"
-
+        
             foreach ($service in $disableservices) {
-                Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-                Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+                $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
+                if ($serviceObject -and $serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
+                    Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                    Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+                }
             }
-
+        
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
-
-        DisableServices
+        
+        DisableServices        
 
         #Set Wallpaper
         Function SetWallpaper {
