@@ -1759,7 +1759,7 @@ Function GithubSoftwares {
             #install vscode extensions
             #VSCode extensions
             Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
-    
+            Start-Sleep 60
             $vsCodePath = "$env:LOCALAPPDATA\Programs\Microsoft VS Code\bin\code.cmd"
 
             $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"

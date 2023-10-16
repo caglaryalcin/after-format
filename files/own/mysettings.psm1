@@ -245,8 +245,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             #Putty
             $WScriptShell = New-Object -ComObject WScript.Shell
-            $Putty = "C:\ProgramData\chocolatey\lib\putty.portable\tools\PUTTY.EXE"
-            $PuttyPath = "C:\ProgramData\chocolatey\lib\putty.portable\tools\"
+            $Putty = "C:\Program Files\PuTTY\putty.exe"
+            $PuttyPath = "C:\Program Files\PuTTY\"
             $ShortcutFile = "C:\icons\Putty.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Putty
@@ -344,7 +344,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.WorkingDirectory = $fanControlPath
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\FanControl.lnk" *>$null
-            #copy to startup folder
+            #copy fan control to startup folder
             Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
 
             #openrgb
