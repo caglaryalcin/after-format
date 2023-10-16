@@ -152,6 +152,9 @@ Function RemoveEdgeUpdates {
 }
 RemoveEdgeUpdates
 
+# Remove search box from taskbar
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+
 # Sync Localtime
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
