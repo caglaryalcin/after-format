@@ -1713,143 +1713,32 @@ Function GithubSoftwares {
 
     if ($response -eq 'y' -or $response -eq 'Y') {
 
-        Function Winget-Fullauto {
-            Write-Host `n"Installing Winget..." -NoNewline
-            $progressPreference = 'silentlyContinue'
-            iwr "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.psm1" -UseB | iex *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        Function choco-install {
+            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
+            Start-Sleep 10
+
+            #eliminates the -y requirement
+            choco feature enable -n allowGlobalConfirmation *>$null
         }
-        
-        Function Winget-Manual {
-            
-            function Winget-Alternative {
-                [CmdletBinding()]
-                param (
-                    [Parameter(Mandatory = $true)]
-                    [string]$Match
-                )
-            
-                $uri = "https://api.github.com/repos/microsoft/winget-cli/releases"
-                Write-Debug "Getting information from $uri"
-                $releases = Invoke-RestMethod -uri $uri -Method Get -ErrorAction stop
-            
-                Write-Debug "Getting latest release..."
-                foreach ($release in $releases) {
-                    if ($release.name -match "preview") {
-                        continue
-                    }
-                    $data = $release.assets | Where-Object name -Match $Match
-                    if ($data) {
-                        return $data.browser_download_url
-                    }
-                }
-            
-                Write-Debug "Falling back to the latest release..."
-                $latestRelease = $releases | Select-Object -First 1
-                $data = $latestRelease.assets | Where-Object name -Match $Match
-                return $data.browser_download_url
-            }
-            
-            $wingetUrl = Winget-Alternative -Match "msixbundle"
-            
-            mkdir c:\temp *>$null
-            
-            $wingetPath = Join-Path -Path c:\temp -ChildPath "winget.msixbundle"
-            Write-Host "Installing Winget..." -NoNewline
-            $Global:ProgressPreference = 'SilentlyContinue'
-            $ErrorActionPreference = 'SilentlyContinue'
-            
-            Invoke-WebRequest -Uri $wingetUrl -OutFile $wingetPath
-            
-            Invoke-Item "C:\temp\winget.msixbundle"
-            
-            Start-Sleep 2
-            [System.Windows.Forms.SendKeys]::SendWait("{ALT}")
-            [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-            
-            Start-Sleep 2
-            
-            [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-            
-            Start-Sleep 50
-            
-            taskkill /f /im AppInstaller.exe *>$null
-            
-            Remove-Item C:\temp -Recurse -Force *>$null
-
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        Winget-Fullauto
-
-        Start-Sleep -Seconds 60
-
-        try {
-            $version = winget --version 2>&1
-            if ($version -like "*is not recognized*") {
-                throw
-            }
-        }
-        catch {
-            Winget-Manual
-        }
-
         Function InstallSoftwares {
-            Start-Sleep 15
-            #Softwares
-            $appsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json'
+            # Downloading the config file
+            $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
+            $configPath = "C:\choco-apps.config"
+            Invoke-WebRequest -Uri $configUrl -OutFile $configPath | Out-Null
 
-            $jsonContent = Invoke-RestMethod -Uri $appsUrl
-            $packages = $jsonContent.Sources[0].Packages
+            #Convert the config file to xml
+            [xml]$configContent = Get-Content $configPath
 
-            foreach ($package in $packages) {
-                $packageIdentifier = $package.PackageIdentifier
-                Write-Host "Installing '$packageIdentifier'..." -NoNewline
-                Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
+            #Start the upload process for each package and print the status
+            foreach ($package in $configContent.packages.package) {
+                $packageName = $package.id
+                Write-Host "Installing $packageName..." -NoNewline
+                choco install $packageName --force -y | Out-Null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            Start-Sleep 5
-            $progressPreference = 'silentlyContinue'
-            taskkill /f /im Powertoys.exe *>$null
 
-            #VSCode extensions
-            Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
-    
-            $vsCodePath = "$env:LOCALAPPDATA\Programs\Microsoft VS Code\bin\code.cmd"
-
-            $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
-            $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
-            $design = "pkief.material-icon-theme"
-            $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell"
-            $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode"
-            $github = "github.vscode-pull-request-github", "github.copilot"
-            $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github
-
-            $installed = & $vsCodePath --list-extensions
-
-            foreach ($vse in $vsextensions) {
-                if ($installed -contains $vse) {
-                    Write-Host $vse "already installed." -ForegroundColor Gray
-                }
-                else {
-                    & $vsCodePath --install-extension $vse *>$null
-                }
-            }
-
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-            #other softwares
-            $otherappsUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/othapps.json'
-
-            $jsonContent = Invoke-RestMethod -Uri $otherappsUrl
-            $packages = $jsonContent.Sources[0].Packages
-
-            foreach ($package in $packages) {
-                $packageIdentifier = $package.PackageIdentifier
-                Write-Host "Installing '$packageIdentifier'..." -NoNewline
-                Start-Process -FilePath "winget" -ArgumentList "install", $packageIdentifier, "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
+            #delete the config file
+            Remove-Item $configPath -Force -Recurse -ErrorAction SilentlyContinue
 
             #7-Zip on PS
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
