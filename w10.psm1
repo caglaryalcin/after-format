@@ -1756,6 +1756,31 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
+            #install vscode extensions
+            #VSCode extensions
+            Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
+    
+            $vsCodePath = "$env:LOCALAPPDATA\Programs\Microsoft VS Code\bin\code.cmd"
+
+            $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
+            $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
+            $design = "pkief.material-icon-theme"
+            $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell"
+            $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode"
+            $github = "github.vscode-pull-request-github", "github.copilot"
+            $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github
+
+            $installed = & $vsCodePath --list-extensions
+
+            foreach ($vse in $vsextensions) {
+                if ($installed -contains $vse) {
+                    Write-Host $vse "already installed." -ForegroundColor Gray
+                }
+                else {
+                    & $vsCodePath --install-extension $vse *>$null
+                }
+            }
+
             #close the github desktop window
             taskkill /f /im GithubDesktop.exe *>$null
             taskkill /f /im PowerToys.exe *>$null
