@@ -965,16 +965,16 @@ Function SystemSettings {
                 $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
                 if ($serviceObject -and $serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
                     Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-        
+            
                     # Service stopping, wait for a maximum of 10 seconds
                     $timeout = 10
                     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-                    while (($serviceObject.Status -eq 'Running') -and ($stopwatch.Elapsed.Seconds -lt $timeout)) {
+                    while (($serviceObject.Status -eq 'Running' -or $serviceObject.Status -eq 'Stopping') -and ($stopwatch.Elapsed.Seconds -lt $timeout)) {
                         Start-Sleep -Seconds 1
                         $serviceObject.Refresh()
                     }
                     $stopwatch.Stop()
-        
+            
                     if ($serviceObject.Status -eq 'Stopped') {
                         Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
                     }
@@ -982,7 +982,7 @@ Function SystemSettings {
                         Write-Host "Could not stop service $service in a timely manner" -ForegroundColor Red
                     }
                 }
-            }
+            }            
         
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
