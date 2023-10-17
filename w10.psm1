@@ -32,7 +32,7 @@ Priority
 ##########
 
 ##########
-#region System Settings
+#region System Settings 
 ##########
 Function SystemSettings {
     Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor White
@@ -1217,7 +1217,7 @@ SystemSettings
 #region Privacy Settings
 ##########
 Function PrivacySettings {
-    Write-Host `n"---------Setting Privacy Settings" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Adjusting Privacy Settings" -ForegroundColor Blue -BackgroundColor White
 
     Write-Host `n"Do you want " -NoNewline
     Write-Host "Privacy Settings?" -ForegroundColor Yellow -NoNewline
@@ -1721,7 +1721,7 @@ PrivacySettings
 #region Install Softwares
 ##########
 Function GithubSoftwares {
-    Write-Host `n"---------Install Softwares" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Installing Softwares" -ForegroundColor Blue -BackgroundColor White
 
     Write-Host `n"Do you want to " -NoNewline
     Write-Host "install applications that are written on github?" -ForegroundColor Yellow -NoNewline
