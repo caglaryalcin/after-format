@@ -1763,7 +1763,7 @@ Function GithubSoftwares {
                     Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
                 }
             }
-        }
+        
 
             #install vscode extensions
             #VSCode extensions
@@ -1844,9 +1844,7 @@ Function GithubSoftwares {
             }
    
         }
-
         InstallSoftwares
-
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
         Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
