@@ -2,11 +2,9 @@
 #region My Custom Drivers
 ##########
 $myText = @"
-
 ###############################
 ######## DO NOT ACCEPT ########
 ###############################
-
 "@
 
 Write-Host $myText -ForegroundColor Red -BackgroundColor Black
@@ -538,144 +536,185 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 
         Drivers
 
-        #restore browser settings and extensions
-        function installLibreWolfAddIn() {
-            Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
-    
-            #it is necessary to formation of a profile
-            cd "C:\Program Files\LibreWolf\"
-            .\librewolf.exe
-            Start-Sleep 2
-            taskkill /f /im "librewolf.exe" *>$null
-
-            $instdir = "C:\Program Files\LibreWolf"
-            $distribution = $instdir + '\distribution'
-            $extensions = $instdir + '\distribution\extensions'
-
-            $bitwarden = "https://addons.mozilla.org/firefox/downloads/file/4164440/bitwarden_password_manager-2023.8.3.xpi"
-            $bitwardenuid = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
-            $ublockorigin = "https://addons.mozilla.org/firefox/downloads/file/4171020/ublock_origin-1.52.2.xpi"
-            $ublockoriginuid = 'uBlock0@raymondhill.net'
-            $privacybadger = "https://addons.mozilla.org/firefox/downloads/file/4167070/privacy_badger17-2023.9.12.xpi"
-            $privacybadgeruid = 'jid1-MnnxcxisBPnSXQ@jetpack'
-            $darkreader = "https://addons.mozilla.org/firefox/downloads/file/4151368/darkreader-4.9.65.xpi"
-            $darkreaderuid = 'addon@darkreader.org'
-            $ublacklist = "https://addons.mozilla.org/firefox/downloads/file/4169526/ublacklist-8.3.4.xpi"
-            $ublacklistuid = '@ublacklist'
-            $returnytdl = 'https://addons.mozilla.org/firefox/downloads/file/4147411/return_youtube_dislikes-3.0.0.10.xpi'
-            $returnytdluid = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}'
-            $idm = 'https://addons.mozilla.org/firefox/downloads/file/4167725/tonec_idm_integration_module-6.41.20.xpi'
-            $idmuid = 'mozilla_cc3@internetdownloadmanager.com'
-           
-            $bitwardenpath = $extensions + '\' + $bitwardenuid + '.xpi'
-            $ublockoriginpath = $extensions + '\' + $ublockoriginuid + '.xpi'
-            $privacybadgerpath = $extensions + '\' + $privacybadgeruid + '.xpi'
-            $darkreaderpath = $extensions + '\' + $darkreaderuid + '.xpi'
-            $ublacklistpath = $extensions + '\' + $ublacklistuid + '.xpi'
-            $returnytdlpath = $extensions + '\' + $returnytdluid + '.xpi'
-            $idmpath = $extensions + '\' + $idmuid + '.xpi'
-
-            #Download XPI file of AddIn
-            If (-Not(Test-Path $distribution)) {
-                New-Item $distribution -ItemType Container | Out-Null
+        #Restore Librewolf settings and extensions
+        function Install-LibreWolfAddIn {
+            Write-Host "Restoring Librewolf settings and extensions..." -NoNewline
+        
+            try {
+                # Start and immediately stop LibreWolf to initiate profile creation
+                Start-Process -FilePath "C:\Program Files\LibreWolf\librewolf.exe" -Wait
+                Start-Sleep -Seconds 2
+                Stop-Process -Name "librewolf" -Force
+        
+                $extensionsBasePath = "C:\Program Files\LibreWolf\distribution\extensions"
+                $profilePath = Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Exclude *.default
+        
+                # Ensure directories exist
+                $null = New-Item -Path $extensionsBasePath -ItemType Container -Force
+        
+                # Define addons and their URLs
+                $addons = @{
+                    "bitwarden"        = "https://addons.mozilla.org/firefox/downloads/file/4164440/bitwarden_password_manager-2023.8.3.xpi"
+                    "ublockorigin"     = "https://addons.mozilla.org/firefox/downloads/file/4171020/ublock_origin-1.52.2.xpi"
+                    "privacybadger"    = "https://addons.mozilla.org/firefox/downloads/file/4167070/privacy_badger17-2023.9.12.xpi"
+                    "darkreader"       = "https://addons.mozilla.org/firefox/downloads/file/4151368/darkreader-4.9.65.xpi"
+                    "ublacklist"       = "https://addons.mozilla.org/firefox/downloads/file/4169526/ublacklist-8.3.4.xpi"
+                    "returnytdl"       = "https://addons.mozilla.org/firefox/downloads/file/4147411/return_youtube_dislikes-3.0.0.10.xpi"
+                    "idm"              = "https://addons.mozilla.org/firefox/downloads/file/4167725/tonec_idm_integration_module-6.41.20.xpi"
+                }
+        
+                # Download and place each addon
+                foreach ($addon in $addons.GetEnumerator()) {
+                    $addonPath = Join-Path -Path $extensionsBasePath -ChildPath "$($addon.Name).xpi"
+                    Invoke-WebRequest -Uri $addon.Value -OutFile $addonPath
+                }
+        
+                # Download and apply user configurations
+                $configUrls = @{
+                    "user.js"          = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
+                    "Tab Shapes.css"   = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css"
+                    "Toolbar.css"      = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
+                    "userContent.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css"
+                    "userChrome.css"   = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
+                }
+        
+                $chromeDir = New-Item -Path (Join-Path -Path $profilePath -ChildPath "chrome") -ItemType "directory" -Force
+        
+                foreach ($config in $configUrls.GetEnumerator()) {
+                    $configPath = Join-Path -Path $chromeDir -ChildPath $config.Key
+                    Invoke-WebRequest -Uri $config.Value -OutFile $configPath
+                }
+        
+                Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host " [WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
             }
-            If (-Not(Test-Path $extensions)) {
-                New-Item $extensions -ItemType Container | Out-Null
-            }
-    
-            Invoke-WebRequest $bitwarden -Outfile $bitwardenpath
-            Invoke-WebRequest $ublockorigin -Outfile $ublockoriginpath
-            Invoke-WebRequest $privacybadger -Outfile $privacybadgerpath
-            Invoke-WebRequest $darkreader -Outfile $darkreaderpath
-            Invoke-WebRequest $ublacklist -Outfile $ublacklistpath
-            Invoke-WebRequest $returnytdl -Outfile $returnytdlpath
-            Invoke-WebRequest $idm -Outfile $idmpath
-
-            $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
-            New-Item $dest -Name chrome -ItemType "directory" *>$null
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css" -Outfile "$dest\chrome\userContent.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
-        installLibreWolfAddIn("");
+        
+        Install-LibreWolfAddIn
                 
         #sublime text
-        Function configs {
-            ##sublimetext
-            $userconf = "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User"
-            $userpackage = "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages"
-
-            #create directory
-            New-Item $userconf -ItemType "directory" *>$null
-            New-Item $userpackage -ItemType "directory" *>$null
-
-            #settings and theme
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings" -Outfile "$userconf\Preferences.sublime-settings"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme" -Outfile "$userconf\cy.sublime-color-scheme"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Default%20(Windows).sublime-mousemap" -Outfile "$userconf\Default (Windows).sublime-mousemap"
-
-            #packages
-            Invoke-WebRequest -Uri "https://packagecontrol.io/Package%20Control.sublime-package" -Outfile "$userpackage\Package Control.sublime-package"
-
-            #powertoys backup
-            New-Item -Path "$env:UserProfile\Documents\" -Name "PowerToys" -ItemType "directory" *>$null
-            New-Item -Path "$env:UserProfile\Documents\PowerToys\" -Name "Backup" -ItemType "directory" *>$null
-            $powertoysbackup = "$env:UserProfile\Documents\PowerToys\Backup\settings_133264013067260668.ptb"
-            Invoke-WebRequest -Uri "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb" -Outfile $powertoysbackup
-
-            #startup twinkle tray
-            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
-                
-            #sound Settings
-            Write-Host "`nSetting sound devices..." -NoNewline
-            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -PropertyType DWORD -Value "0" *>$null
-            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWORD -Value "0" *>$null
-            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 *>$null
-            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -PropertyType DWORD -Value 1 *>$null
-
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-            #set monitor hertz
-            Write-Host "Select the hertz rate of monitors..." -NoNewline
-            Write-Host "(It doesn't continue without a choice)" -ForegroundColor Red -NoNewline -BackgroundColor Black
-            cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
-            cmd.exe /c "rundll32.exe display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-
-            #import cloudflare certificates
-            Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile C:\Cloudflare_CA.crt *>$null
-            Get-Item "C:\Cloudflare_CA.crt" | Import-Certificate -CertStoreLocation "cert:\LocalMachine\Root" *>$null
-            Remove-Item C:\Cloudflare_CA.crt -recurse -ErrorAction SilentlyContinue
-
-            #download configs to desktop
-            curl -o $env:userprofile\Desktop\uBlock.txt https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt
-            curl -o $env:userprofile\Desktop\bookmarks.json https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json
-            
-            $text = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
-            $text | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
-
-            #fan & rgb config download
-            Invoke-WebRequest -Uri https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json -Outfile C:\fan_control\Configurations\userConfig.json *>$null
-            Invoke-WebRequest -Uri "https://github.com/caglaryalcin/my-configs/raw/main/my_led_config.orp" -Outfile $env:USERPROFILE\Appdata\Roaming\Openrgb\my_led_config.orp *>$null
-
+        function Set-Configs {
+            Write-Host "Setting my configs..." -NoNewline
+            # Helper function to create directories
+            function Ensure-Directory($path) {
+                try {
+                    if (-Not (Test-Path $path)) {
+                        New-Item -Path $path -ItemType "directory" | Out-Null
+                    }
+                } catch {
+                    Write-Host " [WARNING] Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                }
+            }
+        
+            # Helper function for web requests
+            function Safe-Invoke-WebRequest($uri, $outFile) {
+                try {
+                    Invoke-WebRequest -Uri $uri -Outfile $outFile
+                } catch {
+                    Write-Host " [WARNING] Failed to download from: $uri. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                }
+            }
+        
+            # Define directories and files to be downloaded
+            $downloads = @{
+                    "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User" = @(
+                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings",
+                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme",
+                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Default%20(Windows).sublime-mousemap"
+                    )
+                    "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages" = @(
+                        "https://packagecontrol.io/Package%20Control.sublime-package"
+                    )
+                    "$env:UserProfile\Documents\PowerToys\Backup" = @(
+                        "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
+                    )
+                    "$env:userprofile\Desktop" = @(
+                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
+                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json",
+                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
+                    )
+                    "C:\fan_control\Configurations" = @(
+                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json"
+                    )
+                    "$env:USERPROFILE\Appdata\Roaming\Openrgb" = @(
+                        "https://github.com/caglaryalcin/my-configs/raw/main/my_led_config.orp"
+                    )
+                }
+        
+            # Process each directory and download files
+            foreach ($dir in $downloads.Keys) {
+                Ensure-Directory -path $dir
+                foreach ($url in $downloads[$dir]) {
+                    $fileName = [System.IO.Path]::GetFileName((Convert-Path -URI $url))
+                    $outFile = Join-Path -Path $dir -ChildPath $fileName
+                    Safe-Invoke-WebRequest -uri $url -outFile $outFile
+                }
+            }
+        
+            # Additional configurations
+            try {
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -PropertyType DWORD -Value "0" | Out-Null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWORD -Value "0" | Out-Null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 | Out-Null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -PropertyType DWORD -Value 1 | Out-Null
+            } catch {
+                Write-Host " [WARNING] Failed in additional configurations. Error: $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        
+            # Monitor settings prompt
+            try {
+                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
+                Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
+            } catch {
+                Write-Host " [WARNING] Failed to set monitor settings. Error: $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        
+            # Import Cloudflare certificate
+            try {
+                $certPath = "C:\Cloudflare_CA.crt"
+                Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile $certPath
+                Import-Certificate -FilePath $certPath -CertStoreLocation "cert:\LocalMachine\Root" | Out-Null
+                Remove-Item -Path $certPath -Force
+            } catch {
+                Write-Host " [WARNING] Failed to import Cloudflare certificate. Error: $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        
+            Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
-        configs
+        
+        Set-Configs        
         function MediaFeaturePack {
-            # check new version
-            $newVersion = (DISM /Online /Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~').ToString().Trim()
-            $newVersion = $newVersion -replace 'Capability Identity : ', '' -replace '\s', ''
-                
-            cmd.exe /c DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
-                
-            Write-Host "Update completed."
+            try {
+                Write-Host "Installing Media Feature Pack..." -NoNewline
+                # check new version
+                $capability = DISM /Online /Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~'
+                if ($capability) {
+                    $newVersion = $capability.ToString().Trim()
+                    $newVersion = $newVersion -replace 'Capability Identity : ', '' -replace '\s', ''
+                    
+                    # Add the capability
+                    $installResult = DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
+                    
+                    if ($LASTEXITCODE -eq 0) {
+                        Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    else {
+                        throw "DISM exited with code $LASTEXITCODE. Message: $installResult"
+                    }
+                }
+                else {
+                    throw "Media Feature Pack capability not found."
+                }
+            }
+            catch {
+                Write-Host " [WARNING] Failed. Error: $_" -ForegroundColor Red
+            }
         }
-                
+        
         MediaFeaturePack
+        
     }
 
     Own
