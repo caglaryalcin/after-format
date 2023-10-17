@@ -1744,17 +1744,26 @@ Function GithubSoftwares {
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
             $configPath = "C:\choco-apps.config"
             Invoke-WebRequest -Uri $configUrl -OutFile $configPath | Out-Null
-
+        
             #Convert the config file to xml
             [xml]$configContent = Get-Content $configPath
-
+        
             #Start the upload process for each package and print the status
             foreach ($package in $configContent.packages.package) {
                 $packageName = $package.id
                 Write-Host "Installing $packageName..." -NoNewline
-                choco install $packageName --force -y | Out-Null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        
+                # Capture the result of the installation
+                $result = choco install $packageName --force -y 2>&1 | Out-String
+        
+                # Check if the installation was successful by looking for a specific string in the output
+                if ($result -like "*The install of $packageName was successful*") {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                } else {
+                    Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+                }
             }
+        }
 
             #install vscode extensions
             #VSCode extensions
