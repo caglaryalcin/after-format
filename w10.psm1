@@ -1176,7 +1176,7 @@ Function SystemSettings {
             Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
 
             #import remote xml file into task scheduler
-            $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Startup.xml"
+            $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/startup.xml"
             $taskXmlPath = "$env:TEMP\startup.xml"
             Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath
 
@@ -1759,15 +1759,16 @@ Function GithubSoftwares {
                 # Check if the installation was successful by looking for a specific string in the output
                 if ($result -like "*The install of $packageName was successful*") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                } else {
-                    Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+                }
+                else {
+                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                 }
             }
         
 
             #install vscode extensions
             #VSCode extensions
-            Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
+            Write-Host "Installing Microsoft Visual Studio Code Extensions..."
             Start-Sleep 5
             $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
 
