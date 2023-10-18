@@ -13,16 +13,16 @@ $ErrorActionPreference = 'Continue'
 
 # Remove secondary en-US keyboard
 Function RemoveENKeyboard {
-	$langs = Get-WinUserLanguageList
-	Set-WinUserLanguageList ($langs | Where-Object {$_.LanguageTag -ne "en-US"}) -Force *>$null
+    $langs = Get-WinUserLanguageList
+    Set-WinUserLanguageList ($langs | Where-Object { $_.LanguageTag -ne "en-US" }) -Force *>$null
 }
 RemoveENKeyboard
 
 # Add TR Keyboard
 Function AddTRKeyboard {
-	$langs = Get-WinUserLanguageList
-	$langs.Add("tr-TR")
-	Set-WinUserLanguageList $langs -Force *>$null
+    $langs = Get-WinUserLanguageList
+    $langs.Add("tr-TR")
+    Set-WinUserLanguageList $langs -Force *>$null
     #HKU
     New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS *>$null
     Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" *>$null
@@ -106,23 +106,24 @@ Function RemoveTasks {
 RemoveTasks
 
 Function HideDefenderTrayIcon {
-	If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray")) {
-		New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Force *>$null
-	}
-	Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Name "HideSystray" -Type DWord -Value 1
-	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
-		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "WindowsDefender" -ErrorAction SilentlyContinue
-	} ElseIf ([System.Environment]::OSVersion.Version.Build -ge 15063) {
-		Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "SecurityHealth" -ErrorAction SilentlyContinue
-	}
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Force *>$null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Name "HideSystray" -Type DWord -Value 1
+    If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "WindowsDefender" -ErrorAction SilentlyContinue
+    }
+    ElseIf ([System.Environment]::OSVersion.Version.Build -ge 15063) {
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "SecurityHealth" -ErrorAction SilentlyContinue
+    }
 }
 HideDefenderTrayIcon
 
 # Disable Startup App 
 Function DisableStartupApps {
-    $StartPaths = @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\","HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\")
+    $StartPaths = @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\", "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\", "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\", "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\")
     $StartFilePaths = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
-    $removeList = @("*EADM*","*Java*","*CCX*","*cisco*","*vivaldi","*NV*","*npcap*","*Edge*","*Brave*","*Riot*","*IDMan*","*Teams*","*Disc*","*Epic*","*CORS*","*Next*","*One*","*Chrome*","*Opera*","*iTunes*","*CC*","*Cloud*","*Vanguard*","*Update*","*iTunes*","*Ai*","*Skype*","*Yandex*","*uTorrent*","*Deluge*","*Blitz*","*vmware*","*Any*")
+    $removeList = @("*EADM*", "*Java*", "*CCX*", "*cisco*", "*vivaldi", "*NV*", "*npcap*", "*Edge*", "*Brave*", "*Riot*", "*IDMan*", "*Teams*", "*Disc*", "*Epic*", "*CORS*", "*Next*", "*One*", "*Chrome*", "*Opera*", "*iTunes*", "*CC*", "*Cloud*", "*Vanguard*", "*Update*", "*iTunes*", "*Ai*", "*Skype*", "*Yandex*", "*uTorrent*", "*Deluge*", "*Blitz*", "*vmware*", "*Any*")
     
     #Remove
     Remove-ItemProperty $StartPaths -Name $removeList *>$null
@@ -161,6 +162,6 @@ Function SyncTime {
     net stop W32Time *>$null
     net start W32Time *>$null
     w32tm /resync /force *>$null
-    w32tm /config /manualpeerlist:time.windows.com,0x1 /syncfromflags:manual /reliable:yes /update *>$null
+    w32tm /config /manualpeerlist:time.windows.com, 0x1 /syncfromflags:manual /reliable:yes /update *>$null
 }
 SyncTime

@@ -2504,7 +2504,6 @@ Function GithubSoftwares {
         choco-install
         
         Function InstallSoftwares {
-            # Config dosyasının URL'si
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
 
             $response = Invoke-WebRequest -Uri $configUrl
@@ -2512,8 +2511,8 @@ Function GithubSoftwares {
             [xml]$configContent = $response.Content
 
             $appsToClose = @{
-                "github-desktop" = "GithubDesktop";
-                "powertoys" = "PowerToys";
+                "github-desktop"  = "GithubDesktop";
+                "powertoys"       = "PowerToys";
                 "cloudflare-warp" = "Cloudflare WARP"
             }
         
@@ -2538,7 +2537,6 @@ Function GithubSoftwares {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                 }
             }
-        
 
             #install vscode extensions
             #VSCode extensions
