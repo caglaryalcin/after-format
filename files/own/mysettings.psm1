@@ -585,7 +585,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     Invoke-WebRequest -Uri $config.Value -OutFile $configPath
                 }
         
-                Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host " [WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
@@ -693,7 +693,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host " [WARNING] Failed to import Cloudflare certificate. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
                     
-            Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
                     
         Set-Configs
@@ -710,15 +710,16 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     # Add the capability
                     $installResult = DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
                     
-                    if ($LASTEXITCODE -eq 0) {
-                        Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
+                    # 0 success, 3010 restart required
+                    if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 3010)
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     else {
                         # throw "DISM exited with code $LASTEXITCODE. Message: $installResult"
                     }
                 }
                 else {
-                    Write-Host "Media Feature Pack capability not found." -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING] Media Feature Pack capability not found." -ForegroundColor Red -BackgroundColor Black
                 }
             }
             catch {
