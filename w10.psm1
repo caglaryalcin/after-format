@@ -2942,7 +2942,6 @@ Function UnusedApps {
                         if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
                             $edgeClient.DeleteValue('experiment_control_labels')
                         }
-                        Write-Host "[DONE]" -ForegroundColor Green
                     }
                     catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -3029,9 +3028,9 @@ Function UnusedApps {
                         $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
                         if ($edgeDirectories) {
                             $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction Stop
-                            Write-Host "[DONE]" -ForegroundColor Green
                         }
-                    } catch {
+                    }
+                    catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
@@ -3058,14 +3057,25 @@ Function UnusedApps {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
-                    try {
-                        Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction Stop
-                        Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction Stop
-                        Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction Stop
-                        Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction Stop
-                    }
-                    catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    $paths = @(
+                        "C:\Program Files (x86)\Microsoft\*edge*",
+                        "C:\Program Files (x86)\Microsoft\Edge",
+                        "C:\Program Files (x86)\Microsoft\Temp",
+                        "C:\Program Files (x86)\Microsoft\*"
+                    )
+
+                    foreach ($path in $paths) {
+                        try {
+                            $items = Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue
+
+                            if ($items) {
+                                Remove-Item -Path $path -Force -Recurse -ErrorAction Stop
+                                Write-Host "DONE: Removed $path" -ForegroundColor Green
+                            }
+                        }
+                        catch {
+                            Write-Host "[WARNING]: Failed to remove $path. Error: $_" -ForegroundColor Red
+                        }
                     }
                         
                     # Check if Edge is still installed
