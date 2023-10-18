@@ -2516,7 +2516,21 @@ Function GithubSoftwares {
                 "cloudflare-warp" = "Cloudflare WARP"
             }
 
-            # Start the upload process for each package and print the status
+            # This script block will continuously check for specified processes and stop them if found
+            $scriptBlock = {
+                Param($processNames)
+                while ($true) {
+                    foreach ($process in $processNames) {
+                        Get-Process | Where-Object { $_.Name -eq $process } | Stop-Process -Force -ErrorAction SilentlyContinue
+                    }
+                    Start-Sleep -Seconds 2  # check every 2 seconds
+                }
+            }
+
+            # Start the background job for monitoring and stopping processes
+            $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
+
+            # Start the installation process for each package and print the status
             foreach ($package in $configContent.packages.package) {
                 $packageName = $package.id
                 Write-Host "Installing $packageName..." -NoNewline
@@ -2527,22 +2541,15 @@ Function GithubSoftwares {
                 # Check if the installation was successful by looking for a specific string in the output
                 if ($result -like "*The install of $packageName was successful*") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            
-                    # If the package is in the list of apps to close, terminate its process after installation
-                    if ($appsToClose.ContainsKey($packageName)) {
-                        $processName = $appsToClose[$packageName]
-
-                        # Wait a few seconds to ensure that the installation process has fully completed
-                        Start-Sleep -Seconds 3
-
-                        # Then attempt to close the application
-                        Get-Process | Where-Object { $_.Name -eq $processName } | Stop-Process -Force -ErrorAction SilentlyContinue
-                    }
                 }
                 else {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                 }
             }
+
+            # Once all installations are done, stop the background job
+            Stop-Job -Job $job
+            Remove-Job -Job $job
 
             #install vscode extensions
             #VSCode extensions
