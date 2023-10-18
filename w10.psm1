@@ -2942,7 +2942,7 @@ Function UnusedApps {
                         if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
                             $edgeClient.DeleteValue('experiment_control_labels')
                         }
-                        Write-Host "Edge client experiment_control_labels removed. [DONE]" -ForegroundColor Green
+                        Write-Host "[DONE]" -ForegroundColor Green
                     }
                     catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -3029,7 +3029,7 @@ Function UnusedApps {
                         $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
                         if ($edgeDirectories) {
                             $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction Stop
-                        } else {
+                            Write-Host "[DONE]" -ForegroundColor Green
                         }
                     } catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
