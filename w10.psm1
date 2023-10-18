@@ -186,12 +186,15 @@ Function SystemSettings {
                 Set-MpPreference -ModerateThreatDefaultAction 6 -ErrorAction Ignore;
                 Set-MpPreference -LowThreatDefaultAction 6 -ErrorAction Ignore;
                 Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
+
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
                 
-                #Exclude github folders for scan
-                Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
+
+                #Exclude github folders for scan
+                Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
+
                 Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
@@ -879,25 +882,29 @@ Function SystemSettings {
         
             try {
                 Set-RegistryValue -path "HKCU:\Software\Microsoft\GameBar" -name "AutoGameModeEnabled" -value 0
-            } catch {
+            }
+            catch {
                 $allSuccessful = $false
             }
         
             try {
                 Set-RegistryValue -path "HKCU:\System\GameConfigStore" -name "GameDVR_Enabled" -value 0
-            } catch {
+            }
+            catch {
                 $allSuccessful = $false
             }
         
             try {
                 Set-RegistryValue -path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -name "AllowGameDVR" -value 0
-            } catch {
+            }
+            catch {
                 $allSuccessful = $false
             }
         
             if ($allSuccessful) {
-                Write-Host " [DONE]" -ForegroundColor Green
-            } else {
+                Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            else {
                 Write-Host " [DONE WITH ERRORS]" -ForegroundColor Red
             }
         }
@@ -2709,21 +2716,21 @@ Function UnusedApps {
             Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
         
             $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
-                    "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
-                    "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
-                    "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-                    "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "Microsoft.XboxApp", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
-                    "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
-                    "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
-                    "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*", "Microsoft.XboxGamingOverlay"
+            "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
+            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
+            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "Microsoft.XboxApp", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
+            "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
+            "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*", "Microsoft.XboxGamingOverlay"
             
-                    $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
-                    "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
-                    "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
-                    "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
-                    "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
-                    "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
-                    "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
+            $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
+            "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
+            "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
+            "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
+            "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
+            "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
+            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
         
             $allPackages = $Uninstall3Party + $UninstallAppxPackages
         
@@ -2732,10 +2739,14 @@ Function UnusedApps {
                     $app = Get-AppxPackage -AllUsers | Where-Object { $_.Name -like $package }
                     if ($null -ne $app) {
                         $appName = $app.Name
+                        $OriginalProgressPreference = $Global:ProgressPreference
+                        $Global:ProgressPreference = 'SilentlyContinue'
                         $app | Remove-AppxPackage -ErrorAction Stop
-                    } else {
                     }
-                } catch {
+                    else {
+                    }
+                }
+                catch {
                     Write-Host "[WARNING]: $_" -ForegroundColor Red
                 }
             }
@@ -2745,7 +2756,8 @@ Function UnusedApps {
                 $progressPreference = 'silentlyContinue'
                 taskkill /f /im PCHealthCheck.exe *>$null
                 Get-CimInstance -ClassName Win32_Product -Filter "Name = 'Microsoft.WindowsPCHealthCheck'" | ForEach-Object { $_.Uninstall() } *>$null
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2761,7 +2773,8 @@ Function UnusedApps {
                 $Global:ProgressPreference = 'SilentlyContinue'
                 Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WindowsMediaPlayer" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
                 Get-WindowsCapability -Online | Where-Object { $_.Name -like "Media.WindowsMediaPlayer*" } | Remove-WindowsCapability -Online | Out-Null
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2776,7 +2789,8 @@ Function UnusedApps {
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
                 Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2789,7 +2803,8 @@ Function UnusedApps {
             Write-Host "Uninstalling Microsoft XPS Document Writer..." -NoNewline
             try {
                 Remove-Printer -Name "Microsoft XPS Document Writer" -ErrorAction SilentlyContinue 
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2802,7 +2817,8 @@ Function UnusedApps {
             Write-Host "Removing Default Fax Printer..." -NoNewline
             try {
                 Remove-Printer -Name "Fax" -ErrorAction SilentlyContinue
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2818,7 +2834,8 @@ Function UnusedApps {
                 $Global:ProgressPreference = 'SilentlyContinue'
                 Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
                 Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online | Out-Null
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2832,7 +2849,8 @@ Function UnusedApps {
             try {
                 Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
                 Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
@@ -2852,9 +2870,11 @@ Function UnusedApps {
                 try {
                     $taskName = $task.TaskName
                     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
-                } catch {
+                }
+                catch {
                     if ($_.Exception.Message -like "*No MSFT_ScheduledTask objects found*") {
-                    } else {
+                    }
+                    else {
                         Write-Host "`n[WARNING]: Failed to remove '$taskName'. Error: $_" -ForegroundColor Red
                     }
                 }
@@ -2882,12 +2902,15 @@ Function UnusedApps {
                     Start-Sleep -Seconds 3  # Give OneDrive setup some time to complete
                     if (!(Get-Process "OneDrive" -ErrorAction SilentlyContinue)) {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    } else {
+                    }
+                    else {
                         throw "OneDrive process is still running."
                     }
-                } catch {
+                }
+                catch {
                     Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
-                } finally {
+                }
+                finally {
                     $Global:ProgressPreference = $OriginalProgressPreference
                 }
             }
@@ -2931,13 +2954,15 @@ Function UnusedApps {
                             $edgeClient.DeleteValue('experiment_control_labels')
                         }
                         Write-Host "Edge client experiment_control_labels removed. [DONE]" -ForegroundColor Green
-                    } catch {
+                    }
+                    catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
                         $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
-                    } catch {
+                    }
+                    catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
@@ -2947,7 +2972,8 @@ Function UnusedApps {
                         $OriginalProgressPreference = $Global:ProgressPreference
                         $Global:ProgressPreference = 'SilentlyContinue'
                         Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
-                    } catch {
+                    }
+                    catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
@@ -2956,7 +2982,8 @@ Function UnusedApps {
                         $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
                         $key = (Get-Item -Path $pattern).PSChildName
                         reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
-                    } catch {
+                    }
+                    catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
@@ -2965,92 +2992,102 @@ Function UnusedApps {
                         New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
                         Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction Stop
                         Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction Stop
-                     } catch {
+                    }
+                    catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
         
-                        # Delete additional files
-                        $additionalFilesPath = "C:\Windows\System32\MicrosoftEdgeCP.exe"
-                        if (Test-Path -Path $additionalFilesPath) {
-                            $additionalFiles = Get-ChildItem -Path "C:\Windows\System32\MicrosoftEdge*" -File
-                            foreach ($file in $additionalFiles) {
-                                $takeownArgs = "/f $($file.FullName)"
-                                Start-Process -FilePath "takeown.exe" -ArgumentList $takeownArgs -Wait | Out-Null
-                                $icaclsArgs = "`"$($file.FullName)`" /inheritance:e /grant `"$($env:UserName)`":(OI)(CI)F /T /C"
-                                Start-Process -FilePath "icacls.exe" -ArgumentList $icaclsArgs -Wait | Out-Null
-                                Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
-                            }
+                    # Delete additional files
+                    $additionalFilesPath = "C:\Windows\System32\MicrosoftEdgeCP.exe"
+                    if (Test-Path -Path $additionalFilesPath) {
+                        $additionalFiles = Get-ChildItem -Path "C:\Windows\System32\MicrosoftEdge*" -File
+                        foreach ($file in $additionalFiles) {
+                            $takeownArgs = "/f $($file.FullName)"
+                            Start-Process -FilePath "takeown.exe" -ArgumentList $takeownArgs -Wait | Out-Null
+                            $icaclsArgs = "`"$($file.FullName)`" /inheritance:e /grant `"$($env:UserName)`":(OI)(CI)F /T /C"
+                            Start-Process -FilePath "icacls.exe" -ArgumentList $icaclsArgs -Wait | Out-Null
+                            Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
                         }
+                    }
 
-                        try {
-                            $keyPath = "HKLM:\SOFTWARE\Microsoft\EdgeUpdate"
-                            $propertyName = "DoNotUpdateToEdgeWithChromium"
+                    try {
+                        $keyPath = "HKLM:\SOFTWARE\Microsoft\EdgeUpdate"
+                        $propertyName = "DoNotUpdateToEdgeWithChromium"
                         
-                            # Check if the key exists
-                            if (-not (Test-Path $keyPath)) {
-                                # Create the key if it doesn't exist
-                                New-Item -Path $keyPath -Force | Out-Null
-                            }
-                        
-                            # Set the property value (this will create the property if it doesn't exist, or update it if it does)
-                            Set-ItemProperty -Path $keyPath -Name $propertyName -Value 1 -Type DWord -Force -ErrorAction Stop
-                        
-                        } catch {
-                            # If there's an error, display a warning
-                            Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        # Check if the key exists
+                        if (-not (Test-Path $keyPath)) {
+                            # Create the key if it doesn't exist
+                            New-Item -Path $keyPath -Force | Out-Null
                         }
                         
-                        try {
-                            taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
-                        } catch {
-                            Write-Host "[WARNING]: $_" -ForegroundColor Red
-                        }
+                        # Set the property value (this will create the property if it doesn't exist, or update it if it does)
+                        Set-ItemProperty -Path $keyPath -Name $propertyName -Value 1 -Type DWord -Force -ErrorAction Stop
                         
-                        try {
-                            $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
-                            if ($edgeDirectories) {
-                                $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction Stop
-                            } 
-                        } catch {
-                            Write-Host "[WARNING]: $_" -ForegroundColor Red
-                        }
+                    }
+                    catch {
+                        # If there's an error, display a warning
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
                         
-                        try {
-                            Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
-                            Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
-                        } catch {
-                            Write-Host "[WARNING]: $_" -ForegroundColor Red
-                        }
+                    try {
+                        taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
                         
-                        try {
-                            Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction Stop
-                        } catch {
-                            Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    try {
+                        $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
+                        if ($edgeDirectories) {
+                            $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction Stop
+                        } else {
                         }
+                    } catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
                         
-                        try {
-                            $progressPreference = 'SilentlyContinue'
-                            Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction Stop | Out-Null
-                        } catch {
-                            Write-Host "[WARNING]: $_" -ForegroundColor Red
-                        }
+                    try {
+                        Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
+                        Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
                         
-                        try {
-                            Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction Stop
-                            Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction Stop
-                            Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction Stop
-                            Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction Stop
-                        } catch {
-                            Write-Host "[WARNING]: $_" -ForegroundColor Red
-                        }
+                    try {
+                        Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction Stop
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
+                        
+                    try {
+                        $progressPreference = 'SilentlyContinue'
+                        Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction Stop | Out-Null
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
+                        
+                    try {
+                        Remove-Item "C:\Program Files (x86)\Microsoft\*edge*" -recurse -ErrorAction Stop
+                        Remove-Item "C:\Program Files (x86)\Microsoft\Edge" -Force -Recurse -ErrorAction Stop
+                        Remove-Item "C:\Program Files (x86)\Microsoft\Temp" -Force -Recurse -ErrorAction Stop
+                        Remove-Item "C:\Program Files (x86)\Microsoft\*" -Force -Recurse -ErrorAction Stop
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
                         
                     # Check if Edge is still installed
                     if (!(Get-Process "msedge" -ErrorAction SilentlyContinue)) {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    } else {
+                    }
+                    else {
                         throw "Microsoft Edge process is still running."
                     }
-                } catch {
+                }
+                catch {
                     Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }

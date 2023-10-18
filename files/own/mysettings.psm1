@@ -717,7 +717,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     }
                 }
                 else {
-                    throw "Media Feature Pack capability not found." -ForegroundColor Red
+                    Write-Host "Media Feature Pack capability not found." -ForegroundColor Red -BackgroundColor Black
                 }
             }
             catch {
