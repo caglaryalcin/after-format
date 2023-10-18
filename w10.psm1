@@ -856,53 +856,49 @@ Function SystemSettings {
         Function DisableXboxFeatures {
             Write-Host "Disabling Xbox Features..." -NoNewline
         
+            # Helper function to create key if it doesn't exist and set the value
+            function Set-RegistryValue($path, $name, $value) {
+                $keyPath = Split-Path -Path $path
+                $itemName = Split-Path -Path $path -Leaf
+        
+                # Check if the key exists, if not, create it
+                if (-not (Test-Path $keyPath)) {
+                    New-Item -Path $keyPath -Force | Out-Null
+                }
+        
+                # Check if the item exists, if not, create it
+                if (-not (Test-Path $path)) {
+                    New-Item -Path $path -Force | Out-Null
+                }
+        
+                # Set the value
+                Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord
+            }
+        
             $allSuccessful = $true
         
-            if (Test-Path "HKCU:\Software\Microsoft\GameBar") {
-                try {
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Type DWord -Value 0
-                }
-                catch {
-                    $allSuccessful = $false
-                }
-            }
-            else {
-                $allSuccessful = $false
-            }
-        
-            if (Test-Path "HKCU:\System\GameConfigStore") {
-                try {
-                    Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 0
-                }
-                catch {
-                    $allSuccessful = $false
-                }
-            }
-            else {
+            try {
+                Set-RegistryValue -path "HKCU:\Software\Microsoft\GameBar" -name "AutoGameModeEnabled" -value 0
+            } catch {
                 $allSuccessful = $false
             }
         
             try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" | Out-Null
-                }
-                # Since the creation of the key did not throw an exception, we can proceed to set the property.
-                try {
-                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
-                }
-                catch {
-                    $allSuccessful = $false
-                }
+                Set-RegistryValue -path "HKCU:\System\GameConfigStore" -name "GameDVR_Enabled" -value 0
+            } catch {
+                $allSuccessful = $false
             }
-            catch {
+        
+            try {
+                Set-RegistryValue -path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -name "AllowGameDVR" -value 0
+            } catch {
                 $allSuccessful = $false
             }
         
             if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Yellow
+                Write-Host " [DONE]" -ForegroundColor Green
+            } else {
+                Write-Host " [DONE WITH ERRORS]" -ForegroundColor Red
             }
         }
         
@@ -2563,7 +2559,6 @@ Function GithubSoftwares {
             try {
                 taskkill /f /im GithubDesktop.exe *>$null
                 if ($LASTEXITCODE -ne 0) { throw "Could not close GithubDesktop.exe" }
-                Write-Host "GithubDesktop.exe closed successfully." -ForegroundColor Green
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -2572,7 +2567,6 @@ Function GithubSoftwares {
             try {
                 taskkill /f /im PowerToys.exe *>$null
                 if ($LASTEXITCODE -ne 0) { throw "Could not close PowerToys.exe" }
-                Write-Host "PowerToys.exe closed successfully." -ForegroundColor Green
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -2581,7 +2575,6 @@ Function GithubSoftwares {
             try {
                 taskkill /f /im "Cloudflare WARP.exe" *>$null
                 if ($LASTEXITCODE -ne 0) { throw "Could not close Cloudflare WARP.exe" }
-                Write-Host "Cloudflare WARP.exe closed successfully." -ForegroundColor Green
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -2590,7 +2583,6 @@ Function GithubSoftwares {
             # Delete chocoapps config file
             try {
                 Remove-Item $configPath -Force -Recurse -ErrorAction Stop
-                Write-Host "Config file removed successfully." -ForegroundColor Green
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -2604,7 +2596,6 @@ Function GithubSoftwares {
                 Install-Module -Name 7Zip4PowerShell -Force *>$null
     
                 if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
-                Write-Host "7Zip4PowerShell module installed successfully." -ForegroundColor Green
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -2638,7 +2629,6 @@ Function GithubSoftwares {
             foreach ($path in $registryPaths) {
                 try {
                     Remove-Item -Path $path -Recurse -ErrorAction Stop
-                    Write-Host "Registry key $path removed successfully." -ForegroundColor Green
                 }
                 catch {
                     # Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
@@ -2862,7 +2852,6 @@ Function UnusedApps {
                 try {
                     $taskName = $task.TaskName
                     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
-                    Write-Host "`n[REMOVED]: $taskName" -ForegroundColor Green
                 } catch {
                     if ($_.Exception.Message -like "*No MSFT_ScheduledTask objects found*") {
                     } else {
@@ -2994,17 +2983,18 @@ Function UnusedApps {
                         }
 
                         try {
-                            # Check if the property exists
-                            $property = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -ErrorAction SilentlyContinue
+                            $keyPath = "HKLM:\SOFTWARE\Microsoft\EdgeUpdate"
+                            $propertyName = "DoNotUpdateToEdgeWithChromium"
                         
-                            if ($null -eq $property) {
-                                # If the property does not exist, create it
-                                New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -PropertyType DWord -Force -ErrorAction Stop
-                            } else {
-                                # If the property exists, set its value
-                                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord -Force -ErrorAction Stop
+                            # Check if the key exists
+                            if (-not (Test-Path $keyPath)) {
+                                # Create the key if it doesn't exist
+                                New-Item -Path $keyPath -Force | Out-Null
                             }
-
+                        
+                            # Set the property value (this will create the property if it doesn't exist, or update it if it does)
+                            Set-ItemProperty -Path $keyPath -Name $propertyName -Value 1 -Type DWord -Force -ErrorAction Stop
+                        
                         } catch {
                             # If there's an error, display a warning
                             Write-Host "[WARNING]: $_" -ForegroundColor Red

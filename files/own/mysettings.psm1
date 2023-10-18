@@ -713,11 +713,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                         Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     else {
-                        throw "DISM exited with code $LASTEXITCODE. Message: $installResult"
+                        # throw "DISM exited with code $LASTEXITCODE. Message: $installResult"
                     }
                 }
                 else {
-                    throw "Media Feature Pack capability not found."
+                    throw "Media Feature Pack capability not found." -ForegroundColor Red
                 }
             }
             catch {
