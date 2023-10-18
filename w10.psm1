@@ -2482,7 +2482,7 @@ Function GithubSoftwares {
 
         Function choco-install {
             try {
-                Write-Host "Installing Chocolatey..." -NoNewline
+                Write-Host "Installing chocolatey..." -NoNewline
                 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
                 Start-Sleep 10
         
@@ -2515,23 +2515,29 @@ Function GithubSoftwares {
                 "powertoys"       = "PowerToys";
                 "cloudflare-warp" = "Cloudflare WARP"
             }
-        
-            #Start the upload process for each package and print the status
+
+            # Start the upload process for each package and print the status
             foreach ($package in $configContent.packages.package) {
                 $packageName = $package.id
                 Write-Host "Installing $packageName..." -NoNewline
-        
+
                 # Capture the result of the installation
                 $result = choco install $packageName --force -y 2>&1 | Out-String
 
-                if ($appsToClose.ContainsKey($packageName)) {
-                    $processName = $appsToClose[$packageName]
-                    Get-Process | Where-Object { $_.Name -eq $processName } | Stop-Process -Force -ErrorAction SilentlyContinue
-                }
-        
                 # Check if the installation was successful by looking for a specific string in the output
                 if ($result -like "*The install of $packageName was successful*") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            
+                    # If the package is in the list of apps to close, terminate its process after installation
+                    if ($appsToClose.ContainsKey($packageName)) {
+                        $processName = $appsToClose[$packageName]
+
+                        # Wait a few seconds to ensure that the installation process has fully completed
+                        Start-Sleep -Seconds 3
+
+                        # Then attempt to close the application
+                        Get-Process | Where-Object { $_.Name -eq $processName } | Stop-Process -Force -ErrorAction SilentlyContinue
+                    }
                 }
                 else {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
