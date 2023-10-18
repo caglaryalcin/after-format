@@ -902,10 +902,10 @@ Function SystemSettings {
             }
         
             if ($allSuccessful) {
-                Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host " [DONE WITH ERRORS]" -ForegroundColor Red
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Red
             }
         }
         

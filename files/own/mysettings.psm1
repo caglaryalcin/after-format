@@ -711,7 +711,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     $installResult = DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
                     
                     # 0 success, 3010 restart required
-                    if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 3010)
+                    if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 3010) {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     else {
