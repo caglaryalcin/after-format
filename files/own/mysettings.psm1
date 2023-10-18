@@ -7,7 +7,7 @@ $myText = @"
 ###############################
 "@
 
-Write-Host $myText -ForegroundColor Red -BackgroundColor Black
+Write-Host `n$myText -ForegroundColor Red -BackgroundColor Black
 
 Write-Host `n"Do you " -NoNewline
 Write-Host "own this script?" -NoNewline -ForegroundColor Red -BackgroundColor Black
@@ -401,137 +401,69 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Start-Sleep 5
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-            #Nvidia driver
-            Write-Host "Installing latest version Nvidia Drivers..." -NoNewline
-
-            # Check 7zip install path on registry
-            $7zipinstalled = $false 
-            if ((Test-path HKLM:\SOFTWARE\7-Zip\) -eq $true) {
-                $7zpath = Get-ItemProperty -path  HKLM:\SOFTWARE\7-Zip\ -Name Path
-                $7zpath = $7zpath.Path
-                $7zpathexe = $7zpath + "7z.exe"
-                if ((Test-Path $7zpathexe) -eq $true) {
-                    $archiverProgram = $7zpathexe
-                    $7zipinstalled = $true 
-                }    
-            }
-            elseif ($7zipinstalled -eq $false) {
-                if ((Test-path HKLM:\SOFTWARE\WinRAR) -eq $true) {
-                    $winrarpath = Get-ItemProperty -Path HKLM:\SOFTWARE\WinRAR -Name exe64 
-                    $winrarpath = $winrarpath.exe64
-                    if ((Test-Path $winrarpath) -eq $true) {
-                        $archiverProgram = $winrarpath
-                    }
+            #NVIDIA Driver
+            # Check for archiving software (7-zip or WinRAR)
+            Write-Host "Installing Nvidia Driver..." -NoNewline
+            $archiverProgram = $null
+            $7zPath = Get-ItemProperty -Path "HKLM:\SOFTWARE\7-Zip\" -Name "Path" -ErrorAction SilentlyContinue
+            if ($7zPath) {
+                $archiverProgram = Join-Path $7zPath.Path "7z.exe"
+            } else {
+                $winrarPath = Get-ItemProperty -Path "HKLM:\SOFTWARE\WinRAR" -Name "exe64" -ErrorAction SilentlyContinue
+                if ($winrarPath) {
+                    $archiverProgram = $winrarPath.exe64
                 }
             }
-            else {
-                Write-Host "Sorry, but it looks like you don't have a supported archiver."
-                while ($choice -notmatch "[y|n]") {
-                    $choice = read-host "Would you like to install 7-Zip now? (Y/N)"
-                }
-                if ($choice -eq "y") {
-                    # Download and silently install 7-zip if the user presses y
-                    $7zip = "https://www.7-zip.org/a/7z1900-x64.exe"
-                    $output = "$PSScriptRoot\7Zip.exe"
-                        (New-Object System.Net.WebClient).DownloadFile($7zip, $output)
-       
-                    Start-Process "7Zip.exe" -Wait -ArgumentList "/S"
-                    # Delete the installer once it completes
-                    Remove-Item "$PSScriptRoot\7Zip.exe"
-                }
-                else {
-                    Write-Host "Fail..."
-                }
+                        if (-not $archiverProgram) {
+                Write-Host "No supported archiver found. Install 7-Zip or WinRAR and rerun the script." -ForegroundColor Red
+                return
             }
-   
-            # Checking currently installed driver version
-            try {
-                $VideoController = Get-WmiObject -ClassName Win32_VideoController | Where-Object { $_.Name -match "NVIDIA" }
-                $ins_version = ($VideoController.DriverVersion.Replace('.', '')[-5..-1] -join '').insert(3, '.')
-            }
-            catch {
-                Write-Host -ForegroundColor Yellow "Unable to detect a compatible Nvidia device."
-            }
-
-            # Checking latest driver version
+            # Get the latest driver version
             $uri = 'https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php' +
-            '?func=DriverManualLookup' +
-            '&psid=120' + # Geforce RTX 30 Series
-            '&pfid=929' + # RTX 3080
-            '&osID=57' + # Windows 10 64bit
-            '&languageCode=1033' + # en-US; seems to be "Windows Locale ID"[1] in decimal
-            '&isWHQL=1' + # WHQL certified
-            '&dch=1' + # DCH drivers (the new standard)
-            '&sort1=0' + # sort: most recent first(?)
-            '&numberOfResults=1' # single, most recent result is enough
-
-            #[1]: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
-
+            '?func=DriverManualLookup&psid=120&pfid=929&osID=57&languageCode=1033&isWHQL=1&dch=1&sort1=0&numberOfResults=1'
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
             $response = Invoke-WebRequest -Uri $uri -Method GET -UseBasicParsing
             $payload = $response.Content | ConvertFrom-Json
             $version = $payload.IDS[0].downloadInfo.Version
-            Write-Output "Latest version `t$version"
 
-            # Checking Windows version
-            if ([Environment]::OSVersion.Version -ge (new-object 'Version' 9, 1)) {
-                $windowsVersion = "win10-win11"
-            }
-            else {
-                $windowsVersion = "win8-win7"
-            }
+            # Determine Windows version and architecture
+            $windowsVersion = if ([Environment]::OSVersion.Version -ge [Version]::new(9, 1)) { "win10-win11" } else { "win8-win7" }
+            $windowsArchitecture = if ([Environment]::Is64BitOperatingSystem) { "64bit" } else { "32bit" }
 
-            # Checking Windows bitness
-            if ([Environment]::Is64BitOperatingSystem) {
-                $windowsArchitecture = "64bit"
-            }
-            else {
-                $windowsArchitecture = "32bit"
-            }
-
-            # Create a new temp folder NVIDIA
-            $nvidiaTempFolder = "$env:temp\NVIDIA"
-            New-Item -Path $nvidiaTempFolder -ItemType Directory 2>&1 | Out-Null
-
-
-            # Generating the download link
+            # Set up temp folder and download link
+            $nvidiaTempFolder = Join-Path $env:TEMP "NVIDIA"
+            New-Item -Path $nvidiaTempFolder -ItemType Directory -Force | Out-Null
             $url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-dch-whql.exe"
-            $rp_url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-dch-whql-rp.exe"
 
-
-            # Downloading the installer
-            $dlFile = "$nvidiaTempFolder\$version.exe"
+            # Download the installer
+            $dlFile = Join-Path $nvidiaTempFolder "$version.exe"
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri $url -OutFile $dlFile
+            Invoke-WebRequest -Uri $url -OutFile $dlFile -UseBasicParsing
 
-            # Extracting setup files
-            $extractFolder = "$nvidiaTempFolder\$version"
-            $filesToExtract = "Display.Driver HDAudio NVI2 PhysX EULA.txt ListDevices.txt setup.cfg setup.exe"
+            # Extract setup files
+            $extractFolder = Join-Path $nvidiaTempFolder $version
+            $filesToExtract = "Display.Driver", "HDAudio", "NVI2", "PhysX", "EULA.txt", "ListDevices.txt", "setup.cfg", "setup.exe"
+            $tempOutFile = [System.IO.Path]::GetTempFileName()
+            $tempErrFile = [System.IO.Path]::GetTempFileName()
+            $arguments = @("x", "-aoa", "-o`"$extractFolder`"", "`"$dlFile`"") + $filesToExtract
+            $null = Start-Process -FilePath $archiverProgram -ArgumentList $arguments -Wait -NoNewWindow -PassThru -RedirectStandardOutput $tempOutFile -RedirectStandardError $tempErrFile
 
-            if ($7zipinstalled) {
-                Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList "x -bso0 -bsp1 -bse1 -aoa $dlFile $filesToExtract -o""$extractFolder""" -wait
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            elseif ($archiverProgram -eq $winrarpath) {
-                Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList 'x $dlFile $extractFolder -IBCK $filesToExtract' -wait
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "Something went wrong. No archive program detected. This should not happen."
-            }
+            # Update setup.cfg to remove unneeded dependencies
+            (Get-Content (Join-Path $extractFolder "setup.cfg")) -replace 'name="\${{(EulaHtmlFile|FunctionalConsentFile|PrivacyPolicyFile)}}"', '' | Set-Content (Join-Path $extractFolder "setup.cfg")
 
-            # Remove unneeded dependencies from setup.cfg
-                (Get-Content "$extractFolder\setup.cfg") | Where-Object { $_ -notmatch 'name="\${{(EulaHtmlFile|FunctionalConsentFile|PrivacyPolicyFile)}}' } | Set-Content "$extractFolder\setup.cfg" -Encoding UTF8 -Force
+            # Install drivers
+            $installArgs = "-passive", "-noreboot", "-noeula", "-nofinish", "-s"
 
-            # Installing drivers
-            $install_args = "-passive -noreboot -noeula -nofinish -s"
-            Start-Process -FilePath "$extractFolder\setup.exe" -ArgumentList $install_args -wait
+            # Clean up
+            Remove-Item $nvidiaTempFolder -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item "C:\NVIDIA" -Recurse -Force -ErrorAction SilentlyContinue
 
-            # Cleaning up downloaded files
-            Write-Host "Deleting downloaded files"
-            Remove-Item $nvidiaTempFolder -Recurse -Force *>$null
-            Remove-Item C:\NVIDIA -Recurse -Force *>$null
-            Start-Sleep 3
+            # Delete temp files
+            Remove-Item $tempOutFile -ErrorAction SilentlyContinue
+            Remove-Item $tempErrFile -ErrorAction SilentlyContinue
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
                 
         Drivers

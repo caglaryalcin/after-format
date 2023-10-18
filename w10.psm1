@@ -229,7 +229,7 @@ Function SystemSettings {
                     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name $extension -Type String -Value "PhotoViewer.FileAssoc.Tiff" -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "[WARNING] Could not set default viewer for $extension. Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -283,7 +283,7 @@ Function SystemSettings {
                 }
             }
             catch {
-                Write-Host "[WARNING] Could not create the ControlPanel key. Error: $_" -ForegroundColor Red
+                Write-Host "Error: $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -291,7 +291,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" -Name "StartupPage" -Type DWord -Value 1 -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] Could not set the StartupPage property. Error: $_" -ForegroundColor Red
+                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -299,7 +299,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" -Name "AllItemsIconView" -Type DWord -Value 0 -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] Could not set the AllItemsIconView property. Error: $_" -ForegroundColor Red
+                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -324,7 +324,7 @@ Function SystemSettings {
                 }
             }
             catch {
-                Write-Host "[WARNING] Could not create the HKU drive. Error: $_" -ForegroundColor Red
+                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -332,7 +332,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value "2147483650" -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] Could not set the InitialKeyboardIndicators property. Error: $_" -ForegroundColor Red
+                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -344,7 +344,7 @@ Function SystemSettings {
                         $wsh.SendKeys('{NUMLOCK}')
                     }
                     catch {
-                        throw "Could not toggle the NumLock key. Error: $_"
+                        throw "Error: $_"
                     }
                 }
             }
@@ -459,7 +459,7 @@ Function SystemSettings {
                         Set-ItemProperty -Path $path -Name $name -Value $settings[$path][$name] -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING] Could not set $name. Error: $_" -ForegroundColor Red
+                        Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                         $allSuccessful = $false
                     }
                 }
@@ -487,7 +487,7 @@ Function SystemSettings {
                     New-Item -Path $path -ErrorAction Stop | Out-Null
                 }
                 catch {
-                    Write-Host "[WARNING] Could not create registry path. Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -502,7 +502,7 @@ Function SystemSettings {
                     Set-ItemProperty -Path $path -Name $name -Value $settings[$name] -Type DWord -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "[WARNING] Could not set $name. Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -533,7 +533,7 @@ Function SystemSettings {
                         New-Item -Path $path -Force -ErrorAction Stop | Out-Null
                     }
                     catch {
-                        Write-Host "[WARNING] Could not create registry path $path. Error: $_" -ForegroundColor Red
+                        Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                         $allSuccessful = $false
                     }
                 }
@@ -542,7 +542,7 @@ Function SystemSettings {
                     Set-ItemProperty -Path $path -Name $paths[$path] -Value 1 -Type DWord -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "[WARNING] Could not set property for $path. Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -2504,13 +2504,18 @@ Function GithubSoftwares {
         choco-install
         
         Function InstallSoftwares {
-            # Downloading the config file
+            # Config dosyasının URL'si
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
-            $configPath = "C:\choco-apps.config"
-            Invoke-WebRequest -Uri $configUrl -OutFile $configPath | Out-Null
-        
-            #Convert the config file to xml
-            [xml]$configContent = Get-Content $configPath
+
+            $response = Invoke-WebRequest -Uri $configUrl
+
+            [xml]$configContent = $response.Content
+
+            $appsToClose = @{
+                "github-desktop" = "GithubDesktop";
+                "powertoys" = "PowerToys";
+                "cloudflare-warp" = "Cloudflare WARP"
+            }
         
             #Start the upload process for each package and print the status
             foreach ($package in $configContent.packages.package) {
@@ -2519,6 +2524,11 @@ Function GithubSoftwares {
         
                 # Capture the result of the installation
                 $result = choco install $packageName --force -y 2>&1 | Out-String
+
+                if ($appsToClose.ContainsKey($packageName)) {
+                    $processName = $appsToClose[$packageName]
+                    Get-Process | Where-Object { $_.Name -eq $processName } | Stop-Process -Force -ErrorAction SilentlyContinue
+                }
         
                 # Check if the installation was successful by looking for a specific string in the output
                 if ($result -like "*The install of $packageName was successful*") {
@@ -2605,7 +2615,7 @@ Function GithubSoftwares {
                     Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "[WARNING]: Unable to stop/disable $service. Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
                 }
 
                 try {
@@ -2613,7 +2623,7 @@ Function GithubSoftwares {
                     if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
                 }
                 catch {
-                    Write-Host "[WARNING]: Unable to delete $service. Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
                 }
             }
 
@@ -2635,7 +2645,7 @@ Function GithubSoftwares {
                 Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -Recurse -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING]: Unable to remove chrmstp.exe. Error: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
             }
     
             #workstation key
@@ -2864,7 +2874,7 @@ Function UnusedApps {
                     if ($_.Exception.Message -like "*No MSFT_ScheduledTask objects found*") {
                     }
                     else {
-                        Write-Host "`n[WARNING]: Failed to remove '$taskName'. Error: $_" -ForegroundColor Red
+                        Write-Host "`n[WARNING]: Error: $_" -ForegroundColor Red
                     }
                 }
             }
@@ -3073,7 +3083,7 @@ Function UnusedApps {
                             }
                         }
                         catch {
-                            Write-Host "[WARNING]: Failed to remove $path. Error: $_" -ForegroundColor Red
+                            Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
                         }
                     }
                         
@@ -3115,6 +3125,28 @@ UnusedApps
 ##########
 #endregion Remove Unused Apps/Softwares
 ##########
+
+Function Restart {
+    Write-Host `n"Do you " -NoNewline
+    Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor Black
+    Write-Host "(y/n): " -NoNewline
+    $response = Read-Host
+
+    if ($response -eq 'y' -or $response -eq 'Y') {
+        Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
+
+        cmd.exe /c "shutdown /r /t 0"
+    }
+    elseif ($response -eq 'n' -or $response -eq 'N') {
+        Write-Host("Cancel restart process") -ForegroundColor Red
+    }
+    else {
+        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+    }
+ 
+}
+
+Restart
 
 ##########
 #region My Settings
