@@ -3070,7 +3070,6 @@ Function UnusedApps {
 
                             if ($items) {
                                 Remove-Item -Path $path -Force -Recurse -ErrorAction Stop
-                                Write-Host "DONE: Removed $path" -ForegroundColor Green
                             }
                         }
                         catch {
