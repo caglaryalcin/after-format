@@ -697,6 +697,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         }
                     
         Set-Configs
+        
         function MediaFeaturePack {
             try {
                 Write-Host "Installing Media Feature Pack..." -NoNewline

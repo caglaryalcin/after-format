@@ -220,7 +220,7 @@ Function SystemSettings {
 
         #Default Photo Viewer Old
         Function DefaultPhotoViewer {
-            Write-Host `n"Default Old Photo Viewer..." -NoNewline
+            Write-Host "Default Old Photo Viewer..." -NoNewline
             $OldPhotoViewer = ".bmp", ".dng", ".ico", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".raw"
             $allSuccessful = $true
         
@@ -2562,30 +2562,19 @@ Function GithubSoftwares {
                     }
                 }
             }
-            # Close the GitHub Desktop window
-            try {
-                taskkill /f /im GithubDesktop.exe *>$null
-                if ($LASTEXITCODE -ne 0) { throw "Could not close GithubDesktop.exe" }
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
+            function Safe-TaskKill {
+                param($processName)
+            
+                taskkill /f /im $processName *>$null
 
-            try {
-                taskkill /f /im PowerToys.exe *>$null
-                if ($LASTEXITCODE -ne 0) { throw "Could not close PowerToys.exe" }
+                if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
+                    Write-Host "[WARNING]: Could not close $processName, exit code: $LASTEXITCODE" -ForegroundColor Red
+                }
             }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
-
-            try {
-                taskkill /f /im "Cloudflare WARP.exe" *>$null
-                if ($LASTEXITCODE -ne 0) { throw "Could not close Cloudflare WARP.exe" }
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
+            
+            Safe-TaskKill "GithubDesktop.exe"
+            Safe-TaskKill "PowerToys.exe"
+            Safe-TaskKill "Cloudflare WARP.exe"
 
             # Delete chocoapps config file
             try {
