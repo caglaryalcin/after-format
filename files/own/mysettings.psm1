@@ -554,13 +554,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         
                 # Define addons and their URLs
                 $addons = @{
-                    "bitwarden"        = "https://addons.mozilla.org/firefox/downloads/file/4164440/bitwarden_password_manager-2023.8.3.xpi"
-                    "ublockorigin"     = "https://addons.mozilla.org/firefox/downloads/file/4171020/ublock_origin-1.52.2.xpi"
-                    "privacybadger"    = "https://addons.mozilla.org/firefox/downloads/file/4167070/privacy_badger17-2023.9.12.xpi"
-                    "darkreader"       = "https://addons.mozilla.org/firefox/downloads/file/4151368/darkreader-4.9.65.xpi"
-                    "ublacklist"       = "https://addons.mozilla.org/firefox/downloads/file/4169526/ublacklist-8.3.4.xpi"
-                    "returnytdl"       = "https://addons.mozilla.org/firefox/downloads/file/4147411/return_youtube_dislikes-3.0.0.10.xpi"
-                    "idm"              = "https://addons.mozilla.org/firefox/downloads/file/4167725/tonec_idm_integration_module-6.41.20.xpi"
+                    "bitwarden"     = "https://addons.mozilla.org/firefox/downloads/file/4164440/bitwarden_password_manager-2023.8.3.xpi"
+                    "ublockorigin"  = "https://addons.mozilla.org/firefox/downloads/file/4171020/ublock_origin-1.52.2.xpi"
+                    "privacybadger" = "https://addons.mozilla.org/firefox/downloads/file/4167070/privacy_badger17-2023.9.12.xpi"
+                    "darkreader"    = "https://addons.mozilla.org/firefox/downloads/file/4151368/darkreader-4.9.65.xpi"
+                    "ublacklist"    = "https://addons.mozilla.org/firefox/downloads/file/4169526/ublacklist-8.3.4.xpi"
+                    "returnytdl"    = "https://addons.mozilla.org/firefox/downloads/file/4147411/return_youtube_dislikes-3.0.0.10.xpi"
+                    "idm"           = "https://addons.mozilla.org/firefox/downloads/file/4167725/tonec_idm_integration_module-6.41.20.xpi"
                 }
         
                 # Download and place each addon
@@ -571,11 +571,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         
                 # Download and apply user configurations
                 $configUrls = @{
-                    "user.js"          = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
-                    "Tab Shapes.css"   = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css"
-                    "Toolbar.css"      = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
-                    "userContent.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css"
-                    "userChrome.css"   = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
+                    "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
+                    "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css"
+                    "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
+                    "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css"
+                    "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
                 }
         
                 $chromeDir = New-Item -Path (Join-Path -Path $profilePath -ChildPath "chrome") -ItemType "directory" -Force
@@ -586,7 +586,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
         
                 Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
+            }
+            catch {
                 Write-Host " [WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
@@ -602,7 +603,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     if (-Not (Test-Path $path)) {
                         New-Item -Path $path -ItemType "directory" | Out-Null
                     }
-                } catch {
+                }
+                catch {
                     Write-Host " [WARNING] Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
@@ -611,80 +613,90 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             function Safe-Invoke-WebRequest($uri, $outFile) {
                 try {
                     Invoke-WebRequest -Uri $uri -Outfile $outFile
-                } catch {
+                }
+                catch {
                     Write-Host " [WARNING] Failed to download from: $uri. Error: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
-        
+            
+            function Ensure-Directory($path) {
+                if (-Not (Test-Path $path)) {
+                    New-Item -ItemType Directory -Force -Path $path | Out-Null
+                }
+            }
+            
             # Define directories and files to be downloaded
             $downloads = @{
-                    "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User" = @(
-                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings",
-                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme",
-                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Default%20(Windows).sublime-mousemap"
-                    )
-                    "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages" = @(
-                        "https://packagecontrol.io/Package%20Control.sublime-package"
-                    )
-                    "$env:UserProfile\Documents\PowerToys\Backup" = @(
-                        "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
-                    )
-                    "$env:userprofile\Desktop" = @(
-                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json",
-                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
-                    )
-                    "C:\fan_control\Configurations" = @(
-                        "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json"
-                    )
-                    "$env:USERPROFILE\Appdata\Roaming\Openrgb" = @(
-                        "https://github.com/caglaryalcin/my-configs/raw/main/my_led_config.orp"
-                    )
-                }
-        
+                "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User"      = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Default%20(Windows).sublime-mousemap"
+                )
+                "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages" = @(
+                    "https://packagecontrol.io/Package%20Control.sublime-package"
+                )
+                "$env:UserProfile\Documents\PowerToys\Backup"                      = @(
+                    "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
+                )
+                "$env:userprofile\Desktop"                                         = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
+                )
+                "C:\fan_control\Configurations"                                    = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json"
+                )
+                "$env:USERPROFILE\Appdata\Roaming\Openrgb"                         = @(
+                    "https://github.com/caglaryalcin/my-configs/raw/main/my_led_config.orp"
+                )
+            }
+            
             # Process each directory and download files
             foreach ($dir in $downloads.Keys) {
                 Ensure-Directory -path $dir
                 foreach ($url in $downloads[$dir]) {
-                    $fileName = [System.IO.Path]::GetFileName((Convert-Path -URI $url))
+                    $uri = [System.Uri]$url
+                    $fileName = [System.IO.Path]::GetFileName($uri.LocalPath)
                     $outFile = Join-Path -Path $dir -ChildPath $fileName
                     Safe-Invoke-WebRequest -uri $url -outFile $outFile
                 }
             }
-        
-            # Additional configurations
+            
             try {
                 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
                 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -PropertyType DWORD -Value "0" | Out-Null
                 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWORD -Value "0" | Out-Null
                 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 | Out-Null
                 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -PropertyType DWORD -Value 1 | Out-Null
-            } catch {
+            }
+            catch {
                 Write-Host " [WARNING] Failed in additional configurations. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
-        
+                    
             # Monitor settings prompt
             try {
-                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
+                Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
-            } catch {
+            }
+            catch {
                 Write-Host " [WARNING] Failed to set monitor settings. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
-        
+                    
             # Import Cloudflare certificate
             try {
                 $certPath = "C:\Cloudflare_CA.crt"
                 Invoke-WebRequest -Uri "https://developers.cloudflare.com/cloudflare-one/static/documentation/connections/Cloudflare_CA.crt" -Outfile $certPath
                 Import-Certificate -FilePath $certPath -CertStoreLocation "cert:\LocalMachine\Root" | Out-Null
                 Remove-Item -Path $certPath -Force
-            } catch {
+            }
+            catch {
                 Write-Host " [WARNING] Failed to import Cloudflare certificate. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
-        
+                    
             Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-        
-        Set-Configs        
+                    
+        Set-Configs
         function MediaFeaturePack {
             try {
                 Write-Host "Installing Media Feature Pack..." -NoNewline

@@ -1503,7 +1503,7 @@ Function SystemSettings {
 
         #Turn Off News and Interest
         Function DisableNews {
-            Write-Host "Disabling News and Interes on Taskbar..." -NoNewline
+            Write-Host "Disabling News and Interest on Taskbar..." -NoNewline
         
             # Test if the 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds' path exists
             if (Test-Path -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds") {
@@ -1511,7 +1511,7 @@ Function SystemSettings {
             else {
                 # If it doesn't exist, create it
                 try {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -ErrorAction Stop
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -ErrorAction Stop | Out-Null
                 }
                 catch {
                     Write-Host "[WARNING] Failed to create 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds' path: $_" -ForegroundColor Yellow
@@ -1520,7 +1520,7 @@ Function SystemSettings {
         
             # Set the 'EnableFeeds' registry value to 0
             try {
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
             }
             catch {
                 Write-Host "[WARNING] Failed to set 'EnableFeeds' registry value: $_" -ForegroundColor Yellow
@@ -2422,7 +2422,6 @@ Function PrivacySettings {
                     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MusNotification.exe" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MusNotification.exe" -Name "Debugger" -Type String -Value "cmd.exe"
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
                 Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor Red
@@ -2440,7 +2439,6 @@ Function PrivacySettings {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1 -ErrorAction Stop
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
                 Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor Red
@@ -2481,7 +2479,7 @@ Function GithubSoftwares {
 
         Function choco-install {
             try {
-                Write-Host "Installing Chocolatey..."
+                Write-Host "Installing Chocolatey..." -NoNewline
                 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
                 Start-Sleep 10
         
@@ -2554,7 +2552,7 @@ Function GithubSoftwares {
                     Start-Sleep -Seconds 3  # Give some time for the extension to install
                     $updatedInstalled = & $vsCodePath --list-extensions
                     if ($updatedInstalled -contains $vse) {
-                        Write-Host $vse "installed successfully." -ForegroundColor Green
+                        # Write-Host "" -ForegroundColor Green
                     }
                     else {
                         Write-Host "[WARNING]: Failed to install $vse" -ForegroundColor Red
@@ -2643,7 +2641,7 @@ Function GithubSoftwares {
                     Write-Host "Registry key $path removed successfully." -ForegroundColor Green
                 }
                 catch {
-                    Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
+                    # Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
                 }
             }
 
@@ -2658,7 +2656,6 @@ Function GithubSoftwares {
             try {
                 $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208"
                 Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
-                Write-Host "VMware Workstation key updated successfully." -ForegroundColor Green
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -2857,8 +2854,7 @@ Function UnusedApps {
         Function RemoveTasks {
             Write-Host "Removing Unnecessary Tasks..." -NoNewline
         
-            $taskPatterns = "OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*",
-            "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*"
+            $taskPatterns = "OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*"
         
             $allTasks = Get-ScheduledTask | Where-Object { $task = $_; $taskPatterns | ForEach-Object { $task.TaskName -like $_ } }
         
@@ -2866,15 +2862,20 @@ Function UnusedApps {
                 try {
                     $taskName = $task.TaskName
                     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+                    Write-Host "`n[REMOVED]: $taskName" -ForegroundColor Green
                 } catch {
-                    Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    if ($_.Exception.Message -like "*No MSFT_ScheduledTask objects found*") {
+                    } else {
+                        Write-Host "`n[WARNING]: Failed to remove '$taskName'. Error: $_" -ForegroundColor Red
+                    }
                 }
             }
         
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
         RemoveTasks
+        
 
         # Uninstall OneDrive
         Function UninstallOneDrive {
@@ -2993,8 +2994,19 @@ Function UnusedApps {
                         }
 
                         try {
-                            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord -Force -ErrorAction Stop
+                            # Check if the property exists
+                            $property = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -ErrorAction SilentlyContinue
+                        
+                            if ($null -eq $property) {
+                                # If the property does not exist, create it
+                                New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -PropertyType DWord -Force -ErrorAction Stop
+                            } else {
+                                # If the property exists, set its value
+                                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord -Force -ErrorAction Stop
+                            }
+
                         } catch {
+                            # If there's an error, display a warning
                             Write-Host "[WARNING]: $_" -ForegroundColor Red
                         }
                         
@@ -3005,7 +3017,10 @@ Function UnusedApps {
                         }
                         
                         try {
-                            Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory | Remove-Item -Force -Recurse -ErrorAction Stop
+                            $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
+                            if ($edgeDirectories) {
+                                $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction Stop
+                            } 
                         } catch {
                             Write-Host "[WARNING]: $_" -ForegroundColor Red
                         }
