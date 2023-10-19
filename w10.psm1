@@ -2506,7 +2506,7 @@ Function GithubSoftwares {
         Function InstallSoftwares {
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
 
-            $response = Invoke-WebRequest -Uri $configUrl
+            $response = Invoke-WebRequest -Uri $configUrl -UseBasicParsing
 
             [xml]$configContent = $response.Content
 
