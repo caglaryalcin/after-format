@@ -2506,7 +2506,7 @@ Function GithubSoftwares {
         Function InstallSoftwares {
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
 
-            $response = Invoke-WebRequest -Uri $configUrl -UseBasicParsing
+            $response = Invoke-WebRequest -Uri $configUrl
 
             [xml]$configContent = $response.Content
 
@@ -2536,16 +2536,17 @@ Function GithubSoftwares {
                 Write-Host "Installing $packageName..." -NoNewline
 
                 # Capture the result of the installation
-                $logFile = "C:\${packageName}_install.log"
-                $result = choco install $packageName --force -y -Verbose *> $logFile
+                $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
 
-                # Check the log file for errors
-                $logContent = Get-Content $logFile
-                if ($logContent -like "*The install of $packageName was successful*") {
+                # Check the installation result for errors
+                if ($result -like "*The install of $packageName was successful*") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                    # If there was an error, write the output to a log file
+                    $logFile = "C:\${packageName}_install.log"
+                    $result | Out-File -FilePath $logFile -Force
                     Write-Host "Check the log file at $logFile for details."
                 }
             }
@@ -2599,14 +2600,6 @@ Function GithubSoftwares {
             Safe-TaskKill "GithubDesktop.exe"
             Safe-TaskKill "PowerToys.exe"
             Safe-TaskKill "Cloudflare WARP.exe"
-
-            # Delete chocoapps config file
-            try {
-                Remove-Item $configPath -Force -Recurse -ErrorAction Stop
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
 
             # 7-Zip on PS
             try {
