@@ -1447,36 +1447,44 @@ Function SystemSettings {
         
             foreach ($service in $disableservices) {
                 $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
-                if ($serviceObject -and $serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
-                    Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                if ($serviceObject) {
+                    if ($serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
+                        try {
+                            Stop-Service -Name $service -Force -ErrorAction Stop
         
-                    # Service stopping, wait for a maximum of 10 seconds
-                    $timeout = 10
-                    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-                    while (($serviceObject.Status -eq 'Running' -or $serviceObject.Status -eq 'Stopping') -and ($stopwatch.Elapsed.Seconds -lt $timeout)) {
-                        Start-Sleep -Seconds 1
-                        $serviceObject.Refresh()
-                    }
-                    $stopwatch.Stop()
+                            # Service stopping, wait for a maximum of 10 seconds
+                            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+                            while (($serviceObject.Status -eq 'Running' -or $serviceObject.Status -eq 'Stopping') -and ($stopwatch.Elapsed.Seconds -lt 10)) {
+                                Start-Sleep -Seconds 1
+                                $serviceObject.Refresh()
+                            }
+                            $stopwatch.Stop()
         
-                    if ($serviceObject.Status -eq 'Stopped') {
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+                            if ($serviceObject.Status -eq 'Stopped') {
+                                Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+                            }
+                            else {
+                                Write-Host "[WARNING] Could not stop service $service in a timely manner" -ForegroundColor Yellow
+                                $allServicesSuccessful = $false
+                            }
+                        } catch {
+                            Write-Host "[ERROR] Failed to stop service $service`: $($_.Exception.Message)" -ForegroundColor Red
+                            $allServicesSuccessful = $false
+                        }
                     }
-                    else {
-                        Write-Host "[WARNING] Could not stop service $service in a timely manner" -ForegroundColor Yellow
-                        $allServicesSuccessful = $false
+                    elseif (-not $serviceObject.CanStop) {
+                        Write-Host "[INFO] Service $service cannot be stopped and will be left as is" -ForegroundColor Yellow
                     }
                 }
                 else {
-        
+                    Write-Host "[INFO] Service $service not found" -ForegroundColor Yellow
                 }
             }
         
             if ($allServicesSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[WARNING] Some services could not be stopped or disabled." -ForegroundColor Yellow
+            } else {
+                Write-Host "[DONE] with errors" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
