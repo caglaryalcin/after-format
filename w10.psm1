@@ -1462,23 +1462,27 @@ Function SystemSettings {
         
                         if ($serviceObject.Status -eq 'Stopped') {
                             Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
-                        } else {
+                        }
+                        else {
                             Write-Host "[WARNING] Could not stop service $service in a timely manner" -ForegroundColor Yellow
                             $allServicesSuccessful = $false
                         }
-                    } elseif ($serviceObject.Status -eq 'Stopped' -and $serviceObject.StartType -ne 'Disabled') {
+                    }
+                    elseif ($serviceObject.Status -eq 'Stopped' -and $serviceObject.StartType -ne 'Disabled') {
                         # If the service is already stopped but not disabled, disable it
                         Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
                     }
                     # If the service is already stopped and disabled, do nothing
-                } else {
+                }
+                else {
                     Write-Host "[INFO] Service $service does not exist on this system" -ForegroundColor Blue
                 }
             }
         
             if ($allServicesSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green
-            } else {
+            }
+            else {
                 Write-Host "[DONE WITH WARNINGS]" -ForegroundColor Yellow
             }
         }
@@ -2610,20 +2614,34 @@ Function GithubSoftwares {
             # Disable and remove Chrome services
             $chromeservices = "gupdate", "gupdatem"
             foreach ($service in $chromeservices) {
-                try {
-                    Stop-Service -Name $service -Force -ErrorAction Stop
-                    Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-                }
-                catch {
-                    Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
-                }
+                $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
 
-                try {
-                    sc.exe delete $service *>$null
-                    if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
+                if ($serviceObject) {
+                    if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
+                        # The service is already stopped and disabled, so there is no need to do anything.
+                        continue
+                    }
+
+                    try {
+                        Stop-Service -Name $service -Force -ErrorAction Stop
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
+                    }
+                    catch {
+                        $errorMessage = $_.Exception.Message
+                        Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
+                    }
+
+                    try {
+                        sc.exe delete $service *>$null
+                        if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
+                    }
+                    catch {
+                        $errorMessage = $_.Exception.Message
+                        Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
+                    }
                 }
-                catch {
-                    Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+                else {
+                    # The service is not available, so there is no need to do anything.
                 }
             }
 
