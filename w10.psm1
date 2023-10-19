@@ -2536,14 +2536,17 @@ Function GithubSoftwares {
                 Write-Host "Installing $packageName..." -NoNewline
 
                 # Capture the result of the installation
-                $result = choco install $packageName --force -y 2>&1 | Out-String
+                $logFile = "C:\path\to\your\logs\${packageName}_install.log"
+                $result = choco install $packageName --force -y -Verbose *> $logFile
 
-                # Check if the installation was successful by looking for a specific string in the output
-                if ($result -like "*The install of $packageName was successful*") {
+                # Check the log file for errors
+                $logContent = Get-Content $logFile
+                if ($logContent -like "*The install of $packageName was successful*") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "Check the log file at $logFile for details."
                 }
             }
 
