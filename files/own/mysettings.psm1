@@ -363,7 +363,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
             } *> $null
          
-            Start-Sleep 5
+            Start-Sleep 10
             taskkill.exe /f /im OpenRGB.exe *>$null
 
             #Set Pin
