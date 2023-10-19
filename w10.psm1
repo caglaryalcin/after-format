@@ -1483,8 +1483,6 @@ Function SystemSettings {
                     else {
                         # An error occurred while stopping or disabling the service
                         Write-Host "An error occurred: $($_.Exception.Message)" -ForegroundColor Red
-                        Write-Host "Error details:" -ForegroundColor Red
-                        Write-Host $_.ScriptStackTrace -ForegroundColor Red
                         
                         $allServicesSuccessful = $false
                     }
