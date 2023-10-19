@@ -1490,10 +1490,10 @@ Function SystemSettings {
             }
         
             if ($allServicesSuccessful) {
-                Write-Host "DONE" -ForegroundColor Green
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "DONE WITH WARNINGS" -ForegroundColor Yellow
+                Write-Host "[DONE With WARNINGS]" -ForegroundColor Green -BackgroundColor Black
             }
         }
         
