@@ -1438,66 +1438,48 @@ Function SystemSettings {
 
         Function DisableServices {
             Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-                
-            $disableservices = "XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
-            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", 'PcaSvc', "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
-            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service"
-                
-            $allServicesSuccessful = $true
-            
-            $allServicesSuccessful = $true
-            
+                    
+            $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
+            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
+            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service")
+                    
             foreach ($service in $disableservices) {
                 try {
-                    $serviceObject = Get-Service -Name $service -ErrorAction Stop
+                    $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
                     
-                    if ($serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
-                        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-
-                        # Wait for the service to stop with a timeout
-                        $stopTimeoutSeconds = 15
-                        $serviceStopped = $false
-                        for ($i = 0; $i -lt $stopTimeoutSeconds; $i++) {
-                            if ((Get-Service -Name $service -ErrorAction SilentlyContinue).Status -eq 'Stopped') {
-                                $serviceStopped = $true
-                                break
+                    if ($serviceObject) {
+                        if ($serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
+                            if ($service -eq "WpnService") {
+                                # WpnService için özel durum
+                                $result = Start-Job -ScriptBlock { 
+                                    Stop-Service -Name $using:service -Force -ErrorAction SilentlyContinue *>$null
+                                }
+        
+                                Stop-Job -Job $result
+        
+                                if ((Get-Service -Name $service -ErrorAction SilentlyContinue).Status -eq 'Stopped') {
+                                    Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+                                }
+                            } else {
+                                Stop-Service -Name $service -Force -ErrorAction Stop
+                                Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
                             }
-                            Start-Sleep -Seconds 1
+                        } elseif ($serviceObject.StartType -ne 'Disabled') {
+                            Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
                         }
-
-                        if (-not $serviceStopped) {
-                            throw "Service '$service' could not be stopped within the timeout period."
-                        }
-
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
                     }
-                    elseif ($serviceObject.StartType -ne 'Disabled') {
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-                    }
-                    # If the service is already stopped and disabled, do nothing
-                }
-                catch {
-                    if ($_.Exception.Message -match "Cannot find any service with service name") {
-                        # Service does not exist, do nothing
-                    }
-                    else {
-                        # An error occurred while stopping or disabling the service
+                } catch {
+                    if ($service -ne "WpnService") {
                         Write-Host "An error occurred: $($_.Exception.Message)" -ForegroundColor Red
-                        
-                        $allServicesSuccessful = $false
                     }
                 }
             }
         
-            if ($allServicesSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[DONE With WARNINGS]" -ForegroundColor Green -BackgroundColor Black
-            }
+            Write-Host "DONE" -ForegroundColor Green
         }
-        
+                
         DisableServices
+        
  
         ##########
         #region Taskbar Settings
