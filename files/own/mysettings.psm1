@@ -660,6 +660,24 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         }
         
         MediaFeaturePack
+
+        #Set Wallpaper
+        Function SetWallpaper {
+            Write-Host "Setting Desktop Wallpaper..." -NoNewline
+            $url = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/hello.png"
+            $filePath = "$HOME\Documents\hello.png"
+            $wc = New-Object System.Net.WebClient
+            try {
+                $wc.DownloadFile($url, $filePath)
+                Set-Itemproperty -path "HKCU:Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            }
+            catch {
+                Write-Host "[WARNING] Failed to set wallpaper: $_" -ForegroundColor Yellow
+            }
+        }
+        
+        SetWallpaper
         
     }
 
