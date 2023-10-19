@@ -1445,12 +1445,30 @@ Function SystemSettings {
                 
             $allServicesSuccessful = $true
             
+            $allServicesSuccessful = $true
+            
             foreach ($service in $disableservices) {
                 try {
                     $serviceObject = Get-Service -Name $service -ErrorAction Stop
                     
                     if ($serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
-                        Stop-Service -Name $service -Force -ErrorAction Stop
+                        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+
+                        # Wait for the service to stop with a timeout
+                        $stopTimeoutSeconds = 15
+                        $serviceStopped = $false
+                        for ($i = 0; $i -lt $stopTimeoutSeconds; $i++) {
+                            if ((Get-Service -Name $service -ErrorAction SilentlyContinue).Status -eq 'Stopped') {
+                                $serviceStopped = $true
+                                break
+                            }
+                            Start-Sleep -Seconds 1
+                        }
+
+                        if (-not $serviceStopped) {
+                            throw "Service '$service' could not be stopped within the timeout period."
+                        }
+
                         Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
                     }
                     elseif ($serviceObject.StartType -ne 'Disabled') {
@@ -1459,7 +1477,7 @@ Function SystemSettings {
                     # If the service is already stopped and disabled, do nothing
                 }
                 catch {
-                    if ($_.Exception -match "Cannot find any service with service name") {
+                    if ($_.Exception.Message -match "Cannot find any service with service name") {
                         # Service does not exist, do nothing
                     }
                     else {
