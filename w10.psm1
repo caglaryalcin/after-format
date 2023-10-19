@@ -1440,7 +1440,7 @@ Function SystemSettings {
             Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
                 
             $disableservices = "XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
-            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
+            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", 'PcaSvc', "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
             "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service"
                 
             $allServicesSuccessful = $true
