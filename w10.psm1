@@ -1438,53 +1438,48 @@ Function SystemSettings {
 
         Function DisableServices {
             Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-        
+            
             $disableservices = "XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
             "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service"
-        
+            
             $allServicesSuccessful = $true
         
             foreach ($service in $disableservices) {
                 $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
                 if ($serviceObject) {
                     if ($serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
-                        try {
-                            Stop-Service -Name $service -Force -ErrorAction Stop
+                        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
         
-                            # Service stopping, wait for a maximum of 10 seconds
-                            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-                            while (($serviceObject.Status -eq 'Running' -or $serviceObject.Status -eq 'Stopping') -and ($stopwatch.Elapsed.Seconds -lt 10)) {
-                                Start-Sleep -Seconds 1
-                                $serviceObject.Refresh()
-                            }
-                            $stopwatch.Stop()
+                        # Service stopping, wait for a maximum of 10 seconds
+                        $timeout = 10
+                        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+                        while (($serviceObject.Status -eq 'Running' -or $serviceObject.Status -eq 'Stopping') -and ($stopwatch.Elapsed.Seconds -lt $timeout)) {
+                            Start-Sleep -Seconds 1
+                            $serviceObject.Refresh()
+                        }
+                        $stopwatch.Stop()
         
-                            if ($serviceObject.Status -eq 'Stopped') {
-                                Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
-                            }
-                            else {
-                                Write-Host "[WARNING] Could not stop service $service in a timely manner" -ForegroundColor Yellow
-                                $allServicesSuccessful = $false
-                            }
-                        } catch {
-                            Write-Host "[ERROR] Failed to stop service $service`: $($_.Exception.Message)" -ForegroundColor Red
+                        if ($serviceObject.Status -eq 'Stopped') {
+                            Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+                        } else {
+                            Write-Host "[WARNING] Could not stop service $service in a timely manner" -ForegroundColor Yellow
                             $allServicesSuccessful = $false
                         }
+                    } elseif ($serviceObject.Status -eq 'Stopped' -and $serviceObject.StartType -ne 'Disabled') {
+                        # If the service is already stopped but not disabled, disable it
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
                     }
-                    elseif (-not $serviceObject.CanStop) {
-                        Write-Host "[INFO] Service $service cannot be stopped and will be left as is" -ForegroundColor Yellow
-                    }
-                }
-                else {
-                    Write-Host "[INFO] Service $service not found" -ForegroundColor Yellow
+                    # If the service is already stopped and disabled, do nothing
+                } else {
+                    Write-Host "[INFO] Service $service does not exist on this system" -ForegroundColor Blue
                 }
             }
         
             if ($allServicesSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                Write-Host "[DONE]" -ForegroundColor Green
             } else {
-                Write-Host "[DONE] with errors" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[DONE WITH WARNINGS]" -ForegroundColor Yellow
             }
         }
         
