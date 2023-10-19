@@ -359,7 +359,10 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Copy-Item C:\icons\openrgb.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\openrgb.lnk" -Force
 
             #create config folder
-            Start-Process "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null
+            $job = Start-Job -ScriptBlock { 
+                & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
+            } *> $null
+         
             Start-Sleep 5
             taskkill.exe /f /im OpenRGB.exe *>$null
 
