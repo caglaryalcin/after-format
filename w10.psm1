@@ -2536,7 +2536,7 @@ Function GithubSoftwares {
                 Write-Host "Installing $packageName..." -NoNewline
 
                 # Capture the result of the installation
-                $logFile = "C:\path\to\your\logs\${packageName}_install.log"
+                $logFile = "C:\${packageName}_install.log"
                 $result = choco install $packageName --force -y -Verbose *> $logFile
 
                 # Check the log file for errors
