@@ -472,62 +472,68 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         Drivers
 
         #Restore Librewolf settings and extensions
-        function Install-LibreWolfAddIn {
-            Write-Host "Restoring Librewolf settings and extensions..." -NoNewline
-        
-            try {
-                # Start and immediately stop LibreWolf to initiate profile creation
-                Start-Process -FilePath "C:\Program Files\LibreWolf\librewolf.exe" -Wait
-                Start-Sleep -Seconds 2
-                Stop-Process -Name "librewolf" -Force
-        
-                $extensionsBasePath = "C:\Program Files\LibreWolf\distribution\extensions"
-                $profilePath = Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Exclude *.default
-        
-                # Ensure directories exist
-                $null = New-Item -Path $extensionsBasePath -ItemType Container -Force
-        
-                # Define addons and their URLs
-                $addons = @{
-                    "bitwarden"     = "https://addons.mozilla.org/firefox/downloads/file/4164440/bitwarden_password_manager-2023.8.3.xpi"
-                    "ublockorigin"  = "https://addons.mozilla.org/firefox/downloads/file/4171020/ublock_origin-1.52.2.xpi"
-                    "privacybadger" = "https://addons.mozilla.org/firefox/downloads/file/4167070/privacy_badger17-2023.9.12.xpi"
-                    "darkreader"    = "https://addons.mozilla.org/firefox/downloads/file/4151368/darkreader-4.9.65.xpi"
-                    "ublacklist"    = "https://addons.mozilla.org/firefox/downloads/file/4169526/ublacklist-8.3.4.xpi"
-                    "returnytdl"    = "https://addons.mozilla.org/firefox/downloads/file/4147411/return_youtube_dislikes-3.0.0.10.xpi"
-                    "idm"           = "https://addons.mozilla.org/firefox/downloads/file/4167725/tonec_idm_integration_module-6.41.20.xpi"
-                }
-        
-                # Download and place each addon
-                foreach ($addon in $addons.GetEnumerator()) {
-                    $addonPath = Join-Path -Path $extensionsBasePath -ChildPath "$($addon.Name).xpi"
-                    Invoke-WebRequest -Uri $addon.Value -OutFile $addonPath
-                }
-        
-                # Download and apply user configurations
-                $configUrls = @{
-                    "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
-                    "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css"
-                    "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
-                    "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css"
-                    "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css"
-                }
-        
-                $chromeDir = New-Item -Path (Join-Path -Path $profilePath -ChildPath "chrome") -ItemType "directory" -Force
-        
-                foreach ($config in $configUrls.GetEnumerator()) {
-                    $configPath = Join-Path -Path $chromeDir -ChildPath $config.Key
-                    Invoke-WebRequest -Uri $config.Value -OutFile $configPath
-                }
-        
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host " [WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
-            }
+        function installLibreWolfAddIn() {
+            Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
+
+            #it is necessary to formation of a profile
+            cd "C:\Program Files\LibreWolf\"
+            .\librewolf.exe
+            Start-Sleep 2
+            taskkill /f /im "librewolf.exe" *>$null
+
+            $instdir = "C:\Program Files\LibreWolf"
+$distribution = $instdir + '\distribution'
+$extensions = $instdir + '\distribution\extensions'
+
+# Eklenti isimleri ve ID'leri
+$addons = @{
+    "bitwarden-password-manager" = '{446900e4-71c2-419f-a6a7-df9c091e268b}';
+    "ublock-origin" = 'uBlock0@raymondhill.net';
+    "privacy-badger17" = 'jid1-MnnxcxisBPnSXQ@jetpack';
+    "darkreader" = 'addon@darkreader.org';
+    "ublacklist" = '@ublacklist';
+    "return-youtube-dislikes" = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}';
+    "best-internet-download-manager" = 'mozilla_cc3@internetdownloadmanager.com'
+}
+
+If (-Not(Test-Path $distribution)) {
+    New-Item $distribution -ItemType Container | Out-Null
+}
+If (-Not(Test-Path $extensions)) {
+    New-Item $extensions -ItemType Container | Out-Null
+}
+
+foreach ($addon in $addons.GetEnumerator()) {
+    try {
+        # Eklenti bilgilerini al
+        $response = Invoke-RestMethod -Uri "https://addons.mozilla.org/api/v4/addons/addon/$($addon.Name)/"
+
+        # En son sürüm numarasını al
+        $latestVersion = $response.current_version.version
+
+        # Eklenti adı ve sürüm numarasını kullanarak indirme URL'sini oluştur
+        $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$($addon.Name)/addon-$($addon.Name)-latest.xpi"
+
+        $addonPath = $extensions + '\' + $addon.Value + '.xpi'
+
+        # XPI dosyasını indir
+        Invoke-WebRequest $addonUrl -Outfile $addonPath
+    } catch {
+        Write-Host "Error downloading or getting info for addon $($addon.Name): $_" -ForegroundColor Red
+    }
+}
+
+            $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
+            New-Item $dest -Name chrome -ItemType "directory" *>$null
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css" -Outfile "$dest\chrome\userContent.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-        
-        Install-LibreWolfAddIn
+
+        installLibreWolfAddIn("");
                 
         #sublime text
         function Set-Configs {
