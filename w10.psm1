@@ -1436,51 +1436,49 @@ Function SystemSettings {
 
         HideRecentlyAddedApps
 
-        Function DisableServices {
+        function Disable-Services {
+            param (
+                [string[]]$disableservices
+            )
             Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-                    
-            $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
-            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
-            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service")
-                    
             foreach ($service in $disableservices) {
                 try {
-                    $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
-                    
-                    if ($serviceObject) {
-                        if ($serviceObject.Status -eq 'Running' -and $serviceObject.CanStop) {
-                            if ($service -eq "WpnService") {
-                                # WpnService için özel durum
-                                $result = Start-Job -ScriptBlock { 
-                                    Stop-Service -Name $using:service -Force -ErrorAction SilentlyContinue *>$null
-                                }
-        
-                                Stop-Job -Job $result
-        
-                                if ((Get-Service -Name $service -ErrorAction SilentlyContinue).Status -eq 'Stopped') {
-                                    Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
-                                }
-                            } else {
-                                Stop-Service -Name $service -Force -ErrorAction Stop
-                                Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-                            }
-                        } elseif ($serviceObject.StartType -ne 'Disabled') {
-                            Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-                        }
+                    $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
+                    if ($null -ne $currentService) {
+                        Stop-Service -Name $service -Force -ErrorAction Stop *> $null
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *> $null
                     }
                 } catch {
-                    if ($service -ne "WpnService") {
-                        Write-Host "An error occurred: $($_.Exception.Message)" -ForegroundColor Red
-                    }
+                    Write-Warning "Could not stop/disable service: $service"
                 }
             }
         
-            Write-Host "DONE" -ForegroundColor Green
-        }
-                
-        DisableServices
+            # WPNUser* services
+            try {
+                $wpnServices = Get-Service -Name WPNUser* -ErrorAction SilentlyContinue
+                if ($null -ne $wpnServices) {
+                    $wpnServices | Stop-Service -ErrorAction Stop *> $null
+                    foreach ($wpnService in $wpnServices) {
+                        $serviceName = $wpnService.Name
+                        $path = "HKLM:\SYSTEM\CurrentControlSet\Services\$serviceName"
+                        Set-ItemProperty -Path $path -Name "Start" -Value 4 -ErrorAction Stop *> $null
+                    }
+                }
+            } catch {
+                Write-Warning "Could not stop/disable one or more WPNUser* services."
+            }
         
- 
+            # If the script reaches this point, it has executed successfully
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        
+        # Function usage
+        $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
+                    "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
+                    "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service")
+        
+        Disable-Services -disableservices $disableservices
+
         ##########
         #region Taskbar Settings
         ##########
