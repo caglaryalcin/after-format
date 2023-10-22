@@ -485,7 +485,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 $distribution = $instdir + '\distribution'
 $extensions = $instdir + '\distribution\extensions'
 
-# Eklenti isimleri ve ID'leri
 $addons = @{
     "bitwarden-password-manager" = '{446900e4-71c2-419f-a6a7-df9c091e268b}';
     "ublock-origin" = 'uBlock0@raymondhill.net';
@@ -535,7 +534,7 @@ foreach ($addon in $addons.GetEnumerator()) {
 
         installLibreWolfAddIn("");
                 
-        #sublime text
+        #Sublime text
         function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
             # Helper function to create directories
@@ -687,7 +686,21 @@ foreach ($addon in $addons.GetEnumerator()) {
         }
         
         SetWallpaper
+
+        #Adobe DNG Codec
+        Function DNGCodec {
+        $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
+        $filePath = "C:\DNGCodec_Installer.exe"
+
+        Invoke-WebRequest -Uri $url -OutFile $filePath
+
+        Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru
+
+        Remove-Item -Path $filePath
+
+        }
         
+        DNGCodec
     }
 
     Own
