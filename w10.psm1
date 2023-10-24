@@ -2481,6 +2481,16 @@ Function choco-install {
     }
 }
 
+function Safe-TaskKill {
+    param($processName)
+
+    taskkill /f /im $processName *>$null
+
+    if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
+        Write-Host "[WARNING]: Could not close $processName, exit code: $LASTEXITCODE" -ForegroundColor Red
+    }
+}
+
 Function InstallSoftwares {
     $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
     $wingetConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget-apps.json"
@@ -2519,37 +2529,38 @@ Function InstallSoftwares {
 
             # Capture the result of the installation
             $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
-            
-        }
-        # Check the installation result for errors
-        if ($result -like "*successful*") {
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-        else {
-            Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-            # If there was an error, write the output to a log file
-            $logFile = "C:\${packageName}_install.log"
-            $result | Out-File -FilePath $logFile -Force
-            Write-Host "Check the log file at $logFile for details."
-    
-            # Find the winget package name in the winget config
-            $wingetPackageName = $wingetConfigContent.packages | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
-    
-            if ($wingetPackageName) {
-                # Try to install with winget here
-                Write-Host "Trying to install $packageName with winget..."
-                $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
-                if ($wingetResult -like "*Successfully*") {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    Write-Host "Failed to install $packageName with winget." -ForegroundColor Red
-                    # Here you can add additional logging if needed
-                }
+
+            # Check the installation result for errors right after the installation attempt
+            if ($result -like "*successful*") {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "Package name for winget not found in config." -ForegroundColor Yellow
-            }
+                Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                # If there was an error, write the output to a log file
+                $logFile = "C:\${packageName}_install.log"
+                $result | Out-File -FilePath $logFile -Force
+                Write-Host "Check the log file at $logFile for details."
+    
+                # Find the winget package name in the winget config
+                $wingetPackageName = $wingetConfigContent.packages | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
+
+                if ($wingetPackageName) {
+                    # Try to install with winget here
+                    Write-Host "Trying to install $packageName with winget..."
+                    $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
+                    if ($wingetResult -like "*Successfully*") {
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    else {
+                        Write-Host "Failed to install $packageName with winget." -ForegroundColor Red
+                        # Here you can add additional logging if needed
+                    }
+                }
+                else {
+                    Write-Host "Package name for winget not found in config." -ForegroundColor Yellow
+                }
+            } # Closing the if statement inside the foreach loop
+
         }
 
         # Once all installations are done, stop the background job
@@ -2586,15 +2597,6 @@ Function InstallSoftwares {
                 else {
                     Write-Host "[WARNING]: Failed to install $vse" -ForegroundColor Red
                 }
-            }
-        }
-        function Safe-TaskKill {
-            param($processName)
-    
-            taskkill /f /im $processName *>$null
-
-            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
-                Write-Host "[WARNING]: Could not close $processName, exit code: $LASTEXITCODE" -ForegroundColor Red
             }
         }
     
