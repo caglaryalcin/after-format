@@ -2521,7 +2521,7 @@ foreach ($package in $configContent.packages.package) {
     $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
 }
     # Check the installation result for errors
-    if ($result -like "*The install of $packageName was successful*") {
+    if ($result -like "*successful*") {
         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     }
     else {
