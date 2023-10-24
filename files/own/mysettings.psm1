@@ -538,18 +538,7 @@ foreach ($addon in $addons.GetEnumerator()) {
         #Sublime text
         function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
-            # Helper function to create directories
-            function Ensure-Directory($path) {
-                try {
-                    if (-Not (Test-Path $path)) {
-                        New-Item -Path $path -ItemType "directory" | Out-Null
-                    }
-                }
-                catch {
-                    Write-Host " [WARNING] Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
-                }
-            }
-        
+
             # Helper function for web requests
             function Safe-Invoke-WebRequest($uri, $outFile) {
                 try {
@@ -560,12 +549,10 @@ foreach ($addon in $addons.GetEnumerator()) {
                 }
             }
             
-            function Ensure-Directory($path) {
-                if (-Not (Test-Path $path)) {
-                    New-Item -ItemType Directory -Force -Path $path | Out-Null
-                }
-            }
-            
+            # Ublacklist url to desktop
+            $filePath = "$env:userprofile\Desktop\ublacklist-address.txt"
+            Set-Content -Path $filePath -Value "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
+
             # Define directories and files to be downloaded
             $downloads = @{
                 "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User"      = @(
@@ -581,8 +568,7 @@ foreach ($addon in $addons.GetEnumerator()) {
                 )
                 "$env:userprofile\Desktop"                                         = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json"
                 )
                 "C:\fan_control\Configurations"                                    = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json"
@@ -695,7 +681,7 @@ foreach ($addon in $addons.GetEnumerator()) {
 
         Invoke-WebRequest -Uri $url -OutFile $filePath
 
-        Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru
+        Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
 
         Remove-Item -Path $filePath
 

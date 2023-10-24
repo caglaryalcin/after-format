@@ -196,6 +196,7 @@ Function SystemSettings {
                 Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
 
                 Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host ""
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
