@@ -2490,6 +2490,7 @@ Function GithubSoftwares {
             }
         }
     }
+
     choco-install
         
     Function InstallSoftwares {
@@ -2713,13 +2714,15 @@ Function GithubSoftwares {
         }
         InstallSoftwares
     }
-    elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
-    }
-    else {
-        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-        GithubSoftwares
-    }
+
+    InstallSoftwares
+    
+} elseif ($response -eq 'n' -or $response -eq 'N') {
+    Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
+}
+else {
+    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+    GithubSoftwares
 }
 
 GithubSoftwares
