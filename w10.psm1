@@ -1448,7 +1448,8 @@ Function SystemSettings {
                         Stop-Service -Name $service -Force -ErrorAction Stop *> $null
                         Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *> $null
                     }
-                } catch {
+                }
+                catch {
                     Write-Warning "Could not stop/disable service: $service"
                 }
             }
@@ -1464,7 +1465,8 @@ Function SystemSettings {
                         Set-ItemProperty -Path $path -Name "Start" -Value 4 -ErrorAction Stop *> $null
                     }
                 }
-            } catch {
+            }
+            catch {
                 Write-Warning "Could not stop/disable one or more WPNUser* services."
             }
         
@@ -1474,8 +1476,8 @@ Function SystemSettings {
         
         # Function usage
         $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
-                    "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
-                    "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service")
+            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
+            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service")
         
         Disable-Services -disableservices $disableservices
 
@@ -2535,6 +2537,22 @@ Function GithubSoftwares {
                     $logFile = "C:\${packageName}_install.log"
                     $result | Out-File -FilePath $logFile -Force
                     Write-Host "Check the log file at $logFile for details."
+
+                    # Try to install with winget here
+                    Write-Host "Trying to install $packageName with winget..."
+                    try {
+                        $wingetResult = winget install $packageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
+                        if ($wingetResult -like "*Successfully installed*") {
+                            Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
+                        }
+                        else {
+                            throw "Failed to install $packageName with winget."
+                        }
+                    }
+                    catch {
+                        Write-Host $_.Exception.Message -ForegroundColor Red
+                        # Additional logging if necessary
+                    }
                 }
             }
 
