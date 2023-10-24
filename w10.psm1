@@ -2489,59 +2489,64 @@ Function GithubSoftwares {
                 Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor Red
             }
         }
+    }
+    choco-install
         
-        choco-install
-        
-        Function InstallSoftwares {
-            $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
+    Function InstallSoftwares {
+        $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
+        $wingetConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget-apps.json"
+            
+        $response = Invoke-WebRequest -Uri $configUrl
+        [xml]$configContent = $response.Content
+        [xml]$wingetConfigContent = $wingetResponse.Content
 
-            $response = Invoke-WebRequest -Uri $configUrl
+        $appsToClose = @{
+            "github-desktop"  = "GithubDesktop";
+            "powertoys"       = "PowerToys";
+            "cloudflare-warp" = "Cloudflare WARP"
+        }
 
-            [xml]$configContent = $response.Content
-
-            $appsToClose = @{
-                "github-desktop"  = "GithubDesktop";
-                "powertoys"       = "PowerToys";
-                "cloudflare-warp" = "Cloudflare WARP"
-            }
-
-            # This script block will continuously check for specified processes and stop them if found
-            $scriptBlock = {
-                Param($processNames)
-                while ($true) {
-                    foreach ($process in $processNames) {
-                        Get-Process | Where-Object { $_.Name -eq $process } | Stop-Process -Force -ErrorAction SilentlyContinue
-                    }
-                    Start-Sleep -Seconds 2  # check every 2 seconds
+        # This script block will continuously check for specified processes and stop them if found
+        $scriptBlock = {
+            Param($processNames)
+            while ($true) {
+                foreach ($process in $processNames) {
+                    Get-Process | Where-Object { $_.Name -eq $process } | Stop-Process -Force -ErrorAction SilentlyContinue
                 }
+                Start-Sleep -Seconds 2  # check every 2 seconds
             }
+        }
 
-            # Start the background job for monitoring and stopping processes
-            $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
+        # Start the background job for monitoring and stopping processes
+        $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
 
-            # Start the installation process for each package and print the status
-            foreach ($package in $configContent.packages.package) {
-                $packageName = $package.id
-                Write-Host "Installing $packageName..." -NoNewline
+        # Start the installation process for each package and print the status
+        foreach ($package in $configContent.packages.package) {
+            $packageName = $package.id
+            Write-Host "Installing $packageName..." -NoNewline
 
-                # Capture the result of the installation
-                $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
+            # Capture the result of the installation
+            $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
 
-                # Check the installation result for errors
-                if ($result -like "*The install of $packageName was successful*") {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                    # If there was an error, write the output to a log file
-                    $logFile = "C:\${packageName}_install.log"
-                    $result | Out-File -FilePath $logFile -Force
-                    Write-Host "Check the log file at $logFile for details."
+            # Check the installation result for errors
+            if ($result -like "*The install of $packageName was successful*") {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            else {
+                Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                # If there was an error, write the output to a log file
+                $logFile = "C:\${packageName}_install.log"
+                $result | Out-File -FilePath $logFile -Force
+                Write-Host "Check the log file at $logFile for details."
 
+                # Find the winget package name in the winget config
+                $wingetPackageName = $wingetConfigContent.packages.package | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
+
+                if ($wingetPackageName) {
                     # Try to install with winget here
                     Write-Host "Trying to install $packageName with winget..."
                     try {
-                        $wingetResult = winget install $packageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
+                        $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
                         if ($wingetResult -like "*Successfully installed*") {
                             Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
                         }
@@ -2553,6 +2558,9 @@ Function GithubSoftwares {
                         Write-Host $_.Exception.Message -ForegroundColor Red
                         # Additional logging if necessary
                     }
+                }
+                else {
+                    Write-Host "Package name for winget not found in config." -ForegroundColor Yellow
                 }
             }
 
