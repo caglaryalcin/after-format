@@ -2459,6 +2459,7 @@ Function GithubSoftwares {
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $response = Read-Host
     Write-Host ""
+
     if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function choco-install {
@@ -2710,7 +2711,6 @@ Function GithubSoftwares {
             }
    
         }
-        InstallSoftwares
         }
 
     choco-install
