@@ -2519,11 +2519,12 @@ Function InstallSoftwares {
 
             # Capture the result of the installation
             $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
-            }
-            # Check the installation result for errors
-            if ($result -like "*successful*") {
+            
+        }
+        # Check the installation result for errors
+        if ($result -like "*successful*") {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
+        }
         else {
             Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
             # If there was an error, write the output to a log file
@@ -2539,7 +2540,6 @@ Function InstallSoftwares {
                 Write-Host "Trying to install $packageName with winget..."
                 $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
                 if ($wingetResult -like "*Successfully*") {
-                    Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
