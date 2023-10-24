@@ -2491,7 +2491,7 @@ Function GithubSoftwares {
         }
     }
         
-    Function InstallSoftwares {
+        Function InstallSoftwares {
         $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
         $wingetConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget-apps.json"
 
@@ -2711,7 +2711,7 @@ Function GithubSoftwares {
    
         }
         InstallSoftwares
-    }
+        }
 
     choco-install
     InstallSoftwares
