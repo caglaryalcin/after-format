@@ -2482,225 +2482,226 @@ Function choco-install {
 }
 
 Function InstallSoftwares {
-$configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
-$wingetConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget-apps.json"
+    $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
+    $wingetConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget-apps.json"
 
-$response = Invoke-WebRequest -Uri $configUrl
-$wingetResponse = Invoke-WebRequest -Uri $wingetConfigUrl # This line was missing
+    $response = Invoke-WebRequest -Uri $configUrl
+    $wingetResponse = Invoke-WebRequest -Uri $wingetConfigUrl # This line was missing
 
-[xml]$configContent = $response.Content
-$wingetConfigContent = $wingetResponse.Content | ConvertFrom-Json # Use ConvertFrom-Json for .json files
+    [xml]$configContent = $response.Content
+    $wingetConfigContent = $wingetResponse.Content | ConvertFrom-Json # Use ConvertFrom-Json for .json files
 
-$appsToClose = @{
-    "github-desktop"  = "GithubDesktop";
-    "powertoys"       = "PowerToys";
-    "cloudflare-warp" = "Cloudflare WARP"
-}
+    $appsToClose = @{
+        "github-desktop"  = "GithubDesktop";
+        "powertoys"       = "PowerToys";
+        "cloudflare-warp" = "Cloudflare WARP"
+    }
 
-# This script block will continuously check for specified processes and stop them if found
-$scriptBlock = {
-    Param($processNames)
-    while ($true) {
-        foreach ($process in $processNames) {
-            Get-Process | Where-Object { $_.Name -eq $process } | Stop-Process -Force -ErrorAction SilentlyContinue
+    # This script block will continuously check for specified processes and stop them if found
+    $scriptBlock = {
+        Param($processNames)
+        while ($true) {
+            foreach ($process in $processNames) {
+                Get-Process | Where-Object { $_.Name -eq $process } | Stop-Process -Force -ErrorAction SilentlyContinue
+            }
+            Start-Sleep -Seconds 2  # check every 2 seconds
         }
-        Start-Sleep -Seconds 2  # check every 2 seconds
     }
-}
 
-# Start the background job for monitoring and stopping processes
-$job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
+    # Start the background job for monitoring and stopping processes
+    $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
 
-# Start the installation process for each package and print the status
-if ($null -ne $configContent -and $null -ne $configContent.packages -and $null -ne $configContent.packages.package) {
-foreach ($package in $configContent.packages.package) {
-    $packageName = $package.id
-    Write-Host "Installing $packageName..." -NoNewline
+    # Start the installation process for each package and print the status
+    if ($null -ne $configContent -and $null -ne $configContent.packages -and $null -ne $configContent.packages.package) {
+        foreach ($package in $configContent.packages.package) {
+            $packageName = $package.id
+            Write-Host "Installing $packageName..." -NoNewline
 
-    # Capture the result of the installation
-    $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
-}
-    # Check the installation result for errors
-    if ($result -like "*successful*") {
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    }
-    else {
-        Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-        # If there was an error, write the output to a log file
-        $logFile = "C:\${packageName}_install.log"
-        $result | Out-File -FilePath $logFile -Force
-        Write-Host "Check the log file at $logFile for details."
+            # Capture the result of the installation
+            $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
+            }
+            # Check the installation result for errors
+            if ($result -like "*successful*") {
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+        else {
+            Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+            # If there was an error, write the output to a log file
+            $logFile = "C:\${packageName}_install.log"
+            $result | Out-File -FilePath $logFile -Force
+            Write-Host "Check the log file at $logFile for details."
     
-        # Find the winget package name in the winget config
-        $wingetPackageName = $wingetConfigContent.packages | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
+            # Find the winget package name in the winget config
+            $wingetPackageName = $wingetConfigContent.packages | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
     
-        if ($wingetPackageName) {
-            # Try to install with winget here
-            Write-Host "Trying to install $packageName with winget..."
-            $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
-            if ($wingetResult -like "*Successfully installed*") {
-                Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
+            if ($wingetPackageName) {
+                # Try to install with winget here
+                Write-Host "Trying to install $packageName with winget..."
+                $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
+                if ($wingetResult -like "*Successfully*") {
+                    Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Failed to install $packageName with winget." -ForegroundColor Red
+                    # Here you can add additional logging if needed
+                }
             }
             else {
-                Write-Host "Failed to install $packageName with winget." -ForegroundColor Red
-                # Here you can add additional logging if needed
+                Write-Host "Package name for winget not found in config." -ForegroundColor Yellow
             }
         }
-        else {
-            Write-Host "Package name for winget not found in config." -ForegroundColor Yellow
-        }
-    }
 
-    # Once all installations are done, stop the background job
-    Stop-Job -Job $job
-    Remove-Job -Job $job
+        # Once all installations are done, stop the background job
+        Stop-Job -Job $job
+        Remove-Job -Job $job
 
-    #install vscode extensions
-    #VSCode extensions
-    Write-Host "Installing Microsoft Visual Studio Code Extensions..."
-    Start-Sleep 5
-    $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
+        #install vscode extensions
+        #VSCode extensions
+        Write-Host "Installing Microsoft Visual Studio Code Extensions..."
+        Start-Sleep 5
+        $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
 
-    $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
-    $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
-    $design = "pkief.material-icon-theme"
-    $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell"
-    $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode"
-    $github = "github.vscode-pull-request-github", "github.copilot"
-    $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github
+        $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
+        $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
+        $design = "pkief.material-icon-theme"
+        $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell"
+        $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode"
+        $github = "github.vscode-pull-request-github", "github.copilot"
+        $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github
 
-    $installed = & $vsCodePath --list-extensions
+        $installed = & $vsCodePath --list-extensions
 
-    foreach ($vse in $vsextensions) {
-        if ($installed -contains $vse) {
-            Write-Host $vse "already installed." -ForegroundColor Gray
-        }
-        else {
-            & $vsCodePath --install-extension $vse *>$null
-            Start-Sleep -Seconds 3  # Give some time for the extension to install
-            $updatedInstalled = & $vsCodePath --list-extensions
-            if ($updatedInstalled -contains $vse) {
-                # Write-Host "" -ForegroundColor Green
+        foreach ($vse in $vsextensions) {
+            if ($installed -contains $vse) {
+                Write-Host $vse "already installed." -ForegroundColor Gray
             }
             else {
-                Write-Host "[WARNING]: Failed to install $vse" -ForegroundColor Red
+                & $vsCodePath --install-extension $vse *>$null
+                Start-Sleep -Seconds 3  # Give some time for the extension to install
+                $updatedInstalled = & $vsCodePath --list-extensions
+                if ($updatedInstalled -contains $vse) {
+                    # Write-Host "" -ForegroundColor Green
+                }
+                else {
+                    Write-Host "[WARNING]: Failed to install $vse" -ForegroundColor Red
+                }
             }
         }
-    }
-    function Safe-TaskKill {
-        param($processName)
+        function Safe-TaskKill {
+            param($processName)
     
-        taskkill /f /im $processName *>$null
+            taskkill /f /im $processName *>$null
 
-        if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
-            Write-Host "[WARNING]: Could not close $processName, exit code: $LASTEXITCODE" -ForegroundColor Red
+            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
+                Write-Host "[WARNING]: Could not close $processName, exit code: $LASTEXITCODE" -ForegroundColor Red
+            }
         }
-    }
     
-    Safe-TaskKill "GithubDesktop.exe"
-    Safe-TaskKill "PowerToys.exe"
-    Safe-TaskKill "Cloudflare WARP.exe"
+        Safe-TaskKill "GithubDesktop.exe"
+        Safe-TaskKill "PowerToys.exe"
+        Safe-TaskKill "Cloudflare WARP.exe"
 
-    # 7-Zip on PS
-    try {
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
-        Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
-        Install-Module -Name 7Zip4PowerShell -Force *>$null
-
-        if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
-    }
-    catch {
-        Write-Host "[WARNING]: $_" -ForegroundColor Red
-    }
-
-    # Disable and remove Chrome services
-    $chromeservices = "gupdate", "gupdatem"
-    foreach ($service in $chromeservices) {
-        $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
-
-        if ($serviceObject) {
-            if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
-                # The service is already stopped and disabled, so there is no need to do anything.
-                continue
-            }
-
-            try {
-                Stop-Service -Name $service -Force -ErrorAction Stop
-                Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-            }
-            catch {
-                $errorMessage = $_.Exception.Message
-                Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
-            }
-
-            try {
-                sc.exe delete $service *>$null
-                if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
-            }
-            catch {
-                $errorMessage = $_.Exception.Message
-                Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
-            }
-        }
-        else {
-            # The service is not available, so there is no need to do anything.
-        }
-    }
-
-    # Remove registry keys and files
-    $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate", 
-    "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem", 
-    "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
-
-    foreach ($path in $registryPaths) {
+        # 7-Zip on PS
         try {
-            Remove-Item -Path $path -Recurse -ErrorAction Stop
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
+            Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
+            Install-Module -Name 7Zip4PowerShell -Force *>$null
+
+            if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
         }
         catch {
-            # Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
+            Write-Host "[WARNING]: $_" -ForegroundColor Red
         }
-    }
 
-    try {
-        Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -Recurse -ErrorAction Stop
-    }
-    catch {
-        Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
-    }
+        # Disable and remove Chrome services
+        $chromeservices = "gupdate", "gupdatem"
+        foreach ($service in $chromeservices) {
+            $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
 
-    #workstation key
-    try {
-        $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208"
-        Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
-    }
-    catch {
-        Write-Host "[WARNING]: $_" -ForegroundColor Red
-    }
+            if ($serviceObject) {
+                if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
+                    # The service is already stopped and disabled, so there is no need to do anything.
+                    continue
+                }
 
-    Write-Host `n"Do you want install " -NoNewline
-    Write-Host "Valorant?" -ForegroundColor Yellow -NoNewline
-    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-    $response = Read-Host
+                try {
+                    Stop-Service -Name $service -Force -ErrorAction Stop
+                    Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
+                }
+                catch {
+                    $errorMessage = $_.Exception.Message
+                    Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
+                }
 
-    if ($response -eq 'y' -or $response -eq 'Y') {
+                try {
+                    sc.exe delete $service *>$null
+                    if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
+                }
+                catch {
+                    $errorMessage = $_.Exception.Message
+                    Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
+                }
+            }
+            else {
+                # The service is not available, so there is no need to do anything.
+            }
+        }
 
-        Write-Host "Installing Valorant..." -NoNewline
-        $progressPreference = 'silentlyContinue'
-        Invoke-WebRequest -Uri https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.eu.exe -OutFile C:\valo.exe
-        Write-Host "[You are expected to close the installation screen!]" -NoNewline -ForegroundColor Red
-        Start-Process C:\valo.exe -NoNewWindow -Wait
-        Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    }
-    elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor Black
-    }
-    else {
-        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-    }
+        # Remove registry keys and files
+        $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate", 
+        "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem", 
+        "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
 
-}
+        foreach ($path in $registryPaths) {
+            try {
+                Remove-Item -Path $path -Recurse -ErrorAction Stop
+            }
+            catch {
+                # Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
+            }
+        }
+
+        try {
+            Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -Recurse -ErrorAction Stop
+        }
+        catch {
+            Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+        }
+
+        #workstation key
+        try {
+            $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208"
+            Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
+        }
+        catch {
+            Write-Host "[WARNING]: $_" -ForegroundColor Red
+        }
+
+        Write-Host `n"Do you want install " -NoNewline
+        Write-Host "Valorant?" -ForegroundColor Yellow -NoNewline
+        Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+        $response = Read-Host
+
+        if ($response -eq 'y' -or $response -eq 'Y') {
+
+            Write-Host "Installing Valorant..." -NoNewline
+            $progressPreference = 'silentlyContinue'
+            Invoke-WebRequest -Uri https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.eu.exe -OutFile C:\valo.exe
+            Write-Host "[You are expected to close the installation screen!]" -NoNewline -ForegroundColor Red
+            Start-Process C:\valo.exe -NoNewWindow -Wait
+            Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        elseif ($response -eq 'n' -or $response -eq 'N') {
+            Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+        }
+
+    }
 }
 
 Function GithubSoftwares {
@@ -2720,7 +2721,8 @@ Function GithubSoftwares {
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
         Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
-    } else {
+    }
+    else {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
         GithubSoftwares
     }
