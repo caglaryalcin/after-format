@@ -16,7 +16,7 @@ Function RemoveENKeyboard {
     $langs = Get-WinUserLanguageList
     Set-WinUserLanguageList ($langs | Where-Object { $_.LanguageTag -ne "en-US" }) -Force *>$null
 }
-RemoveENKeyboard
+#RemoveENKeyboard
 
 # Add TR Keyboard
 Function AddTRKeyboard {
