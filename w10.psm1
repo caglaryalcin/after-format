@@ -2495,10 +2495,12 @@ Function GithubSoftwares {
     Function InstallSoftwares {
         $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
         $wingetConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget-apps.json"
-            
+
         $response = Invoke-WebRequest -Uri $configUrl
+        $wingetResponse = Invoke-WebRequest -Uri $wingetConfigUrl # This line was missing
+        
         [xml]$configContent = $response.Content
-        [xml]$wingetConfigContent = $wingetResponse.Content
+        $wingetConfigContent = $wingetResponse.Content | ConvertFrom-Json # Use ConvertFrom-Json for .json files
 
         $appsToClose = @{
             "github-desktop"  = "GithubDesktop";
@@ -2540,7 +2542,7 @@ Function GithubSoftwares {
                 Write-Host "Check the log file at $logFile for details."
 
                 # Find the winget package name in the winget config
-                $wingetPackageName = $wingetConfigContent.packages.package | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
+                $wingetPackageName = $wingetConfigContent.packages | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
 
                 if ($wingetPackageName) {
                     # Try to install with winget here
@@ -2551,7 +2553,7 @@ Function GithubSoftwares {
                             Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
                         }
                         else {
-                            throw "Failed to install $packageName with winget."
+                        Write-Host "Package name for winget not found in config." -ForegroundColor Yellow
                         }
                     }
                     catch {
