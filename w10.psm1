@@ -2496,7 +2496,7 @@ Function InstallSoftwares {
     $wingetConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget-apps.json"
 
     $response = Invoke-WebRequest -Uri $configUrl
-    $wingetResponse = Invoke-WebRequest -Uri $wingetConfigUrl # This line was missing
+    $wingetResponse = Invoke-WebRequest -Uri $wingetConfigUrl
 
     [xml]$configContent = $response.Content
     $wingetConfigContent = $wingetResponse.Content | ConvertFrom-Json # Use ConvertFrom-Json for .json files

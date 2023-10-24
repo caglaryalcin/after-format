@@ -1,131 +1,118 @@
 {
-    "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
-    "CreationDate": "2023-07-01",
-    "Sources": [
-      {
-        "Packages": [
-          {
-            "PackageIdentifier": "Opera.Opera"
-          },
-          {
-            "PackageIdentifier": "Google.Chrome"
-          },
-          {
-            "PackageIdentifier": "Brave.Brave"
-          },
-          {
-            "PackageIdentifier": "Mozilla.Firefox"
-          },
-          {
-            "PackageIdentifier": "LibreWolf.LibreWolf"
-          },
-          {
-            "PackageIdentifier": "Valve.Steam"
-          },
-          {
-            "PackageIdentifier": "EpicGames.EpicGamesLauncher"
-          },
-          {
-            "PackageIdentifier": "CPUID.HWMonitor"
-          },
-          {
-            "PackageIdentifier": "CrystalDewWorld.CrystalDiskInfo"
-          },
-          {
-            "PackageIdentifier": "VMware.WorkstationPro"
-          },
-          {
-            "PackageIdentifier": "Oracle.VirtualBox"
-          },
-          {
-            "PackageIdentifier": "OpenWhisperSystems.Signal"
-          },
-          {
-            "PackageIdentifier": "Microsoft.VisualStudioCode"
-          },
-          {
-            "PackageIdentifier": "Microsoft.VisualStudio.2022.Community"
-          },
-          {
-            "PackageIdentifier": "Microsoft.VisualStudio.2022.BuildTools"
-          },
-          {
-            "PackageIdentifier": "Microsoft.WindowsSDK"
-          },
-          {
-            "PackageIdentifier": "OpenJS.NodeJS.LTS"
-          },
-          {
-            "PackageIdentifier": "Python.Python.3.10"
-          },
-          {
-            "PackageIdentifier": "Git.Git"
-          },
-          {
-            "PackageIdentifier": "AnyDeskSoftwareGmbH.AnyDesk"
-          },
-          {
-            "PackageIdentifier": "Microsoft.WindowsTerminal"
-          },
-          {
-            "PackageIdentifier": "Ookla.Speedtest.CLI"
-          },
-          {
-            "PackageIdentifier": "SublimeHQ.SublimeText.4"
-          },
-          {
-            "PackageIdentifier": "GitHub.GitHubDesktop"
-          },
-          {
-            "PackageIdentifier": "VideoLAN.VLC"
-          },
-          {
-            "PackageIdentifier": "JAMSoftware.TreeSize.Free"
-          },
-          {
-            "PackageIdentifier": "Ghisler.TotalCommander"
-          },
-          {
-            "PackageIdentifier": "WiresharkFoundation.Wireshark"
-          },
-          {
-            "PackageIdentifier": "PuTTY.PuTTY"
-          },
-          {
-            "PackageIdentifier": "DelugeTeam.Deluge"
-          },
-          {
-            "PackageIdentifier": "dbeaver.dbeaver"
-          },
-          {
-            "PackageIdentifier": "Cryptomator.Cryptomator"
-          },
-          {
-            "PackageIdentifier": "WinFsp.WinFsp"
-          },
-          {
-            "PackageIdentifier": "Microsoft.Teams"
-          },
-          {
-            "PackageIdentifier": "DupeGuru.DupeGuru"
-          },
-          {
-            "PackageIdentifier": "SteelSeries.GG"
-          },
-		  {
-            "PackageIdentifier": "Tonec.InternetDownloadManager"
-          },
-          {
-            "PackageIdentifier": "Microsoft.PowerToys"
-          }
-        ],
-        "SourceDetails": {
-          "Argument": "https://winget.azureedge.net/cache",
-          "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
-          "Name": "winget",
-          "Type": "Microsoft.PreIndexed.Package"
-        }
-      }
-    ],
-    "WinGetVersion": "1.1.12653"
+  "packages": [
+    {
+      "PackageIdentifier": "Opera.Opera"
+    },
+    {
+      "PackageIdentifier": "Google.Chrome"
+    },
+    {
+      "PackageIdentifier": "Brave.Brave"
+    },
+    {
+      "PackageIdentifier": "Mozilla.Firefox"
+    },
+    {
+      "PackageIdentifier": "LibreWolf.LibreWolf"
+    },
+    {
+      "PackageIdentifier": "Valve.Steam"
+    },
+    {
+      "PackageIdentifier": "EpicGames.EpicGamesLauncher"
+    },
+    {
+      "PackageIdentifier": "CPUID.HWMonitor"
+    },
+    {
+      "PackageIdentifier": "CrystalDewWorld.CrystalDiskInfo"
+    },
+    {
+      "PackageIdentifier": "VMware.WorkstationPro"
+    },
+    {
+      "PackageIdentifier": "Oracle.VirtualBox"
+    },
+    {
+      "PackageIdentifier": "OpenWhisperSystems.Signal"
+    },
+    {
+      "PackageIdentifier": "Microsoft.VisualStudioCode"
+    },
+    {
+      "PackageIdentifier": "Microsoft.VisualStudio.2022.Community"
+    },
+    {
+      "PackageIdentifier": "Microsoft.VisualStudio.2022.BuildTools"
+    },
+    {
+      "PackageIdentifier": "Microsoft.WindowsSDK"
+    },
+    {
+      "PackageIdentifier": "OpenJS.NodeJS.LTS"
+    },
+    {
+      "PackageIdentifier": "Python.Python.3.10"
+    },
+    {
+      "PackageIdentifier": "Git.Git"
+    },
+    {
+      "PackageIdentifier": "AnyDeskSoftwareGmbH.AnyDesk"
+    },
+    {
+      "PackageIdentifier": "Microsoft.WindowsTerminal"
+    },
+    {
+      "PackageIdentifier": "Ookla.Speedtest.CLI"
+    },
+    {
+      "PackageIdentifier": "SublimeHQ.SublimeText.4"
+    },
+    {
+      "PackageIdentifier": "GitHub.GitHubDesktop"
+    },
+    {
+      "PackageIdentifier": "VideoLAN.VLC"
+    },
+    {
+      "PackageIdentifier": "JAMSoftware.TreeSize.Free"
+    },
+    {
+      "PackageIdentifier": "Ghisler.TotalCommander"
+    },
+    {
+      "PackageIdentifier": "WiresharkFoundation.Wireshark"
+    },
+    {
+      "PackageIdentifier": "PuTTY.PuTTY"
+    },
+    {
+      "PackageIdentifier": "DelugeTeam.Deluge"
+    },
+    {
+      "PackageIdentifier": "dbeaver.dbeaver"
+    },
+    {
+      "PackageIdentifier": "Cryptomator.Cryptomator"
+    },
+    {
+      "PackageIdentifier": "WinFsp.WinFsp"
+    },
+    {
+      "PackageIdentifier": "Microsoft.Teams"
+    },
+    {
+      "PackageIdentifier": "DupeGuru.DupeGuru"
+    },
+    {
+      "PackageIdentifier": "SteelSeries.GG"
+    },
+    {
+      "PackageIdentifier": "Tonec.InternetDownloadManager"
+    },
+    {
+      "PackageIdentifier": "Microsoft.PowerToys"
+    }
+  ]
 }
