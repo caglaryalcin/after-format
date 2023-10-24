@@ -140,6 +140,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             #vMware Workstation
             $WScriptShell = New-Object -ComObject WScript.Shell
             $vMware = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe"
+            $vMwareDirectory = "C:\Program Files (x86)\VMware\VMware Workstation\"
             $ShortcutFile = "C:\icons\VMware Workstation Pro.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $vMware
