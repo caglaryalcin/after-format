@@ -2526,34 +2526,37 @@ Function InstallSoftwares {
         foreach ($package in $configContent.packages.package) {
             $packageName = $package.id
             Write-Host "Installing $packageName..." -NoNewline
+    
+            # Try with Chocolatey first
+            try {
+                $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
+    
+                if ($result -notlike "*successful*") {
+                    throw $result  # Hata mesajını catch bloğuna gönderiyoruz.
+                }
 
-            # Capture the result of the installation
-            $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
-
-            # Check the installation result for errors right after the installation attempt
-            if ($result -like "*successful*") {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
+            catch {
                 Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                # If there was an error, write the output to a log file
                 $logFile = "C:\${packageName}_install.log"
-                $result | Out-File -FilePath $logFile -Force
+                $_ | Out-File -FilePath $logFile -Force  # Chocolatey'nin hata mesajını log dosyasına yazdırıyoruz.
                 Write-Host "Check the log file at $logFile for details."
     
-                # Find the winget package name in the winget config
+                # If Chocolatey fails, try with winget
                 $wingetPackageName = $wingetConfigContent.packages | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
-
-                if ($wingetPackageName) {
-                    # Try to install with winget here
+    
+                if ($null -ne $wingetPackageName) {
                     Write-Host "Trying to install $packageName with winget..."
-                    $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
-                    if ($wingetResult -like "*Successfully*") {
+                    try {
+                        $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h 2>&1 | Out-String
+                        if ($wingetResult -notlike "*Successfully*") {
+                            throw $wingetResult  # winget'in hata mesajını catch bloğuna gönderiyoruz.
+                        }
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
-                    else {
-                        Write-Host "Failed to install $packageName with winget." -ForegroundColor Red
-                        # Here you can add additional logging if needed
+                    catch {
+                        Write-Host "[ERROR] Failed to install $packageName with winget. Error: $_" -ForegroundColor Red
                     }
                 }
                 else {
