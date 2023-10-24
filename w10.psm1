@@ -2540,25 +2540,20 @@ Function GithubSoftwares {
                 $logFile = "C:\${packageName}_install.log"
                 $result | Out-File -FilePath $logFile -Force
                 Write-Host "Check the log file at $logFile for details."
-
+            
                 # Find the winget package name in the winget config
                 $wingetPackageName = $wingetConfigContent.packages | Where-Object { $_.chocoName -eq $packageName } | Select-Object -ExpandProperty wingetName
-
+            
                 if ($wingetPackageName) {
                     # Try to install with winget here
                     Write-Host "Trying to install $packageName with winget..."
-                    try {
-                        $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
-                        if ($wingetResult -like "*Successfully installed*") {
-                            Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
-                        }
-                        else {
-                        Write-Host "Package name for winget not found in config." -ForegroundColor Yellow
-                        }
+                    $wingetResult = winget install $wingetPackageName -e --accept-package-agreements --accept-source-agreements -h | Out-String
+                    if ($wingetResult -like "*Successfully installed*") {
+                        Write-Host "Successfully installed $packageName with winget." -ForegroundColor Green
                     }
-                    catch {
-                        Write-Host $_.Exception.Message -ForegroundColor Red
-                        # Additional logging if necessary
+                    else {
+                        Write-Host "Failed to install $packageName with winget." -ForegroundColor Red
+                        # Here you can add additional logging if needed
                     }
                 }
                 else {
