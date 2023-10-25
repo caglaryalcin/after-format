@@ -1451,11 +1451,9 @@ Function SystemSettings {
                     Write-Host "`nTabletInputService has been started." -ForegroundColor Green
                 }
                 
-                # Check if the startup type is not Automatic and set it
-                $tabletServiceStartType = (Get-WmiObject -Class Win32_Service -Filter "Name='TabletInputService'").StartMode
-                if ($tabletServiceStartType -ne "Auto") {
-                    Set-Service -Name "TabletInputService" -StartupType Automatic -ErrorAction Stop
-                }
+                # Set the startup type to Automatic (Trigger Start) using sc.exe
+                sc.exe config TabletInputService start= auto
+        
             } catch {
                 Write-Host "`n[WARNING]: Error with TabletInputService. Error: $_" -ForegroundColor Red
             }
@@ -1464,27 +1462,12 @@ Function SystemSettings {
                 try {
                     $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
                     if ($null -ne $currentService) {
-                        Stop-Service -Name $service -Force -ErrorAction Stop *>$null
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *>$null
+                        Stop-Service -Name $service -Force -ErrorAction Stop *> $null
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *> $null
                     }
                 } catch {
                     Write-Warning "Could not stop/disable service: $service"
                 }
-            }
-        
-            # WPNUser* services
-            try {
-                $wpnServices = Get-Service -Name WPNUser* -ErrorAction SilentlyContinue
-                if ($null -ne $wpnServices) {
-                    $wpnServices | Stop-Service -ErrorAction Stop *>$null
-                    foreach ($wpnService in $wpnServices) {
-                        $serviceName = $wpnService.Name
-                        $path = "HKLM:\SYSTEM\CurrentControlSet\Services\$serviceName"
-                        Set-ItemProperty -Path $path -Name "Start" -Value 4 -ErrorAction Stop *>$null
-                    }
-                }
-            } catch {
-                Write-Warning "Could not stop/disable one or more WPNUser* services."
             }
         
             # If the script reaches this point, it has executed successfully

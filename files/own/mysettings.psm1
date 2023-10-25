@@ -584,7 +584,8 @@ foreach ($addon in $addons.GetEnumerator()) {
                 )
                 "$env:userprofile\Desktop"                                         = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json",
+                    "https://github.com/caglaryalcin/my-configs/raw/main/eyes.gif"
                 )
                 "C:\fan_control\Configurations"                                    = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json"
