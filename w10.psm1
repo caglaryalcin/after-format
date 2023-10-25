@@ -2735,8 +2735,12 @@ Function GithubSoftwares {
         }
         
         # Reading packages from a .json file
-        $wingetPackages = Get-Content -Path "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json" | ConvertFrom-Json
-        $appsPackages = Get-Content -Path "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json" | ConvertFrom-Json
+        $wingetPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
+        $wingetPackages = $wingetPackagesContent.Content | ConvertFrom-Json
+
+        $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json"
+        $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
+
         
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
