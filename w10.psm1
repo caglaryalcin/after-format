@@ -2693,7 +2693,75 @@ Function GithubSoftwares {
             }
    
         }
+        
         InstallSoftwares
+
+        function Get-InstalledProgram {
+            param (
+                [Parameter(Mandatory=$true)]
+                [string]$programName
+            )
+        
+            # Search Uninstall logs first
+            $installedProgram = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall, HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like "*$programName*" } | Select-Object -First 1
+        
+            # If Uninstall does not find it in the registry, search in Win32_Product
+            if (-not $installedProgram) {
+                $installedProgram = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "*$programName*" } | Select-Object -First 1
+            }
+        
+            # If still not found, search with Get-Package
+            if (-not $installedProgram) {
+                $installedProgram = Get-Package | Where-Object { $_.Name -like "*$programName*" } | Select-Object -First 1
+            }
+        
+            # If you still can't find it, check in the Chocolatey lib folder
+            if (-not $installedProgram) {
+                $chocoPaths = Get-ChildItem -Path "C:\ProgramData\chocolatey\lib\" -Directory | Where-Object { $_.Name -like "*$programName*" }
+                if ($chocoPaths) {
+                    return $chocoPaths.Name
+                }
+            }
+        
+            if ($installedProgram) {
+                if ($installedProgram -is [System.Management.Automation.PSCustomObject]) {
+                    return $installedProgram.DisplayName
+                } else {
+                    return $installedProgram.Name
+                }
+            } else {
+                return $null
+            }
+        }
+        
+        # Reading packages from a .json file
+        $wingetPackages = Get-Content -Path "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json" | ConvertFrom-Json
+        $appsPackages = Get-Content -Path "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json" | ConvertFrom-Json
+        
+        foreach ($package in $wingetPackages.Sources.Packages) {
+            $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
+            if ($installedProgramName) {
+                #Write-Host "Program yüklü: $installedProgramName"
+            } else {
+                Write-Host "Not Installed " -NoNewline
+                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Yellow -NoNewline
+        
+                # Searcing for the full name of this package in apps.json
+                $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
+        
+                if ($matchingPackage) {
+                    Write-Host "Installing $($matchingPackage.PackageIdentifier) with winget..." -NoNewline
+        
+                    Start-Process -FilePath "winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
+        
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+         else {
+                    Write-Host "$($package.PackageIdentifier) C:\apps.json dosyasında bulunamadı."
+                }
+            }
+        }
+        
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
         Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
