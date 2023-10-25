@@ -538,7 +538,17 @@ foreach ($addon in $addons.GetEnumerator()) {
         #Sublime text
         function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
-
+            # Helper function to create directories
+            function Ensure-Directory($path) {
+                try {
+                    if (-Not (Test-Path $path)) {
+                        New-Item -Path $path -ItemType "directory" | Out-Null
+                    }
+                }
+                catch {
+                    Write-Host " [WARNING] Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                }
+            }
             # Helper function for web requests
             function Safe-Invoke-WebRequest($uri, $outFile) {
                 try {
@@ -549,6 +559,12 @@ foreach ($addon in $addons.GetEnumerator()) {
                 }
             }
             
+            function Ensure-Directory($path) {
+                if (-Not (Test-Path $path)) {
+                    New-Item -ItemType Directory -Force -Path $path | Out-Null
+                }
+            }
+
             # Ublacklist url to desktop
             $filePath = "$env:userprofile\Desktop\ublacklist-address.txt"
             Set-Content -Path $filePath -Value "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
