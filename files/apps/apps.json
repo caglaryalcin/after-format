@@ -1,0 +1,53 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2023-07-01",
+  "Sources": [
+    {
+      "Packages": [
+        {"PackageIdentifier": "Opera.Opera"},
+        {"PackageIdentifier": "Google.Chrome"},
+        {"PackageIdentifier": "Brave.Brave"},
+        {"PackageIdentifier": "Mozilla.Firefox"},
+        {"PackageIdentifier": "LibreWolf.LibreWolf"},
+        {"PackageIdentifier": "Valve.Steam"},
+        {"PackageIdentifier": "EpicGames.EpicGamesLauncher"},
+        {"PackageIdentifier": "CPUID.HWMonitor"},
+        {"PackageIdentifier": "CrystalDewWorld.CrystalDiskInfo"},
+        {"PackageIdentifier": "VMware.WorkstationPro"},
+        {"PackageIdentifier": "Oracle.VirtualBox"},
+        {"PackageIdentifier": "OpenWhisperSystems.Signal"},
+        {"PackageIdentifier": "Microsoft.VisualStudio.2022.Community"},
+        {"PackageIdentifier": "Microsoft.VisualStudio.2022.BuildTools"},
+        {"PackageIdentifier": "Microsoft.WindowsSDK.10.0.18362"},
+        {"PackageIdentifier": "OpenJS.NodeJS"},
+        {"PackageIdentifier": "Python.Python.3.8"},
+        {"PackageIdentifier": "Git.Git"},
+        {"PackageIdentifier": "AnyDeskSoftwareGmbH.AnyDesk"},
+        {"PackageIdentifier": "Microsoft.WindowsTerminal"},
+        {"PackageIdentifier": "Ookla.Speedtest.CLI"},
+        {"PackageIdentifier": "SublimeHQ.SublimeText.4"},
+        {"PackageIdentifier": "GitHub.GitHubDesktop"},
+        {"PackageIdentifier": "VideoLAN.VLC"},
+        {"PackageIdentifier": "JAMSoftware.TreeSize.Free"},
+        {"PackageIdentifier": "Ghisler.TotalCommander"},
+        {"PackageIdentifier": "WiresharkFoundation.Wireshark"},
+        {"PackageIdentifier": "DelugeTeam.Deluge"},
+        {"PackageIdentifier": "dbeaver.dbeaver"},
+        {"PackageIdentifier": "Cryptomator.Cryptomator"},
+        {"PackageIdentifier": "Microsoft.Teams"},
+        {"PackageIdentifier": "DupeGuru.DupeGuru"},
+        {"PackageIdentifier": "SteelSeries.GG"},
+        {"PackageIdentifier": "Oracle.JavaRuntimeEnvironment"},
+        {"PackageIdentifier": "Microsoft.PowerToys"},
+        {"PackageIdentifier": "7zip.7zip"},
+        {"PackageIdentifier": "Skillbrains.Lightshot"},
+        {"PackageIdentifier": "xanderfrangos.twinkletray"},
+        {"PackageIdentifier": "CodecGuide.K-LiteCodecPack.Mega"},
+        {"PackageIdentifier": "Malwarebytes.Malwarebytes"},
+        {"PackageIdentifier": "Tonec.InternetDownloadManager"},
+        {"PackageIdentifier": "Cloudflare.Warp"},
+        {"PackageIdentifier": "CalcProgrammer1.OpenRGB"}
+      ]
+    }
+  ]
+}

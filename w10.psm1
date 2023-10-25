@@ -1451,8 +1451,11 @@ Function SystemSettings {
                     Write-Host "`nTabletInputService has been started." -ForegroundColor Green
                 }
                 
-                # Set the startup type to Automatic (Trigger Start) using sc.exe
-                sc.exe config TabletInputService start= auto
+                # Check if the startup type is not Automatic and set it
+                $tabletServiceStartType = (Get-WmiObject -Class Win32_Service -Filter "Name='TabletInputService'").StartMode
+                if ($tabletServiceStartType -ne "Auto") {
+                    Set-Service -Name "TabletInputService" -StartupType Automatic -ErrorAction Stop
+                }
         
             } catch {
                 Write-Host "`n[WARNING]: Error with TabletInputService. Error: $_" -ForegroundColor Red
@@ -1466,7 +1469,7 @@ Function SystemSettings {
                         Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *> $null
                     }
                 } catch {
-                    Write-Warning "Could not stop/disable service: $service"
+                    Write-Warning "Could not stop/disable service: $service" -NoNewline
                 }
             }
         

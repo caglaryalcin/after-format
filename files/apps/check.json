@@ -1,0 +1,53 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2023-07-01",
+  "Sources": [
+    {
+      "Packages": [
+        {"PackageIdentifier": "Opera"},
+        {"PackageIdentifier": "Chrome"},
+        {"PackageIdentifier": "Brave"},
+        {"PackageIdentifier": "Firefox"},
+        {"PackageIdentifier": "LibreWolf"},
+        {"PackageIdentifier": "Steam"},
+        {"PackageIdentifier": "Epic Games"},
+        {"PackageIdentifier": "HWMonitor"},
+        {"PackageIdentifier": "Crystal"},
+        {"PackageIdentifier": "VMware"},
+        {"PackageIdentifier": "VirtualBox"},
+        {"PackageIdentifier": "Signal"},
+        {"PackageIdentifier": "Community"},
+        {"PackageIdentifier": "Build Tools"},
+        {"PackageIdentifier": "*SDK"},
+        {"PackageIdentifier": "Node.js"},
+        {"PackageIdentifier": "Python"},
+        {"PackageIdentifier": "Git"},
+        {"PackageIdentifier": "AnyDesk"},
+        {"PackageIdentifier": "Terminal"},
+        {"PackageIdentifier": "Speedtest"},
+        {"PackageIdentifier": "Sublime Text"},
+        {"PackageIdentifier": "GitHub"},
+        {"PackageIdentifier": "VLC"},
+        {"PackageIdentifier": "TreeSize"},
+        {"PackageIdentifier": "Total Commander"},
+        {"PackageIdentifier": "Wireshark"},
+        {"PackageIdentifier": "Deluge"},
+        {"PackageIdentifier": "dbeaver"},
+        {"PackageIdentifier": "Cryptomator"},
+        {"PackageIdentifier": "Teams"},
+        {"PackageIdentifier": "DupeGuru"},
+        {"PackageIdentifier": "SteelSeries"},
+        {"PackageIdentifier": "Java"},
+        {"PackageIdentifier": "PowerToys"},
+        {"PackageIdentifier": "7zip"},
+        {"PackageIdentifier": "Lightshot"},
+        {"PackageIdentifier": "twinkle tray"},
+        {"PackageIdentifier": "Mega Codec"},
+        {"PackageIdentifier": "Malwarebytes"},
+        {"PackageIdentifier": "Internet Download Manager"},
+        {"PackageIdentifier": "Warp"},
+        {"PackageIdentifier": "OpenRGB"}
+      ]
+    }
+  ]
+}
