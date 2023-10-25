@@ -1737,7 +1737,7 @@ Function SystemSettings {
             $taskDefinition.XmlText = $taskXmlContent
         
             try {
-                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
+                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3)
             }
             catch {
                 Write-Host "[WARNING] Failed to register the task: $_" -ForegroundColor Yellow
@@ -2870,14 +2870,18 @@ Function UnusedApps {
         Function RemoveTasks {
             Write-Host "Removing Unnecessary Tasks..." -NoNewline
         
-            $taskPatterns = "OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*"
+            $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
         
             $allTasks = Get-ScheduledTask | Where-Object { $task = $_; $taskPatterns | ForEach-Object { $task.TaskName -like $_ } }
         
             foreach ($task in $allTasks) {
                 try {
                     $taskName = $task.TaskName
-                    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+                    # Do not remove the startup task
+                    if ($taskName -ne "startup") {
+                        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+                        Write-Host "`n[INFO]: Removed task: $taskName" -ForegroundColor Yellow
+                    }
                 }
                 catch {
                     if ($_.Exception.Message -like "*No MSFT_ScheduledTask objects found*") {
@@ -2892,7 +2896,6 @@ Function UnusedApps {
         }
         
         RemoveTasks
-        
 
         # Uninstall OneDrive
         Function UninstallOneDrive {
