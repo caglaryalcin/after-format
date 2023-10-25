@@ -1464,8 +1464,8 @@ Function SystemSettings {
                 try {
                     $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
                     if ($null -ne $currentService) {
-                        Stop-Service -Name $service -Force -ErrorAction Stop *> $null
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *> $null
+                        Stop-Service -Name $service -Force -ErrorAction Stop *>$null
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *>$null
                     }
                 } catch {
                     Write-Warning "Could not stop/disable service: $service"
@@ -1476,11 +1476,11 @@ Function SystemSettings {
             try {
                 $wpnServices = Get-Service -Name WPNUser* -ErrorAction SilentlyContinue
                 if ($null -ne $wpnServices) {
-                    $wpnServices | Stop-Service -ErrorAction Stop *> $null
+                    $wpnServices | Stop-Service -ErrorAction Stop *>$null
                     foreach ($wpnService in $wpnServices) {
                         $serviceName = $wpnService.Name
                         $path = "HKLM:\SYSTEM\CurrentControlSet\Services\$serviceName"
-                        Set-ItemProperty -Path $path -Name "Start" -Value 4 -ErrorAction Stop *> $null
+                        Set-ItemProperty -Path $path -Name "Start" -Value 4 -ErrorAction Stop *>$null
                     }
                 }
             } catch {
@@ -1755,7 +1755,7 @@ Function SystemSettings {
             $taskDefinition.XmlText = $taskXmlContent
         
             try {
-                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3)
+                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
             }
             catch {
                 Write-Host "[WARNING] Failed to register the task: $_" -ForegroundColor Yellow
