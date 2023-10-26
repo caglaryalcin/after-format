@@ -2579,96 +2579,6 @@ Function GithubSoftwares {
                     }
                 }
             }
-            function Safe-TaskKill {
-                param($processName)
-            
-                taskkill /f /im $processName *>$null
-
-                if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
-                    Write-Host "[WARNING]: Could not close $processName, exit code: $LASTEXITCODE" -ForegroundColor Red
-                }
-            }
-            
-            Safe-TaskKill "GithubDesktop.exe"
-            Safe-TaskKill "PowerToys.exe"
-            Safe-TaskKill "Cloudflare WARP.exe"
-
-            # 7-Zip on PS
-            try {
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
-                Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
-                Install-Module -Name 7Zip4PowerShell -Force *>$null
-    
-                if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
-
-            # Disable and remove Chrome services
-            $chromeservices = "gupdate", "gupdatem"
-            foreach ($service in $chromeservices) {
-                $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
-
-                if ($serviceObject) {
-                    if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
-                        # The service is already stopped and disabled, so there is no need to do anything.
-                        continue
-                    }
-
-                    try {
-                        Stop-Service -Name $service -Force -ErrorAction Stop
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-                    }
-                    catch {
-                        $errorMessage = $_.Exception.Message
-                        Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
-                    }
-
-                    try {
-                        sc.exe delete $service *>$null
-                        if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
-                    }
-                    catch {
-                        $errorMessage = $_.Exception.Message
-                        Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
-                    }
-                }
-                else {
-                    # The service is not available, so there is no need to do anything.
-                }
-            }
-
-            # Remove registry keys and files
-            $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate", 
-            "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem", 
-            "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
-
-            foreach ($path in $registryPaths) {
-                try {
-                    Remove-Item -Path $path -Recurse -ErrorAction Stop
-                }
-                catch {
-                    # Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
-                }
-            }
-
-            try {
-                Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -Recurse -ErrorAction Stop
-            }
-            catch {
-                Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
-            }
-    
-            #workstation key
-            try {
-                $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208"
-                Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
 
             Write-Host `n"Do you want install " -NoNewline
             Write-Host "Valorant?" -ForegroundColor Yellow -NoNewline
@@ -2767,8 +2677,100 @@ Function GithubSoftwares {
                 }
             }
         }
+
+        function Safe-TaskKill {
+            param($processName)
+        
+            taskkill /f /im $processName *>$null
+
+            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
+                Write-Host "[WARNING]: Could not close $processName, exit code: $LASTEXITCODE" -ForegroundColor Red
+            }
+        }
+        
+        Safe-TaskKill "GithubDesktop.exe"
+        Safe-TaskKill "PowerToys.exe"
+        Safe-TaskKill "Cloudflare WARP.exe"
+
+        # 7-Zip on PS
+        try {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
+            Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
+            Install-Module -Name 7Zip4PowerShell -Force *>$null
+
+            if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
+        }
+        catch {
+            Write-Host "[WARNING]: $_" -ForegroundColor Red
+        }
+
+        # Disable and remove Chrome services
+        $chromeservices = "gupdate", "gupdatem"
+        foreach ($service in $chromeservices) {
+            $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
+
+            if ($serviceObject) {
+                if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
+                    # The service is already stopped and disabled, so there is no need to do anything.
+                    continue
+                }
+
+                try {
+                    Stop-Service -Name $service -Force -ErrorAction Stop
+                    Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
+                }
+                catch {
+                    $errorMessage = $_.Exception.Message
+                    Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
+                }
+
+                try {
+                    sc.exe delete $service *>$null
+                    if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
+                }
+                catch {
+                    $errorMessage = $_.Exception.Message
+                    Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
+                }
+            }
+            else {
+                # The service is not available, so there is no need to do anything.
+            }
+        }
+
+        # Remove registry keys and files
+        $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate", 
+        "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem", 
+        "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
+
+        foreach ($path in $registryPaths) {
+            try {
+                Remove-Item -Path $path -Recurse -ErrorAction Stop
+            }
+            catch {
+                # Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
+            }
+        }
+
+        try {
+            Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -Recurse -ErrorAction Stop
+        }
+        catch {
+            Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+        }
+
+        #workstation key
+        try {
+            $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208"
+            Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
+        }
+        catch {
+            Write-Host "[WARNING]: $_" -ForegroundColor Red
+        }
         
     }
+
     elseif ($response -eq 'n' -or $response -eq 'N') {
         Write-Host "[Softwares written on Github will not be installed]" -ForegroundColor Red -BackgroundColor Black
     }
