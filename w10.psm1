@@ -2596,7 +2596,7 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host `n"[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -2658,14 +2658,14 @@ Function GithubSoftwares {
                 #Write-Host "Program yüklü: $installedProgramName"
             } else {
                 Write-Host "Detecting programs that cannot be installed..."
-                Write-Host "Not Installed" -NoNewline
-                Write-Host "$($package.PackageIdentifier)  /" -ForegroundColor Red -NoNewline
+                Write-Host "Not Installed " -NoNewline
+                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -NoNewline
         
                 # Searcing for the full name of this package in apps.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
         
                 if ($matchingPackage) {
-                    Write-Host "Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
+                    Write-Host "--Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
                     Write-Host " winget..." -Foregroundcolor Yellow -NoNewline
         
                     Start-Process -FilePath "winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
