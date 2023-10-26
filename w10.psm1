@@ -2575,7 +2575,8 @@ Function GithubSoftwares {
                         # Write-Host "" -ForegroundColor Green
                     }
                     else {
-                        Write-Host "[WARNING]: Failed to install $vse" -ForegroundColor Red
+                        Write-Host "[WARNING]" -ForegroundColor Yellow -NoNewline
+                        Write-Host " VSCode's $vse plugin failed to install"
                     }
                 }
             }
@@ -2651,21 +2652,20 @@ Function GithubSoftwares {
         $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
-        
+        Write-Host "Detecting programs that cannot be installed..."
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
             if ($installedProgramName) {
                 #Write-Host "Program yüklü: $installedProgramName"
             } else {
-                Write-Host "Detecting programs that cannot be installed..."
                 Write-Host "Not Installed " -NoNewline
-                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -NoNewline
+                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red
         
                 # Searcing for the full name of this package in apps.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
         
                 if ($matchingPackage) {
-                    Write-Host "--Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
+                    Write-Host "Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
                     Write-Host " winget..." -Foregroundcolor Yellow -NoNewline
         
                     Start-Process -FilePath "winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
