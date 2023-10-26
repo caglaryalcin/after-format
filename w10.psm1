@@ -2652,7 +2652,7 @@ Function GithubSoftwares {
         $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
-        Write-Host "Detecting programs that cannot be installed..."
+        Write-Host `n"Detecting programs that cannot be installed..."
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
             if ($installedProgramName) {
