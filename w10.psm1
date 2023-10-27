@@ -1457,7 +1457,8 @@ Function SystemSettings {
                     Set-Service -Name "TabletInputService" -StartupType Automatic -ErrorAction Stop
                 }
         
-            } catch {
+            }
+            catch {
                 Write-Host "`n[WARNING]: Error with TabletInputService. Error: $_" -ForegroundColor Red
             }
         
@@ -1468,7 +1469,8 @@ Function SystemSettings {
                         Stop-Service -Name $service -Force -ErrorAction Stop *> $null
                         Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *> $null
                     }
-                } catch {
+                }
+                catch {
                     Write-Warning "Could not stop/disable service: $service" -NoNewline
                 }
             }
@@ -1479,8 +1481,8 @@ Function SystemSettings {
         
         # Function usage
         $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
-                    "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
-                    "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service")
+            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
+            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SENS", "SDRSVC", "Spooler", "Bonjour Service")
         
         Disable-Services -disableservices $disableservices
 
@@ -2580,36 +2582,13 @@ Function GithubSoftwares {
                     }
                 }
             }
-
-            Write-Host `n"Do you want install " -NoNewline
-            Write-Host "Valorant?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $response = Read-Host
-
-            if ($response -eq 'y' -or $response -eq 'Y') {
-
-                Write-Host "Installing Valorant..." -NoNewline
-                $progressPreference = 'silentlyContinue'
-                Invoke-WebRequest -Uri https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.eu.exe -OutFile C:\valo.exe
-                Write-Host "[You are expected to close the installation screen!]" -NoNewline -ForegroundColor Red
-                Start-Process C:\valo.exe -NoNewWindow -Wait
-                Remove-Item C:\valo.exe -recurse -ErrorAction SilentlyContinue
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Valorant installation canceled]" -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-            }
-   
         }
         
         InstallSoftwares
 
         function Get-InstalledProgram {
             param (
-                [Parameter(Mandatory=$true)]
+                [Parameter(Mandatory = $true)]
                 [string]$programName
             )
         
@@ -2637,10 +2616,12 @@ Function GithubSoftwares {
             if ($installedProgram) {
                 if ($installedProgram -is [System.Management.Automation.PSCustomObject]) {
                     return $installedProgram.DisplayName
-                } else {
+                }
+                else {
                     return $installedProgram.Name
                 }
-            } else {
+            }
+            else {
                 return $null
             }
         }
@@ -2657,23 +2638,30 @@ Function GithubSoftwares {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
             if ($installedProgramName) {
                 #Write-Host "Program yüklü: $installedProgramName"
-            } else {
+            }
+            else {
                 Write-Host "Not Installed " -NoNewline
                 Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red
         
-                # Searcing for the full name of this package in apps.json
+                # Searching for the full name of this package in apps.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
         
                 if ($matchingPackage) {
                     Write-Host "Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
                     Write-Host " winget..." -Foregroundcolor Yellow -NoNewline
         
-                    Start-Process -FilePath "winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait *>$null
+                    try {
+                        Start-Process -FilePath "winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    catch {
+                        Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "Failed to install $($matchingPackage.PackageIdentifier) with winget."
+                    }
         
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-         else {
-                    Write-Host "$($package.PackageIdentifier) apps.json dosyasında bulunamadı."
+                }
+                else {
+                    Write-Host "$($package.PackageIdentifier) was not found in apps.json."
                 }
             }
         }
