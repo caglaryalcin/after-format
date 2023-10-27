@@ -22,17 +22,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             ##Create Icons folder
             New-Item -Path 'C:\icons' -ItemType Directory *>$null
 
-            #Opera
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Opera = "C:\Program Files\Opera\Launcher.exe"
-            $OperaDirectory = "C:\Program Files\Opera\"
-            $ShortcutFile = "C:\icons\Opera Browser.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Opera
-            $Shortcut.WorkingDirectory = $OperaDirectory
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Opera Browser.lnk" *>$null
-
             #Chrome
             $WScriptShell = New-Object -ComObject WScript.Shell
             $Chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"

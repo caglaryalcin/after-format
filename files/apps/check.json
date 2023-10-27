@@ -4,7 +4,6 @@
   "Sources": [
     {
       "Packages": [
-        {"PackageIdentifier": "Opera"},
         {"PackageIdentifier": "Chrome"},
         {"PackageIdentifier": "Brave"},
         {"PackageIdentifier": "Firefox"},
