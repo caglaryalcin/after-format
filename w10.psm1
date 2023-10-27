@@ -2641,7 +2641,7 @@ Function GithubSoftwares {
             }
             else {
                 Write-Host "Not Installed " -NoNewline
-                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red
+                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black
         
                 # Searching for the full name of this package in apps.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
@@ -2651,7 +2651,7 @@ Function GithubSoftwares {
                     Write-Host " winget..." -Foregroundcolor Yellow -NoNewline
         
                     try {
-                        Start-Process -FilePath "winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait
+                        Start-Process -FilePath "Winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     catch {
