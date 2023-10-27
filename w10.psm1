@@ -3217,7 +3217,7 @@ Function Restart {
         cmd.exe /c "shutdown /r /t 0"
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host("Restart process cancelled") -ForegroundColor Red
+        Write-Host("Restart process cancelled") -ForegroundColor Red -BackgroundColor Black
     }
     else {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -3253,7 +3253,7 @@ Function Restart {
         cmd.exe /c "shutdown /r /t 0"
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host("Restart process cancelled") -ForegroundColor Red
+        Write-Host("Restart process cancelled") -ForegroundColor Red -BackgroundColor Black
     }
     else {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
