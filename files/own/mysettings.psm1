@@ -25,10 +25,10 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             #Chrome
             $WScriptShell = New-Object -ComObject WScript.Shell
             $Chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"
-            $Shortcut.WorkingDirectory = "C:\Program Files\Google\Chrome\Application\"
             $ShortcutFile = "C:\icons\Google Chrome.lnk"
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $Chrome
+            $Shortcut.WorkingDirectory = "C:\Program Files\Google\Chrome\Application\"
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\Google Chrome.lnk" *>$null
 
