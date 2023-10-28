@@ -3013,8 +3013,10 @@ Function UnusedApps {
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Microsoft Edge..." -NoNewline
+       
                 try {
                     taskkill /f /im msedge.exe *>$null 2>&1
+                    taskkill /f /im explorer.exe *>$null 2>&1
         
                     #Edge Services
                     $edgeservices = "edgeupdate", "edgeupdatem"
@@ -3035,14 +3037,14 @@ Function UnusedApps {
                         }
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
                         $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
@@ -3053,7 +3055,7 @@ Function UnusedApps {
                         Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
@@ -3063,7 +3065,7 @@ Function UnusedApps {
                         reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
@@ -3073,7 +3075,7 @@ Function UnusedApps {
                         Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
         
                     # Delete additional files
@@ -3105,14 +3107,14 @@ Function UnusedApps {
                     }
                     catch {
                         # If there's an error, display a warning
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
                         taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
@@ -3122,7 +3124,7 @@ Function UnusedApps {
                         }
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
@@ -3130,14 +3132,14 @@ Function UnusedApps {
                         Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
                         Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
@@ -3145,7 +3147,7 @@ Function UnusedApps {
                         Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction Stop | Out-Null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     $paths = @(
@@ -3160,16 +3162,17 @@ Function UnusedApps {
                             $items = Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue
 
                             if ($items) {
-                                Remove-Item -Path $path -Force -Recurse -ErrorAction Stop
+                                Remove-Item -Path $path -Force -Recurse -ErrorAction Stop *>$null
                             }
                         }
                         catch {
-                            Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+                            #Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
                         }
                     }
                         
                     # Check if Edge is still installed
                     if (!(Get-Process "msedge" -ErrorAction SilentlyContinue)) {
+                        Start-Process explorer.exe
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     else {
@@ -3177,7 +3180,7 @@ Function UnusedApps {
                     }
                 }
                 catch {
-                    Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+                    #Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
