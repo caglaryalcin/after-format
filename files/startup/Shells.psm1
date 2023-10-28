@@ -40,7 +40,7 @@ Function AddTRKeyboard {
     Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "4" *>$null
     Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Type String -Value 0000041f *>$null
 }
-AddTRKeyboard
+#AddTRKeyboard
 
 # Remove Sticky Keys
 Function RemoveStickyKeys {
@@ -51,7 +51,7 @@ Function RemoveStickyKeys {
 }
 RemoveStickyKeys
 
-# Remove Sticky Keys
+# Remove Toggle Keys
 Function RemoveToggleKeys {
     New-ItemProperty -Path "HKCU:\Keyboard Layout\Toggle" -Name "Language HotKey" -Type String -Value 3 *>$null
     New-ItemProperty -Path "HKCU:\Keyboard Layout\Toggle" -Name "Layout HotKey" -Type String -Value 3 *>$null
@@ -134,7 +134,7 @@ Function DisableStartupApps {
     $shellcommonstartup = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
 
     # Exclude list
-    $excludeItems = @("FanControl*", "OpenRGB*")
+    $excludeItems = @("FanControl*", "OpenRGB*", "Steel*")
 
     # Startup Folder Delete Files
     Get-ChildItem -Path $shellstartup -Exclude $excludeItems -Recurse | Remove-Item -Recurse -ErrorAction SilentlyContinue
@@ -153,9 +153,6 @@ Function RemoveEdgeUpdates {
 }
 RemoveEdgeUpdates
 
-# Remove search box from taskbar
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
-
 # Sync Localtime
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
@@ -165,3 +162,6 @@ Function SyncTime {
     w32tm /config /manualpeerlist:time.windows.com, 0x1 /syncfromflags:manual /reliable:yes /update *>$null
 }
 SyncTime
+
+# Remove search box from taskbar
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
