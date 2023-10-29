@@ -285,6 +285,7 @@ Function SystemSettings {
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "Keyboard layout will not be changed." -ForegroundColor Red -BackgroundColor Black
+                Write-Host ""
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
@@ -1565,24 +1566,6 @@ Function SystemSettings {
                 [string[]]$disableservices
             )
             Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-        
-            # Check TabletInputService
-            try {
-                $tabletService = Get-Service -Name "TabletInputService" -ErrorAction Stop
-                if ($tabletService.Status -eq "Stopped") {
-                    Start-Service -Name "TabletInputService" -ErrorAction Stop
-                }
-                
-                # Check if the startup type is not Automatic and set it
-                $tabletServiceStartType = (Get-WmiObject -Class Win32_Service -Filter "Name='TabletInputService'").StartMode
-                if ($tabletServiceStartType -ne "Auto") {
-                    Set-Service -Name "TabletInputService" -StartupType Automatic -ErrorAction Stop
-                }
-        
-            }
-            catch {
-                Write-Host "`n[WARNING]: Error with TabletInputService. Error: $_" -ForegroundColor Red
-            }
         
             foreach ($service in $disableservices) {
                 try {
