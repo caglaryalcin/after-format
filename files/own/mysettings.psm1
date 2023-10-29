@@ -345,8 +345,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.WorkingDirectory = $openrgbpath
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\openrgb.lnk" *>$null
-            #copy openrgb to startup folder
-            Copy-Item C:\icons\openrgb.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\openrgb.lnk" -Force
 
             #Cloudflare WARP
             $WScriptShell = New-Object -ComObject WScript.Shell

@@ -152,7 +152,7 @@ Function DisableStartupApps {
     $shellcommonstartup = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
 
     # Exclude list
-    $excludeItems = @("FanControl*", "OpenRGB*", "Steel*", "Cloudflare*")
+    $excludeItems = @("FanControl*", "Steel*", "Cloudflare*")
 
     # Startup Folder Delete Files
     Get-ChildItem -Path $shellstartup -Exclude $excludeItems -Recurse | Remove-Item -Recurse -ErrorAction SilentlyContinue
