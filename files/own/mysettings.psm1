@@ -355,11 +355,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.TargetPath = $Cloudflare
             $Shortcut.WorkingDirectory = $oCloudflarepath
             $Shortcut.Save()
-            Unblock-File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Cloudflare WARP.lnk" *>$null
             
-            "C:\Program Files\Cloudflare\Cloudflare WARP\Cloudflare WARP.exe"
-            Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
-
             #create config folder
             $job = Start-Job -ScriptBlock { 
                 & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1

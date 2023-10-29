@@ -207,7 +207,8 @@ Function SystemSettings {
         DisableDefender
 
         function SetKeyboardLayout {
-            Write-Host "`nDo you want to adjust the keyboard layout? (y/n): " -NoNewline
+            Write-Host "Do you want to adjust the keyboard layout?" -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
         
             if ($response -eq 'y' -or $response -eq 'Y') {
