@@ -280,16 +280,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             #$Shortcut.Save()
             #Unblock-File -Path "C:\icons\iTunes.lnk" *>$null
 
-            #MS Teams
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $MSTeams = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
-            $ShortcutFile = "C:\icons\Microsoft Teams.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
-            $Shortcut.Arguments = "--processStart Teams.exe"
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Microsoft Teams.lnk" *>$null
-
             #PowerToys
             $WScriptShell = New-Object -ComObject WScript.Shell
             $Powertoys = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe"
@@ -300,6 +290,16 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.WorkingDirectory = $PowertoysPath
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\PowerToys.lnk" *>$null
+
+            #MS Teams
+            $WScriptShell = New-Object -ComObject WScript.Shell
+            $MSTeams = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
+            $ShortcutFile = "C:\icons\Microsoft Teams.lnk"
+            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+            $Shortcut.TargetPath = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
+            $Shortcut.Arguments = "--processStart Teams.exe"
+            $Shortcut.Save()
+            Unblock-File -Path "C:\icons\Microsoft Teams.lnk" *>$null
 
             #dupeGuru
             $WScriptShell = New-Object -ComObject WScript.Shell
