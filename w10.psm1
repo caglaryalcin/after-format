@@ -210,9 +210,12 @@ Function SystemSettings {
         
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "`nWhich keyboard layout do you want to set? Write 1, 2 or 3."
-                Write-Host "1 - Turkish keyboard layout"
-                Write-Host "2 - United Kingdom keyboard layout"
-                Write-Host "3 - Both Turkish and United Kingdom keyboard layout"
+                Write-Host "[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Turkish keyboard layout"
+                Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - United Kingdom keyboard layout"
+                Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Both Turkish and United Kingdom keyboard layout"
                 $choice = Read-Host
         
                 switch ($choice) {
