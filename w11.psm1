@@ -205,13 +205,19 @@ Function SystemSettings {
         }
 
         DisableDefender
-
+        
+        # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {
             Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
-            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" *>$null
-            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" *>$null
-            Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value $null *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            try {
+                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" *>$null
+                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value $null *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: $_" -ForegroundColor Red
+            }
         }
 
         RightClickMenu
@@ -219,11 +225,34 @@ Function SystemSettings {
         # Hide Taskbar Start button alignment left for Windows 11
         Function TaskbarAlignLeft {
             Write-Host "Taskbar Aligns Left..." -NoNewline
-            New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            try {
+                New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: $_" -ForegroundColor Red
+            }
         }
 
         TaskbarAlignLeft
+
+        # Enable task manager button on taskbar
+        Function taskmanagermenu {
+            Write-Host "Enable TaskManager button on taskbar..." -NoNewline
+            try {
+                If (!(Test-Path "SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4")) {
+                    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4\1887869580" -Force *>$null
+                }
+                New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4\1887869580" -Name "EnabledState" -PropertyType Dword -Value "2" *>$null
+                New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4\1887869580" -Name "EnabledStateOptions" -PropertyType Dword -Value "0" *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: $_" -ForegroundColor Red
+            }
+        }
+
+        taskmanagermenu
 
         #Default Photo Viewer Old
         Function DefaultPhotoViewer {
