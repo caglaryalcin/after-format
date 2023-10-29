@@ -3,10 +3,7 @@
 ##########
 
 $ErrorActionPreference = 'SilentlyContinue'
-New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
-New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
-New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
-New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+f
 $ErrorActionPreference = 'Continue'
     
 ##########
@@ -232,9 +229,12 @@ Function SystemSettings {
                                 Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
                             }
                         }
+
+                        # Set keyboard layout to TR
                         Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
+                        Set-WinLanguageBarOption -UseLegacyLanguageBar
                     }
                     "2" {
                         # UK keyboard layout
@@ -251,9 +251,12 @@ Function SystemSettings {
                                 Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
                             }
                         }
+
+                        # Set keyboard layout to UK
                         Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                        Set-WinLanguageBarOption -UseLegacyLanguageBar
                     }
                     "3" {
                         # Both TR and UK keyboard layout
@@ -270,11 +273,13 @@ Function SystemSettings {
                                 Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
                             }
                         }
+                        # Set keyboard layout to TR and UK
                         Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
+                        Set-WinLanguageBarOption -UseLegacyLanguageBar
                     }
                     default {
                         Write-Host "Invalid input. Please enter 1, 2 or 3."

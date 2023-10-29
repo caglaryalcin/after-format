@@ -29,33 +29,13 @@ Function TRFormats {
 
 TRFormats
 
-# UK-TR Keyboard settings
-Function KeyboardLayouts {
     # Show language bar
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\CTF\LangBar" -Name "ShowStatus" -Value 4
-
-    # Remove all keyboard layouts under HKCU
-    Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
-        $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-            Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
-        }
+    Function ShowLanguageBar {
+    # Show language bar
+        Set-WinLanguageBarOption -UseLegacyLanguageBar
     }
 
-    # Remove all keyboard layouts under HKU\.DEFAULT
-    Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
-        $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-            Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
-        }
-    }
-
-    # Add UK-TR Keyboard Layout
-    Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
-    Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
-    Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
-    Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
-}
-
-    #KeyboardLayouts
+    ShowLanguageBar
 
     # Remove Sticky Keys
     Function RemoveStickyKeys {
