@@ -29,12 +29,28 @@ Function TRFormats {
 
 TRFormats
 
-# Keyboard settings
-Function Setkeyboard {
-    # show language bar
+# UK Keyboard settings
+Function UKkeyboard {
+    # Show language bar
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\CTF\LangBar" -Name "ShowStatus" -Value 4
+
+    # Delete all keyboard layouts under HKCU  
+    Get-ChildItem "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
+        Remove-ItemProperty -Path $_.PSPath -Name "1" -ErrorAction SilentlyContinue *>$null
+    }
+
+    # Delete all keyboard layouts under HKU\.DEFAULT
+    Get-ChildItem "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
+        Remove-ItemProperty -Path $_.PSPath -Name "1" -ErrorAction SilentlyContinue *>$null
+    }
+
+    # Set keyboard layout to English (United Kingdom)
+    Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809" *>$null
+    Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809" *>$null
+
 }
-Setkeyboard
+
+UKkeyboard
 
 # Add TR Keyboard
 Function AddTRKeyboard {
