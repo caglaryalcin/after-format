@@ -29,12 +29,12 @@ Function TRFormats {
 
 TRFormats
 
-# Remove secondary en-US keyboard
-Function RemoveENKeyboard {
-    $langs = Get-WinUserLanguageList
-    Set-WinUserLanguageList ($langs | Where-Object { $_.LanguageTag -ne "en-US" }) -Force *>$null
+# Keyboard settings
+Function Setkeyboard {
+    # show language bar
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\CTF\LangBar" -Name "ShowStatus" -Value 4
 }
-#RemoveENKeyboard
+Setkeyboard
 
 # Add TR Keyboard
 Function AddTRKeyboard {
