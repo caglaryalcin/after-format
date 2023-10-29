@@ -205,6 +205,93 @@ Function SystemSettings {
         }
 
         DisableDefender
+
+        function SetKeyboardLayout {
+            Write-Host "`nDo you want to adjust the keyboard layout? (y/n): " -NoNewline
+            $response = Read-Host
+        
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "`nWhich keyboard layout do you want to set? Write 1, 2 or 3."
+                Write-Host "1 - Turkish keyboard layout"
+                Write-Host "2 - United Kingdom keyboard layout"
+                Write-Host "3 - Both Turkish and United Kingdom keyboard layout"
+                $choice = Read-Host
+        
+                switch ($choice) {
+                    "1" {
+                        # TR keyboard layout
+                        # Remove all keyboard layouts under HKCU
+                        Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
+                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                            }
+                        }
+                        
+                        # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
+                        Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
+                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                            }
+                        }
+                        Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
+                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
+                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
+                    }
+                    "2" {
+                        # UK keyboard layout
+                        # Remove all keyboard layouts under HKCU
+                        Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
+                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                            }
+                        }
+                        
+                        # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
+                        Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
+                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                            }
+                        }
+                        Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
+                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                    }
+                    "3" {
+                        # Both TR and UK keyboard layout
+                        # Remove all keyboard layouts under HKCU
+                        Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
+                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                            }
+                        }
+
+                        # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
+                        Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
+                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                            }
+                        }
+                        Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
+                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
+                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
+                    }
+                    default {
+                        Write-Host "Invalid input. Please enter 1, 2 or 3."
+                    }
+                }
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "Keyboard layout will not be changed." -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                SetKeyboardLayout
+            }
+        }
+        
+        SetKeyboardLayout
         
         # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {

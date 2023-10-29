@@ -55,7 +55,7 @@ Function KeyboardLayouts {
     Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
 }
 
-    KeyboardLayouts
+    #KeyboardLayouts
 
     # Remove Sticky Keys
     Function RemoveStickyKeys {
