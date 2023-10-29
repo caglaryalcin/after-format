@@ -11,6 +11,24 @@ $ErrorActionPreference = 'Continue'
 #endregion MAP
 ##########
 
+Function TRFormats {
+            Set-TimeZone -Name "Turkey Standard Time" -ErrorAction Stop
+            Set-Culture tr-TR -ErrorAction Stop
+            Set-ItemProperty -Path "HKCU:\Control Panel\International" -name ShortDate -value "dd/MM/yyyy" -ErrorAction Stop
+
+            #sync time
+            Set-Service -Name "W32Time" -StartupType Automatic -ErrorAction Stop
+            Restart-Service W32Time *>$null
+            if (-not $?) { throw "Failed to stop W32Time" }
+            w32tm /resync /force *>$null
+            if (-not $?) { throw "Failed to resync time" }
+            w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:yes /update *>$null
+            if (-not $?) { throw "Failed to configure time sync settings" }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+TRFormats
+
 # Remove secondary en-US keyboard
 Function RemoveENKeyboard {
     $langs = Get-WinUserLanguageList
