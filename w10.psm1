@@ -82,7 +82,6 @@ Function SystemSettings {
         }
         
         TRFormats
-        
 
         Function SetHostname {
             Write-Host `n"Do you want " -NoNewline
@@ -1448,7 +1447,6 @@ Function SystemSettings {
                 $tabletService = Get-Service -Name "TabletInputService" -ErrorAction Stop
                 if ($tabletService.Status -eq "Stopped") {
                     Start-Service -Name "TabletInputService" -ErrorAction Stop
-                    Write-Host "`nTabletInputService has been started." -ForegroundColor Green
                 }
                 
                 # Check if the startup type is not Automatic and set it
