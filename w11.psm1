@@ -284,7 +284,7 @@ Function SystemSettings {
                 }
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "Keyboard layout will not be changed." -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[Keyboard layout will not be changed.]" -ForegroundColor Red -BackgroundColor Black
                 Write-Host ""
             }
             else {
@@ -1299,7 +1299,7 @@ Function SystemSettings {
             }
         
             try {
-                schtasks /Change /TN "\Microsoft\Windows\SystemRestore\SR" /disable  | Out-Null
+                schtasks /Change /TN "\Microsoft\Windows\SystemRestore\SR" /disable  | Out-Null *>$null
             }
             catch {
                 Write-Host "[WARNING] Could not disable the scheduled task." -ForegroundColor Red
