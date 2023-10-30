@@ -3,7 +3,10 @@
 ##########
 
 $ErrorActionPreference = 'SilentlyContinue'
-f
+New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
+New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
 $ErrorActionPreference = 'Continue'
     
 ##########
