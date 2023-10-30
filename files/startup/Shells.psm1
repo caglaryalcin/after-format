@@ -32,7 +32,7 @@ TRFormats
     # Show language bar
     Function ShowLanguageBar {
     # Show language bar
-        Set-WinLanguageBarOption -UseLegacyLanguageBar
+        Set-WinLanguageBarOption -UseLegacySwitchMode
     }
 
     ShowLanguageBar
