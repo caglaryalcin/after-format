@@ -2324,29 +2324,6 @@ Function PrivacySettings {
         
         DisableAppLaunchTracking
 
-        # Disable Edge Privacy Settings (It will be implemented if Edge is not deleted)
-        Function ConfigureEdgePrivacySettings {
-            Write-Host "Configuring Microsoft Edge privacy settings..." -NoNewline
-        
-            # Registry path
-            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
-        
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
-            }
-        
-            try {
-                Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
-                Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-            }
-        }
-
         # Disable setting 'Let websites provide locally relevant content by accessing my language list' 
         Function DisableWebLangList {
             Write-Host "Disabling Website Access to Language List..." -NoNewline
@@ -3561,7 +3538,24 @@ Function UnusedApps {
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-                ConfigureEdgePrivacySettings
+                Write-Host "Microsoft Edge privacy settings are being adjusted..." -NoNewline
+                # Registry path for Edge privacy settings
+                $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+        
+                if (-not (Test-Path $registryPath)) {
+                    New-Item -Path $registryPath -Force *>$null
+                }
+        
+                try {
+                    Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
+                    Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                } catch {
+                    Write-Host "[WARNING]: Failed to apply Edge privacy settings" -ForegroundColor Yellow -BackgroundColor Black
+                }
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."

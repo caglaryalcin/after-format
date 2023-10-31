@@ -2297,29 +2297,6 @@ Function PrivacySettings {
         
         DisableAppLaunchTracking
 
-        # Disable Edge Privacy Settings (It will be implemented if Edge is not deleted)
-        Function ConfigureEdgePrivacySettings {
-            Write-Host "Configuring Microsoft Edge privacy settings..." -NoNewline
-        
-            # Registry path
-            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
-        
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
-            }
-        
-            try {
-                Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
-                Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-            }
-        }
-
         # Disable setting 'Let websites provide locally relevant content by accessing my language list' 
         Function DisableWebLangList {
             Write-Host "Disabling Website Access to Language List..." -NoNewline
@@ -3366,8 +3343,10 @@ Function UnusedApps {
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Microsoft Edge..." -NoNewline
+       
                 try {
                     taskkill /f /im msedge.exe *>$null 2>&1
+                    taskkill /f /im explorer.exe *>$null 2>&1
         
                     #Edge Services
                     $edgeservices = "edgeupdate", "edgeupdatem"
@@ -3388,14 +3367,14 @@ Function UnusedApps {
                         }
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
                         $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
@@ -3406,7 +3385,7 @@ Function UnusedApps {
                         Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
@@ -3416,7 +3395,7 @@ Function UnusedApps {
                         reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                     
                     try {
@@ -3426,7 +3405,7 @@ Function UnusedApps {
                         Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
         
                     # Delete additional files
@@ -3458,14 +3437,14 @@ Function UnusedApps {
                     }
                     catch {
                         # If there's an error, display a warning
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
                         taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
@@ -3475,7 +3454,7 @@ Function UnusedApps {
                         }
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
@@ -3483,14 +3462,14 @@ Function UnusedApps {
                         Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
                         Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     try {
@@ -3498,7 +3477,7 @@ Function UnusedApps {
                         Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction Stop | Out-Null
                     }
                     catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                         
                     $paths = @(
@@ -3513,16 +3492,17 @@ Function UnusedApps {
                             $items = Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue
 
                             if ($items) {
-                                Remove-Item -Path $path -Force -Recurse -ErrorAction Stop
+                                Remove-Item -Path $path -Force -Recurse -ErrorAction Stop *>$null
                             }
                         }
                         catch {
-                            Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+                            #Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
                         }
                     }
                         
                     # Check if Edge is still installed
                     if (!(Get-Process "msedge" -ErrorAction SilentlyContinue)) {
+                        Start-Process explorer.exe
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     else {
@@ -3530,12 +3510,29 @@ Function UnusedApps {
                     }
                 }
                 catch {
-                    Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+                    #Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-                ConfigureEdgePrivacySettings
+                Write-Host "Microsoft Edge privacy settings are being adjusted..." -NoNewline
+                # Registry path for Edge privacy settings
+                $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+        
+                if (-not (Test-Path $registryPath)) {
+                    New-Item -Path $registryPath -Force *>$null
+                }
+        
+                try {
+                    Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
+                    Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                } catch {
+                    Write-Host "[WARNING]: Failed to apply Edge privacy settings" -ForegroundColor Yellow -BackgroundColor Black
+                }
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
