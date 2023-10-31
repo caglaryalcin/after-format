@@ -2243,14 +2243,14 @@ Function PrivacySettings {
             $registryPath1 = "HKCU:\Software\Microsoft\Clipboard"
         
             if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force
+                New-Item -Path $registryPath1 -Force *>$null
             }
         
             # Second registry path
             $registryPath2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
         
             if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force
+                New-Item -Path $registryPath2 -Force *>$null
             }
         
             try {
@@ -2272,7 +2272,7 @@ Function PrivacySettings {
             $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"
         
             if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force
+                New-Item -Path $registryPath -Force *>$null
             }
         
             try {
@@ -2293,7 +2293,7 @@ Function PrivacySettings {
             $registryPath = "HKCU:\Software\Microsoft\Input\Settings"
         
             if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force
+                New-Item -Path $registryPath -Force *>$null
             }
         
             try {
@@ -2314,7 +2314,7 @@ Function PrivacySettings {
             $registryPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         
             if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force
+                New-Item -Path $registryPath -Force *>$null
             }
         
             try {
@@ -2335,7 +2335,7 @@ Function PrivacySettings {
             $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
         
             if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force
+                New-Item -Path $registryPath -Force *>$null
             }
         
             try {
