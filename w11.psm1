@@ -1721,7 +1721,7 @@ Function SystemSettings {
         # Function usage
         $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
-            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service")
+            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")
         
         Disable-Services -disableservices $disableservices
 
@@ -3294,20 +3294,23 @@ Function UnusedApps {
         
             $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
         
-            $allTasks = Get-ScheduledTask | Where-Object { $task = $_; $taskPatterns | ForEach-Object { $task.TaskName -like $_ } }
+            $allTasks = Get-ScheduledTask
         
             foreach ($task in $allTasks) {
-                try {
-                    $taskName = $task.TaskName
-                    # Do not remove the startup task
-                    if ($taskName -ne "startup") {
-                        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+                $taskName = $task.TaskName
+                $remove = $false
+        
+                foreach ($pattern in $taskPatterns) {
+                    if ($taskName -like $pattern) {
+                        $remove = $true
+                        break
                     }
                 }
-                catch {
-                    if ($_.Exception.Message -like "*No MSFT_ScheduledTask objects found*") {
-                    }
-                    else {
+        
+                if ($remove) {
+                    try {
+                        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+                    } catch {
                         Write-Host "`n[WARNING]: Error: $_" -ForegroundColor Red
                     }
                 }
