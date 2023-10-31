@@ -1722,7 +1722,7 @@ Function SystemSettings {
         # Function usage
         $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "seclogon", "lmhosts", "WerSvc", "wisvc", "BTAGService", "BTAGService", "bthserv", "PhoneSvc", "EFS", "BDESVC",
-            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensrSvc", "SensorService", "WbioSrvc", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service")
+            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service")
         
         Disable-Services -disableservices $disableservices
 
