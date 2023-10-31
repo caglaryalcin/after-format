@@ -1763,8 +1763,6 @@ Function SystemSettings {
                 Write-Host "[WARNING] Failed to set 'ShellFeedsTaskbarViewMode' registry value: $_" -ForegroundColor Yellow
             }
 
-            # Disable news and interests in the taskbar
-
             $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
 
             if (-not (Test-Path $registryPath)) {
@@ -1774,7 +1772,6 @@ Function SystemSettings {
             if (-not (Get-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -ErrorAction SilentlyContinue)) {
                 try {
                     Set-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -Value 1
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 } catch {
                     Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
                 }
