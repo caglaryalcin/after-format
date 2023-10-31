@@ -57,47 +57,35 @@ TRFormats
 
     # Remove Tasks in Task Scheduler
     Function RemoveTasks {
-        Get-ScheduledTask "Chrome*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "OneDrive*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "MicrosoftEdge*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Google*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Nv*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Brave*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Intel*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "update-s*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "klcp*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "MSI*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Adobe*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "CCleaner*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Blue*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "klcp*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Driver*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "G2M*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "klcp*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Opera*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "PC*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "Overwolf*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "klcp*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "User*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "CreateExplorer*" | Unregister-ScheduledTask -Confirm:$false    
-        Get-ScheduledTask "{*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Samsung*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Auto*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*McAfee*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*npcap*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Consolidator*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Dropbox*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Heimdal*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*klcp*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*UsbCeip*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*DmClient*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Office*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*GPU*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Firefox*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask "*Post*" | Unregister-ScheduledTask -Confirm:$false
-        Get-ScheduledTask -TaskName "*XblGameSaveTask*" | Disable-ScheduledTask -ea 0 | Out-Null
-        Get-ScheduledTask -TaskName "*XblGameSaveTaskLogon*" | Disable-ScheduledTask -ea 0 | Out-Null
+        Write-Host "Removing Unnecessary Tasks..." -NoNewline
+    
+        $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
+    
+        $allTasks = Get-ScheduledTask
+    
+        foreach ($task in $allTasks) {
+            $taskName = $task.TaskName
+            $remove = $false
+    
+            foreach ($pattern in $taskPatterns) {
+                if ($taskName -like $pattern) {
+                    $remove = $true
+                    break
+                }
+            }
+    
+            if ($remove) {
+                try {
+                    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+                } catch {
+                    Write-Host "`n[WARNING]: Error: $_" -ForegroundColor Red
+                }
+            }
+        }
+    
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     }
+    
     RemoveTasks
 
     Function HideDefenderTrayIcon {

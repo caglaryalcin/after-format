@@ -7,7 +7,7 @@ $myText = @"
 ###############################
 "@
 
-Write-Host `n$myText -ForegroundColor Red -BackgroundColor Black
+Write-Host `n$myText -ForegroundColor Red
 
 Write-Host `n"Do you " -NoNewline
 Write-Host "own this script?" -NoNewline -ForegroundColor Red -BackgroundColor Black
