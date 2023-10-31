@@ -105,7 +105,7 @@ Function SystemSettings {
                 $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
                 $hostname = Read-Host -Prompt $hostq
                 Rename-Computer -NewName "$hostname" *>$null
-                Write-Host "Hostname was set to"$hostname"" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "Hostname was set to"$hostname"" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
@@ -219,7 +219,7 @@ Function SystemSettings {
         DisableDefender
 
         function SetKeyboardLayout {
-            Write-Host "Do you want to " -NoNewline
+            Write-Host `n"Do you want to " -NoNewline
             Write-Host "adjust the keyboard layout?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
@@ -232,7 +232,7 @@ Function SystemSettings {
                 Write-Host " - United Kingdom keyboard layout"
                 Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                 Write-Host " - Both Turkish and United Kingdom keyboard layout"
-                $choice = Read-Host
+                $choice = Read-Host -Prompt "Choice"
         
                 switch ($choice) {
                     "1" {
