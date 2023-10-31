@@ -325,7 +325,7 @@ Function SystemSettings {
             $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
 
             if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force
+                New-Item -Path $registryPath -Force *>$null
             }
 
             try {
@@ -351,14 +351,14 @@ Function SystemSettings {
             $registryPath1 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
         
             if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force
+                New-Item -Path $registryPath1 -Force *>$null
             }
         
             # Second registry path
             $registryPath2 = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
         
             if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force
+                New-Item -Path $registryPath2 -Force *>$null
             }
         
             try {
@@ -380,14 +380,14 @@ Function SystemSettings {
             $registryPath1 = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings"
         
             if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force
+                New-Item -Path $registryPath1 -Force *>$null
             }
         
             # Second registry path
             $registryPath2 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
         
             if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force
+                New-Item -Path $registryPath2 -Force *>$null
             }
         
             try {
@@ -409,14 +409,14 @@ Function SystemSettings {
             $registryPath1 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences\HME"
         
             if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force
+                New-Item -Path $registryPath1 -Force *>$null
             }
         
             # Second registry path
             $registryPath2 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences"
         
             if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force
+                New-Item -Path $registryPath2 -Force *>$null
             }
         
             try {
@@ -438,7 +438,7 @@ Function SystemSettings {
             $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
         
             if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force
+                New-Item -Path $registryPath -Force *>$null
             }
         
             try {
@@ -681,9 +681,6 @@ Function SystemSettings {
                 };
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" = @{
                     "HideSCAMeetNow" = 1 # HideSCAMeetNow
-                };
-                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" = @{
-                    "NoNewsAndInterests" = 1 # Disable news and interests in the taskbar
                 }
             }
         
@@ -1682,8 +1679,8 @@ Function SystemSettings {
                 try {
                     $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
                     if ($null -ne $currentService) {
-                        Stop-Service -Name $service -Force -ErrorAction Stop *> $null
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *> $null
+                        Stop-Service -Name $service -Force -ErrorAction Stop *>$null
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *>$null
                     }
                 }
                 catch {
@@ -1738,6 +1735,23 @@ Function SystemSettings {
             catch {
                 Write-Host "[WARNING] Failed to set 'ShellFeedsTaskbarViewMode' registry value: $_" -ForegroundColor Yellow
             }
+
+            # Disable news and interests in the taskbar
+
+            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force *>$null
+            }
+        
+            if (-not (Get-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -ErrorAction SilentlyContinue)) {
+                try {
+                    Set-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -Value 1
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                } catch {
+                    Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+                }
+                }
 
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
