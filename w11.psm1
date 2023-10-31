@@ -83,7 +83,6 @@ Function SystemSettings {
         
         TRFormats
         
-
         Function SetHostname {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "change your hostname?" -ForegroundColor Yellow -NoNewline
@@ -347,6 +346,138 @@ Function SystemSettings {
 
         taskmanagermenu
 
+        # Disable Sync your settings
+        Function DisableSync {
+            Write-Host "Disabling Sync your settings..." -NoNewline
+            $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
+
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force
+            }
+
+            try {
+                Set-ItemProperty -Path $registryPath -Name "DisableSettingSyncUserOverride" -Value 1
+                Set-ItemProperty -Path $registryPath -Name "DisableSyncYourSettings" -Value 1
+                Set-ItemProperty -Path $registryPath -Name "DisableWebBrowser" -Value 1
+                Set-ItemProperty -Path $registryPath -Name "DisablePersonalization" -Value 1
+                Set-ItemProperty -Path $registryPath -Name "DisableSettingSync" -Value 2
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+
+        DisableSync
+
+        # Disable Spotlight
+        Function DisableSpotlight {
+            Write-Host "Disabling Spotlight..." -NoNewline
+        
+            # First registry path
+            $registryPath1 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+        
+            if (-not (Test-Path $registryPath1)) {
+                New-Item -Path $registryPath1 -Force
+            }
+        
+            # Second registry path
+            $registryPath2 = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+        
+            if (-not (Test-Path $registryPath2)) {
+                New-Item -Path $registryPath2 -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath1 -Name "NoWindowsSpotlight" -Value 1
+                Set-ItemProperty -Path $registryPath2 -Name "RotatingLockScreenOverlayEnabled" -Value 0
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableSpotlight
+
+        # Disable Lock Screen Notifications
+        Function DisableLockScreenNotifications {
+            Write-Host "Disabling toast and apps notifications on lock screen..." -NoNewline
+        
+            # First registry path
+            $registryPath1 = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings"
+        
+            if (-not (Test-Path $registryPath1)) {
+                New-Item -Path $registryPath1 -Force
+            }
+        
+            # Second registry path
+            $registryPath2 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
+        
+            if (-not (Test-Path $registryPath2)) {
+                New-Item -Path $registryPath2 -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath1 -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
+                Set-ItemProperty -Path $registryPath2 -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableLockScreenNotifications
+
+        # Disable Windows Media Player diagnostics
+        Function DisableWMPDiagnostics {
+            Write-Host "Disabling Windows Media Player diagnostics..." -NoNewline
+        
+            # First registry path
+            $registryPath1 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences\HME"
+        
+            if (-not (Test-Path $registryPath1)) {
+                New-Item -Path $registryPath1 -Force
+            }
+        
+            # Second registry path
+            $registryPath2 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences"
+        
+            if (-not (Test-Path $registryPath2)) {
+                New-Item -Path $registryPath2 -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath1 -Name "WMPDiagnosticsEnabled" -Value 0
+                Set-ItemProperty -Path $registryPath2 -Name "UsageTracking" -Value 0
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableWMPDiagnostics
+
+        # Disable Windows Search with Bing
+        Function DisableBingSearchExtension {
+            Write-Host "Disabling extension of Windows search with Bing..." -NoNewline
+        
+            # Registry path
+            $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+        
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath -Name "DisableSearchBoxSuggestions" -Value 1
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableBingSearchExtension
+
         #Default Photo Viewer Old
         Function DefaultPhotoViewer {
             Write-Host "Default Old Photo Viewer..." -NoNewline
@@ -566,17 +697,20 @@ Function SystemSettings {
                     "HudMode" = 1 #hide quick access
                 };
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" = @{
-                    "LaunchTo"                     = 1; #1 'This PC' #2 'Quick Access'
+                    "LaunchTo"                     = 1; # 1 'This PC' #2 'Quick Access'
                     "HideFileExt"                  = 0; # Show known file extensions
-                    "NavPaneExpandToCurrentFolder" = 0; #expand all folders
-                    "NavPaneShowAllFolders"        = 0 #show all folders
+                    "NavPaneExpandToCurrentFolder" = 0; # expand all folders
+                    "NavPaneShowAllFolders"        = 0 # show all folders
                 };
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"          = @{
-                    "ShowFrequent"   = 0; #Hide frequently used folders in quick access
-                    "EnableAutoTray" = 0 #Show All Icons
+                    "ShowFrequent"   = 0; # Hide frequently used folders in quick access
+                    "EnableAutoTray" = 0 # Show All Icons
                 };
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" = @{
-                    "HideSCAMeetNow" = 1 #HideSCAMeetNow
+                    "HideSCAMeetNow" = 1 # HideSCAMeetNow
+                };
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" = @{
+                    "NoNewsAndInterests" = 1 # Disable news and interests in the taskbar
                 }
             }
         
@@ -1623,7 +1757,15 @@ Function SystemSettings {
             catch {
                 Write-Host "[WARNING] Failed to set 'EnableFeeds' registry value: $_" -ForegroundColor Yellow
             }
-        
+            
+            # Disable news and interests in the taskbar
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
+            }
+            catch {
+                Write-Host "[WARNING] Failed to set 'ShellFeedsTaskbarViewMode' registry value: $_" -ForegroundColor Yellow
+            }
+
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
@@ -1910,7 +2052,6 @@ Function PrivacySettings {
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\TabletPC"; Name = "PreventHandwritingDataSharing"; Type = "DWord"; Value = 1 },
                 @{Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\TextInput"; Name = "AllowLinguisticDataCollection"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE"; Name = "DisablePrivacyExperience"; Type = "Dword"; Value = "1" },
-                @{Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location"; Name = "Value"; Type = "String"; Value = "Deny" },
                 @{Path = "HKLM:\SOFTWARE\Microsoft\MdmCommon\SettingValues"; Name = "LocationSyncEnabled"; Type = "Dword"; Value = "0" },
                 @{Path = "HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy"; Name = "HasAccepted"; Type = "Dword"; Value = "0" },
                 @{Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack"; Name = "ShowedToastAtLevel"; Type = "Dword"; Value = "1" },
@@ -2079,6 +2220,121 @@ Function PrivacySettings {
         }
         
         DisableActivityHistory
+
+        # Disable clipboard history
+        Function DisableClipboardHistory{
+            Write-Host "Disabling clipboard history..." -NoNewline
+        
+            # First registry path
+            $registryPath1 = "HKCU:\Software\Microsoft\Clipboard"
+        
+            if (-not (Test-Path $registryPath1)) {
+                New-Item -Path $registryPath1 -Force
+            }
+        
+            # Second registry path
+            $registryPath2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+        
+            if (-not (Test-Path $registryPath2)) {
+                New-Item -Path $registryPath2 -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath1 -Name "EnableClipboardHistory" -Value 0
+                Set-ItemProperty -Path $registryPath2 -Name "AllowClipboardHistory" -Value 0 -Type DWord -Force
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableClipboardHistory
+
+        # Disable User Steps Recorder
+        Function DisableUserStepsRecorder {
+            Write-Host "Disabling User Steps Recorder..." -NoNewline
+        
+            # Registry path
+            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"
+        
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath -Name "DisableUAR" -Value 1
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableUserStepsRecorder
+
+        # Disable Hardware Keyboard Text Suggestions
+        Function DisableHardwareKeyboardTextSuggestions {
+            Write-Host "Turning off text suggestions for hardware keyboard..." -NoNewline
+        
+            # Registry path
+            $registryPath = "HKCU:\Software\Microsoft\Input\Settings"
+        
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath -Name "EnableHwkbTextPrediction" -Value 0
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableHardwareKeyboardTextSuggestions
+
+        # Disable App Launch Tracking
+        Function DisableAppLaunchTracking {
+            Write-Host "Disabling App Launch Tracking..." -NoNewline
+        
+            # Registry path
+            $registryPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath -Name "Start_TrackProgs" -Value 0
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DisableAppLaunchTracking
+
+        # Disable Edge Privacy Settings (It will be implemented if Edge is not deleted)
+        Function ConfigureEdgePrivacySettings {
+            Write-Host "Configuring Microsoft Edge privacy settings..." -NoNewline
+        
+            # Registry path
+            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+        
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force
+            }
+        
+            try {
+                Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
+                Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
+                Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
+                Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
+                Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
 
         # Disable setting 'Let websites provide locally relevant content by accessing my language list' 
         Function DisableWebLangList {
@@ -2466,7 +2722,14 @@ Function PrivacySettings {
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\documentsLibrary",
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\picturesLibrary",
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\videosLibrary",
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\broadFileSystemAccess"
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\broadFileSystemAccess",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userAccountInformation",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appDiagnostics",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\contacts",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\email",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userDataTasks",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\chat"
             )
         
             try {
@@ -3072,7 +3335,7 @@ Function UnusedApps {
         # Uninstall OneDrive
         Function UninstallOneDrive {
             Write-Host `n"Do you want " -NoNewline
-            Write-Host "uninstall Windows OneDrive?" -ForegroundColor Yellow -NoNewline
+            Write-Host "uninstall Microsoft OneDrive?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
@@ -3111,7 +3374,7 @@ Function UnusedApps {
         # Disable Edge desktop shortcut creation after certain Windows updates are applied 
         Function UninstallEdge {
             Write-Host `n"Do you want " -NoNewline
-            Write-Host "uninstall Windows Edge?" -ForegroundColor Yellow -NoNewline
+            Write-Host "uninstall Microsoft Edge?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
@@ -3288,6 +3551,7 @@ Function UnusedApps {
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
+                ConfigureEdgePrivacySettings
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
