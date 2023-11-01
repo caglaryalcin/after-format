@@ -514,10 +514,10 @@ foreach ($addon in $addons.GetEnumerator()) {
             $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
             New-Item $dest -Name chrome -ItemType "directory" *>$null
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userContent.css" -Outfile "$dest\chrome\userContent.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css" -Outfile "$dest\chrome\userContent.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
@@ -572,7 +572,7 @@ foreach ($addon in $addons.GetEnumerator()) {
                 )
                 "$env:userprofile\Desktop"                                         = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/bookmarks.json",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/bookmarks/bookmarks.json",
                     "https://github.com/caglaryalcin/my-configs/raw/main/eyes.gif"
                 )
                 "C:\fan_control\Configurations"                                    = @(
