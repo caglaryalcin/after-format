@@ -222,15 +222,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\Total Commander.lnk" *>$null
 
-            #WireShark
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $WireShark = "C:\Program Files\Wireshark\Wireshark.exe"
-            $ShortcutFile = "C:\icons\WireShark.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $WireShark
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\WireShark.lnk" *>$null
-
             #Putty
             $WScriptShell = New-Object -ComObject WScript.Shell
             $Putty = "C:\Program Files\PuTTY\putty.exe"
@@ -251,6 +242,15 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\Deluge.lnk" *>$null
 
+            #WireShark
+            $WScriptShell = New-Object -ComObject WScript.Shell
+            $WireShark = "C:\Program Files\Wireshark\Wireshark.exe"
+            $ShortcutFile = "C:\icons\WireShark.lnk"
+            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+            $Shortcut.TargetPath = $WireShark
+            $Shortcut.Save()
+            Unblock-File -Path "C:\icons\WireShark.lnk" *>$null
+
             #DBeaver
             $WScriptShell = New-Object -ComObject WScript.Shell
             $DBeaver = "C:\Program Files\DBeaver\dbeaver.exe"
@@ -270,15 +270,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Shortcut.TargetPath = $Cryptomator
             $Shortcut.Save()
             Unblock-File -Path "C:\icons\Cryptomator.lnk" *>$null
-
-            #iTunes (problematic)
-            #$WScriptShell = New-Object -ComObject WScript.Shell
-            #$iTunes = "C:\Program Files\iTunes\iTunes.exe"
-            #$ShortcutFile = "C:\icons\iTunes.lnk"
-            #$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            #$Shortcut.TargetPath = $iTunes
-            #$Shortcut.Save()
-            #Unblock-File -Path "C:\icons\iTunes.lnk" *>$null
 
             #PowerToys
             $WScriptShell = New-Object -ComObject WScript.Shell
