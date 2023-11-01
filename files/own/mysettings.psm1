@@ -29,7 +29,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
             Start-Process C:\fan_control\FanControl.exe
             Start-Sleep 10
-            taskkill / f / im FanControl.exe *>$null
+            taskkill /f /im FanControl.exe *>$null
 
             ##Create Icons folder
             New-Item -Path 'C:\icons' -ItemType Directory *>$null
@@ -190,7 +190,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             } *> $null
          
             Start-Sleep 10
-            taskkill.exe / f / im OpenRGB.exe *>$null
+            taskkill.exe /f /im OpenRGB.exe *>$null
 
             ##Set Pin
             $progressPreference = 'silentlyContinue'
@@ -204,7 +204,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             reg import "C:\taskbar_pin.reg" *>$null
             Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
             reg import "C:\taskbar_pin.reg" *>$null
-            taskkill / f / im explorer.exe *>$null
+            taskkill /f /im explorer.exe *>$null
 
             #delete taskbar_pin.reg
             Remove-Item C:\taskbar_pin.reg -recurse -ErrorAction SilentlyContinue
@@ -312,7 +312,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             cd "C:\Program Files\LibreWolf\"
             .\librewolf.exe
             Start-Sleep 2
-            taskkill / f / im "librewolf.exe" *>$null
+            taskkill /f /im "librewolf.exe" *>$null
 
             $instdir = "C:\Program Files\LibreWolf"
             $distribution = $instdir + '\distribution'
@@ -406,7 +406,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             # twinkle tray
             & "$env:USERPROFILE\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
             Start-Sleep 10
-            taskkill / f / im "Twinkle Tray.exe" *>$null
+            taskkill /f /im "Twinkle Tray.exe" *>$null
 
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json" -Outfile "$env:USERPROFILE\AppData\Roaming\twinkle-tray\settings.json"
             
