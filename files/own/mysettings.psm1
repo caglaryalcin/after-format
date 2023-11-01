@@ -19,290 +19,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
     Function Own {
         Function SetPins {
-            ##Create Icons folder
-            New-Item -Path 'C:\icons' -ItemType Directory *>$null
-
-            #Chrome
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"
-            $ShortcutFile = "C:\icons\Google Chrome.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Chrome
-            $Shortcut.WorkingDirectory = "C:\Program Files\Google\Chrome\Application\"
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Google Chrome.lnk" *>$null
-
-            #Brave
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Brave = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe"
-            $BraveDirectory = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application"
-            $Shortcut.WorkingDirectory = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application"
-            $ShortcutFile = "C:\icons\Brave.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Brave
-            $Shortcut.WorkingDirectory = $BraveDirectory
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Brave.lnk" *>$null
-
-            #Firefox
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Firefox = "C:\Program Files\Mozilla Firefox\firefox.exe"
-            $ShortcutFile = "C:\icons\Firefox.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Firefox
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Firefox.lnk" *>$null
-
-            #Librewolf
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Librewolf = "C:\Program Files\LibreWolf\librewolf.exe"
-            $ShortcutFile = "C:\icons\LibreWolf.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Librewolf
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\LibreWolf.lnk" *>$null
-
-            #File Explorer was here
-
-            #Adobe Photoshop (offline)
-            #$WScriptShell = New-Object -ComObject WScript.Shell
-            #$Photoshop = "C:\Program Files\Adobe\Adobe Photoshop 2020\Photoshop.exe"
-            #$PhotoshopPath = "C:\Program Files\Adobe\Adobe Photoshop 2020"
-            #$ShortcutFile = "C:\icons\Adobe Photoshop 2020.lnk"
-            #$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            #$Shortcut.TargetPath = $Photoshop
-            #$Shortcut.WorkingDirectory = $PhotoshopPath
-            #$Shortcut.Save()
-            #Unblock-File -Path "C:\icons\Adobe Photoshop 2020.lnk" *>$null
-
-            #Adobe Premiere Pro (offline)
-            #$WScriptShell = New-Object -ComObject WScript.Shell
-            #$Premiere = "C:\Program Files\Adobe\Adobe Premiere Pro 2020\Adobe Premiere Pro.exe"
-            #$PremierePath = "C:\Program Files\Adobe\Adobe Premiere Pro 2020"
-            #$ShortcutFile = "C:\icons\Adobe Premiere Pro 2020.lnk"
-            #$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            #$Shortcut.TargetPath = $Premiere
-            #$Shortcut.WorkingDirectory = $PremierePath
-            #$Shortcut.Save()
-            #Unblock-File -Path "C:\icons\Adobe Premiere Pro 2020.lnk" *>$null
-
-            #Steam
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Steam = "C:\Program Files (x86)\Steam\Steam.exe"
-            $ShortcutFile = "C:\icons\Steam.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Steam
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Steam.lnk" *>$null
-
-            #Epic Games
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Epic = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"
-            $EpicPath = "C:\Program Files (x86)\Epic Games\"
-            $ShortcutFile = "C:\icons\EpicGamesLauncher.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Epic
-            $Shortcut.WorkingDirectory = $EpicPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\EpicGamesLauncher.lnk" *>$null
-
-            #HWMonitor
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $HW = "C:\Program Files\CPUID\HWMonitor\HWMonitor.exe"
-            $ShortcutFile = "C:\icons\HWMonitor.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $HW
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\HWMonitor.lnk" *>$null
-
-            #Crystal Disk Info
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Crystal = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\DiskInfo64.exe"
-            $CrystalDirectory = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\"
-            $ShortcutFile = "C:\icons\CrystalDiskInfo.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Crystal
-            $Shortcut.WorkingDirectory = $CrystalDirectory
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\CrystalDiskInfo.lnk" *>$null
-
-            #vMware Workstation
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $vMware = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe"
-            $vMwareDirectory = "C:\Program Files (x86)\VMware\VMware Workstation\"
-            $ShortcutFile = "C:\icons\VMware Workstation Pro.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $vMware
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\VMware Workstation Pro.lnk" *>$null
-
-            #VirtualBox
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $VirtualBox = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe"
-            $ShortcutFile = "C:\icons\Oracle VM VirtualBox.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $VirtualBox
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Oracle VM VirtualBox.lnk" *>$null
-
-            #Signal
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Signal = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\Signal.exe"
-            $ShortcutFile = "C:\icons\Signal.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Signal
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Signal.lnk" *>$null
-
-            #Sticky Notes was here
-
-            #Visual Studio
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Visual = "C:\Program Files\Microsoft VS Code\Code.exe"
-            $ShortcutFile = "C:\icons\Visual Studio Code.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Visual
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Visual Studio Code.lnk" *>$null
-
-            #AnyDesk
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Anydesk = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe"
-            $AnydeskPath = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\"
-            $ShortcutFile = "C:\icons\AnyDesk.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Anydesk
-            $Shortcut.WorkingDirectory = $AnydeskPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\AnyDesk.lnk" *>$null
-
-            #Terminal was here
-
-            #SublimeText
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $SublimeText = "C:\Program Files\Sublime Text 3\sublime_text.exe"
-            $SublimeTextPath = "C:\Program Files\Sublime Text 3\"
-            $ShortcutFile = "C:\icons\Sublime Text.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $SublimeText
-            $Shortcut.WorkingDirectory = $SublimeTextPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Sublime Text.lnk" *>$null
-
-            #Github Desktop
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Github = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe"
-            $GithubPath = "$env:USERPROFILE\AppData\Local\GitHubDesktop\"
-            $ShortcutFile = "C:\icons\GitHub Desktop.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Github
-            $Shortcut.WorkingDirectory = $GithubPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\GitHub Desktop.lnk" *>$null
-
-            #Calculator was here
-
-            #TreeSize
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $TreeSize = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe"
-            $TreeSizePath = "C:\Program Files\JAM Software\TreeSize Free"
-            $ShortcutFile = "C:\icons\TreeSize Free (Administrator).lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $TreeSize
-            $Shortcut.WorkingDirectory = $TreeSizePath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\TreeSize Free (Administrator).lnk" *>$null
-
-            #Total Commander
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $TCM = "C:\Program Files\totalcmd\TOTALCMD64.EXE"
-            $ShortcutFile = "C:\icons\Total Commander.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $TCM
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Total Commander.lnk" *>$null
-
-            #Putty
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Putty = "C:\Program Files\PuTTY\putty.exe"
-            $PuttyPath = "C:\Program Files\PuTTY\"
-            $ShortcutFile = "C:\icons\Putty.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Putty
-            $Shortcut.WorkingDirectory = $PuttyPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Putty.lnk" *>$null
-
-            #Deluge
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Deluge = "C:\Program Files\Deluge\deluge.exe"
-            $ShortcutFile = "C:\icons\Deluge.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Deluge
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Deluge.lnk" *>$null
-
-            #WireShark
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $WireShark = "C:\Program Files\Wireshark\Wireshark.exe"
-            $ShortcutFile = "C:\icons\WireShark.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $WireShark
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\WireShark.lnk" *>$null
-
-            #DBeaver
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $DBeaver = "C:\Program Files\DBeaver\dbeaver.exe"
-            $DBeaverPath = "C:\Program Files\DBeaver\"
-            $ShortcutFile = "C:\icons\DBeaver.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $DBeaver
-            $Shortcut.WorkingDirectory = $DBeaverPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\DBeaver.lnk" *>$null
-
-            #Cryptomator
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Cryptomator = "C:\Program Files\Cryptomator\Cryptomator.exe"
-            $ShortcutFile = "C:\icons\Cryptomator.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Cryptomator
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Cryptomator.lnk" *>$null
-
-            #PowerToys
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Powertoys = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe"
-            $PowertoysPath = "C:\Program Files\PowerToys\WinUI3Apps\"
-            $ShortcutFile = "C:\icons\PowerToys.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Powertoys
-            $Shortcut.WorkingDirectory = $PowertoysPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\PowerToys.lnk" *>$null
-
-            #MS Teams
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $MSTeams = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
-            $ShortcutFile = "C:\icons\Microsoft Teams.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe"
-            $Shortcut.Arguments = "--processStart Teams.exe"
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\Microsoft Teams.lnk" *>$null
-
-            #dupeGuru
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $dupeGuru = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe"
-            $dupeGuruPath = "C:\Program Files\Hardcoded Software\dupeGuru\"
-            $ShortcutFile = "C:\icons\dupeGuru.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $dupeGuru
-            $Shortcut.WorkingDirectory = $dupeGuruPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\dupeGuru.lnk" *>$null
-
             #fan control manual installation
             Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile C:\fan_control.zip *>$null
             $OriginalProgressPreference = $Global:ProgressPreference
@@ -311,59 +27,184 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
             Start-Process C:\fan_control\FanControl.exe
             Start-Sleep 5
-            taskkill /f /im FanControl.exe *>$null
+            taskkill / f / im FanControl.exe *>$null
 
-            #fan control
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $fanControl = "C:\fan_control\FanControl.exe"
-            $fanControlPath = "C:\fan_control"
-            $ShortcutFile = "C:\icons\FanControl.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $fanControl
-            $Shortcut.WorkingDirectory = $fanControlPath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\FanControl.lnk" *>$null
+            # CreateShortcut function to simplify the creation of shortcuts
+            function CreateShortcut([string]$exePath, [string]$shortcutPath, [string]$workingDirectory = $null, [string]$arguments = $null) {
+                $WScriptShell = New-Object -ComObject WScript.Shell
+                $Shortcut = $WScriptShell.CreateShortcut($shortcutPath)
+                $Shortcut.TargetPath = $exePath
+                if ($workingDirectory) {
+                    $Shortcut.WorkingDirectory = $workingDirectory
+                }
+                if ($arguments) {
+                    $Shortcut.Arguments = $arguments
+                }
+                $Shortcut.Save()
+                Unblock-File -Path $shortcutPath *>$null
+            }
+
+            ##Create Icons folder
+            New-Item -Path 'C:\icons' -ItemType Directory *>$null
+
+            # Creating shortcuts
+            $shortcutPaths = @{
+                "Google Chrome"      = @{
+                    "Path"             = "C:\Program Files\Google\Chrome\Application\chrome.exe";
+                    "WorkingDirectory" = "C:\Program Files\Google\Chrome\Application\";
+                };
+                "Brave"              = @{
+                    "Path"             = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe";
+                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application";
+                };
+                "Firefox"            = @{
+                    "Path"             = "C:\Program Files\Mozilla Firefox\firefox.exe";
+                    "WorkingDirectory" = "C:\Program Files\Mozilla Firefox\";
+                };
+                "LibreWolf"          = @{
+                    "Path"             = "C:\Program Files\LibreWolf\librewolf.exe";
+                    "WorkingDirectory" = "C:\Program Files\LibreWolf\";
+                };
+                "Steam"              = @{
+                    "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
+                    "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
+                };
+                "Epic Games"         = @{
+                    "Path"             = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe";
+                    "WorkingDirectory" = "C:\Program Files (x86)\Epic Games\";
+                };
+                "HWMonitor"          = @{
+                    "Path"             = "C:\Program Files\CPUID\HWMonitor\HWMonitor.exe";
+                    "WorkingDirectory" = "C:\Program Files\CPUID\HWMonitor\";
+                };
+                "Crystal Disk Info"  = @{
+                    "Path"             = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\DiskInfo64.exe";
+                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\";
+                };
+                "vMware Workstation" = @{
+                    "Path"             = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe";
+                    "WorkingDirectory" = "C:\Program Files (x86)\VMware\VMware Workstation\";
+                };
+                "VirtualBox"         = @{
+                    "Path"             = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe";
+                    "WorkingDirectory" = "C:\Program Files\Oracle\VirtualBox\";
+                };
+                "Signal"             = @{
+                    "Path"             = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\Signal.exe";
+                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\";
+                };
+                "Visual Studio"      = @{
+                    "Path"             = "C:\Program Files\Microsoft VS Code\Code.exe";
+                    "WorkingDirectory" = "C:\Program Files\Microsoft VS Code\";
+                };
+                "AnyDesk"            = @{
+                    "Path"             = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe";
+                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\";
+                };
+                "SublimeText"        = @{
+                    "Path"             = "C:\Program Files\Sublime Text 3\sublime_text.exe";
+                    "WorkingDirectory" = "C:\Program Files\Sublime Text 3\";
+                };
+                "GitHub Desktop"     = @{
+                    "Path"             = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe";
+                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\GitHubDesktop\";
+                };
+                "TreeSize"           = @{
+                    "Path"             = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe";
+                    "WorkingDirectory" = "C:\Program Files\JAM Software\TreeSize Free";
+                };
+                "Total Commander"    = @{
+                    "Path"             = "C:\Program Files\totalcmd\TOTALCMD64.EXE";
+                    "WorkingDirectory" = "C:\Program Files\totalcmd\";
+                };
+                "Putty"              = @{
+                    "Path"             = "C:\Program Files\PuTTY\putty.exe";
+                    "WorkingDirectory" = "C:\Program Files\PuTTY\";
+                };
+                "Deluge"             = @{
+                    "Path"             = "C:\Program Files\Deluge\deluge.exe";
+                    "WorkingDirectory" = "C:\Program Files\Deluge\";
+                };
+                "WireShark"          = @{
+                    "Path"             = "C:\Program Files\Wireshark\Wireshark.exe";
+                    "WorkingDirectory" = "C:\Program Files\Wireshark\";
+                };
+                "DBeaver"            = @{
+                    "Path"             = "C:\Program Files\DBeaver\dbeaver.exe";
+                    "WorkingDirectory" = "C:\Program Files\DBeaver\";
+                };
+                "Cryptomator"        = @{
+                    "Path"             = "C:\Program Files\Cryptomator\Cryptomator.exe";
+                    "WorkingDirectory" = "C:\Program Files\Cryptomator\";
+                };
+                "PowerToys"          = @{
+                    "Path"             = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe";
+                    "WorkingDirectory" = "C:\Program Files\PowerToys\WinUI3Apps\";
+                };
+                "MS Teams"           = @{
+                    "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
+                    "Arguments"        = "--processStart Teams.exe";
+                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
+                };
+                "dupeGuru"           = @{
+                    "Path"             = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe";
+                    "WorkingDirectory" = "C:\Program Files\Hardcoded Software\dupeGuru\";
+                };
+                "Fan Control "       = @{
+                    "Path"             = "C:\fan_control\FanControl.exe";
+                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
+                };
+                "OpenRGB"            = @{
+                    "Path"             = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe";
+                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
+                };
+                "Cloudflare WARP"    = @{
+                    "Path"             = "C:\Program Files\Cloudflare\Cloudflare WARP\Cloudflare WARP.exe";
+                    "WorkingDirectory" = "C:\Program Files\Cloudflare\Cloudflare WARP\";
+                };
+            }
+
+            foreach ($name in $shortcutPaths.Keys) {
+                $WScriptShell = New-Object -ComObject WScript.Shell
+                $path = $shortcutPaths[$name].Path
+                $workingDirectory = $shortcutPaths[$name].WorkingDirectory
+                $shortcutFile = "C:\icons\$name.lnk"
+                $shortcut = $WScriptShell.CreateShortcut($shortcutFile)
+                $shortcut.TargetPath = $path
+                if ($shortcutPaths[$name].Arguments) {
+                    $shortcut.Arguments = $shortcutPaths[$name].Arguments
+                }
+                $shortcut.WorkingDirectory = $workingDirectory
+                $shortcut.Save()
+                Unblock-File -Path $shortcutFile
+            }
+
             #copy fan control to startup folder
             Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
 
-            #openrgb
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $openrgb = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe"
-            $openrgbpath = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\"
-            $ShortcutFile = "C:\icons\openrgb.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $openrgb
-            $Shortcut.WorkingDirectory = $openrgbpath
-            $Shortcut.Save()
-            Unblock-File -Path "C:\icons\openrgb.lnk" *>$null
-
-            #Cloudflare WARP
-            $WScriptShell = New-Object -ComObject WScript.Shell
-            $Cloudflare = "C:\Program Files\Cloudflare\Cloudflare WARP\Cloudflare WARP.exe"
-            $Cloudflarepath = "C:\Program Files\Cloudflare\Cloudflare WARP\"
-            $ShortcutFile = "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Cloudflare WARP.lnk"
-            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-            $Shortcut.TargetPath = $Cloudflare
-            $Shortcut.WorkingDirectory = $oCloudflarepath
-            $Shortcut.Save()
-            
             #create config folder
             $job = Start-Job -ScriptBlock { 
                 & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
             } *> $null
          
             Start-Sleep 10
-            taskkill.exe /f /im OpenRGB.exe *>$null
+            taskkill.exe / f / im OpenRGB.exe *>$null
 
-            #Set Pin
+            ##Set Pin
             $progressPreference = 'silentlyContinue'
+
+            #delete all files on desktop
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
             Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
+
+            # set taskbar icons and pin to taskbar
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
             reg import "C:\taskbar_pin.reg" *>$null
             Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
             reg import "C:\taskbar_pin.reg" *>$null
-            taskkill /f /im explorer.exe *>$null
+            taskkill / f / im explorer.exe *>$null
+
+            #delete taskbar_pin.reg
             Remove-Item C:\taskbar_pin.reg -recurse -ErrorAction SilentlyContinue
             Start-Sleep 1
             start explorer.exe
@@ -374,13 +215,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         }
 
         SetPins
-                
+
         Function Drivers {
             #Chipset
             Write-Host `n"Installing Chipset Driver..." -NoNewline
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
+            Invoke-WebRequest -Uri https: / / dlcdnets.asus.com / pub / ASUS / mb / 03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
             Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
@@ -400,13 +241,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $7zPath = Get-ItemProperty -Path "HKLM:\SOFTWARE\7-Zip\" -Name "Path" -ErrorAction SilentlyContinue
             if ($7zPath) {
                 $archiverProgram = Join-Path $7zPath.Path "7z.exe"
-            } else {
+            }
+            else {
                 $winrarPath = Get-ItemProperty -Path "HKLM:\SOFTWARE\WinRAR" -Name "exe64" -ErrorAction SilentlyContinue
                 if ($winrarPath) {
                     $archiverProgram = $winrarPath.exe64
                 }
             }
-                        if (-not $archiverProgram) {
+            if (-not $archiverProgram) {
                 Write-Host "No supported archiver found. Install 7-Zip or WinRAR and rerun the script." -ForegroundColor Red
                 return
             }
@@ -468,50 +310,51 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             cd "C:\Program Files\LibreWolf\"
             .\librewolf.exe
             Start-Sleep 2
-            taskkill /f /im "librewolf.exe" *>$null
+            taskkill / f / im "librewolf.exe" *>$null
 
             $instdir = "C:\Program Files\LibreWolf"
-$distribution = $instdir + '\distribution'
-$extensions = $instdir + '\distribution\extensions'
+            $distribution = $instdir + '\distribution'
+            $extensions = $instdir + '\distribution\extensions'
 
-$addons = @{
-    "bitwarden-password-manager" = '{446900e4-71c2-419f-a6a7-df9c091e268b}';
-    "ublock-origin" = 'uBlock0@raymondhill.net';
-    "privacy-badger17" = 'jid1-MnnxcxisBPnSXQ@jetpack';
-    "darkreader" = 'addon@darkreader.org';
-    "ublacklist" = '@ublacklist';
-    "return-youtube-dislikes" = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}';
-    "best-internet-download-manager" = 'mozilla_cc3@internetdownloadmanager.com'
-}
+            $addons = @{
+                "bitwarden-password-manager"     = '{446900e4-71c2-419f-a6a7-df9c091e268b}';
+                "ublock-origin"                  = 'uBlock0@raymondhill.net';
+                "privacy-badger17"               = 'jid1-MnnxcxisBPnSXQ@jetpack';
+                "darkreader"                     = 'addon@darkreader.org';
+                "ublacklist"                     = '@ublacklist';
+                "return-youtube-dislikes"        = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}';
+                "best-internet-download-manager" = 'mozilla_cc3@internetdownloadmanager.com'
+            }
 
-If (-Not(Test-Path $distribution)) {
-    New-Item $distribution -ItemType Container | Out-Null
-}
-If (-Not(Test-Path $extensions)) {
-    New-Item $extensions -ItemType Container | Out-Null
-}
+            If (-Not(Test-Path $distribution)) {
+                New-Item $distribution -ItemType Container | Out-Null
+            }
+            If (-Not(Test-Path $extensions)) {
+                New-Item $extensions -ItemType Container | Out-Null
+            }
 
-foreach ($addon in $addons.GetEnumerator()) {
-    try {
-        # Eklenti bilgilerini al
-        $response = Invoke-RestMethod -Uri "https://addons.mozilla.org/api/v4/addons/addon/$($addon.Name)/"
+            foreach ($addon in $addons.GetEnumerator()) {
+                try {
+                    # Eklenti bilgilerini al
+                    $response = Invoke-RestMethod -Uri "https://addons.mozilla.org/api/v4/addons/addon/$($addon.Name)/"
 
-        # En son sürüm numarasını al
-        $latestVersion = $response.current_version.version
+                    # En son sürüm numarasını al
+                    $latestVersion = $response.current_version.version
 
-        # Eklenti adı ve sürüm numarasını kullanarak indirme URL'sini oluştur
-        $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$($addon.Name)/addon-$($addon.Name)-latest.xpi"
+                    # Eklenti adı ve sürüm numarasını kullanarak indirme URL'sini oluştur
+                    $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$($addon.Name)/addon-$($addon.Name)-latest.xpi"
 
-        $addonPath = $extensions + '\' + $addon.Value + '.xpi'
+                    $addonPath = $extensions + '\' + $addon.Value + '.xpi'
 
-        # XPI dosyasını indir
-        Invoke-WebRequest $addonUrl -Outfile $addonPath
-    } catch {
-        Write-Host "Error downloading or getting info for addon $($addon.Name): $_" -ForegroundColor Red
-    }
-}
+                    # XPI dosyasını indir
+                    Invoke-WebRequest $addonUrl -Outfile $addonPath
+                }
+                catch {
+                    Write-Host "Error downloading or getting info for addon $($addon.Name): $_" -ForegroundColor Red
+                }
+            }
 
-            $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude *.default
+            $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude * .default
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
             New-Item $dest -Name chrome -ItemType "directory" *>$null
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
@@ -561,7 +404,7 @@ foreach ($addon in $addons.GetEnumerator()) {
             # twinkle tray
             & "$env:USERPROFILE\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
             Start-Sleep 10
-            taskkill /f /im "Twinkle Tray.exe" *>$null
+            taskkill / f / im "Twinkle Tray.exe" *>$null
 
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json" -Outfile "$env:USERPROFILE\AppData\Roaming\twinkle-tray\settings.json"
             
@@ -594,13 +437,13 @@ foreach ($addon in $addons.GetEnumerator()) {
                     "https://github.com/caglaryalcin/my-configs/raw/main/led/my_led_config.orp"
                 )
                 # keyboard
-                "C:\ProgramData\SteelSeries\GG\apps\engine\db"                         = @(
+                "C:\ProgramData\SteelSeries\GG\apps\engine\db"                     = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db-shm",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db-wal",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/dbconf.yml"
                 )
-                "C:\ProgramData\SteelSeries\GG\apps\engine\prism\db"                         = @(
+                "C:\ProgramData\SteelSeries\GG\apps\engine\prism\db"               = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/engine/db/database.db"
                 )
             }
@@ -656,13 +499,13 @@ foreach ($addon in $addons.GetEnumerator()) {
             try {
                 Write-Host "Installing Media Feature Pack..." -NoNewline
                 # check new version
-                $capability = DISM /Online /Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~'
+                $capability = DISM / Online / Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~'
                 if ($capability) {
                     $newVersion = $capability.ToString().Trim()
                     $newVersion = $newVersion -replace 'Capability Identity : ', '' -replace '\s', ''
                     
                     # Add the capability
-                    $installResult = DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
+                    $installResult = DISM / Online / Add-Capability / CapabilityName:$newVersion / Quiet / NoRestart
                     
                     # 0 success, 3010 restart required
                     if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 3010) {
@@ -703,14 +546,14 @@ foreach ($addon in $addons.GetEnumerator()) {
 
         #Adobe DNG Codec
         Function DNGCodec {
-        $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
-        $filePath = "C:\DNGCodec_Installer.exe"
+            $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
+            $filePath = "C:\DNGCodec_Installer.exe"
 
-        Invoke-WebRequest -Uri $url -OutFile $filePath
+            Invoke-WebRequest -Uri $url -OutFile $filePath
 
-        Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
+            Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
 
-        Remove-Item -Path $filePath
+            Remove-Item -Path $filePath
 
         }
         
