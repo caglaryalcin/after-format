@@ -557,6 +557,11 @@ foreach ($addon in $addons.GetEnumerator()) {
             $filePath = "$env:userprofile\Desktop\ublacklist-address.txt"
             Set-Content -Path $filePath -Value "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
 
+            ## create twinkle-tray config folder
+            & "$env:USERPROFILE\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe"
+            Start-Sleep 10
+            taskkill /f /im "Twinkle Tray.exe" *>$null
+
             # Define directories and files to be downloaded
             $downloads = @{
                 # sublime text
