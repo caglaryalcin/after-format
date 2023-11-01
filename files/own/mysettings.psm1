@@ -28,7 +28,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Expand-Archive -Path 'C:\fan_control.zip' -DestinationPath C:\fan_control\ -Force *>$null
             Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
             Start-Process C:\fan_control\FanControl.exe
-            Start-Sleep 5
+            Start-Sleep 10
             taskkill / f / im FanControl.exe *>$null
 
             ##Create Icons folder
@@ -152,7 +152,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "Path"             = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe";
                     "WorkingDirectory" = "C:\Program Files\Hardcoded Software\dupeGuru\";
                 };
-                "Fan Control "       = @{
+                "FanControl "       = @{
                     "Path"             = "C:\fan_control\FanControl.exe";
                     "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
                 };
