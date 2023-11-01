@@ -105,7 +105,8 @@ Function SystemSettings {
                 $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
                 $hostname = Read-Host -Prompt $hostq
                 Rename-Computer -NewName "$hostname" *>$null
-                Write-Host "Hostname was set to"$hostname"" -ForegroundColor Green -BackgroundColor Black
+                Write-Host "Hostname was set to"$hostname"" -ForegroundColor White -BackgroundColor Black -NoNewline
+                Write-Host ""$hostname"" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black

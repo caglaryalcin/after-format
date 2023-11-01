@@ -37,6 +37,47 @@ TRFormats
 
     ShowLanguageBar
 
+    Function FileExplorerExpandRibbon {
+        Write-Host "Expanding for File Explorer..." -NoNewline
+    
+        $allSuccessful = $true
+        $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon"
+    
+        if (-Not (Test-Path $path)) {
+            try {
+                New-Item -Path $path -ErrorAction Stop | Out-Null
+            }
+            catch {
+                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
+                $allSuccessful = $false
+            }
+        }
+    
+        $settings = @{
+            "MinimizedStateTabletModeOff" = 0;
+            "Minimized"                   = 0;
+        }
+    
+        foreach ($name in $settings.Keys) {
+            try {
+                Set-ItemProperty -Path $path -Name $name -Value $settings[$name] -Type DWord -ErrorAction Stop
+            }
+            catch {
+                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
+                $allSuccessful = $false
+            }
+        }
+    
+        if ($allSuccessful) {
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        else {
+            Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
+        }
+    }
+    
+    FileExplorerExpandRibbon
+
     # Remove Sticky Keys
     Function RemoveStickyKeys {
         New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER *>$null
