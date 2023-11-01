@@ -152,7 +152,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "Path"             = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe";
                     "WorkingDirectory" = "C:\Program Files\Hardcoded Software\dupeGuru\";
                 };
-                "FanControl "       = @{
+                "FanControl"       = @{
                     "Path"             = "C:\fan_control\FanControl.exe";
                     "WorkingDirectory" = "C:\fan_control\";
                 };
