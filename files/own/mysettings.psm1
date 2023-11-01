@@ -559,6 +559,7 @@ foreach ($addon in $addons.GetEnumerator()) {
 
             # Define directories and files to be downloaded
             $downloads = @{
+                # sublime text
                 "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User"      = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme",
@@ -567,19 +568,37 @@ foreach ($addon in $addons.GetEnumerator()) {
                 "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages" = @(
                     "https://packagecontrol.io/Package%20Control.sublime-package"
                 )
+                # power toys
                 "$env:UserProfile\Documents\PowerToys\Backup"                      = @(
                     "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
                 )
+                # browser restore files
                 "$env:userprofile\Desktop"                                         = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/bookmarks/bookmarks.json",
                     "https://github.com/caglaryalcin/my-configs/raw/main/eyes.gif"
                 )
+                # fan control
                 "C:\fan_control\Configurations"                                    = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/my_fan_config.json"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/fan/my_fan_config.json"
                 )
+                # openrgb
                 "$env:USERPROFILE\Appdata\Roaming\Openrgb"                         = @(
-                    "https://github.com/caglaryalcin/my-configs/raw/main/my_led_config.orp"
+                    "https://github.com/caglaryalcin/my-configs/raw/led/my_led_config.orp"
+                )
+                # twinkle tray
+                "$env:USERPROFILE\AppData\Roaming\twinkle-tray\"                         = @(
+                    "https://github.com/caglaryalcin/my-configs/raw/led/my_led_config.orp"
+                )
+                # keyboard
+                "C:\ProgramData\SteelSeries\GG\apps\engine\db"                         = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/keyboard/engine/db/database.db"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/keyboard/engine/db/database.db-shm"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/keyboard/engine/db/database.db-wal"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/keyboard/engine/db/dbconf.yml"
+                )
+                "C:\ProgramData\SteelSeries\GG\apps\engine\prism\db"                         = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/keyboard/engine/prism/db/database.db"
                 )
             }
             
