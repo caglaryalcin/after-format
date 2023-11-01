@@ -29,6 +29,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Start-Sleep 5
             taskkill / f / im FanControl.exe *>$null
 
+            ##Create Icons folder
+            New-Item -Path 'C:\icons' -ItemType Directory *>$null
+
             # CreateShortcut function to simplify the creation of shortcuts
             function CreateShortcut([string]$exePath, [string]$shortcutPath, [string]$workingDirectory = $null, [string]$arguments = $null) {
                 $WScriptShell = New-Object -ComObject WScript.Shell
@@ -43,9 +46,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 $Shortcut.Save()
                 Unblock-File -Path $shortcutPath *>$null
             }
-
-            ##Create Icons folder
-            New-Item -Path 'C:\icons' -ItemType Directory *>$null
 
             # Creating shortcuts
             $shortcutPaths = @{
@@ -221,7 +221,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host `n"Installing Chipset Driver..." -NoNewline
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri https: / / dlcdnets.asus.com / pub / ASUS / mb / 03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
+            Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
             Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
