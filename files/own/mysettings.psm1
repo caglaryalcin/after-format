@@ -20,6 +20,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
     Function Own {
         Function SetPins {
             #fan control manual installation
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile C:\fan_control.zip *>$null
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
