@@ -154,7 +154,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 };
                 "FanControl "       = @{
                     "Path"             = "C:\fan_control\FanControl.exe";
-                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
+                    "WorkingDirectory" = "C:\fan_control\";
                 };
                 "OpenRGB"            = @{
                     "Path"             = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe";
