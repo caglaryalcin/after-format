@@ -557,11 +557,14 @@ foreach ($addon in $addons.GetEnumerator()) {
             $filePath = "$env:userprofile\Desktop\ublacklist-address.txt"
             Set-Content -Path $filePath -Value "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
 
-            ## create twinkle-tray config folder
-            & "$env:USERPROFILE\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe"
+            ## manual configs
+            # twinkle tray
+            & "$env:USERPROFILE\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
             Start-Sleep 10
             taskkill /f /im "Twinkle Tray.exe" *>$null
 
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json" -Outfile "$env:USERPROFILE\AppData\Roaming\twinkle-tray\settings.json"
+            
             # Define directories and files to be downloaded
             $downloads = @{
                 # sublime text
@@ -590,16 +593,12 @@ foreach ($addon in $addons.GetEnumerator()) {
                 "$env:USERPROFILE\Appdata\Roaming\Openrgb"                         = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/led/my_led_config.orp"
                 )
-                # twinkle tray
-                "$env:USERPROFILE\AppData\Roaming\twinkle-tray\"                         = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json"
-                )
                 # keyboard
                 "C:\ProgramData\SteelSeries\GG\apps\engine\db"                         = @(
-                    "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/engine/db/database.db",
-                    "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/engine/db/database.db-shm",
-                    "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/engine/db/database.db-wal",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/keyboard/engine/db/dbconf.yml"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db-shm",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db-wal",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/dbconf.yml"
                 )
                 "C:\ProgramData\SteelSeries\GG\apps\engine\prism\db"                         = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/engine/db/database.db"
