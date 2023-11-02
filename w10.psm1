@@ -2800,7 +2800,7 @@ Function GithubSoftwares {
 
         Function choco-install {
             try {
-                Write-Host "Installing chocolatey..." -NoNewline
+                Write-Host `n"Installing chocolatey..." -NoNewline
                 
                 #disable first run customize for chocolatey
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
@@ -2982,21 +2982,20 @@ Function GithubSoftwares {
                     Write-Host "Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
                     Write-Host " winget..." -Foregroundcolor Yellow -NoNewline
         
-                    try {
-                        Start-Process -FilePath "Winget" -ArgumentList "install", $($matchingPackage.PackageIdentifier), "-e", "--silent", "--accept-source-agreements", "--accept-package-agreements", "--force" -WindowStyle Hidden -Wait
+                    & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force
+        
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Host "[WARNING] Failed to install $($matchingPackage.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black
+                    } else {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    }
-                    catch {
-                        Write-Host "$($package.PackageIdentifier) was not found in apps.json." -ForegroundColor Yellow
-                        Write-Host "Failed to install $($matchingPackage.PackageIdentifier) with winget."
                     }
         
                 }
                 else {
-                    Write-Host "$($package.PackageIdentifier) was not found in apps.json."
+                    Write-Host "$($package.PackageIdentifier) was not found in apps.json." -ForegroundColor Yellow
                 }
             }
-        }
+        }        
 
         function Safe-TaskKill {
             param($processName)
