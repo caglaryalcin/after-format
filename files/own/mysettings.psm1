@@ -145,7 +145,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 };
                 "MS Teams"           = @{
                     "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
-                    "Arguments"        = "--processStart Teams.exe";
+                    "Arguments"        = "--process Start Teams.exe";
                     "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
                 };
                 "dupeGuru"           = @{
