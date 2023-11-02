@@ -2871,7 +2871,7 @@ Function GithubSoftwares {
                 else {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                     # If there was an error, write the output to a log file
-                    $logFile = "C:\${packageName}_install.log"
+                    $logFile = "C:\${packageName}_choco_install.log"
                     $result | Out-File -FilePath $logFile -Force
                     Write-Host "Check the log file at $logFile for details."
                 }
@@ -2958,14 +2958,14 @@ Function GithubSoftwares {
             }
         }
         
-        # Reading packages from a .json file
+        # Reading packages from .json file
         $wingetPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
         $wingetPackages = $wingetPackagesContent.Content | ConvertFrom-Json
 
         $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
-        Write-Host `n"Detecting programs that cannot be installed..."
+        Write-Host `n"Detecting programs that cannot be installed with chocolatey..."
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
             if ($installedProgramName) {
@@ -2986,7 +2986,7 @@ Function GithubSoftwares {
         
                     if ($LASTEXITCODE -ne 0) {
                         Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                        $logFile = "C:\$($matchingPackage.PackageIdentifier)_install.log"
+                        $logFile = "C:\$($matchingPackage.PackageIdentifier)_winget_install.log"
                         $result | Out-File -FilePath $logFile -Force
                         Write-Host "Check the log file at $logFile for details."
                     } else {
