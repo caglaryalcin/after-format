@@ -3012,8 +3012,8 @@ Function GithubSoftwares {
                     $result = & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
         
                     if ($LASTEXITCODE -ne 0) {
-                        Write-Host "[WARNING] Failed to install $($matchingPackage.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black
-                        $logFile = "C:\${matchingPackage.PackageIdentifier}_install.log"
+                        Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                        $logFile = "C:\$($matchingPackage.PackageIdentifier)_install.log"
                         $result | Out-File -FilePath $logFile -Force
                         Write-Host "Check the log file at $logFile for details."
                     } else {
