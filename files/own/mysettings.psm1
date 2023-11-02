@@ -187,7 +187,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             #create config folder
             $job = Start-Job -ScriptBlock { 
                 & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
-            } *> $null
+            } *>$null
          
             Start-Sleep 10
             taskkill.exe /f /im OpenRGB.exe *>$null
@@ -356,13 +356,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
             }
 
-            $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Exclude * .default
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile $dest\user.js
-            New-Item $dest -Name chrome -ItemType "directory" *>$null
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css" -Outfile "$dest\chrome\Tab Shapes.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$dest\chrome\Toolbar.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css" -Outfile "$dest\chrome\userContent.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$dest\chrome\userChrome.css"
+            $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Filter "*.default-default" -Directory
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile "$($dest.FullName)\user.js"
+            New-Item -Path "$($dest.FullName)" -Name chrome -ItemType "directory" *>$null
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css" -Outfile "$($dest.FullName)\chrome\Tab Shapes.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$($dest.FullName)\chrome\Toolbar.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css" -Outfile "$($dest.FullName)\chrome\userContent.css"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$($dest.FullName)\chrome\userChrome.css"
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
@@ -462,11 +462,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
             
             try {
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -PropertyType String -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -PropertyType DWORD -Value "0" | Out-Null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWORD -Value "0" | Out-Null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 | Out-Null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -PropertyType DWORD -Value 1 | Out-Null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -Value "0" | Out-Null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -Value "0" | Out-Null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 | Out-Null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -Value 1 | Out-Null
             }
             catch {
                 Write-Host " [WARNING] Failed in additional configurations. Error: $_" -ForegroundColor Red -BackgroundColor Black
