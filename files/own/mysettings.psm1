@@ -51,116 +51,116 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             # Creating shortcuts
             $shortcutPaths = @{
-                "Google Chrome"      = @{
+                "Google Chrome"           = @{
                     "Path"             = "C:\Program Files\Google\Chrome\Application\chrome.exe";
                     "WorkingDirectory" = "C:\Program Files\Google\Chrome\Application\";
                 };
-                "Brave"              = @{
+                "Brave"                   = @{
                     "Path"             = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe";
                     "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application";
                 };
-                "Firefox"            = @{
+                "Firefox"                 = @{
                     "Path"             = "C:\Program Files\Mozilla Firefox\firefox.exe";
                     "WorkingDirectory" = "C:\Program Files\Mozilla Firefox\";
                 };
-                "LibreWolf"          = @{
+                "LibreWolf"               = @{
                     "Path"             = "C:\Program Files\LibreWolf\librewolf.exe";
                     "WorkingDirectory" = "C:\Program Files\LibreWolf\";
                 };
-                "Steam"              = @{
+                "Steam"                   = @{
                     "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
                     "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
                 };
-                "Epic Games"         = @{
+                "Epic Games Launcher"     = @{
                     "Path"             = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe";
                     "WorkingDirectory" = "C:\Program Files (x86)\Epic Games\";
                 };
-                "HWMonitor"          = @{
+                "HWMonitor"               = @{
                     "Path"             = "C:\Program Files\CPUID\HWMonitor\HWMonitor.exe";
                     "WorkingDirectory" = "C:\Program Files\CPUID\HWMonitor\";
                 };
-                "Crystal Disk Info"  = @{
+                "CrystalDiskInfo"         = @{
                     "Path"             = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\DiskInfo64.exe";
                     "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\";
                 };
-                "vMware Workstation" = @{
+                "VMware Workstation Pro"  = @{
                     "Path"             = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe";
                     "WorkingDirectory" = "C:\Program Files (x86)\VMware\VMware Workstation\";
                 };
-                "VirtualBox"         = @{
+                "Oracle VM VirtualBox"    = @{
                     "Path"             = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe";
                     "WorkingDirectory" = "C:\Program Files\Oracle\VirtualBox\";
                 };
-                "Signal"             = @{
+                "Signal"                  = @{
                     "Path"             = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\Signal.exe";
                     "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\";
                 };
-                "Visual Studio"      = @{
+                "Visual Studio Code"      = @{
                     "Path"             = "C:\Program Files\Microsoft VS Code\Code.exe";
                     "WorkingDirectory" = "C:\Program Files\Microsoft VS Code\";
                 };
-                "AnyDesk"            = @{
+                "AnyDesk"                 = @{
                     "Path"             = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe";
                     "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\";
                 };
-                "SublimeText"        = @{
+                "Sublime Text 3"          = @{
                     "Path"             = "C:\Program Files\Sublime Text 3\sublime_text.exe";
                     "WorkingDirectory" = "C:\Program Files\Sublime Text 3\";
                 };
-                "GitHub Desktop"     = @{
+                "GitHub Desktop"          = @{
                     "Path"             = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe";
                     "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\GitHubDesktop\";
                 };
-                "TreeSize"           = @{
+                "TreeSizeFree"            = @{
                     "Path"             = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe";
                     "WorkingDirectory" = "C:\Program Files\JAM Software\TreeSize Free";
                 };
-                "Total Commander"    = @{
+                "Total Commander"         = @{
                     "Path"             = "C:\Program Files\totalcmd\TOTALCMD64.EXE";
                     "WorkingDirectory" = "C:\Program Files\totalcmd\";
                 };
-                "Putty"              = @{
+                "Putty"                   = @{
                     "Path"             = "C:\Program Files\PuTTY\putty.exe";
                     "WorkingDirectory" = "C:\Program Files\PuTTY\";
                 };
-                "Deluge"             = @{
+                "Deluge"                  = @{
                     "Path"             = "C:\Program Files\Deluge\deluge.exe";
                     "WorkingDirectory" = "C:\Program Files\Deluge\";
                 };
-                "WireShark"          = @{
+                "WireShark"               = @{
                     "Path"             = "C:\Program Files\Wireshark\Wireshark.exe";
                     "WorkingDirectory" = "C:\Program Files\Wireshark\";
                 };
-                "DBeaver"            = @{
+                "DBeaver"                 = @{
                     "Path"             = "C:\Program Files\DBeaver\dbeaver.exe";
                     "WorkingDirectory" = "C:\Program Files\DBeaver\";
                 };
-                "Cryptomator"        = @{
+                "Cryptomator"             = @{
                     "Path"             = "C:\Program Files\Cryptomator\Cryptomator.exe";
                     "WorkingDirectory" = "C:\Program Files\Cryptomator\";
                 };
-                "PowerToys"          = @{
+                "PowerToys"               = @{
                     "Path"             = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe";
                     "WorkingDirectory" = "C:\Program Files\PowerToys\WinUI3Apps\";
                 };
-                "MS Teams"           = @{
+                "Microsoft Teams classic" = @{
                     "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
                     "Arguments"        = "--process Start Teams.exe";
                     "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
                 };
-                "dupeGuru"           = @{
+                "dupeGuru"                = @{
                     "Path"             = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe";
                     "WorkingDirectory" = "C:\Program Files\Hardcoded Software\dupeGuru\";
                 };
-                "FanControl"       = @{
+                "FanControl"              = @{
                     "Path"             = "C:\fan_control\FanControl.exe";
                     "WorkingDirectory" = "C:\fan_control\";
                 };
-                "OpenRGB"            = @{
+                "OpenRGB"                 = @{
                     "Path"             = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe";
                     "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
                 };
-                "Cloudflare WARP"    = @{
+                "Cloudflare WARP"         = @{
                     "Path"             = "C:\Program Files\Cloudflare\Cloudflare WARP\Cloudflare WARP.exe";
                     "WorkingDirectory" = "C:\Program Files\Cloudflare\Cloudflare WARP\";
                 };
