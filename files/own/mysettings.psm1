@@ -200,15 +200,15 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
 
             # Remove Brave and Firefox shortcuts from startup folder
-            $braveShortcut = "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Brave.lnk"
-            $firefoxShortcut = "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Firefox.lnk"
+            $braveShortcut = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Brave.lnk"
+            $firefoxShortcut = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Firefox.lnk"
 
             if (Test-Path $braveShortcut) {
-                Remove-Item -Path $braveShortcut -ErrorAction SilentlyContinue
+                Remove-Item -Path $braveShortcut
             }
 
             if (Test-Path $firefoxShortcut) {
-                Remove-Item -Path $firefoxShortcut -ErrorAction SilentlyContinue
+                Remove-Item -Path $firefoxShortcut
             }
             
             # set taskbar icons and pin to taskbar
