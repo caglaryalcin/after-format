@@ -199,6 +199,18 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
             Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
 
+            # Remove Brave and Firefox shortcuts from startup folder
+            $braveShortcut = "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Brave.lnk"
+            $firefoxShortcut = "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Firefox.lnk"
+
+            if (Test-Path $braveShortcut) {
+                Remove-Item -Path $braveShortcut -ErrorAction SilentlyContinue
+            }
+
+            if (Test-Path $firefoxShortcut) {
+                Remove-Item -Path $firefoxShortcut -ErrorAction SilentlyContinue
+            }
+            
             # set taskbar icons and pin to taskbar
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
             reg import "C:\taskbar_pin.reg" *>$null
