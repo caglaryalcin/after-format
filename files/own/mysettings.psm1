@@ -211,6 +211,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Remove-Item -Path $firefoxShortcut
             }
             
+            Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse -Force
+
             # set taskbar icons and pin to taskbar
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
             reg import "C:\taskbar_pin.reg" *>$null
