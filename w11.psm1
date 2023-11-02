@@ -3009,10 +3009,13 @@ Function GithubSoftwares {
                     Write-Host "Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
                     Write-Host " winget..." -Foregroundcolor Yellow -NoNewline
         
-                    & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force
+                    $result = & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
         
                     if ($LASTEXITCODE -ne 0) {
                         Write-Host "[WARNING] Failed to install $($matchingPackage.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black
+                        $logFile = "C:\${matchingPackage.PackageIdentifier}_install.log"
+                        $result | Out-File -FilePath $logFile -Force
+                        Write-Host "Check the log file at $logFile for details."
                     } else {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
@@ -3022,7 +3025,7 @@ Function GithubSoftwares {
                     Write-Host "$($package.PackageIdentifier) was not found in apps.json." -ForegroundColor Yellow
                 }
             }
-        }        
+        }
 
         function Safe-TaskKill {
             param($processName)
