@@ -2987,7 +2987,7 @@ Function GithubSoftwares {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     catch {
-                        Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "$($package.PackageIdentifier) was not found in apps.json." -ForegroundColor Yellow
                         Write-Host "Failed to install $($matchingPackage.PackageIdentifier) with winget."
                     }
         
