@@ -501,13 +501,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             try {
                 Write-Host "Installing Media Feature Pack..." -NoNewline
                 # check new version
-                $capability = DISM / Online / Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~'
+                $capability = DISM /Online /Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~'
                 if ($capability) {
                     $newVersion = $capability.ToString().Trim()
                     $newVersion = $newVersion -replace 'Capability Identity : ', '' -replace '\s', ''
                     
                     # Add the capability
-                    $installResult = DISM / Online / Add-Capability / CapabilityName:$newVersion / Quiet / NoRestart
+                    $installResult = DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
                     
                     # 0 success, 3010 restart required
                     if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 3010) {
