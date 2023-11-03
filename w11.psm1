@@ -3338,6 +3338,8 @@ Function UnusedApps {
                     taskkill /f /im onedrive.exe *>$null 2>&1
                     cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null 2>&1
                     Start-Sleep -Seconds 3  # Give OneDrive setup some time to complete
+                    Get-AppxPackage *OneDrive* | Remove-AppxProvisionedPackage
+                    winget uninstall Microsoft.OneDrive --accept-source-agreements --force *>$null
                     if (!(Get-Process "OneDrive" -ErrorAction SilentlyContinue)) {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
