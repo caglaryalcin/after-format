@@ -250,70 +250,29 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Start-Sleep 5
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
-            #NVIDIA Driver
-            # Check for archiving software (7-zip or WinRAR)
+            # NVIDIA Driver installation
             Write-Host "Installing Nvidia Driver..." -NoNewline
-            $archiverProgram = $null
-            $7zPath = Get-ItemProperty -Path "HKLM:\SOFTWARE\7-Zip\" -Name "Path" -ErrorAction SilentlyContinue
-            if ($7zPath) {
-                $archiverProgram = Join-Path $7zPath.Path "7z.exe"
-            }
-            else {
-                $winrarPath = Get-ItemProperty -Path "HKLM:\SOFTWARE\WinRAR" -Name "exe64" -ErrorAction SilentlyContinue
-                if ($winrarPath) {
-                    $archiverProgram = $winrarPath.exe64
+
+            try {
+                # Run Chocolatey install command and wait for it to finish
+                $output = choco install nvidia-display-driver -y | Out-String
+                Write-Host $output  # Outputs the result of installation for logging purposes
+
+                # Check if NVIDIA driver installed successfully using the correct class name
+                $driver = Get-WmiObject -Class Win32_VideoController | Where-Object { $_.Name -like "*NVIDIA*" }
+
+                if ($driver) {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                else {
+                    Write-Host "[WARNING]: Installation completed, but Nvidia driver was not found." -ForegroundColor Red -BackgroundColor Black
                 }
             }
-            if (-not $archiverProgram) {
-                Write-Host "No supported archiver found. Install 7-Zip or WinRAR and rerun the script." -ForegroundColor Red
-                return
+            catch {
+                # If an error occurred during installation, output a warning
+                Write-Host "[WARNING]: An error occurred during installation." -ForegroundColor Red -BackgroundColor Black
             }
-            # Get the latest driver version
-            $uri = 'https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php' +
-            '?func=DriverManualLookup&psid=120&pfid=929&osID=57&languageCode=1033&isWHQL=1&dch=1&sort1=0&numberOfResults=1'
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            $response = Invoke-WebRequest -Uri $uri -Method GET -UseBasicParsing
-            $payload = $response.Content | ConvertFrom-Json
-            $version = $payload.IDS[0].downloadInfo.Version
 
-            # Determine Windows version and architecture
-            $windowsVersion = if ([Environment]::OSVersion.Version -ge [Version]::new(9, 1)) { "win10-win11" } else { "win8-win7" }
-            $windowsArchitecture = if ([Environment]::Is64BitOperatingSystem) { "64bit" } else { "32bit" }
-
-            # Set up temp folder and download link
-            $nvidiaTempFolder = Join-Path $env:TEMP "NVIDIA"
-            New-Item -Path $nvidiaTempFolder -ItemType Directory -Force | Out-Null
-            $url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-dch-whql.exe"
-
-            # Download the installer
-            $dlFile = Join-Path $nvidiaTempFolder "$version.exe"
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri $url -OutFile $dlFile -UseBasicParsing
-
-            # Extract setup files
-            $extractFolder = Join-Path $nvidiaTempFolder $version
-            $filesToExtract = "Display.Driver", "HDAudio", "NVI2", "PhysX", "EULA.txt", "ListDevices.txt", "setup.cfg", "setup.exe"
-            $tempOutFile = [System.IO.Path]::GetTempFileName()
-            $tempErrFile = [System.IO.Path]::GetTempFileName()
-            $arguments = @("x", "-aoa", "-o`"$extractFolder`"", "`"$dlFile`"") + $filesToExtract
-            $null = Start-Process -FilePath $archiverProgram -ArgumentList $arguments -Wait -NoNewWindow -PassThru -RedirectStandardOutput $tempOutFile -RedirectStandardError $tempErrFile
-
-            # Update setup.cfg to remove unneeded dependencies
-            (Get-Content (Join-Path $extractFolder "setup.cfg")) -replace 'name="\${{(EulaHtmlFile|FunctionalConsentFile|PrivacyPolicyFile)}}"', '' | Set-Content (Join-Path $extractFolder "setup.cfg")
-
-            # Install drivers
-            $installArgs = "-passive", "-noreboot", "-noeula", "-nofinish", "-s"
-
-            # Clean up
-            Remove-Item $nvidiaTempFolder -Recurse -Force -ErrorAction SilentlyContinue
-            Remove-Item "C:\NVIDIA" -Recurse -Force -ErrorAction SilentlyContinue
-
-            # Delete temp files
-            Remove-Item $tempOutFile -ErrorAction SilentlyContinue
-            Remove-Item $tempErrFile -ErrorAction SilentlyContinue
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
                 
         Drivers
