@@ -45,7 +45,8 @@
         {"PackageIdentifier": "Malwarebytes"},
         {"PackageIdentifier": "Internet Download Manager"},
         {"PackageIdentifier": "Warp"},
-        {"PackageIdentifier": "OpenRGB"}
+        {"PackageIdentifier": "OpenRGB"},
+        {"PackageIdentifier": "tailscale"}
       ]
     }
   ]

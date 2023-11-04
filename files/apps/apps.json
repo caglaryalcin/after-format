@@ -45,7 +45,8 @@
         {"PackageIdentifier": "Malwarebytes.Malwarebytes"},
         {"PackageIdentifier": "Tonec.InternetDownloadManager"},
         {"PackageIdentifier": "Cloudflare.Warp"},
-        {"PackageIdentifier": "CalcProgrammer1.OpenRGB"}
+        {"PackageIdentifier": "CalcProgrammer1.OpenRGB"},
+        {"PackageIdentifier": "tailscale.tailscale"}
       ]
     }
   ]
