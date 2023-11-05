@@ -1,4 +1,4 @@
-![Alt Text](https://github.com/caglaryalcin/post-wpe-w10/blob/main/files/after-format.gif)
+![Alt Text](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/main.gif)
 
 ## Description
 
@@ -7,7 +7,9 @@ If you new formatted your computer on Windows 10/11(all versions) you can run th
 This script does exactly the following; (Some are optional(y/n))
 
 <details><summary>System Settings</summary>&nbsp;
-
+  
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/1.png)
+  
 - It asks if you want Region change to Turkey.  
 - It asks if you want change your hostname.
 - It asks if you want disable Windows Defender.
@@ -71,6 +73,8 @@ This script does exactly the following; (Some are optional(y/n))
 </details>
 
 <details><summary>Privacy Settings</summary>&nbsp;
+
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/2.png)
   
 - Disabling Telemetry
 - Blocking Telemetry in Host File
@@ -103,6 +107,8 @@ This script does exactly the following; (Some are optional(y/n))
 
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
+
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/3.png)
   
 It asks if you want to install the following softwares or not.
 
@@ -152,6 +158,8 @@ It asks if you want to install the following softwares or not.
 </details>
 
 <details><summary>Remove Unused Apps/Softwares</summary>&nbsp;
+
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/4.png)
   
 - Uninstalling Default Third Party Applications
 - Uninstalling Windows Media Player
