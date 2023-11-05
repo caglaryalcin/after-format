@@ -523,6 +523,9 @@ Function SystemSettings {
             Write-Host "Setting Dark Mode for System..." -NoNewline
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
+                
+                # Disable transparency
+                Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
