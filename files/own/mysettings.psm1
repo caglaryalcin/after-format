@@ -255,18 +255,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             try {
                 # Run Chocolatey install command and wait for it to finish
-                $output = choco install nvidia-display-driver -y | Out-String
-                Write-Host $output  # Outputs the result of installation for logging purposes
-
-                # Check if NVIDIA driver installed successfully using the correct class name
-                $driver = Get-WmiObject -Class Win32_VideoController | Where-Object { $_.Name -like "*NVIDIA*" }
-
-                if ($driver) {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    Write-Host "[WARNING]: Installation completed, but Nvidia driver was not found." -ForegroundColor Red -BackgroundColor Black
-                }
+                choco install nvidia-display-driver -y | Out-String
             }
             catch {
                 # If an error occurred during installation, output a warning
