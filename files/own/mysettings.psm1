@@ -256,6 +256,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             try {
                 # Run Chocolatey install command and wait for it to finish
                 choco install nvidia-display-driver --force -y | Out-Null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 # If an error occurred during installation, output a warning
