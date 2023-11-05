@@ -1,4 +1,4 @@
-![Alt Text](https://github.com/caglaryalcin/post-wpe-w10/blob/main/files/after-format.gif)
+![Alt Text](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format.gif)
 
 ## Description
 
