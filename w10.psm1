@@ -2973,7 +2973,8 @@ Function GithubSoftwares {
             }
             else {
                 Write-Host "Not Installed " -NoNewline
-                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black -NoNewline
+                Write-Host " with chocolatey."
         
                 # Searching for the full name of this package in apps.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
