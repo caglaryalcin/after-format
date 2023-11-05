@@ -1,4 +1,4 @@
-![Alt Text](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format.gif)
+![Alt Text](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/main.gif)
 
 ## Description
 
