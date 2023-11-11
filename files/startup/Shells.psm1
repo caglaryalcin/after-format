@@ -212,12 +212,13 @@ HideDefenderTrayIcon
 Function DisableStartupApps {
     $StartPaths = @(
         "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32\", 
-        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\", 
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\",
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run\",
         "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\", 
         "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\", 
-        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\", 
-        "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\",
-        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run\"
+        "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\"
+        
     )
         
     $StartFilePaths = @(
