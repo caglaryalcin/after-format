@@ -137,7 +137,7 @@ Function RemoveTasks {
     "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
     "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", 
     "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", 
-    "*GPU*", "Xbl*")
+    "*GPU*", "Xbl*", "Autorun*")
 
     $allTasks = Get-ScheduledTask
     
