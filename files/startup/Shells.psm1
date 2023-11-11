@@ -131,13 +131,28 @@ RemoveToggleKeys
 # Remove Tasks in Task Scheduler
 Function RemoveTasks {
     Write-Host "Removing Unnecessary Tasks..." -NoNewline
-    
+    #Autorun - Powertoys
+    #BackgroundDownload - VSCode Updates
+    #ScheduledDefrag - Defrag
+    #ProactiveScan - Checkdisk
+    #SilentCleanup - Disk Cleanup
+    #UsageDataReportin/ReconcileFeatures - Task periodically logging feature usage reports
+    #PenSyncDataAvailable/LocalUserSyncDataAvailable/MouseSyncDataAvailable/TouchpadSyncDataAvailable
+    #Synchronize Language Settings - Synchronize User Language Settings from other devices
+    #PrinterCleanupTask - Clean Printer Processes
+    #SpeechModelDownloadTask - The Windows operating system offers several speech recognition features
+    #QueueReporting - Windows Error Reporting task to process queued reports
+    #Scheduled Start - This task is used to start the Windows Update service when needed to perform scheduled operations such as scans
     $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", 
     "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", 
     "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
     "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", 
     "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", 
-    "*GPU*", "Xbl*", "Autorun*")
+    "*GPU*", "Xbl*", "Autorun*", "BackgroundDownload*", "ScheduledDefrag",
+    "ProactiveScan", "SilentCleanup", "UsageDataReportin", "ReconcileFeatures", 
+    "PenSyncDataAvailable", "LocalUserSyncDataAvailable", "MouseSyncDataAvailable", 
+    "TouchpadSyncDataAvailable", "Synchronize Language Settings", "PrinterCleanupTask",
+    "SpeechModelDownloadTask", "QueueReporting", "Scheduled Start")
 
     $allTasks = Get-ScheduledTask
     
