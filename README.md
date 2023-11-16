@@ -195,14 +195,14 @@ My Custom Drivers
 are my specific settings.
 
 
-> **Note**
+> [!NOTE]  
 > This script takes about 40-60 minutes with 100mbps internet.
 
 
 ## Start the script
 
 ####
-> **Warning**
+> [!IMPORTANT]  
 > Powershell must be run as admin
 <br />
 
