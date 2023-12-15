@@ -2917,6 +2917,20 @@ Function GithubSoftwares {
                     }
                 }
             }
+
+            # Visual Studio Code json path
+            $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
+
+            # Get json content
+$jsonContent = @"
+{
+    "workbench.colorTheme": "Visual Studio Dark",
+    "workbench.iconTheme": "material-icon-theme"
+}
+"@
+
+            # Create or rewrite json file
+            Set-Content -Path $settingsPath -Value $jsonContent -Force
         }
         
         InstallSoftwares
