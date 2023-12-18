@@ -220,7 +220,7 @@ Function SystemSettings {
 
         function SetKeyboardLayout {
             Write-Host `n"Do you want to " -NoNewline
-            Write-Host "adjust the keyboard layout?" -ForegroundColor Yellow -NoNewline
+            Write-Host "set the keyboard layout to UK or TR?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
         

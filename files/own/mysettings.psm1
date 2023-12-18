@@ -101,9 +101,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "Path"             = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe";
                     "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\";
                 };
-                "Sublime Text 3"          = @{
-                    "Path"             = "C:\Program Files\Sublime Text 3\sublime_text.exe";
-                    "WorkingDirectory" = "C:\Program Files\Sublime Text 3\";
+                "Notepad++"          = @{
+                    "Path"             = "C:\Program Files\Notepad++\notepad++.exe";
+                    "WorkingDirectory" = "C:\Program Files\Notepad++\";
                 };
                 "GitHub Desktop"          = @{
                     "Path"             = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe";
