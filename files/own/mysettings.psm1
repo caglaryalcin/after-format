@@ -328,6 +328,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             
             # Define directories and files to be downloaded
             $downloads = @{
+                #notepad++
+                "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes"                      = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/VS2018-Dark_plus.xml"
+                )
+
                 # power toys
                 "$env:UserProfile\Documents\PowerToys\Backup"                      = @(
                     "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
@@ -378,6 +383,23 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host " [WARNING] Failed in additional configurations. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
                     
+            #Set Notepad++ theme
+            $configFilePath = "$env:userprofile\Appdata\Roaming\Notepad++\config.xml"
+
+            try {
+                $content = Get-Content -Path $configFilePath -ErrorAction Stop
+            
+                $search = 'lightThemeName=""'
+                $replace = 'lightThemeName="VS2018-Dark_plus.xml"'
+            
+                $content = $content -replace $search, $replace
+            
+                Set-Content -Path $configFilePath -Value $content
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+            }
+
             # Monitor settings prompt
             try {
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
