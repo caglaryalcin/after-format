@@ -3310,49 +3310,70 @@ Function UnusedApps {
         Remove3D
 
         # Remove Tasks in Task Scheduler
-        Function RemoveTasks {
-            Write-Host "Removing Unnecessary Tasks..." -NoNewline
+        function RemoveTasks {
+            Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
+            
+            $description = @"
+        +---------------------------------------------+
+        |    If you apply it,                         |
+        |    it turns off windows automatic updates,  |
+        |    you can only update manually.            |
+        +---------------------------------------------+
+"@
+            Write-Host `n$description -BackgroundColor Black -ForegroundColor Yellow
         
-            $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "apps and windows update tasks to be deleted?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            
+            $response = Read-Host
         
-            $windowsUpdateTasks = @(
-                "\Microsoft\Windows\WindowsUpdate\Scheduled Start",
-                "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan",
-                "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task",
-                "\Microsoft\Windows\UpdateOrchestrator\Schedule Work",
-                "\Microsoft\Windows\UpdateOrchestrator\Report policies",
-                "\Microsoft\Windows\UpdateOrchestrator\UpdateModelTask",
-                "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker",
-                "\Microsoft\Windows\WaaSMedic\PerformRemediation"
-            )
-        
-            $allTasks = Get-ScheduledTask
-        
-            foreach ($task in $allTasks) {
-                $taskName = $task.TaskName
-                $remove = $false
-        
-                foreach ($pattern in $taskPatterns) {
-                    if ($taskName -like $pattern) {
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Removing Unnecessary Tasks..." -NoNewline
+                $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
+                        
+                $windowsUpdateTasks = @(
+                    "\Microsoft\Windows\WindowsUpdate\Scheduled Start",
+                    "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan",
+                    "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task",
+                    "\Microsoft\Windows\UpdateOrchestrator\Schedule Work",
+                    "\Microsoft\Windows\UpdateOrchestrator\Report policies",
+                    "\Microsoft\Windows\UpdateOrchestrator\UpdateModelTask",
+                    "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker",
+                    "\Microsoft\Windows\WaaSMedic\PerformRemediation"
+                )
+                        
+                $allTasks = Get-ScheduledTask
+                        
+                foreach ($task in $allTasks) {
+                    $taskName = $task.TaskName
+                    $remove = $false
+                        
+                    foreach ($pattern in $taskPatterns) {
+                        if ($taskName -like $pattern) {
+                            $remove = $true
+                            break
+                        }
+                    }
+                        
+                    if ($windowsUpdateTasks -contains $task.TaskPath + $taskName) {
                         $remove = $true
-                        break
+                    }
+                        
+                    if ($remove) {
+                        try {
+                            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+                        } catch {
+                            Write-Host "`n[WARNING]: Error: $_" -ForegroundColor Red
+                        }
                     }
                 }
-        
-                if ($windowsUpdateTasks -contains $task.TaskPath + $taskName) {
-                    $remove = $true
-                }
-        
-                if ($remove) {
-                    try {
-                        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
-                    } catch {
-                        Write-Host "`n[WARNING]: Error: $_" -ForegroundColor Red
-                    }
-                }
+            } elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Update tasks will not be deleted.]" -ForegroundColor Red -BackgroundColor Black
+            } else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                RemoveTasks
             }
-        
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
         RemoveTasks
