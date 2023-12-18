@@ -3290,7 +3290,18 @@ Function UnusedApps {
         Function RemoveTasks {
             Write-Host "Removing Unnecessary Tasks..." -NoNewline
         
-            $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
+            $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
+        
+            $windowsUpdateTasks = @(
+                "\Microsoft\Windows\WindowsUpdate\Scheduled Start",
+                "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan",
+                "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task",
+                "\Microsoft\Windows\UpdateOrchestrator\Schedule Work",
+                "\Microsoft\Windows\UpdateOrchestrator\Report policies",
+                "\Microsoft\Windows\UpdateOrchestrator\UpdateModelTask",
+                "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker",
+                "\Microsoft\Windows\WaaSMedic\PerformRemediation"
+            )
         
             $allTasks = Get-ScheduledTask
         
@@ -3303,6 +3314,10 @@ Function UnusedApps {
                         $remove = $true
                         break
                     }
+                }
+        
+                if ($windowsUpdateTasks -contains $task.TaskPath + $taskName) {
+                    $remove = $true
                 }
         
                 if ($remove) {
