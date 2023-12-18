@@ -1,6 +1,4 @@
-##########
-#region My Custom Drivers
-##########
+
 $myText = @"
 ###############################
 ######## DO NOT ACCEPT ########
@@ -192,9 +190,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Start-Sleep 10
             taskkill.exe /f /im OpenRGB.exe *>$null
 
-            ##Set Pin
-            $progressPreference = 'silentlyContinue'
-
             #delete all files on desktop
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
             Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
@@ -214,6 +209,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse -Force
 
             # set taskbar icons and pin to taskbar
+            $progressPreference = 'silentlyContinue'
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
             reg import "C:\taskbar_pin.reg" *>$null
             Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
@@ -267,57 +263,15 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 
         Drivers
 
-        #Restore Librewolf settings and extensions
+        #Restore Librewolf settings
         function installLibreWolfAddIn() {
-            Write-Host "Librewolf settings and extensions are being restored..." -NoNewline
+            Write-Host "Librewolf settings are being restored..." -NoNewline
 
             #it is necessary to formation of a profile
             cd "C:\Program Files\LibreWolf\"
             .\librewolf.exe
             Start-Sleep 2
             taskkill /f /im "librewolf.exe" *>$null
-
-            $instdir = "C:\Program Files\LibreWolf"
-            $distribution = $instdir + '\distribution'
-            $extensions = $instdir + '\distribution\extensions'
-
-            $addons = @{
-                "bitwarden-password-manager"     = '{446900e4-71c2-419f-a6a7-df9c091e268b}';
-                "ublock-origin"                  = 'uBlock0@raymondhill.net';
-                "privacy-badger17"               = 'jid1-MnnxcxisBPnSXQ@jetpack';
-                "darkreader"                     = 'addon@darkreader.org';
-                "ublacklist"                     = '@ublacklist';
-                "return-youtube-dislikes"        = '{762f9885-5a13-4abd-9c77-433dcd38b8fd}';
-                "best-internet-download-manager" = 'mozilla_cc3@internetdownloadmanager.com'
-            }
-
-            If (-Not(Test-Path $distribution)) {
-                New-Item $distribution -ItemType Container | Out-Null
-            }
-            If (-Not(Test-Path $extensions)) {
-                New-Item $extensions -ItemType Container | Out-Null
-            }
-
-            foreach ($addon in $addons.GetEnumerator()) {
-                try {
-                    # Eklenti bilgilerini al
-                    $response = Invoke-RestMethod -Uri "https://addons.mozilla.org/api/v4/addons/addon/$($addon.Name)/"
-
-                    # En son sürüm numarasını al
-                    $latestVersion = $response.current_version.version
-
-                    # Eklenti adı ve sürüm numarasını kullanarak indirme URL'sini oluştur
-                    $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$($addon.Name)/addon-$($addon.Name)-latest.xpi"
-
-                    $addonPath = $extensions + '\' + $addon.Value + '.xpi'
-
-                    # XPI dosyasını indir
-                    Invoke-WebRequest $addonUrl -Outfile $addonPath
-                }
-                catch {
-                    Write-Host "Error downloading or getting info for addon $($addon.Name): $_" -ForegroundColor Red
-                }
-            }
 
             $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Filter "*.default-default" -Directory
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile "$($dest.FullName)\user.js"
@@ -331,7 +285,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
         installLibreWolfAddIn("");
                 
-        #Sublime text
         function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
             # Helper function to create directories
@@ -375,23 +328,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             
             # Define directories and files to be downloaded
             $downloads = @{
-                # sublime text
-                "$env:userprofile\AppData\Roaming\Sublime Text\Packages\User"      = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Preferences.sublime-settings",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/cy.sublime-color-scheme",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/sublime-text/Default%20(Windows).sublime-mousemap"
-                )
-                "$env:userprofile\AppData\Roaming\Sublime Text\Installed Packages" = @(
-                    "https://packagecontrol.io/Package%20Control.sublime-package"
-                )
                 # power toys
                 "$env:UserProfile\Documents\PowerToys\Backup"                      = @(
                     "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
                 )
                 # browser restore files
                 "$env:userprofile\Desktop"                                         = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/bookmarks/bookmarks.json"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
                 )
                 # fan control
                 "C:\fan_control\Configurations"                                    = @(
@@ -535,8 +478,3 @@ elseif ($response -eq 'n' -or $response -eq 'N') {
 else {
     Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
 }
-
-
-##########
-#endregion My Custom Drivers
-##########
