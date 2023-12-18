@@ -256,6 +256,9 @@ Function SystemSettings {
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
                         Set-WinLanguageBarOption -UseLegacyLanguageBar
+
+                        #disable different input for each app 
+                        Set-WinLanguageBarOption
                     }
                     "2" {
                         # UK keyboard layout
@@ -278,6 +281,9 @@ Function SystemSettings {
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-WinLanguageBarOption -UseLegacyLanguageBar
+
+                        #disable different input for each app 
+                        Set-WinLanguageBarOption
                     }
                     "3" {
                         # Both TR and UK keyboard layout
@@ -301,6 +307,9 @@ Function SystemSettings {
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
                         Set-WinLanguageBarOption -UseLegacyLanguageBar
+
+                        #disable different input for each app 
+                        Set-WinLanguageBarOption
                     }
                     default {
                         Write-Host "Invalid input. Please enter 1, 2 or 3."
