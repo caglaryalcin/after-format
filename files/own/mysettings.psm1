@@ -320,6 +320,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 
         function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
+
             # Helper function to create directories
             function Ensure-Directory($path) {
                 try {
@@ -331,6 +332,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     Write-Host " [WARNING] Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
+
             # Helper function for web requests
             function Safe-Invoke-WebRequest($uri, $outFile) {
                 try {
@@ -347,21 +349,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
             }
 
-            # Ublacklist url to desktop
-            $filePath = "$env:userprofile\Desktop\ublacklist-address.txt"
-            Set-Content -Path $filePath -Value "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
+            # Stop all SteelSeries processes
+            Get-Process | Where-Object { $_.Name -like "steel*" } | ForEach-Object { Stop-Process -Name $_.Name -Force }
 
-            ## manual configs
-            # twinkle tray
-            & "$env:USERPROFILE\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" *>$null
-            Start-Sleep 10
-            taskkill /f /im "Twinkle Tray.exe" *>$null
-
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json" -Outfile "$env:USERPROFILE\AppData\Roaming\twinkle-tray\settings.json"
-            
             # Define directories and files to be downloaded
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
             $downloads = @{
-                #notepad++
+                # notepad++
                 "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes"                      = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/VS2018-Dark_plus.xml"
                 )
@@ -383,20 +378,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://github.com/caglaryalcin/my-configs/raw/main/led/my_led_config.orp"
                 )
                 # keyboard
-                "C:\ProgramData\SteelSeries\GG\apps\engine\db"                     = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db-shm",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/database.db-wal",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/keyboard/engine/db/dbconf.yml"
-                )
-                "C:\ProgramData\SteelSeries\GG\apps\engine\prism\db"               = @(
-                    "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/engine/db/database.db"
+                "C:\ProgramData\SteelSeries\"               = @(
+                    "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
                 )
             }
             
-            # Stop all SteelSeries processes
-            Get-Process | Where-Object { $_.Name -like "steel*" } | ForEach-Object { Stop-Process -Name $_.Name -Force }
-
             # Process each directory and download files
             foreach ($dir in $downloads.Keys) {
                 Ensure-Directory -path $dir
@@ -407,7 +393,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     Safe-Invoke-WebRequest -uri $url -outFile $outFile
                 }
             }
+
+            # Restore SteelSeries keyboard settings
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
+            Expand-Archive -Path 'C:\programdata\SteelSeries\GG.zip' -DestinationPath C:\programdata\SteelSeries\ -Force *>$null
+            Remove-Item C:\programdata\SteelSeries\GG.zip -recurse -ErrorAction SilentlyContinue
             
+            # Restore PowerToys settings
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -Value "0" | Out-Null
@@ -419,7 +412,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host " [WARNING] Failed in additional configurations. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
                     
-            #Set Notepad++ theme
+            # Set Notepad++ theme
             $configFilePath = "$env:userprofile\Appdata\Roaming\Notepad++\config.xml"
 
             try {
