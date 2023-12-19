@@ -97,13 +97,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "Path"             = "C:\Program Files\Microsoft VS Code\Code.exe";
                     "WorkingDirectory" = "C:\Program Files\Microsoft VS Code\";
                 };
-                "AnyDesk"                 = @{
-                    "Path"             = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe";
-                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\";
-                };
                 "Notepad++"          = @{
                     "Path"             = "C:\Program Files\Notepad++\notepad++.exe";
                     "WorkingDirectory" = "C:\Program Files\Notepad++\";
+                };
+                "AnyDesk"                 = @{
+                    "Path"             = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe";
+                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\";
                 };
                 "GitHub Desktop"          = @{
                     "Path"             = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe";
@@ -267,12 +267,45 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         function installLibreWolfAddIn() {
             Write-Host "Librewolf settings are being restored..." -NoNewline
 
-            #it is necessary to formation of a profile
+            #install bitwarden add-in
             cd "C:\Program Files\LibreWolf\"
             .\librewolf.exe
             Start-Sleep 2
             taskkill /f /im "librewolf.exe" *>$null
 
+            $instdir = "C:\Program Files\LibreWolf"
+            $distribution = $instdir + '\distribution'
+            $extensions = $instdir + '\distribution\extensions'
+
+            $addons = @{
+                "bitwarden-password-manager"     = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
+            }
+
+            If (-Not(Test-Path $distribution)) {
+                New-Item $distribution -ItemType Container | Out-Null
+            }
+            If (-Not(Test-Path $extensions)) {
+                New-Item $extensions -ItemType Container | Out-Null
+            }
+
+            foreach ($addon in $addons.GetEnumerator()) {
+                try {
+                    $response = Invoke-RestMethod -Uri "https://addons.mozilla.org/api/v4/addons/addon/$($addon.Name)/"
+
+                    $latestVersion = $response.current_version.version
+
+                    $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$($addon.Name)/addon-$($addon.Name)-latest.xpi"
+
+                    $addonPath = $extensions + '\' + $addon.Value + '.xpi'
+
+                    Invoke-WebRequest $addonUrl -Outfile $addonPath
+                }
+                catch {
+                    Write-Host "Error downloading or getting info for addon $($addon.Name): $_" -ForegroundColor Red
+                }
+            }
+
+            #it is necessary to formation of a profile
             $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Filter "*.default-default" -Directory
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile "$($dest.FullName)\user.js"
             New-Item -Path "$($dest.FullName)" -Name chrome -ItemType "directory" *>$null
@@ -361,6 +394,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 )
             }
             
+            # Stop all SteelSeries processes
+            Get-Process | Where-Object { $_.Name -like "steel*" } | ForEach-Object { Stop-Process -Name $_.Name -Force }
+
             # Process each directory and download files
             foreach ($dir in $downloads.Keys) {
                 Ensure-Directory -path $dir

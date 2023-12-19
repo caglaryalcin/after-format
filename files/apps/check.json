@@ -17,6 +17,7 @@
         {"PackageIdentifier": "Signal"},
         {"PackageIdentifier": "Community"},
         {"PackageIdentifier": "Build Tools"},
+        {"PackageIdentifier": "notepadplusplus"},
         {"PackageIdentifier": "*SDK"},
         {"PackageIdentifier": "Node.js"},
         {"PackageIdentifier": "Python"},

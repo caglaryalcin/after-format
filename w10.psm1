@@ -232,7 +232,7 @@ Function SystemSettings {
                 Write-Host " - United Kingdom keyboard layout"
                 Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                 Write-Host " - Both Turkish and United Kingdom keyboard layout"
-                $choice = Read-Host -Prompt "Choice"
+                $choice = Read-Host -Prompt `n"Choice"
         
                 switch ($choice) {
                     "1" {
@@ -2991,7 +2991,10 @@ $jsonContent = @"
         $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
-        Write-Host `n"Detecting programs that cannot be installed with chocolatey..."
+        Write-Host @"
+--------
+Detecting programs that cannot be installed with chocolatey..."
+"@
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
             if ($installedProgramName) {
@@ -3354,6 +3357,9 @@ Function UnusedApps {
                         }
                     }
                 }
+
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+
             } elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Update tasks will not be deleted.]" -ForegroundColor Red -BackgroundColor Black
             } else {
