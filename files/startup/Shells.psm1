@@ -101,6 +101,13 @@ Function RemoveStickyKeys {
 
 RemoveStickyKeys
 
+# Set WinLanguageBarOption
+Function SetWinLanguageBarOption {
+    Set-WinLanguageBarOption
+}
+
+SetWinLanguageBarOption
+
 # Remove Toggle Keys
 Function RemoveToggleKeys {
     $registryPaths = @(
