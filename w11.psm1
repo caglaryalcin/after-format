@@ -1985,6 +1985,14 @@ Function SystemSettings {
 
         #Import Batch to Startup
         Function ImportStartup {
+            Write-Host `n"Do you want to " -NoNewline
+            Write-Host "add the start task to the task scheduler?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green
+            Write-Host "You can find detailed information in the Startup section of link " -NoNewline
+            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Green -BackgroundColor Black -NoNewline
+            $response = Read-Host
+
+            if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
         
             $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/startup.xml"
@@ -2016,6 +2024,14 @@ Function SystemSettings {
         
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
+        elseif ($response -eq 'n' -or $response -eq 'N') {
+            Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+            ImportStartup
+        }
+    }
         
         ImportStartup
 
