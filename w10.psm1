@@ -328,6 +328,58 @@ Function SystemSettings {
         
         SetKeyboardLayout
 
+        #Import Batch to Startup
+        Function ImportStartup {
+            Write-Host `n"For detailed information " -NoNewline
+            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "Do you want to " -NoNewline
+            Write-Host "add the start task to the task scheduler?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+
+            if ($response -eq 'y' -or $response -eq 'Y') {
+            Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
+        
+            $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/startup.xml"
+            $taskXmlPath = "$env:TEMP\startup.xml"
+        
+            try {
+                Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath -ErrorAction Stop
+            }
+            catch {
+                Write-Host "[WARNING] Failed to download XML file: $_" -ForegroundColor Yellow
+            }
+        
+            $taskName = "startup"
+            $taskXmlContent = Get-Content $taskXmlPath -Raw
+        
+            $taskService = New-Object -ComObject "Schedule.Service"
+            $taskService.Connect()
+        
+            $taskFolder = $taskService.GetFolder("\")
+            $taskDefinition = $taskService.NewTask(0)
+            $taskDefinition.XmlText = $taskXmlContent
+        
+            try {
+                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
+            }
+            catch {
+                Write-Host "[WARNING] Failed to register the task: $_" -ForegroundColor Yellow
+            }
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+            Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
+        }
+            else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+            ImportStartup
+        }
+        }
+        
+        ImportStartup
+
         # Disable Sync your settings
         Function DisableSync {
             Write-Host "Disabling Sync your settings..." -NoNewline
@@ -1964,58 +2016,6 @@ Function SystemSettings {
         ##########
         #endregion Taskbar Settings
         ##########
-
-        #Import Batch to Startup
-        Function ImportStartup {
-            Write-Host `n"For detailed information " -NoNewline
-            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Green -BackgroundColor Black
-            Write-Host "Do you want to " -NoNewline
-            Write-Host "add the start task to the task scheduler?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $response = Read-Host
-
-            if ($response -eq 'y' -or $response -eq 'Y') {
-            Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
-        
-            $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/startup.xml"
-            $taskXmlPath = "$env:TEMP\startup.xml"
-        
-            try {
-                Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath -ErrorAction Stop
-            }
-            catch {
-                Write-Host "[WARNING] Failed to download XML file: $_" -ForegroundColor Yellow
-            }
-        
-            $taskName = "startup"
-            $taskXmlContent = Get-Content $taskXmlPath -Raw
-        
-            $taskService = New-Object -ComObject "Schedule.Service"
-            $taskService.Connect()
-        
-            $taskFolder = $taskService.GetFolder("\")
-            $taskDefinition = $taskService.NewTask(0)
-            $taskDefinition.XmlText = $taskXmlContent
-        
-            try {
-                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
-            }
-            catch {
-                Write-Host "[WARNING] Failed to register the task: $_" -ForegroundColor Yellow
-            }
-        
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-        elseif ($response -eq 'n' -or $response -eq 'N') {
-            Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
-        }
-        else {
-            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-            ImportStartup
-        }
-    }
-        
-        ImportStartup
 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
