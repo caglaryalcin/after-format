@@ -382,7 +382,7 @@ Function SystemSettings {
 
         # Disable Sync your settings
         Function DisableSync {
-            Write-Host "Disabling Sync your settings..." -NoNewline
+            Write-Host `n"Disabling Sync your settings..." -NoNewline
             $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
 
             if (-not (Test-Path $registryPath)) {
@@ -2842,7 +2842,7 @@ Function GithubSoftwares {
         
                 #install vcredist 2015
                 $output = choco install microsoft-vclibs-140-00 --force -y -Verbose
-                If ($output -match "*successful*") {
+                If ($output -match "successful") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
