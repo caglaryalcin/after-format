@@ -2859,7 +2859,7 @@ Function GithubSoftwares {
                 Start-Sleep 10
 
                 #install vcredist 2015
-                choco install microsoft-vclibs-140-00 --force -y -Verbose 2>&1 | Out-String
+                choco install microsoft-vclibs-140-00 --force -y -Verbose *>$null
         
                 $chocoPath = Get-Command "choco" -ErrorAction SilentlyContinue
                 if ($null -eq $chocoPath) {
