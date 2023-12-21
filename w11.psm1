@@ -2930,42 +2930,49 @@ Function GithubSoftwares {
             Stop-Job -Job $job
             Remove-Job -Job $job
 
-            #install vscode extensions
-            #VSCode extensions
-            Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
-            Start-Sleep 5
-            $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
-
-            $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
-            $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
-            $design = "pkief.material-icon-theme"
-            $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell"
-            $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode"
-            $github = "github.vscode-pull-request-github", "github.copilot"
-            $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github
-
-            $installed = & $vsCodePath --list-extensions
-
-            foreach ($vse in $vsextensions) {
-                if ($installed -contains $vse) {
-                    Write-Host $vse "already installed." -ForegroundColor Gray
-                }
-                else {
-                    & $vsCodePath --install-extension $vse *>$null
-                    Start-Sleep -Seconds 3  # Give some time for the extension to install
-                    $updatedInstalled = & $vsCodePath --list-extensions
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    if ($updatedInstalled -contains $vse) {
-                        # Write-Host "" -ForegroundColor Green
+            function Install-VSCodeExtensions {
+                Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
+                Start-Sleep 5
+                $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
+            
+                $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
+                $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
+                $design = "pkief.material-icon-theme"
+                $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell"
+                $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode"
+                $github = "github.vscode-pull-request-github", "github.copilot"
+                $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github
+            
+                $installed = & $vsCodePath --list-extensions
+            
+                foreach ($vse in $vsextensions) {
+                    if ($installed -contains $vse) {
+                        Write-Host $vse "already installed." -ForegroundColor Gray
                     }
                     else {
-                        Write-Host "[WARNING]" -ForegroundColor Yellow -NoNewline
-                        Write-Host " VSCode's $vse plugin failed to install"
+                        & $vsCodePath --install-extension $vse *>$null
+                        Start-Sleep -Seconds 3  # Give some time for the extension to install
+                        $updatedInstalled = & $vsCodePath --list-extensions
                     }
+                }
+            
+                $allExtensionsInstalled = $True
+                foreach ($vse in $vsextensions) {
+                    if (-not ($updatedInstalled -contains $vse)) {
+                        $allExtensionsInstalled = $False
+                        break
+                    }
+                }
+            
+                if ($allExtensionsInstalled) {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                } else {
+                    Write-Host "[WARNING]" -ForegroundColor Yellow
+                    Write-Host " VSCode's $vse plugin failed to install"
                 }
             }
 
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            Install-VSCodeExtensions
             
             # Visual Studio Code json path
             $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
