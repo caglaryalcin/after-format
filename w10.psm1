@@ -102,11 +102,11 @@ Function SystemSettings {
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
-                $hostq = Write-Host "Please enter your hostname: " -ForegroundColor Red -NoNewline
+                $hostq = Write-Host "Please enter your hostname: " -NoNewline
                 $hostname = Read-Host -Prompt $hostq
                 Rename-Computer -NewName "$hostname" *>$null
-                Write-Host "Hostname was set to"$hostname"" -ForegroundColor White -BackgroundColor Black -NoNewline
-                Write-Host ""$hostname"" -ForegroundColor Green -BackgroundColor Black
+                Write-Host "Hostname was set to " -NoNewline
+                Write-Host "$hostname" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
@@ -1967,11 +1967,11 @@ Function SystemSettings {
 
         #Import Batch to Startup
         Function ImportStartup {
-            Write-Host `n"Do you want to " -NoNewline
+            Write-Host `n"For detailed information " -NoNewline
+            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "Do you want to " -NoNewline
             Write-Host "add the start task to the task scheduler?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(y/n): " -ForegroundColor Green
-            Write-Host "You can find detailed information in the Startup section of link " -NoNewline
-            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Green -BackgroundColor Black -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
 
             if ($response -eq 'y' -or $response -eq 'Y') {
@@ -2933,6 +2933,7 @@ Function GithubSoftwares {
                     & $vsCodePath --install-extension $vse *>$null
                     Start-Sleep -Seconds 3  # Give some time for the extension to install
                     $updatedInstalled = & $vsCodePath --list-extensions
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     if ($updatedInstalled -contains $vse) {
                         # Write-Host "" -ForegroundColor Green
                     }
@@ -3004,7 +3005,7 @@ $jsonContent = @"
         $wingetPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
         $wingetPackages = $wingetPackagesContent.Content | ConvertFrom-Json
 
-        $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/apps.json"
+        $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
         Write-Host @"
@@ -3021,7 +3022,7 @@ Detecting programs that cannot be installed with chocolatey..."
                 Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black -NoNewline
                 Write-Host " with chocolatey."
         
-                # Searching for the full name of this package in apps.json
+                # Searching for the full name of this package in winget.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
         
                 if ($matchingPackage) {
@@ -3041,7 +3042,7 @@ Detecting programs that cannot be installed with chocolatey..."
         
                 }
                 else {
-                    Write-Host "$($package.PackageIdentifier) was not found in apps.json." -ForegroundColor Yellow
+                    Write-Host "$($package.PackageIdentifier) was not found in winget.json." -ForegroundColor Yellow
                 }
             }
         }
@@ -3107,25 +3108,38 @@ Detecting programs that cannot be installed with chocolatey..."
             }
         }
 
-        # Remove registry keys and files
-        $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate", 
-        "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem", 
+        # Registry keys and files to remove
+        $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate",
+        "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem",
         "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
 
-        foreach ($path in $registryPaths) {
-            try {
-                Remove-Item -Path $path -Recurse -ErrorAction Stop
-            }
-            catch {
-                # Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
-            }
-        }
+        $filePath = "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe"
 
+        # Registry keys and files to remove
+        foreach ($path in $registryPaths) {
+        if (Test-Path $path -ErrorAction SilentlyContinue) {
         try {
-            Remove-Item "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe" -Recurse -ErrorAction Stop
+        Remove-Item -Path $path -Recurse -ErrorAction Stop
         }
         catch {
-            Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+        Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
+        }
+        }
+        else {
+        Write-Host "[INFO]: Registry key $path not found." -ForegroundColor Yellow
+        }
+        }
+
+        if (Test-Path $filePath -ErrorAction SilentlyContinue) {
+        try {
+        Remove-Item -Path $filePath -Recurse -ErrorAction Stop
+        }
+        catch {
+        Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+        }
+        }
+        else {
+        Write-Host "[INFO]: File $filePath not found." -ForegroundColor Yellow
         }
 
         #workstation key
@@ -3319,11 +3333,11 @@ Function UnusedApps {
             Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
             
             $description = @"
-        +---------------------------------------------+
-        |    If you apply it,                         |
-        |    it turns off windows automatic updates,  |
-        |    you can only update manually.            |
-        +---------------------------------------------+
++---------------------------------------------+
+|    If you apply it,                         |
+|    it turns off windows automatic updates,  |
+|    you can only update manually.            |
++---------------------------------------------+
 "@
             Write-Host `n$description -BackgroundColor Black -ForegroundColor Yellow
         

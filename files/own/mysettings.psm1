@@ -369,6 +369,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 "$env:userprofile\Desktop"                                         = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
                 )
+                "$env:userprofile\Desktop"                                         = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
+                )
                 # fan control
                 "C:\fan_control\Configurations"                                    = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/fan/my_fan_config.json"
