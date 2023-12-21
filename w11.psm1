@@ -2847,19 +2847,25 @@ Function GithubSoftwares {
         Function choco-install {
             try {
                 Write-Host `n"Installing chocolatey..." -NoNewline
-                
+        
                 #disable first run customize for chocolatey
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Type DWord -Value 1
-
+        
                 #install choco
                 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
                 Start-Sleep 10
-
+        
                 #install vcredist 2015
-                choco install microsoft-vclibs-140-00 --force -y -Verbose *>$null
+                $output = choco install microsoft-vclibs-140-00 --force -y -Verbose
+                If ($output -match "The install of microsoft-vclibs-140-00 was successful") {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                else {
+                    Write-Host "[WARNING]: Installation of microsoft-vclibs-140-00 failed." -ForegroundColor Red
+                }
         
                 $chocoPath = Get-Command "choco" -ErrorAction SilentlyContinue
                 if ($null -eq $chocoPath) {
@@ -2869,7 +2875,6 @@ Function GithubSoftwares {
         
                 #eliminates the -y requirement
                 choco feature enable -n allowGlobalConfirmation *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor Red
