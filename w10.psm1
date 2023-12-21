@@ -2842,7 +2842,7 @@ Function GithubSoftwares {
         
                 #install vcredist 2015
                 $output = choco install microsoft-vclibs-140-00 --force -y -Verbose
-                If ($output -match "The install of microsoft-vclibs-140-00 was successful") {
+                If ($output -match "*successful*") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
