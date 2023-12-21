@@ -357,35 +357,37 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Global:ProgressPreference = 'SilentlyContinue'
             $downloads = @{
                 # notepad++
-                "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes"                      = @(
+                "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes" = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/VS2018-Dark_plus.xml"
                 )
-
+            
                 # power toys
-                "$env:UserProfile\Documents\PowerToys\Backup"                      = @(
+                "$env:UserProfile\Documents\PowerToys\Backup" = @(
                     "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
                 )
+            
                 # browser restore files
-                "$env:userprofile\Desktop"                                         = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
-                )
-                "$env:userprofile\Desktop"                                         = @(
+                "$env:userprofile\Desktop" = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
                 )
+            
                 # fan control
-                "C:\fan_control\Configurations"                                    = @(
+                "C:\fan_control\Configurations" = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/fan/my_fan_config.json"
                 )
+            
                 # openrgb
-                "$env:USERPROFILE\Appdata\Roaming\Openrgb"                         = @(
+                "$env:USERPROFILE\Appdata\Roaming\Openrgb" = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/led/my_led_config.orp"
                 )
+            
                 # keyboard
-                "C:\ProgramData\SteelSeries\"               = @(
+                "C:\ProgramData\SteelSeries\" = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
                 )
             }
-            
+                        
             # Process each directory and download files
             foreach ($dir in $downloads.Keys) {
                 Ensure-Directory -path $dir
@@ -416,6 +418,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
                     
             # Set Notepad++ theme
+            Start-Process notepad++.exe
+            taskkill /f /im FanControl.exe *>$null
             $configFilePath = "$env:userprofile\Appdata\Roaming\Notepad++\config.xml"
 
             try {

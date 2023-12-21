@@ -2961,6 +2961,8 @@ Function GithubSoftwares {
                     }
                 }
             }
+
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             
             # Visual Studio Code json path
             $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
@@ -3131,8 +3133,6 @@ Detecting programs that cannot be installed with chocolatey..."
         "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem",
         "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
 
-        $filePath = "C:\Program Files\Google\Chrome\Application\10*\Installer\chrmstp.exe"
-
         # Registry keys and files to remove
         foreach ($path in $registryPaths) {
         if (Test-Path $path -ErrorAction SilentlyContinue) {
@@ -3148,16 +3148,23 @@ Detecting programs that cannot be installed with chocolatey..."
         }
         }
 
-        if (Test-Path $filePath -ErrorAction SilentlyContinue) {
-        try {
-        Remove-Item -Path $filePath -Recurse -ErrorAction Stop
-        }
-        catch {
-        Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
-        }
+        $chromeDirectory = "C:\Program Files\Google\Chrome\Application\"
+
+        # Get the latest version of Chrome
+        $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory | 
+            Where-Object { $_.Name -match '^1\d+' } | 
+            Sort-Object { [Version]($_.Name) } | 
+            Select-Object -Last 1
+
+        # If Chrome is not installed, $chromeVersion will be null
+        if ($chromeVersion -eq $null) {
+            Write-Host "Chrome sürümü bulunamadı." -ForegroundColor Red
         }
         else {
-        Write-Host "[INFO]: File $filePath not found." -ForegroundColor Yellow
+            # Last version of Chrome
+            Set-Location -Path (Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name)
+            cd Installer
+            Remove-Item -Path chrmstp.exe -Recurse -ErrorAction Stop
         }
 
         #workstation key
