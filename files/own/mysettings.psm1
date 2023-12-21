@@ -419,7 +419,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     
             # Set Notepad++ theme
             Start-Process notepad++.exe
-            taskkill /f /im FanControl.exe *>$null
+            taskkill /f /im notepad++.exe *>$null
             $configFilePath = "$env:userprofile\Appdata\Roaming\Notepad++\config.xml"
 
             try {

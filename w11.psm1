@@ -2929,7 +2929,7 @@ Function GithubSoftwares {
 
             #install vscode extensions
             #VSCode extensions
-            Write-Host "Installing Microsoft Visual Studio Code Extensions..."
+            Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
             Start-Sleep 5
             $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
 
@@ -3094,78 +3094,65 @@ Detecting programs that cannot be installed with chocolatey..."
             Write-Host "[WARNING]: $_" -ForegroundColor Red
         }
 
-        # Disable and remove Chrome services
-        $chromeservices = "gupdate", "gupdatem"
-        foreach ($service in $chromeservices) {
-            $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
-
-            if ($serviceObject) {
-                if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
-                    # The service is already stopped and disabled, so there is no need to do anything.
-                    continue
+        Function Remove-ChromeComponents {
+            Write-Host "Disabling and removing Chrome services..." -NoNewline
+            $chromeservices = "gupdate", "gupdatem"
+            foreach ($service in $chromeservices) {
+                $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
+        
+                if ($serviceObject) {
+                    if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
+                        # The service is already stopped and disabled, so there is no need to do anything.
+                        continue
+                    }
+        
+                    try {
+                        Stop-Service -Name $service -Force -ErrorAction Stop
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
+                    }
+                    catch {
+                        $errorMessage = $_.Exception.Message
+                        Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
+                    }
+        
+                    try {
+                        sc.exe delete $service *>$null
+                        if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
+                    }
+                    catch {
+                        $errorMessage = $_.Exception.Message
+                        Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
+                    }
                 }
-
-                try {
-                    Stop-Service -Name $service -Force -ErrorAction Stop
-                    Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
+                else {
+                    # The service is not available, so there is no need to do anything.
                 }
-                catch {
-                    $errorMessage = $_.Exception.Message
-                    Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
-                }
-
-                try {
-                    sc.exe delete $service *>$null
-                    if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
-                }
-                catch {
-                    $errorMessage = $_.Exception.Message
-                    Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
-                }
+            }
+        
+            $chromeDirectory = "C:\Program Files\Google\Chrome\Application\"
+            $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory -ErrorAction SilentlyContinue | 
+                Where-Object { $_.Name -match '^1\d+' } | 
+                Sort-Object { [Version]($_.Name) } | 
+                Select-Object -Last 1
+        
+            if ($chromeVersion -eq $null) {
+                Write-Host "[WARNING]: Chrome version not found." -ForegroundColor Red
             }
             else {
-                # The service is not available, so there is no need to do anything.
+                $chromeInstallerPath = Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name
+                $installerDirectory = Join-Path -Path $chromeInstallerPath -ChildPath "Installer"
+                if (Test-Path $installerDirectory) {
+                    Set-Location -Path $installerDirectory
+                    Remove-Item -Path chrmstp.exe -Recurse -ErrorAction SilentlyContinue
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                else {
+                    Write-Host "[INFO]: Chrome Installer directory not found." -ForegroundColor Yellow
+                }
             }
         }
-
-        # Registry keys and files to remove
-        $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate",
-        "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem",
-        "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
-
-        # Registry keys and files to remove
-        foreach ($path in $registryPaths) {
-        if (Test-Path $path -ErrorAction SilentlyContinue) {
-        try {
-        Remove-Item -Path $path -Recurse -ErrorAction Stop
-        }
-        catch {
-        Write-Host "[WARNING]: Unable to remove registry key $path. Error: $_" -ForegroundColor Red
-        }
-        }
-        else {
-        Write-Host "[INFO]: Registry key $path not found." -ForegroundColor Yellow
-        }
-        }
-
-        $chromeDirectory = "C:\Program Files\Google\Chrome\Application\"
-
-        # Get the latest version of Chrome
-        $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory | 
-            Where-Object { $_.Name -match '^1\d+' } | 
-            Sort-Object { [Version]($_.Name) } | 
-            Select-Object -Last 1
-
-        # If Chrome is not installed, $chromeVersion will be null
-        if ($chromeVersion -eq $null) {
-            Write-Host "Chrome sürümü bulunamadı." -ForegroundColor Red
-        }
-        else {
-            # Last version of Chrome
-            Set-Location -Path (Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name)
-            cd Installer
-            Remove-Item -Path chrmstp.exe -Recurse -ErrorAction Stop
-        }
+        
+        Remove-ChromeComponents
 
         #workstation key
         try {
@@ -3697,7 +3684,7 @@ Function Restart {
         cmd.exe /c "shutdown /r /t 0"
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host("Restart process cancelled") -ForegroundColor Red -BackgroundColor Black
+        Write-Host("[Restart process cancelled]") -ForegroundColor Red -BackgroundColor Black
     }
     else {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."

@@ -81,9 +81,9 @@ FileExplorerExpandRibbon
 # Remove Sticky Keys
 Function RemoveStickyKeys {
     $settings = @{
-        "HKCU:\Control Panel\Accessibility\StickyKeys"             = @{ "Flags" = "506" }  # 506 Off, 510 On
-        "HKCU:\Control Panel\Accessibility\Keyboard Response"     = @{ "Flags" = "122" }  # 122 Off, 126 On
-        "HKCU:\Control Panel\Accessibility\ToggleKeys"            = @{ "Flags" = "58" }   # 58 Off, 62 On
+        "HKCU:\Control Panel\Accessibility\StickyKeys"        = @{ "Flags" = "506" }  # 506 Off, 510 On
+        "HKCU:\Control Panel\Accessibility\Keyboard Response" = @{ "Flags" = "122" }  # 122 Off, 126 On
+        "HKCU:\Control Panel\Accessibility\ToggleKeys"        = @{ "Flags" = "58" }   # 58 Off, 62 On
     }
 
     foreach ($path in $settings.Keys) {
@@ -153,15 +153,15 @@ Function RemoveTasks {
     #Scheduled Start - This task is used to start the Windows Update service when needed to perform scheduled operations such as scans
 
     $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", 
-    "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", 
-    "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
-    "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", 
-    "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", 
-    "*GPU*", "Xbl*", "Autorun*", "BackgroundDownload*", "ScheduledDefrag",
-    "ProactiveScan", "SilentCleanup", "UsageDataReportin", "ReconcileFeatures", 
-    "PenSyncDataAvailable", "LocalUserSyncDataAvailable", "MouseSyncDataAvailable", 
-    "TouchpadSyncDataAvailable", "Synchronize Language Settings", "PrinterCleanupTask",
-    "SpeechModelDownloadTask", "QueueReporting", "Scheduled Start")
+        "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", 
+        "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
+        "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", 
+        "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", 
+        "*GPU*", "Xbl*", "Autorun*", "BackgroundDownload*", "ScheduledDefrag",
+        "ProactiveScan", "SilentCleanup", "UsageDataReportin", "ReconcileFeatures", 
+        "PenSyncDataAvailable", "LocalUserSyncDataAvailable", "MouseSyncDataAvailable", 
+        "TouchpadSyncDataAvailable", "Synchronize Language Settings", "PrinterCleanupTask",
+        "SpeechModelDownloadTask", "QueueReporting", "Scheduled Start")
 
     $allTasks = Get-ScheduledTask
     
@@ -227,7 +227,6 @@ Function DisableStartupApps {
         "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\", 
         "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce\", 
         "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\"
-        
     )
         
     $StartFilePaths = @(
@@ -283,13 +282,29 @@ Function RemoveEdgeUpdates {
 
 RemoveEdgeUpdates
 
+Function RemoveChromeUpdates {
+    # Registry keys and files to remove
+    $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate",
+    "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem",
+    "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
+
+    foreach ($path in $registryPaths) {
+        if (Test-Path $path) {
+            Remove-Item -Path $path -Recurse -ErrorAction Stop
+        }
+            
+    }
+}
+
+RemoveChromeUpdates
+
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
 
     Restart-Service -Name "W32Time" -Force
 
     w32tm /resync /force *>$null
-    w32tm /config /manualpeerlist:time.windows.com,0x1 /syncfromflags:manual /reliable:yes /update *>$null
+    w32tm /config /manualpeerlist:time.windows.com, 0x1 /syncfromflags:manual /reliable:yes /update *>$null
 }
 
 SyncTime
