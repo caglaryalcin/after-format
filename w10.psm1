@@ -2839,6 +2839,9 @@ Function GithubSoftwares {
                 #install choco
                 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
                 Start-Sleep 10
+
+                #install vcredist 2015
+                choco install microsoft-vclibs-140-00
         
                 $chocoPath = Get-Command "choco" -ErrorAction SilentlyContinue
                 if ($null -eq $chocoPath) {
