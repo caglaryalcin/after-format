@@ -372,7 +372,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # browser restore files
                 "$env:userprofile\Desktop" = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt"
                 )
             
                 # fan control
@@ -401,6 +400,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     Safe-Invoke-WebRequest -uri $url -outFile $outFile
                 }
             }
+
+            # Download ublaclist config file to desktop
+            "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Restore SteelSeries keyboard settings
             $OriginalProgressPreference = $Global:ProgressPreference
@@ -466,7 +468,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     }
                 }
                 else {
-                    Write-Host "[WARNING] Media Feature Pack capability not found." -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING] Media Feature Pack capability not found." -ForegroundColor Yellow -BackgroundColor Black
                 }
             }
             catch {

@@ -3046,7 +3046,7 @@ $jsonContent = @"
         Write-Host @"
 --------
 Detecting programs that cannot be installed with chocolatey...
---------
+
 "@
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
@@ -3110,8 +3110,10 @@ Detecting programs that cannot be installed with chocolatey...
             Write-Host "[WARNING]: $_" -ForegroundColor Red
         }
 
+        Write-Host "--------"
+
         Function Remove-ChromeComponents {
-            Write-Host "Disabling and removing Chrome services..." -NoNewline
+            Write-Host `n"Disabling and removing Chrome services..." -NoNewline
             $chromeservices = "gupdate", "gupdatem"
             foreach ($service in $chromeservices) {
                 $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
