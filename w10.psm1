@@ -331,7 +331,7 @@ Function SystemSettings {
         #Import Batch to Startup
         Function ImportStartup {
             Write-Host `n"For detailed information " -NoNewline
-            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Gray
             Write-Host "Do you want to " -NoNewline
             Write-Host "add the start task to the task scheduler?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
@@ -3027,7 +3027,8 @@ $jsonContent = @"
 
         Write-Host @"
 --------
-Detecting programs that cannot be installed with chocolatey..."
+Detecting programs that cannot be installed with chocolatey...
+--------
 "@
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
@@ -3348,7 +3349,7 @@ Function UnusedApps {
 |    you can only update manually.            |
 +---------------------------------------------+
 "@
-            Write-Host `n$description -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host `n$description -ForegroundColor Yellow
         
             Write-Host `n"Do you want " -NoNewline
             Write-Host "apps and windows update tasks to be deleted?" -ForegroundColor Yellow -NoNewline
