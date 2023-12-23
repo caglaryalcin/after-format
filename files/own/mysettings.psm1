@@ -24,13 +24,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         
                 Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile "C:\fan_control.zip" *>$null
         
-                $Global:ProgressPreference = $OriginalProgressPreference
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
         
                 Expand-Archive -Path "C:\fan_control.zip" -DestinationPath "C:\fan_control\" -Force *>$null
         
                 Remove-Item "C:\fan_control.zip" -Recurse -ErrorAction SilentlyContinue
         
-                Start-Process "C:\fan_control\FanControl.exe" -PassThru
+                Start-Process "C:\fan_control\FanControl.exe" -PassThru *>$null
         
                 taskkill /f /im FanControl.exe *>$null
             }
