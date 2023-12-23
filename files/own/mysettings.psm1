@@ -371,7 +371,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             
                 # browser restore files
                 "$env:userprofile\Desktop" = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
                 )
             
                 # fan control
