@@ -295,29 +295,41 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 $addonPath = Join-Path $extensionsDir "$addonId.xpi"
         
                 Invoke-WebRequest $addonUrl -Outfile $addonPath
-            } catch {
+            }
+            catch {
                 Write-Host "Error downloading or getting info for addon $addonName $_" -ForegroundColor Red
             }
         
             # Restore user profile settings
             try {
+                # Get the user profile directory
                 $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Filter "*.default-default" -Directory).FullName
+            
+                # Create user profile chrome directory
+                New-Item $userProfileDir\chrome -ItemType Directory *>$null
+            
                 $configUrls = @{
-                    "user.js" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
-                    "Tab Shapes.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
-                    "Toolbar.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                    "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
+                    "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
+                    "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
                     "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css"
-                    "userChrome.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                    "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
                 }
-        
+            
                 foreach ($file in $configUrls.Keys) {
-                    $filePath = Join-Path $userProfileDir "chrome\$file"
+                    # Download the file and save it to the user profile directory
+                    $filePath = if ($file -eq "user.js") {
+                        Join-Path $userProfileDir $file
+                    }
+                    else {
+                        Join-Path $userProfileDir "chrome\$file"
+                    }
                     Invoke-WebRequest -Uri $configUrls[$file] -Outfile $filePath
                 }
-            } catch {
-                Write-Host "Error setting up user profile: $_" -ForegroundColor Red
             }
-        
+            catch {
+                Write-Host "[WARNING]  $_" -ForegroundColor Red
+            }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
