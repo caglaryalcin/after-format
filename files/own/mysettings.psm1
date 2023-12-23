@@ -16,23 +16,39 @@ $response = Read-Host
 if ($response -eq 'y' -or $response -eq 'Y') {
 
     Function Own {
-        Function SetPins {
-            #fan control manual installation
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile C:\fan_control.zip *>$null
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            Expand-Archive -Path 'C:\fan_control.zip' -DestinationPath C:\fan_control\ -Force *>$null
-            Remove-Item C:\fan_control.zip -recurse -ErrorAction SilentlyContinue
-            Start-Process C:\fan_control\FanControl.exe
-            Start-Sleep 10
-            taskkill /f /im FanControl.exe *>$null
 
+        Function InstallFanControl {
+            try {
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+        
+                Invoke-WebRequest -Uri "https://github.com/Rem0o/FanControl.Releases/blob/master/FanControl.zip?raw=true" -Outfile "C:\fan_control.zip" *>$null
+        
+                $Global:ProgressPreference = $OriginalProgressPreference
+        
+                Expand-Archive -Path "C:\fan_control.zip" -DestinationPath "C:\fan_control\" -Force *>$null
+        
+                Remove-Item "C:\fan_control.zip" -Recurse -ErrorAction SilentlyContinue
+        
+                Start-Process "C:\fan_control\FanControl.exe" -PassThru
+        
+                taskkill /f /im FanControl.exe *>$null
+
+                #copy fan control to startup folder
+                Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
+            }
+            catch {
+                Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+        
+        InstallFanControl
+
+        Function SetPins {
             ##Create Icons folder
             New-Item -Path 'C:\icons' -ItemType Directory *>$null
 
-            # CreateShortcut function to simplify the creation of shortcuts
+            # CreateShortcut function
             function CreateShortcut([string]$exePath, [string]$shortcutPath, [string]$workingDirectory = $null, [string]$arguments = $null) {
                 $WScriptShell = New-Object -ComObject WScript.Shell
                 $Shortcut = $WScriptShell.CreateShortcut($shortcutPath)
@@ -47,148 +63,135 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Unblock-File -Path $shortcutPath *>$null
             }
 
-            # Creating shortcuts
-            $shortcutPaths = @{
-                "Google Chrome"           = @{
-                    "Path"             = "C:\Program Files\Google\Chrome\Application\chrome.exe";
-                    "WorkingDirectory" = "C:\Program Files\Google\Chrome\Application\";
-                };
-                "Brave"                   = @{
-                    "Path"             = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe";
-                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application";
-                };
-                "Firefox"                 = @{
-                    "Path"             = "C:\Program Files\Mozilla Firefox\firefox.exe";
-                    "WorkingDirectory" = "C:\Program Files\Mozilla Firefox\";
-                };
-                "LibreWolf"               = @{
-                    "Path"             = "C:\Program Files\LibreWolf\librewolf.exe";
-                    "WorkingDirectory" = "C:\Program Files\LibreWolf\";
-                };
-                "Steam"                   = @{
-                    "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
-                    "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
-                };
-                "Epic Games Launcher"     = @{
-                    "Path"             = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe";
-                    "WorkingDirectory" = "C:\Program Files (x86)\Epic Games\";
-                };
-                "HWMonitor"               = @{
-                    "Path"             = "C:\Program Files\CPUID\HWMonitor\HWMonitor.exe";
-                    "WorkingDirectory" = "C:\Program Files\CPUID\HWMonitor\";
-                };
-                "CrystalDiskInfo"         = @{
-                    "Path"             = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\DiskInfo64.exe";
-                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\";
-                };
-                "VMware Workstation Pro"  = @{
-                    "Path"             = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe";
-                    "WorkingDirectory" = "C:\Program Files (x86)\VMware\VMware Workstation\";
-                };
-                "Oracle VM VirtualBox"    = @{
-                    "Path"             = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe";
-                    "WorkingDirectory" = "C:\Program Files\Oracle\VirtualBox\";
-                };
-                "Signal"                  = @{
-                    "Path"             = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\Signal.exe";
-                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\";
-                };
-                "Visual Studio Code"      = @{
-                    "Path"             = "C:\Program Files\Microsoft VS Code\Code.exe";
-                    "WorkingDirectory" = "C:\Program Files\Microsoft VS Code\";
-                };
-                "Notepad++"          = @{
-                    "Path"             = "C:\Program Files\Notepad++\notepad++.exe";
-                    "WorkingDirectory" = "C:\Program Files\Notepad++\";
-                };
-                "AnyDesk"                 = @{
-                    "Path"             = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe";
-                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\";
-                };
-                "GitHub Desktop"          = @{
-                    "Path"             = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe";
-                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\GitHubDesktop\";
-                };
-                "TreeSizeFree"            = @{
-                    "Path"             = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe";
-                    "WorkingDirectory" = "C:\Program Files\JAM Software\TreeSize Free";
-                };
-                "Total Commander"         = @{
-                    "Path"             = "C:\Program Files\totalcmd\TOTALCMD64.EXE";
-                    "WorkingDirectory" = "C:\Program Files\totalcmd\";
-                };
-                "Putty"                   = @{
-                    "Path"             = "C:\Program Files\PuTTY\putty.exe";
-                    "WorkingDirectory" = "C:\Program Files\PuTTY\";
-                };
-                "Deluge"                  = @{
-                    "Path"             = "C:\Program Files\Deluge\deluge.exe";
-                    "WorkingDirectory" = "C:\Program Files\Deluge\";
-                };
-                "WireShark"               = @{
-                    "Path"             = "C:\Program Files\Wireshark\Wireshark.exe";
-                    "WorkingDirectory" = "C:\Program Files\Wireshark\";
-                };
-                "DBeaver"                 = @{
-                    "Path"             = "C:\Program Files\DBeaver\dbeaver.exe";
-                    "WorkingDirectory" = "C:\Program Files\DBeaver\";
-                };
-                "Cryptomator"             = @{
-                    "Path"             = "C:\Program Files\Cryptomator\Cryptomator.exe";
-                    "WorkingDirectory" = "C:\Program Files\Cryptomator\";
-                };
-                "PowerToys"               = @{
-                    "Path"             = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe";
-                    "WorkingDirectory" = "C:\Program Files\PowerToys\WinUI3Apps\";
-                };
-                "Microsoft Teams classic" = @{
-                    "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
-                    "Arguments"        = "--process Start Teams.exe";
-                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
-                };
-                "dupeGuru"                = @{
-                    "Path"             = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe";
-                    "WorkingDirectory" = "C:\Program Files\Hardcoded Software\dupeGuru\";
-                };
-                "FanControl"              = @{
-                    "Path"             = "C:\fan_control\FanControl.exe";
-                    "WorkingDirectory" = "C:\fan_control\";
-                };
-                "OpenRGB"                 = @{
-                    "Path"             = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe";
-                    "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
-                };
-                "Cloudflare WARP"         = @{
-                    "Path"             = "C:\Program Files\Cloudflare\Cloudflare WARP\Cloudflare WARP.exe";
-                    "WorkingDirectory" = "C:\Program Files\Cloudflare\Cloudflare WARP\";
-                };
-            }
-
-            foreach ($name in $shortcutPaths.Keys) {
-                $WScriptShell = New-Object -ComObject WScript.Shell
-                $path = $shortcutPaths[$name].Path
-                $workingDirectory = $shortcutPaths[$name].WorkingDirectory
-                $shortcutFile = "C:\icons\$name.lnk"
-                $shortcut = $WScriptShell.CreateShortcut($shortcutFile)
-                $shortcut.TargetPath = $path
-                if ($shortcutPaths[$name].Arguments) {
-                    $shortcut.Arguments = $shortcutPaths[$name].Arguments
+            # CreateShortcuts function
+            Function CreateShortcuts {
+                $shortcutPaths = @{
+                    "Google Chrome"           = @{
+                        "Path"             = "C:\Program Files\Google\Chrome\Application\chrome.exe";
+                        "WorkingDirectory" = "C:\Program Files\Google\Chrome\Application\";
+                    };
+                    "Brave"                   = @{
+                        "Path"             = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe";
+                        "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\BraveSoftware\Brave-Browser\Application";
+                    };
+                    "Firefox"                 = @{
+                        "Path"             = "C:\Program Files\Mozilla Firefox\firefox.exe";
+                        "WorkingDirectory" = "C:\Program Files\Mozilla Firefox\";
+                    };
+                    "LibreWolf"               = @{
+                        "Path"             = "C:\Program Files\LibreWolf\librewolf.exe";
+                        "WorkingDirectory" = "C:\Program Files\LibreWolf\";
+                    };
+                    "Steam"                   = @{
+                        "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
+                        "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
+                    };
+                    "Epic Games Launcher"     = @{
+                        "Path"             = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe";
+                        "WorkingDirectory" = "C:\Program Files (x86)\Epic Games\";
+                    };
+                    "HWMonitor"               = @{
+                        "Path"             = "C:\Program Files\CPUID\HWMonitor\HWMonitor.exe";
+                        "WorkingDirectory" = "C:\Program Files\CPUID\HWMonitor\";
+                    };
+                    "CrystalDiskInfo"         = @{
+                        "Path"             = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\DiskInfo64.exe";
+                        "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\crystaldiskinfo.portable\tools\";
+                    };
+                    "VMware Workstation Pro"  = @{
+                        "Path"             = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe";
+                        "WorkingDirectory" = "C:\Program Files (x86)\VMware\VMware Workstation\";
+                    };
+                    "Oracle VM VirtualBox"    = @{
+                        "Path"             = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe";
+                        "WorkingDirectory" = "C:\Program Files\Oracle\VirtualBox\";
+                    };
+                    "Signal"                  = @{
+                        "Path"             = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\Signal.exe";
+                        "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\";
+                    };
+                    "Visual Studio Code"      = @{
+                        "Path"             = "C:\Program Files\Microsoft VS Code\Code.exe";
+                        "WorkingDirectory" = "C:\Program Files\Microsoft VS Code\";
+                    };
+                    "Notepad++"               = @{
+                        "Path"             = "C:\Program Files\Notepad++\notepad++.exe";
+                        "WorkingDirectory" = "C:\Program Files\Notepad++\";
+                    };
+                    "AnyDesk"                 = @{
+                        "Path"             = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\AnyDesk.exe";
+                        "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\anydesk.portable\tools\";
+                    };
+                    "GitHub Desktop"          = @{
+                        "Path"             = "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe";
+                        "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\GitHubDesktop\";
+                    };
+                    "TreeSizeFree"            = @{
+                        "Path"             = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe";
+                        "WorkingDirectory" = "C:\Program Files\JAM Software\TreeSize Free";
+                    };
+                    "Total Commander"         = @{
+                        "Path"             = "C:\Program Files\totalcmd\TOTALCMD64.EXE";
+                        "WorkingDirectory" = "C:\Program Files\totalcmd\";
+                    };
+                    "Putty"                   = @{
+                        "Path"             = "C:\Program Files\PuTTY\putty.exe";
+                        "WorkingDirectory" = "C:\Program Files\PuTTY\";
+                    };
+                    "Deluge"                  = @{
+                        "Path"             = "C:\Program Files\Deluge\deluge.exe";
+                        "WorkingDirectory" = "C:\Program Files\Deluge\";
+                    };
+                    "WireShark"               = @{
+                        "Path"             = "C:\Program Files\Wireshark\Wireshark.exe";
+                        "WorkingDirectory" = "C:\Program Files\Wireshark\";
+                    };
+                    "DBeaver"                 = @{
+                        "Path"             = "C:\Program Files\DBeaver\dbeaver.exe";
+                        "WorkingDirectory" = "C:\Program Files\DBeaver\";
+                    };
+                    "Cryptomator"             = @{
+                        "Path"             = "C:\Program Files\Cryptomator\Cryptomator.exe";
+                        "WorkingDirectory" = "C:\Program Files\Cryptomator\";
+                    };
+                    "PowerToys"               = @{
+                        "Path"             = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe";
+                        "WorkingDirectory" = "C:\Program Files\PowerToys\WinUI3Apps\";
+                    };
+                    "Microsoft Teams classic" = @{
+                        "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
+                        "Arguments"        = "--process Start Teams.exe";
+                        "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
+                    };
+                    "dupeGuru"                = @{
+                        "Path"             = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe";
+                        "WorkingDirectory" = "C:\Program Files\Hardcoded Software\dupeGuru\";
+                    };
+                    "FanControl"              = @{
+                        "Path"             = "C:\fan_control\FanControl.exe";
+                        "WorkingDirectory" = "C:\fan_control\";
+                    };
+                    "OpenRGB"                 = @{
+                        "Path"             = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe";
+                        "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
+                    };
+                    "Cloudflare WARP"         = @{
+                        "Path"             = "C:\Program Files\Cloudflare\Cloudflare WARP\Cloudflare WARP.exe";
+                        "WorkingDirectory" = "C:\Program Files\Cloudflare\Cloudflare WARP\";
+                    };
                 }
-                $shortcut.WorkingDirectory = $workingDirectory
-                $shortcut.Save()
-                Unblock-File -Path $shortcutFile
+
+                foreach ($name in $shortcutPaths.Keys) {
+                    $path = $shortcutPaths[$name].Path
+                    $workingDirectory = $shortcutPaths[$name].WorkingDirectory
+                    $arguments = $shortcutPaths[$name].Arguments
+                    $shortcutFile = "C:\icons\$name.lnk"
+
+                    CreateShortcut -exePath $path -shortcutPath $shortcutFile -workingDirectory $workingDirectory -arguments $arguments
+                }
             }
 
-            #copy fan control to startup folder
-            Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
-
-            #create config folder
-            $job = Start-Job -ScriptBlock { 
-                & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
-            } *>$null
-         
-            Start-Sleep 10
-            taskkill.exe /f /im OpenRGB.exe *>$null
+            CreateShortcuts
 
             #delete all files on desktop
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
@@ -266,57 +269,52 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         #Restore Librewolf settings
         function installLibreWolfAddIn() {
             Write-Host "Librewolf settings are being restored..." -NoNewline
-
-            #install bitwarden add-in
-            cd "C:\Program Files\LibreWolf\"
-            .\librewolf.exe
-            Start-Sleep 2
-            taskkill /f /im "librewolf.exe" *>$null
-
-            $instdir = "C:\Program Files\LibreWolf"
-            $distribution = $instdir + '\distribution'
-            $extensions = $instdir + '\distribution\extensions'
-
-            $addons = @{
-                "bitwarden-password-manager"     = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
+        
+            # Initialize variables
+            $libreWolfDir = "C:\Program Files\LibreWolf"
+            $distributionDir = Join-Path $libreWolfDir 'distribution'
+            $extensionsDir = Join-Path $distributionDir 'extensions'
+        
+            # Ensure necessary directories exist
+            $distributionDir, $extensionsDir | ForEach-Object {
+                if (-Not (Test-Path $_)) { New-Item $_ -ItemType Directory | Out-Null }
             }
-
-            If (-Not(Test-Path $distribution)) {
-                New-Item $distribution -ItemType Container | Out-Null
+        
+            # Install Bitwarden add-in
+            try {
+                $addonName = "bitwarden-password-manager"
+                $addonId = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
+                $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$addonName/addon-$addonName-latest.xpi"
+                $addonPath = Join-Path $extensionsDir "$addonId.xpi"
+        
+                Invoke-WebRequest $addonUrl -Outfile $addonPath
+            } catch {
+                Write-Host "Error downloading or getting info for addon $addonName $_" -ForegroundColor Red
             }
-            If (-Not(Test-Path $extensions)) {
-                New-Item $extensions -ItemType Container | Out-Null
-            }
-
-            foreach ($addon in $addons.GetEnumerator()) {
-                try {
-                    $response = Invoke-RestMethod -Uri "https://addons.mozilla.org/api/v4/addons/addon/$($addon.Name)/"
-
-                    $latestVersion = $response.current_version.version
-
-                    $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$($addon.Name)/addon-$($addon.Name)-latest.xpi"
-
-                    $addonPath = $extensions + '\' + $addon.Value + '.xpi'
-
-                    Invoke-WebRequest $addonUrl -Outfile $addonPath
+        
+            # Restore user profile settings
+            try {
+                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Filter "*.default-default" -Directory).FullName
+                $configUrls = @{
+                    "user.js" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
+                    "Tab Shapes.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
+                    "Toolbar.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                    "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css"
+                    "userChrome.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
                 }
-                catch {
-                    Write-Host "Error downloading or getting info for addon $($addon.Name): $_" -ForegroundColor Red
+        
+                foreach ($file in $configUrls.Keys) {
+                    $filePath = Join-Path $userProfileDir "chrome\$file"
+                    Invoke-WebRequest -Uri $configUrls[$file] -Outfile $filePath
                 }
+            } catch {
+                Write-Host "Error setting up user profile: $_" -ForegroundColor Red
             }
-
-            #it is necessary to formation of a profile
-            $dest = Get-ChildItem -Path $env:USERPROFILE\AppData\Roaming\librewolf\Profiles\ -Filter "*.default-default" -Directory
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js" -Outfile "$($dest.FullName)\user.js"
-            New-Item -Path "$($dest.FullName)" -Name chrome -ItemType "directory" *>$null
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css" -Outfile "$($dest.FullName)\chrome\Tab Shapes.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$($dest.FullName)\chrome\Toolbar.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css" -Outfile "$($dest.FullName)\chrome\userContent.css"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css" -Outfile "$($dest.FullName)\chrome\userChrome.css"
+        
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
-        installLibreWolfAddIn("");
+        
+        installLibreWolfAddIn        
                 
         function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
@@ -360,32 +358,32 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes" = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/VS2018-Dark_plus.xml"
                 )
-                "$env:USERPROFILE\Appdata\Roaming\Notepad++\" = @(
+                "$env:USERPROFILE\Appdata\Roaming\Notepad++\"       = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/config.xml"
                 )
             
                 # power toys
-                "$env:UserProfile\Documents\PowerToys\Backup" = @(
+                "$env:UserProfile\Documents\PowerToys\Backup"       = @(
                     "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
                 )
             
                 # browser restore files
-                "$env:userprofile\Desktop" = @(
+                "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
                 )
             
                 # fan control
-                "C:\fan_control\Configurations" = @(
+                "C:\fan_control\Configurations"                     = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/fan/my_fan_config.json"
                 )
             
                 # openrgb
-                "$env:USERPROFILE\Appdata\Roaming\Openrgb" = @(
+                "$env:USERPROFILE\Appdata\Roaming\Openrgb"          = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/led/my_led_config.orp"
                 )
             
                 # keyboard
-                "C:\ProgramData\SteelSeries\" = @(
+                "C:\ProgramData\SteelSeries\"                       = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
                 )
             }
@@ -401,7 +399,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
             }
 
-            # Download ublaclist config file to desktop
+            # Download ublacklist config file to desktop
             "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Restore SteelSeries keyboard settings
@@ -410,6 +408,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Expand-Archive -Path 'C:\programdata\SteelSeries\GG.zip' -DestinationPath C:\programdata\SteelSeries\ -Force *>$null
             Remove-Item C:\programdata\SteelSeries\GG.zip -recurse -ErrorAction SilentlyContinue
             
+            #create config folder
+            $job = Start-Job -ScriptBlock { 
+                & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
+            } *>$null
+         
+            Start-Sleep 10
+            taskkill.exe /f /im OpenRGB.exe *>$null
+
             # Restore PowerToys settings
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
@@ -498,18 +504,37 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
         #Adobe DNG Codec
         Function DNGCodec {
-            $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
-            $filePath = "C:\DNGCodec_Installer.exe"
-
-            Invoke-WebRequest -Uri $url -OutFile $filePath
-
-            Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
-
-            Remove-Item -Path $filePath
-
+            Write-Host "Installing DNG Codec..." -NoNewline
+            try {
+                $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
+                $filePath = "C:\DNGCodec_Installer.exe"
+                $programName = "Adobe DNG Codec"
+        
+                Invoke-WebRequest -Uri $url -OutFile $filePath
+        
+                if (Test-Path -Path $filePath) {
+                    Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
+        
+                    Remove-Item -Path $filePath
+        
+                    $program = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "*$programName*" }
+                    if ($program) {
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    else {
+                        Write-Host "[WARNING] Failed to load Adobe DNG Codec." -ForegroundColor Red
+                    }
+                }
+                else {
+                    Write-Host "[WARNING] Failed to download file." -ForegroundColor Red
+                }
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Yellow
+            }
         }
         
-        DNGCodec
+        DNGCodec            
     }
 
     Own
