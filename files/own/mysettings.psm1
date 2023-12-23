@@ -33,9 +33,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Start-Process "C:\fan_control\FanControl.exe" -PassThru
         
                 taskkill /f /im FanControl.exe *>$null
-
-                #copy fan control to startup folder
-                Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
             }
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
@@ -192,6 +189,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
 
             CreateShortcuts
+
+            #copy fan control to startup folder
+            Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
 
             #delete all files on desktop
             Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
