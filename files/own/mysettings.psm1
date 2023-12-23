@@ -270,6 +270,12 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         #Restore Librewolf settings
         function installLibreWolfAddIn() {
             Write-Host "Librewolf settings are being restored..." -NoNewline
+
+            # Create librewolf profile directory
+            cd "C:\Program Files\LibreWolf\"
+            .\librewolf.exe
+            Start-Sleep 2
+            taskkill /f /im "librewolf.exe" *>$null
         
             # Initialize variables
             $libreWolfDir = "C:\Program Files\LibreWolf"
