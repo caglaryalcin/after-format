@@ -407,7 +407,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 catch {
                     Write-Host "[WARNING]  $_" -ForegroundColor Red
                 }
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
         
             installLibreWolfAddIn  
