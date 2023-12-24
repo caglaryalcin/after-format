@@ -36,7 +36,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 taskkill /f /im FanControl.exe *>$null
             }
             catch {
-                Write-Host "[WARNING]: There was an error loading FanControl. $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING]:: There was an error loading FanControl. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -196,7 +196,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Copy-Item "C:\icons\FanControl.lnk" "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
             }
             catch {
-                Write-Host "[WARNING] Error copying FanControl to startup folder. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Error copying FanControl to startup folder. $_" -ForegroundColor Red
             }
             
             # Delete all files on desktop
@@ -205,7 +205,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Get-ChildItem "C:\users\Public\Desktop\*.lnk" | ForEach-Object { Remove-Item $_ -ErrorAction Stop }
             }
             catch {
-                Write-Host "[WARNING] Error deleting all files on the desktop. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Error deleting all files on the desktop. $_" -ForegroundColor Red
             }
             
 
@@ -223,7 +223,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
             }
             catch {
-                Write-Host "[WARNING] Unable to delete Brave and Firefox shortcut from taskbar. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Unable to delete Brave and Firefox shortcut from taskbar. $_" -ForegroundColor Red
             }
             
             # Remove registry path of all taskbar icons
@@ -231,7 +231,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse -Force -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] Error removing the registry path of taskbar icons. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Error removing the registry path of taskbar icons. $_" -ForegroundColor Red
             }
             
 
@@ -254,7 +254,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 taskkill /f /im explorer.exe *>$null
             }
             catch {
-                Write-Host "[WARNING] Error while importing and setting taskbar icons. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Error while importing and setting taskbar icons. $_" -ForegroundColor Red
             }
 
             # Delete registry file and icons folder
@@ -268,7 +268,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Remove-Item "C:\icons\" -Recurse -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] Error deleting registry file and icons folder. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Error deleting registry file and icons folder. $_" -ForegroundColor Red
             }
             
         }
@@ -302,7 +302,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING] Error installing Chipset driver. $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING]: Error installing Chipset driver. $_" -ForegroundColor Red -BackgroundColor Black
             }
 
             # NVIDIA Driver installation
@@ -314,7 +314,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
             catch {
                 # If an error occurred during installation, output a warning
-                Write-Host "[WARNING]: Error installing Nvidia driver.." -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING]:: Error installing Nvidia driver.." -ForegroundColor Red -BackgroundColor Black
             }
         }
                 
@@ -330,7 +330,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     New-Item -ItemType Directory -Force -Path $path | Out-Null
                 }
                 catch {
-                    Write-Host " [WARNING] Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host " [WARNING]: Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }            
 
@@ -340,7 +340,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     Invoke-WebRequest -Uri $uri -Outfile $outFile
                 }
                 catch {
-                    Write-Host " [WARNING] Failed to download from: $uri. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host " [WARNING]: Failed to download from: $uri. Error: $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
             
@@ -405,7 +405,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     }
                 }
                 catch {
-                    Write-Host "[WARNING]  $_" -ForegroundColor Red
+                    Write-Host "[WARNING]:  $_" -ForegroundColor Red
                 }
             }
         
@@ -479,7 +479,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Remove-Item 'C:\programdata\SteelSeries\GG.zip' -Recurse -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red
+                Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
             
             # Create openrgb config folder
@@ -493,7 +493,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 taskkill.exe /f /im OpenRGB.exe *>$null
             }
             catch {
-                Write-Host "[WARNING] Error creating OpenRGB config file. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Error creating OpenRGB config file. $_" -ForegroundColor Red
             }
             
             # Restore PowerToys settings
@@ -501,7 +501,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
             }
             catch {
-                Write-Host " [WARNING] Error restoring Powertoys config file. $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host " [WARNING]: Error restoring Powertoys config file. $_" -ForegroundColor Red -BackgroundColor Black
             }
                     
             # Monitor settings prompt
@@ -510,7 +510,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
             }
             catch {
-                Write-Host " [WARNING] Failed to set monitor settings. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host " [WARNING]: Failed to set monitor settings. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
                     
             # Import Cloudflare certificate
@@ -521,7 +521,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Remove-Item -Path $certPath -Force
             }
             catch {
-                Write-Host " [WARNING] Failed to import Cloudflare certificate. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host " [WARNING]: Failed to import Cloudflare certificate. Error: $_" -ForegroundColor Red -BackgroundColor Black
             }
                     
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -550,11 +550,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     }
                 }
                 else {
-                    Write-Host "[WARNING] Media Feature Pack capability not found." -ForegroundColor Yellow -BackgroundColor Black
+                    Write-Host "[WARNING]: Media Feature Pack capability not found." -ForegroundColor Yellow -BackgroundColor Black
                 }
             }
             catch {
-                Write-Host " [WARNING] Failed. Error: $_" -ForegroundColor Red
+                Write-Host " [WARNING]: Failed. Error: $_" -ForegroundColor Red
             }
         }
         
@@ -572,7 +572,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING] Failed to set wallpaper: $_" -ForegroundColor Yellow
+                Write-Host "[WARNING]: Failed to set wallpaper: $_" -ForegroundColor Yellow
             }
         }
         
@@ -592,14 +592,14 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Invoke-WebRequest -Uri $url -OutFile $filePath
             }
             catch {
-                Write-Host "[WARNING] Failed to download Adobe DNG Codec file. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Failed to download Adobe DNG Codec file. $_" -ForegroundColor Red
             }
             
             # Install DNG Codec
             try {
                 Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
             } catch {
-                Write-Host "[WARNING] Failed to install Adobe DNG Codec. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Failed to install Adobe DNG Codec. $_" -ForegroundColor Red
             }
         
             # Delete the installer file
@@ -608,7 +608,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
             }
             catch {
-                Write-Host "[WARNING] Failed to delete Adobe DNG Codec installer file. $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Failed to delete Adobe DNG Codec installer file. $_" -ForegroundColor Red
             }
         
             # Check if DNG Codec is installed
@@ -633,7 +633,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
         
             if (-not $dngCodec) {
-                Write-Host "[WARNING] Adobe DNG Codec not found after install check." -ForegroundColor Yellow
+                Write-Host "[WARNING]: Adobe DNG Codec not found after install check." -ForegroundColor Yellow
             }
         }
         

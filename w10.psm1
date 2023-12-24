@@ -51,7 +51,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\Open\Command" -Name "(Default)" -Value '"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "%1"'
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: .ps1 could not be set as default for powershell. $_" -ForegroundColor Red
             }
         }
 
@@ -82,7 +82,7 @@ Function SystemSettings {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
-                    Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    Write-Host "[WARNING]: The date format could not be set to turkey. $_" -ForegroundColor Red
                 }
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
@@ -121,104 +121,79 @@ Function SystemSettings {
 
         # DisableDefender
         Function DisableDefender {
-            Write-Host `n"Do you want " -NoNewline
-            Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
+            Write-Host "`nDo you want to disable Windows Defender?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
-
+        
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Disabling Windows Defender..." -NoNewline
-                # Disable Defender Cloud
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
+        
+                try {
+                    # Disable Defender Cloud
+                    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")) {
+                        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
+                    }
+        
+                    # Remove existing policies
+                    Remove-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Recurse -ErrorAction SilentlyContinue
+        
+                    # Create new policies
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Force *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -PropertyType Dword -Value "1" *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiVirus" -PropertyType Dword -Value "1" *>$null
+        
+                    # Disable Real-Time Protection
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Force *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableBehaviorMonitoring" -PropertyType Dword -Value "1" *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableIOAVProtection" -PropertyType Dword -Value "1" *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -PropertyType Dword -Value "1" *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -PropertyType Dword -Value "1" *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableScanOnRealtimeEnable" -PropertyType Dword -Value "1" *>$null
+        
+                    # Disable Cloud-Based Protection
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "DisableBlockAtFirstSeen" -PropertyType Dword -Value "1" *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SpynetReporting" -PropertyType Dword -Value "0" *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SubmitSamplesConsent" -PropertyType Dword -Value "0" *>$null
+        
+                    # Disable Enhanced Notifications
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Force *>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Name "DisableEnhancedNotifications" -PropertyType Dword -Value "1" *>$null
+        
+                    # Disable Windows Defender tasks
+                    schtasks /Change /TN "Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh" /Disable *>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /Disable *>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /Disable *>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /Disable *>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Verification" /Disable *>$null
+        
+                    # Remove Windows Defender context menu entries
+                    New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+                    Remove-Item -LiteralPath "HKCR:\*\shellex\ContextMenuHandlers\EPP" -ErrorAction SilentlyContinue
+                    Remove-Item -Path "HKCR:\Directory\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
+                    Remove-Item -Path "HKCR:\Drive\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
+        
+                    # Restart Windows Explorer
+                    taskkill /f /im explorer.exe *>$null
+                    Start-Process "explorer.exe" -NoNewWindow
+        
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
                 }
-                # REG
-                Remove-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Recurse -ErrorAction SilentlyContinue
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -PropertyType Dword -Value "1" *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiVirus" -PropertyType Dword -Value "1" *>$null
-                New-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows Defender" -Name "DisableRoutinelyTakingAction"-PropertyType Dword -Value "1" *>$null
-                New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\MpEngine" -Force *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\MpEngine" -Name "MpEnablePus" -PropertyType Dword -Value "0" *>$null
-                New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Force *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableBehaviorMonitoring" -PropertyType Dword -Value "1" *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableIOAVProtection" -PropertyType Dword -Value "1" *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -PropertyType Dword -Value "1" *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -PropertyType Dword -Value "1" *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableScanOnRealtimeEnable" -PropertyType Dword -Value "1" *>$null
-                New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Force *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Name "DisableEnhancedNotifications" -PropertyType Dword -Value "1" *>$null
-                New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Force *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "DisableBlockAtFirstSeen" -PropertyType Dword -Value "1" *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "SpynetReporting" -PropertyType Dword -Value "0" *>$null
-                New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SpyNet" -Name "SubmitSamplesConsent" -PropertyType Dword -Value "0" *>$null
-                Set-Item "HKLM:\SOFTWARE\Classes\CLSID\{09A47860-11B0-4DA5-AFA5-26D86198A780}\InprocServer32" "" *>$null
-    
-                # Disable Logging
-                Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\WMI\Autologger\DefenderApiLogger" -Name "Start" -Type Dword -Value 0 *>$null
-                Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\WMI\Autologger\DefenderAuditLogger" -Name "Start" -Type Dword -Value 0 *>$null
-    
-                # Disable WD Tasks
-                schtasks /Change /TN "Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh" /Disable *>$null
-                schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /Disable *>$null
-                schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /Disable *>$null
-                schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /Disable *>$null
-                schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Verification" /Disable *>$null
-    
-                # Remove WD context menu
-                New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-                Remove-Item -LiteralPath "HKCR:\*\shellex\ContextMenuHandlers\EPP" -ErrorAction SilentlyContinue
-                Remove-Item -Path "HKCR:\Directory\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
-                Remove-Item -Path "HKCR:\Drive\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
-
-                # Disable WD services
-                #reg add "HKLM\System\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d "4" /f
-                #reg add "HKLM\System\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d "4" /f
-                #reg add "HKLM\System\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d "4" /f
-                #reg add "HKLM\System\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d "4" /f
-                #reg add "HKLM\System\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d "4" /f
-                #reg add "HKLM\System\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d "4" /f
-    
-                #PS
-                $SetMpPreference = @{
-                    DisableRealtimeMonitoring                    = $true
-                    DisableBehaviorMonitoring                    = $true
-                    DisableBlockAtFirstSeen                      = $true
-                    DisableIOAVProtection                        = $true
-                    DisablePrivacyMode                           = $true
-                    SignatureDisableUpdateOnStartupWithoutEngine = $true
-                    DisableArchiveScanning                       = $true
-                    DisableIntrusionPreventionSystem             = $true
-                    DisableScriptScanning                        = $true
+                catch {
+                    Write-Host "[WARNING]: An error occurred while disabling Windows Defender. $_" -ForegroundColor Red -BackgroundColor Black
                 }
-    
-                Set-MpPreference @SetMpPreference -ErrorAction Ignore
-    
-                Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction Ignore;
-                Set-MpPreference -MAPSReporting 0 -ErrorAction Ignore;
-                Set-MpPreference -HighThreatDefaultAction 6 -Force -ErrorAction Ignore;
-                Set-MpPreference -ModerateThreatDefaultAction 6 -ErrorAction Ignore;
-                Set-MpPreference -LowThreatDefaultAction 6 -ErrorAction Ignore;
-                Set-MpPreference -SevereThreatDefaultAction 6 -ErrorAction Ignore;
-
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-                
-            }
-            elseif ($response -eq 'n' -or $response -eq 'N') {
-
-                #Exclude github folders for scan
-                Set-MpPreference -ExclusionExtension ".psm1", ".bat", ".cmd", ".ps1", ".vbs"
-
-                Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                DisableDefender
+                elseif ($response -eq 'n' -or $response -eq 'N') {
+                    Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                    DisableDefender
+                }
             }
         }
-
+        
         DisableDefender
-
-        function SetKeyboardLayout {
+        Function SetKeyboardLayout {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "set the keyboard layout to UK or TR?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
@@ -338,44 +313,44 @@ Function SystemSettings {
             $response = Read-Host
 
             if ($response -eq 'y' -or $response -eq 'Y') {
-            Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
+                Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
         
-            $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/startup.xml"
-            $taskXmlPath = "$env:TEMP\startup.xml"
+                $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/startup.xml"
+                $taskXmlPath = "$env:TEMP\startup.xml"
         
-            try {
-                Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath -ErrorAction Stop
+                try {
+                    Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath -ErrorAction Stop
+                }
+                catch {
+                    Write-Host "[WARNING]: Failed to download XML file: $_" -ForegroundColor Red -BackgroundColor Black
+                }
+        
+                $taskName = "startup"
+                $taskXmlContent = Get-Content $taskXmlPath -Raw
+        
+                $taskService = New-Object -ComObject "Schedule.Service"
+                $taskService.Connect()
+        
+                $taskFolder = $taskService.GetFolder("\")
+                $taskDefinition = $taskService.NewTask(0)
+                $taskDefinition.XmlText = $taskXmlContent
+        
+                try {
+                    $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
+                }
+                catch {
+                    Write-Host "[WARNING]: Failed to register the task: $_" -ForegroundColor Red -BackgroundColor Black
+                }
+        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            catch {
-                Write-Host "[WARNING] Failed to download XML file: $_" -ForegroundColor Yellow
-            }
-        
-            $taskName = "startup"
-            $taskXmlContent = Get-Content $taskXmlPath -Raw
-        
-            $taskService = New-Object -ComObject "Schedule.Service"
-            $taskService.Connect()
-        
-            $taskFolder = $taskService.GetFolder("\")
-            $taskDefinition = $taskService.NewTask(0)
-            $taskDefinition.XmlText = $taskXmlContent
-        
-            try {
-                $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
-            }
-            catch {
-                Write-Host "[WARNING] Failed to register the task: $_" -ForegroundColor Yellow
-            }
-        
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-            Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
-        }
+                Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
+            }
             else {
-            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-            ImportStartup
-        }
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                ImportStartup
+            }
         }
         
         ImportStartup
@@ -398,7 +373,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[WARNING]: Windows sync could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
 
@@ -408,26 +383,25 @@ Function SystemSettings {
         Function DisableSpotlight {
             Write-Host "Disabling Spotlight..." -NoNewline
         
-            # First registry path
-            $registryPath1 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+            $DisableSpotlight1 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
         
-            if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force *>$null
+            if (-not (Test-Path $DisableSpotlight1)) {
+                New-Item -Path $DisableSpotlight1 -Force *>$null
             }
         
-            # Second registry path
-            $registryPath2 = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+            $DisableSpotlight2 = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
         
-            if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force *>$null
+            if (-not (Test-Path $DisableSpotlight2)) {
+                New-Item -Path $DisableSpotlight2 -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath1 -Name "NoWindowsSpotlight" -Value 1
-                Set-ItemProperty -Path $registryPath2 -Name "RotatingLockScreenOverlayEnabled" -Value 0
+                Set-ItemProperty -Path $DisableSpotlight1 -Name "NoWindowsSpotlight" -Value 1
+                Set-ItemProperty -Path $DisableSpotlight2 -Name "RotatingLockScreenOverlayEnabled" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Spotlight could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
 
@@ -437,26 +411,25 @@ Function SystemSettings {
         Function DisableLockScreenNotifications {
             Write-Host "Disabling toast and apps notifications on lock screen..." -NoNewline
         
-            # First registry path
-            $registryPath1 = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings"
+            $locksreen1 = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings"
         
-            if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force *>$null
+            if (-not (Test-Path $locksreen1)) {
+                New-Item -Path $locksreen1 -Force *>$null
             }
         
-            # Second registry path
-            $registryPath2 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
+            $locksreen2 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
         
-            if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force *>$null
+            if (-not (Test-Path $locksreen2)) {
+                New-Item -Path $locksreen2 -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath1 -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
-                Set-ItemProperty -Path $registryPath2 -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
+                Set-ItemProperty -Path $locksreen1 -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
+                Set-ItemProperty -Path $locksreen2 -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Lock screen notification could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -466,26 +439,25 @@ Function SystemSettings {
         Function DisableWMPDiagnostics {
             Write-Host "Disabling Windows Media Player diagnostics..." -NoNewline
         
-            # First registry path
-            $registryPath1 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences\HME"
+            $WMPDiag1 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences\HME"
         
-            if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force *>$null
+            if (-not (Test-Path $WMPDiag1)) {
+                New-Item -Path $WMPDiag1 -Force *>$null
             }
         
-            # Second registry path
-            $registryPath2 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences"
+            $WMPDiag2 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences"
         
-            if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force *>$null
+            if (-not (Test-Path $WMPDiag2)) {
+                New-Item -Path $WMPDiag2 -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath1 -Name "WMPDiagnosticsEnabled" -Value 0
-                Set-ItemProperty -Path $registryPath2 -Name "UsageTracking" -Value 0
+                Set-ItemProperty -Path $WMPDiag1 -Name "WMPDiagnosticsEnabled" -Value 0
+                Set-ItemProperty -Path $WMPDiag2 -Name "UsageTracking" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Windows media player diagnostics could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -496,17 +468,18 @@ Function SystemSettings {
             Write-Host "Disabling extension of Windows search with Bing..." -NoNewline
         
             # Registry path
-            $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+            $bingsearch = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
         
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+            if (-not (Test-Path $bingsearch)) {
+                New-Item -Path $bingsearch -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath -Name "DisableSearchBoxSuggestions" -Value 1
+                Set-ItemProperty -Path $bingsearch -Name "DisableSearchBoxSuggestions" -Value 1
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Windows search extension with Bing could not be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -516,23 +489,14 @@ Function SystemSettings {
         Function DefaultPhotoViewer {
             Write-Host "Default Old Photo Viewer..." -NoNewline
             $OldPhotoViewer = ".bmp", ".dng", ".ico", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".raw"
-            $allSuccessful = $true
         
             foreach ($extension in $OldPhotoViewer) {
                 try {
                     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name $extension -Type String -Value "PhotoViewer.FileAssoc.Tiff" -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
-                    $allSuccessful = $false
+                    Write-Host "[WARNING]: Old photo viewer could not be set. $_" -ForegroundColor Red
                 }
-            }
-        
-            if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[DONE WITH WARNINGS]" -ForegroundColor Yellow -BackgroundColor Black
             }
         }
         
@@ -545,7 +509,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Aplications could not be set to dark mode. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -562,7 +526,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: System could not be set to dark mode. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -572,39 +536,16 @@ Function SystemSettings {
         # Set Control Panel view to Large icons (Classic)
         Function SetControlPanelLargeIcons {
             Write-Host "Setting Control Panel view to large icons..." -NoNewline
-            $allSuccessful = $true
-        
+
             try {
                 If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel")) {
                     New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" -Force -ErrorAction Stop | Out-Null
                 }
-            }
-            catch {
-                Write-Host "Error: $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" -Name "StartupPage" -Type DWord -Value 1 -ErrorAction Stop
-            }
-            catch {
-                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" -Name "AllItemsIconView" -Type DWord -Value 0 -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[DONE WITH WARNINGS]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[WARNING]: Control panel icons could not be set to large. $_" -ForegroundColor Red
             }
         }
         
@@ -626,7 +567,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -Value 1 -ErrorAction Stop
             }
             catch {
-                Write-Host "Hata oluştu: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
         }
         
@@ -635,48 +576,24 @@ Function SystemSettings {
         # Enable NumLock after startup
         Function EnableNumlock {
             Write-Host "Enabling NumLock after startup..." -NoNewline
-            $allSuccessful = $true
-        
+
             try {
                 If (!(Test-Path "HKU:")) {
                     New-PSDrive -Name "HKU" -PSProvider "Registry" -Root "HKEY_USERS" -ErrorAction Stop | Out-Null
                 }
-            }
-            catch {
-                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+                
+                # Enable NumLock after startup
                 Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value "2147483650" -ErrorAction Stop
-            }
-            catch {
-                Write-Host "[WARNING] Error: $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+                
+                # Numlock control and settings
                 Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
                 If (!([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
-                    try {
-                        $wsh = New-Object -ComObject WScript.Shell
-                        $wsh.SendKeys('{NUMLOCK}')
-                    }
-                    catch {
-                        throw "Error: $_"
-                    }
+                    $wsh = New-Object -ComObject WScript.Shell
+                    $wsh.SendKeys('{NUMLOCK}')
                 }
             }
             catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[DONE WITH WARNINGS]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[WARNING]: Numlock could not be set. $_" -ForegroundColor Red
             }
         }
         
@@ -687,17 +604,11 @@ Function SystemSettings {
             Write-Host "Disabling Windows Beep Sound..." -NoNewline
             try {
                 Set-ItemProperty -Path "HKCU:\Control Panel\Sound" -Name "Beep" -Type String -Value no
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
-            try {
                 Set-Service beep -StartupType disabled *>$null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Windows beep sound could not be disable. $_" -ForegroundColor Red
             }
-            
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
@@ -710,7 +621,7 @@ Function SystemSettings {
                 Disable-NetAdapterBinding -Name "*" -ComponentID "ms_tcpip6"
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Could not to be disable IPv6. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -725,7 +636,7 @@ Function SystemSettings {
                 Disable-NetAdapter -Name "*Virtual*" -Confirm:$false *>$null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: VMware ethernet adapters could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -740,7 +651,7 @@ Function SystemSettings {
                 Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses ("1.1.1.1", "1.0.0.1") -ErrorAction SilentlyContinue
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: CloudFlare DNS could not be set. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black        
         }
@@ -748,7 +659,7 @@ Function SystemSettings {
         SetCFDNS
 
         # Windows Explorer configure settings
-        Function hidequickaccess {
+        Function Hidequickaccess {
             Write-Host "Configuring Windows Explorer settings..." -NoNewline
         
             $settings = @{
@@ -778,7 +689,7 @@ Function SystemSettings {
                         Set-ItemProperty -Path $path -Name $name -Value $settings[$path][$name] -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING] Error: $_" -ForegroundColor Red
+                        Write-Host "[WARNING]: Errors occurred while adjusting hidequick access settings. $_" -ForegroundColor Red
                         $allSuccessful = $false
                     }
                 }
@@ -788,11 +699,11 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
-        hidequickaccess
+        Hidequickaccess
 
         # File Explorer Expand Ribbon
         Function FileExplorerExpandRibbon {
@@ -806,7 +717,7 @@ Function SystemSettings {
                     New-Item -Path $path -ErrorAction Stop | Out-Null
                 }
                 catch {
-                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING]: Unable to create ribbon registry key. $_" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -821,7 +732,7 @@ Function SystemSettings {
                     Set-ItemProperty -Path $path -Name $name -Value $settings[$name] -Type DWord -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING]: Unable to set ribbon registry key. $_" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -830,7 +741,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -852,7 +763,7 @@ Function SystemSettings {
                         New-Item -Path $path -Force -ErrorAction Stop | Out-Null
                     }
                     catch {
-                        Write-Host "[WARNING] Error: $_" -ForegroundColor Red
+                        Write-Host "[WARNING]: Reg key to hide the recycle bin could not be generated. $_" -ForegroundColor Red
                         $allSuccessful = $false
                     }
                 }
@@ -861,7 +772,7 @@ Function SystemSettings {
                     Set-ItemProperty -Path $path -Name $paths[$path] -Value 1 -Type DWord -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "[WARNING] Error: $_" -ForegroundColor Red
+                    Write-Host "[WARNING]: Reg key to hide the recycle bin could not be set. $_" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -870,7 +781,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -883,12 +794,12 @@ Function SystemSettings {
                 powercfg -h off
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Hiberfil could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black        
         }
 
-        DisableHiberfil
+        #DisableHiberfil
 
         # Disable Display and Sleep mode timeouts 
         Function DisableSleepTimeout {
@@ -910,7 +821,7 @@ Function SystemSettings {
                 $process = Start-Process cmd.exe -ArgumentList "/c $command" -PassThru -Wait -WindowStyle Hidden
         
                 if ($process.ExitCode -ne 0) {
-                    Write-Host "[WARNING] Command failed: $command with Exit Code: $($process.ExitCode)" -ForegroundColor Red
+                    Write-Host "[WARNING]: Command failed for display and sleep mode: $command with Exit Code: $($process.ExitCode)" -ForegroundColor Red
                     $allSuccessful = $false
                 }
             }
@@ -919,7 +830,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -934,7 +845,7 @@ Function SystemSettings {
                 }
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Microsoft products update settings could not be turned off. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
@@ -946,84 +857,56 @@ Function SystemSettings {
             Write-Host "Disabling Cortana..." -NoNewline
         
             $allSuccessful = $true
-        
+
             try {
+                # Personalization Settings
                 If (!(Test-Path "HKCU:\Software\Microsoft\Personalization\Settings")) {
                     New-Item -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to set AcceptedPrivacyPolicy." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Input Personalization
                 If (!(Test-Path "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore")) {
                     New-Item -Path "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\InputPersonalization" -Name "RestrictImplicitTextCollection" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\InputPersonalization" -Name "RestrictImplicitInkCollection" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore" -Name "HarvestContacts" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to configure InputPersonalization." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Show Cortana Button
                 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowCortanaButton" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to hide Cortana button." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Allow Cortana Policy
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowCortana" -Name "Value" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to set AllowCortana policy." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Windows Search Policies
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to configure Windows Search policies." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Input Personalization Policies
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization" -Name "AllowInputPersonalization" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to set InputPersonalization policies." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
-                $progressPreference = 'silentlyContinue'
+            
+                # Remove Cortana Package
+                $progressPreference = 'SilentlyContinue'
                 Get-AppxPackage "Microsoft.549981C3F5F10" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
             }
             catch {
-                Write-Host "[WARNING] Failed to remove Cortana package." -ForegroundColor Red
+                Write-Host "[WARNING]: Cortana could not be disabled. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
-        
+
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
+
         }
         
         DisableCortana
@@ -1033,39 +916,30 @@ Function SystemSettings {
             Write-Host "Disabling Bing Search in Start Menu..." -NoNewline
         
             $allSuccessful = $true
-        
+
             try {
+                # Disable BingSearchEnabled
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to disable BingSearchEnabled." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Set CortanaConsent
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to set CortanaConsent." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Disable WebSearch
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "DisableWebSearch" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING] Failed to disable web search." -ForegroundColor Red
+                Write-Host "[WARNING]: Errors were received when setting the web search disable settings. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
-        
+
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
         }
         
@@ -1076,31 +950,27 @@ Function SystemSettings {
             Write-Host "Disabling SmartScreen Filter..." -NoNewline
         
             $allSuccessful = $true
-        
+
             try {
+                # Disable SmartScreen Filter
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableSmartScreen" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Failed to disable SmartScreen for Windows." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Disable SmartScreen for Microsoft Edge
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING] Failed to disable SmartScreen for Microsoft Edge." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not to disable smart screen. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
-        
+
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
         }
         
@@ -1111,31 +981,28 @@ Function SystemSettings {
             Write-Host "Disabling Sensors..." -NoNewline
         
             $allSuccessful = $true
-        
+
             try {
+                # LocationAndSensors kayıt defteri anahtarını oluştur
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Force | Out-Null
                 }
-            }
-            catch {
-                Write-Host "[WARNING] Could not create 'LocationAndSensors' registry key." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # DisableSensors özelliğini ayarla
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableSensors" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING] Could not set 'DisableSensors' property." -ForegroundColor Red
+                Write-Host "[WARNING]: Sensors could not be disabled. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
-        
+
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
+
         }
         
         DisableSensors
@@ -1152,7 +1019,7 @@ Function SystemSettings {
                 }
             }
             catch {
-                Write-Host "[WARNING] Could not create 'CloudContent' registry key." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not create 'CloudContent' registry key. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1160,7 +1027,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING] Could not set 'DisableTailoredExperiencesWithDiagnosticData' property." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not set 'DisableTailoredExperiencesWithDiagnosticData' property. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1168,7 +1035,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
         }
         
@@ -1178,8 +1045,8 @@ Function SystemSettings {
         Function DisableXboxFeatures {
             Write-Host "Disabling Xbox Features..." -NoNewline
         
-            # Helper function to create key if it doesn't exist and set the value
-            function Set-RegistryValue($path, $name, $value) {
+            # Helper Function to create key if it doesn't exist and set the value
+            Function Set-RegistryValue($path, $name, $value) {
                 $keyPath = Split-Path -Path $path
                 $itemName = Split-Path -Path $path -Leaf
         
@@ -1240,7 +1107,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "SaveZoneInformation" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Download blocking could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
@@ -1257,7 +1124,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\Maintenance" -Name "WakeUp" -Type DWord -Value 0 | Out-Null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Maintenance wake up feature could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
@@ -1271,7 +1138,7 @@ Function SystemSettings {
                 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Storage Sense could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
@@ -1283,35 +1150,32 @@ Function SystemSettings {
             Write-Host "Disabling Built-in Adobe Flash in IE and Edge..." -NoNewline
         
             $allSuccessful = $true
-        
+
             try {
+                # Disable Adobe Flash in Internet Explorer
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer" -Name "DisableFlashInIE" -Type DWord -Value 1
-            }
-            catch {
-                Write-Host "[WARNING] Could not disable Adobe Flash in IE." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Disable Adobe Flash in Edge
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Addons")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Addons" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Addons" -Name "FlashPlayerEnabled" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING] Could not disable Adobe Flash in Edge." -ForegroundColor Red
+                Write-Host "[WARNING]: Adobe flash could not be disabled. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
-        
+
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
+
         }
         
         DisableAdobeFlash
@@ -1321,35 +1185,32 @@ Function SystemSettings {
             Write-Host "Disabling Edge Preload..." -NoNewline
         
             $allSuccessful = $true
-        
+
             try {
+                # Set AllowPrelaunch for Microsoft Edge
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main" -Name "AllowPrelaunch" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] Could not set 'AllowPrelaunch'." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Set AllowTabPreloading for Microsoft Edge
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" -Name "AllowTabPreloading" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING] Could not set 'AllowTabPreloading'." -ForegroundColor Red
+                Write-Host "[WARNING]: Edge preload could not be disabled. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
-        
+
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
+
         }
         
         DisableEdgePreload
@@ -1364,7 +1225,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Edge first run wizard could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
@@ -1376,40 +1237,37 @@ Function SystemSettings {
             Write-Host "Disabling Windows Media Player Online Access..." -NoNewline
         
             $allSuccessful = $true
-        
+
             try {
+                # Configure Windows Media Player
                 If (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\WindowsMediaPlayer")) {
                     New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\WindowsMediaPlayer" -Force | Out-Null
                 }
-        
+            
                 $DisableMediaPlayer = "PreventCDDVDMetadataRetrieval", "PreventMusicFileMetadataRetrieval", "PreventRadioPresetsRetrieval"
-        
+            
                 foreach ($property in $DisableMediaPlayer) {
                     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\WindowsMediaPlayer" -Name $property -Type DWord -Value 1
                 }
-            }
-            catch {
-                Write-Host "[WARNING] Could not set Windows Media Player property." -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
+            
+                # Configure Windows Media DRM
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\WMDRM")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\WMDRM" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WMDRM" -Name "DisableOnline" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING] Could not set 'DisableOnline' for WMDRM." -ForegroundColor Red
+                Write-Host "[WARNING]: Mediaplayer online access could not be configured. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
-        
+
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
+
         }
         
         DisableMediaOnlineAccess
@@ -1427,7 +1285,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING] Could not set 'DisableNotificationCenter' property." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not set 'DisableNotificationCenter' property. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1435,7 +1293,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING] Could not set 'ToastEnabled' property." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not set 'ToastEnabled' property. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1443,7 +1301,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
         }
         
@@ -1459,7 +1317,7 @@ Function SystemSettings {
                 Disable-ComputerRestore -Drive "$env:SYSTEMDRIVE" *>$null
             }
             catch {
-                Write-Host "[WARNING] Could not disable system restore." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not disable system restore. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1467,7 +1325,7 @@ Function SystemSettings {
                 vssadmin delete shadows /all /Quiet | Out-Null
             }
             catch {
-                Write-Host "[WARNING] Could not delete all existing restore points." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not delete all existing restore points. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1479,7 +1337,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore" -Name "DisableSR" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING] Could not set SystemRestore properties." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not set SystemRestore properties. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1488,7 +1346,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "DisableSR" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING] Could not set CurrentVersion\SystemRestore properties." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not set CurrentVersion\SystemRestore properties. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1496,7 +1354,7 @@ Function SystemSettings {
                 schtasks /Change /TN "\Microsoft\Windows\SystemRestore\SR" /disable  | Out-Null *>$null
             }
             catch {
-                Write-Host "[WARNING] Could not disable the scheduled task." -ForegroundColor Red
+                Write-Host "[WARNING]: Could not disable the scheduled task. $_" -ForegroundColor Red
                 $allSuccessful = $false
             }
         
@@ -1504,7 +1362,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
+                Write-Host "[WARNING]: Not all operations were successful." -ForegroundColor Red
             }
         }
         
@@ -1519,173 +1377,12 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Low UAC level could not be set. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
         }
 
         SetUACLow
-
-        # Fix System Files
-        Function Sfc {
-            Write-Host "Fixing System Files..." -NoNewline
-        
-            $allSuccessful = $true
-        
-            try {
-                DISM.exe /Online /Cleanup-image /Restorehealth
-                if ($LASTEXITCODE -ne 0) {
-                    throw "DISM exited with code $LASTEXITCODE"
-                }
-            }
-            catch {
-                Write-Host "[WARNING] DISM operation failed: $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            try {
-                $sfcProcess = Start-Process -FilePath "${env:Windir}\System32\SFC.EXE" -ArgumentList '/scannow' -Wait -NoNewWindow -PassThru -ErrorAction Stop
-                if ($sfcProcess.ExitCode -ne 0) {
-                    throw "SFC exited with code $($sfcProcess.ExitCode)"
-                }
-            }
-            catch {
-                Write-Host "[WARNING] SFC scan failed: $_" -ForegroundColor Red
-                $allSuccessful = $false
-            }
-        
-            if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[WARNING] Not all operations were successful." -ForegroundColor Red
-            }
-        }
-        
-        #Sfc
-
-        # Disk cleanup 
-        Function DiskClean {
-            $progressPreference = 'silentlyContinue'
-            Write-Host "Disk Cleaning..." -NoNewline
-        
-            # Define the registry paths and their corresponding operation status
-            $registryPaths = @{
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Temporary Setup Files"                 = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Old ChkDsk Files"                      = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Setup Log Files"                       = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Update Cleanup"                        = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Defender"                      = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Diagnostic Data Viewer database files" = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Downloaded Program Files"              = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Internet Cache Files"                  = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\System error memory dump files"        = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\System error minidump files"           = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Error Reporting Files"         = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\BranchCache"                           = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\D3D Shader Cache"                      = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Delivery Optimization Files"           = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Language Pack"                         = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Recycle Bin"                           = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Temporary Files"                       = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\RetailDemo Offline Content"            = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Thumbnail Cache"                       = $false
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\User file versions"                    = $false
-            }
-        
-            # Create a temporary dictionary to store updates
-            $updatedRegistryPaths = @{}
-        
-            # Iterate over each registry path, attempt the operation, and record the status
-            $pathsToProcess = $registryPaths.Keys
-            foreach ($path in $pathsToProcess) {
-                try {
-                    Set-ItemProperty -Path $path -Name "StateFlags0077" -Type DWord -Value 2 -ErrorAction Stop
-                    $updatedRegistryPaths[$path] = $true
-                }
-                catch {
-                    Write-Host "[WARNING] $($path): $_" -ForegroundColor Yellow
-                }
-            }
-        
-            # Check if all registry operations were successful
-            $registrySuccess = ($updatedRegistryPaths.Values -notcontains $false)
-            if ($registrySuccess) {
-                try {
-                    Start-Process cleanmgr.exe -ArgumentList "/sagerun:77" -Wait -ErrorAction Stop
-                }
-                catch {
-                    Write-Host "WARNING: Disk Cleanup failed to run" -ForegroundColor Yellow
-                }
-        
-                # Sleep to wait for Disk Cleanup to complete
-                Start-Sleep -Seconds 15
-        
-                # Additional cleanup operations
-                # Delete the contents of various directories, checking each operation
-                $directoriesToClean = @{
-                    "C:\Windows\SoftwareDistribution"                                           = $false
-                    "C:\Windows\Temp"                                                           = $false
-                    "$env:userprofile\AppData\Local\Temp"                                       = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\Temporary Internet Files" = $false
-                    "C:\Windows\logs\CBS"                                                       = $false
-                    "C:\inetpub\logs\LogFiles"                                                  = $false
-                    "C:\Config.Msi"                                                             = $false
-                    "c:\Intel"                                                                  = $false
-                    "c:\PerfLogs"                                                               = $false
-                    "$env:windir\memory.dmp"                                                    = $false
-                    "C:\ProgramData\Microsoft\Windows\WER"                                      = $false
-                    "$env:windir\Temp"                                                          = $false
-                    "$env:windir\minidump"                                                      = $false
-                    "$env:windir\Prefetch"                                                      = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\WER"                      = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\Temporary Internet Files" = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\IECompatCache"            = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\IECompatUaCache"          = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\IEDownloadHistory"        = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\INetCache"                = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Windows\INetCookies"              = $false
-                    "$env:userprofile\AppData\Local\Microsoft\Terminal Server Client\Cache"     = $false
-                    'C:\$Recycle.Bin'                                                           = $false
-                }
-        
-                foreach ($dir in $directoriesToClean.Keys) {
-                    try {
-                        Get-ChildItem -Path $dir -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction Stop
-                        $directoriesToClean[$dir] = $true
-                    }
-                    catch {
-                        Write-Host "WARNING: Failed to clean directory $dir" -ForegroundColor Yellow
-                    }
-                }
-
-                $anyWarnings = $registryPaths.Values -contains $false -or $directoriesToClean.Values -contains $false
-        
-                if (-not $anyWarnings) {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-            }
-            else {
-                Write-Host "There were some warnings during the cleanup process." -ForegroundColor Yellow
-            }
-        }
-        
-        #DiskClean
-
-        # Disable Scheduled Defragmentation Task 
-        Function DisableDefragmentation {
-            Write-Host "Disabling Scheduled Defragmentation..." -NoNewline
-            try {
-                $progressPreference = 'silentlyContinue'
-                Schtasks /Delete /TN "\Microsoft\Windows\Defrag\ScheduledDefrag" /F *>$null
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        #DisableDefragmentation
 
         # Enable clearing of recent files on exit 
         Function EnableClearRecentFiles {
@@ -1697,7 +1394,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "ClearRecentDocsOnExit" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Clearing of recent files on exit could not be configured. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -1714,7 +1411,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoRecentDocsHistory" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Recent files list could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -1731,7 +1428,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "NoUseStoreOpenWith" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Suggestions for microsoft file types could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -1748,14 +1445,14 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Failed to disable hiding recently added from start menu. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
 
         HideRecentlyAddedApps
 
-        function Disable-Services {
+        Function Disable-Services {
             param (
                 [string[]]$disableservices
             )
@@ -1770,11 +1467,10 @@ Function SystemSettings {
                     }
                 }
                 catch {
-                    Write-Warning "Could not stop/disable service: $service" -NoNewline
+                    Write-Warning "Could not stop/disable $service" -NoNewline
                 }
             }
         
-            # If the script reaches this point, it has executed successfully
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
@@ -1793,49 +1489,31 @@ Function SystemSettings {
         Function DisableNews {
             Write-Host "Disabling News and Interest on Taskbar..." -NoNewline
         
-            # Test if the 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds' path exists
-            if (Test-Path -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds") {
-            }
-            else {
-                # If it doesn't exist, create it
-                try {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -ErrorAction Stop | Out-Null
-                }
-                catch {
-                    Write-Host "[WARNING] Failed to create 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds' path: $_" -ForegroundColor Yellow
-                }
-            }
-        
-            # Set the 'EnableFeeds' registry value to 0
             try {
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+                # Test and create 'Windows Feeds' path if it doesn't exist
+                $feedsPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
+                if (-not (Test-Path -Path $feedsPath)) {
+                    New-Item -Path $feedsPath -ErrorAction Stop | Out-Null
+                }
+        
+                # Set 'EnableFeeds' registry value to 0
+                Set-ItemProperty -Path $feedsPath -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+        
+                # Disable news and interests in the taskbar
+                $taskbarFeedsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds"
+                Set-ItemProperty -Path $taskbarFeedsPath -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
+        
+                # Disable news and interests via Policies\Explorer
+                $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+                if (-not (Test-Path $registryPath)) {
+                    New-Item -Path $registryPath -Force | Out-Null
+                }
+                Set-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -Value 1 -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING] Failed to set 'EnableFeeds' registry value: $_" -ForegroundColor Yellow
-            }
-            
-            # Disable news and interests in the taskbar
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
-            }
-            catch {
-                Write-Host "[WARNING] Failed to set 'ShellFeedsTaskbarViewMode' registry value: $_" -ForegroundColor Yellow
-            }
-
-            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+                Write-Host "[WARNING]: News could not be disabled. $_" -ForegroundColor Red
             }
         
-            if (-not (Get-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -ErrorAction SilentlyContinue)) {
-                try {
-                    Set-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -Value 1
-                } catch {
-                    Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                }
-                }
-
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
@@ -1851,7 +1529,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Taskbar people icon could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -1865,7 +1543,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Taskbar task view icon could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -1886,7 +1564,7 @@ Function SystemSettings {
                 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "Remove TaskView" -Type DWord -Value 0  *>$null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Taskbar multi task view icon could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -1900,7 +1578,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSmallIcons" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Unable to set icons in the taskbar to be small. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -1914,7 +1592,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Taskbar search icon could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -1928,7 +1606,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarMn" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Taskbar chat icon could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -1942,7 +1620,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarDa" -Type DWord -Value 0
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Taskbar widget icon could not be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -1958,7 +1636,7 @@ Function SystemSettings {
             try {
                 Write-Host "Unpin all taskbar pins..." -NoNewline
         
-                function UnpinStartMenuTiles {
+                Function UnpinStartMenuTiles {
                     $progressPreference = 'silentlyContinue'
                     If ([System.Environment]::OSVersion.Version.Build -ge 15063 -And [System.Environment]::OSVersion.Version.Build -le 16299) {
                         Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Include "*.group" -Recurse | ForEach-Object {
@@ -1976,7 +1654,7 @@ Function SystemSettings {
                     }
                 }
         
-                function getExplorerVerb {
+                Function getExplorerVerb {
                     Param([string]$verb)
                     $getstring = @'
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
@@ -2000,13 +1678,13 @@ Function SystemSettings {
                     if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
                 }
         
-                function Get-ExplorerApps {
+                Function Get-ExplorerApps {
                     Param([string]$RemoveUnpin)
                     $apps = (New-Object -Com Shell.Application).NameSpace("shell:::{4234d49b-0245-4df3-b780-3893943456e1}").Items()
                     $apps | Where { $_.Name -like $AppName -or $app.Path -like $AppName }
                 }
         
-                function Configure-TaskbarPinningApp {
+                Function Configure-TaskbarPinningApp {
                     Param([string]$RemoveUnpin, [string]$Verb)
                     $myProcessName = Get-Process | where { $_.ID -eq $pid } | % { $_.ProcessName }
                     if (-not ($myProcessName -like "explorer")) { 
@@ -2029,7 +1707,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING] An error occurred: $($_.Exception.Message)"
+                Write-Host "[WARNING]: An error occurred: $($_.Exception.Message)"
             }
         }
         
@@ -2123,7 +1801,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[WARNING]: Could not to be disable telemetry. $_" -ForegroundColor Red -BackgroundColor Black
                 Write-Host $_.Exception.Message -ForegroundColor Red
             }
         }
@@ -2131,7 +1809,7 @@ Function PrivacySettings {
         DisableTelemetry
 
         # Block Telemetry Url's to host file
-        Function AddTelemetryHost {
+        Function BlockUrlsToHost {
             Write-Host "Blocking Telemetry in Host File..." -NoNewline
             $file = "C:\Windows\System32\drivers\etc\hosts"
         
@@ -2190,16 +1868,15 @@ Function PrivacySettings {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
-                    Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                    Write-Host $_.Exception.Message -ForegroundColor Red
+                    Write-Host "[WARNING]: Failed to add telemetry urls to block to host file. $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
             else {
-                Write-Host "[WARNING] Hosts file not found or is read-only!" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[WARNING]: Hosts file not found or is read-only!" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
-        AddTelemetryHost
+        BlockUrlsToHost
 
         # Disable Feedback 
         Function DisableFeedback {
@@ -2221,7 +1898,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[WARNING]: Feedback could not be disabled. $_" -ForegroundColor Red -BackgroundColor Black
                 Write-Host $_.Exception.Message -ForegroundColor Red
             }
         }
@@ -2233,13 +1910,11 @@ Function PrivacySettings {
             Write-Host "Disabling Activity History..." -NoNewline
         
             try {
-                # Kayıt defteri yolu kontrolü
                 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
                 if (!(Test-Path $regPath)) {
                     New-Item -Path $regPath -Force | Out-Null
                 }
         
-                # Kayıt defteri ayarlarını yap
                 Set-ItemProperty -Path $regPath -Name "EnableActivityFeed" -Type DWord -Value 0 -ErrorAction Stop
                 Set-ItemProperty -Path $regPath -Name "PublishUserActivities" -Type DWord -Value 0 -ErrorAction Stop
                 Set-ItemProperty -Path $regPath -Name "UploadUserActivities" -Type DWord -Value 0 -ErrorAction Stop
@@ -2247,38 +1922,35 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                # Hata yakalandığında uyarı mesajı göster
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host $_.Exception.Message -ForegroundColor Red
+                Write-Host "[WARNING]: Activity history could not be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
         DisableActivityHistory
 
         # Disable clipboard history
-        Function DisableClipboardHistory{
+        Function DisableClipboardHistory {
             Write-Host "Disabling clipboard history..." -NoNewline
         
-            # First registry path
-            $registryPath1 = "HKCU:\Software\Microsoft\Clipboard"
+            $Clipboardreg1 = "HKCU:\Software\Microsoft\Clipboard"
         
-            if (-not (Test-Path $registryPath1)) {
-                New-Item -Path $registryPath1 -Force *>$null
+            if (-not (Test-Path $Clipboardreg1)) {
+                New-Item -Path $Clipboardreg1 -Force *>$null
             }
+
+            $Clipboardreg2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
         
-            # Second registry path
-            $registryPath2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
-        
-            if (-not (Test-Path $registryPath2)) {
-                New-Item -Path $registryPath2 -Force *>$null
+            if (-not (Test-Path $Clipboardreg2)) {
+                New-Item -Path $Clipboardreg2 -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath1 -Name "EnableClipboardHistory" -Value 0
-                Set-ItemProperty -Path $registryPath2 -Name "AllowClipboardHistory" -Value 0 -Type DWord -Force
+                Set-ItemProperty -Path $Clipboardreg1 -Name "EnableClipboardHistory" -Value 0
+                Set-ItemProperty -Path $Clipboardreg2 -Name "AllowClipboardHistory" -Value 0 -Type DWord -Force
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Clipboard history could not be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2288,18 +1960,18 @@ Function PrivacySettings {
         Function DisableUserStepsRecorder {
             Write-Host "Disabling User Steps Recorder..." -NoNewline
         
-            # Registry path
-            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"
+            $stepspath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"
         
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+            if (-not (Test-Path $stepspath)) {
+                New-Item -Path $stepspath -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath -Name "DisableUAR" -Value 1
+                Set-ItemProperty -Path $stepspath -Name "DisableUAR" -Value 1
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: User steps recorder could not be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2309,18 +1981,18 @@ Function PrivacySettings {
         Function DisableHardwareKeyboardTextSuggestions {
             Write-Host "Turning off text suggestions for hardware keyboard..." -NoNewline
         
-            # Registry path
-            $registryPath = "HKCU:\Software\Microsoft\Input\Settings"
+            $keyboardtext = "HKCU:\Software\Microsoft\Input\Settings"
         
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+            if (-not (Test-Path $keyboardtext)) {
+                New-Item -Path $keyboardtext -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath -Name "EnableHwkbTextPrediction" -Value 0
+                Set-ItemProperty -Path $keyboardtext -Name "EnableHwkbTextPrediction" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Hardware Keyboard Text Suggestions could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2330,18 +2002,18 @@ Function PrivacySettings {
         Function DisableAppLaunchTracking {
             Write-Host "Disabling App Launch Tracking..." -NoNewline
         
-            # Registry path
-            $registryPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+            $applaunchtr = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+            if (-not (Test-Path $applaunchtr)) {
+                New-Item -Path $applaunchtr -Force *>$null
             }
         
             try {
-                Set-ItemProperty -Path $registryPath -Name "Start_TrackProgs" -Value 0
+                Set-ItemProperty -Path $applaunchtr -Name "Start_TrackProgs" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: App Launch Tracking could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2354,7 +2026,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKCU:\Control Panel\International\User Profile" -Name "HttpAcceptLanguageOptOut" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Website access to language list could not to be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2366,9 +2038,9 @@ Function PrivacySettings {
             Write-Host "Stopping and Disabling Connected User Experiences and Telemetry Service..." -NoNewline
         
             try {
-                $service = Get-Service "DiagTrack" -ErrorAction Stop
+                $diagservice = Get-Service "DiagTrack" -ErrorAction Stop
         
-                if ($service.Status -eq 'Running') {
+                if ($diagservice.Status -eq 'Running') {
                     Stop-Service "DiagTrack" -Force -ErrorAction Stop
                 }
         
@@ -2377,8 +2049,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host $_.Exception.Message -ForegroundColor Red
+                Write-Host "[WARNING]: User experience and telemetry services could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2394,7 +2065,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 1
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Advertising ID could not to be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2426,8 +2097,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host $_.Exception.Message -ForegroundColor Red
+                Write-Host "[WARNING]: Wifi sense could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2465,8 +2135,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host $_.Exception.Message -ForegroundColor Red
+                Write-Host "[WARNING]: App suggestions could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2496,8 +2165,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host $_.Exception.Message -ForegroundColor Red
+                Write-Host "[WARNING]: UWP apps background accecss could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2515,7 +2183,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP voice activation could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2532,7 +2200,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP notifications could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2549,7 +2217,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP account info could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2566,7 +2234,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP contacts could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2583,7 +2251,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP calender could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2600,7 +2268,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP phone calls could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2617,7 +2285,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP call history could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2634,7 +2302,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP e-mail could not to be disabled. $_" -ForegroundColor Red
             }
         }
 
@@ -2650,7 +2318,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessTasks" -Type DWord -Value 2
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP tasks could not to be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2667,7 +2335,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessMessaging" -Type DWord -Value 2
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP messaging could not to be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -2684,7 +2352,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessRadios" -Type DWord -Value 2
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP radios could not to be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2701,7 +2369,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsSyncWithDevices" -Type DWord -Value 2
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Some of them UWP could not to be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2718,7 +2386,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsGetDiagnosticInfo" -Type DWord -Value 2
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: UWP diagnostic information could not to be disabled. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2750,8 +2418,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host $_.Exception.Message -ForegroundColor Red
+                Write-Host "[WARNING]: UWP file system could not to be disabled. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -2761,10 +2428,16 @@ Function PrivacySettings {
         # This disables creation and use of swapfile.sys and frees 256 MB of disk space. Swapfile.sys is used only by UWP apps. The tweak has no effect on the real swap in pagefile.sys.
         Function DisableUWPSwapFile {
             Write-Host "Disabling UWP Apps Swap File..." -NoNewline
-            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "SwapfileControl" -Type Dword -Value 0
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        
+            try {
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "SwapfileControl" -Type Dword -Value 0
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            }
+            catch {
+                Write-Host "[WARNING]: UWP swap file could not to be disabled. $_" -ForegroundColor Red
+            }
         }
-
+        
         DisableUWPSwapFile
 
         # Disable automatic Maps updates 
@@ -2778,7 +2451,7 @@ Function PrivacySettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "[WARNING]: Automatic maps updates could not to be disabled. $_" -ForegroundColor Red
             }
         }
         
@@ -2796,7 +2469,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MusNotification.exe" -Name "Debugger" -Type String -Value "cmd.exe"
             }
             catch {
-                Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "[WARNING]: Failed to set Windows Update Disable Automatic Restart. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2813,7 +2486,7 @@ Function PrivacySettings {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1 -ErrorAction Stop
             }
             catch {
-                Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "[WARNING]: Failed to set Disable Windows Update Automatic Downloads. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -2873,7 +2546,7 @@ Function GithubSoftwares {
         
                 $chocoPath = Get-Command "choco" -ErrorAction SilentlyContinue
                 if ($null -eq $chocoPath) {
-                    Write-Host "[WARNING]: Chocolatey is not installed properly." -ForegroundColor Red
+                    Write-Host "[WARNING]: Chocolatey is not installed properly. $_" -ForegroundColor Red
                     return
                 }
         
@@ -2927,7 +2600,7 @@ Function GithubSoftwares {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
-                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING]:" -ForegroundColor Red -BackgroundColor Black
                     # If there was an error, write the output to a log file
                     $logFile = "C:\${packageName}_choco_install.log"
                     $result | Out-File -FilePath $logFile -Force
@@ -2939,7 +2612,7 @@ Function GithubSoftwares {
             Stop-Job -Job $job
             Remove-Job -Job $job
 
-            function Install-VSCodeExtensions {
+            Function Install-VSCodeExtensions {
                 Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
                 Start-Sleep 5
                 $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
@@ -2975,8 +2648,9 @@ Function GithubSoftwares {
             
                 if ($allExtensionsInstalled) {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                } else {
-                    Write-Host "[WARNING]" -ForegroundColor Yellow
+                }
+                else {
+                    Write-Host "[WARNING]:" -ForegroundColor Yellow
                     Write-Host " VSCode's $vse plugin failed to install"
                 }
             }
@@ -2987,7 +2661,7 @@ Function GithubSoftwares {
             $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
 
             # Get json content
-$jsonContent = @"
+            $jsonContent = @"
 {
     "workbench.colorTheme": "Visual Studio Dark",
     "workbench.iconTheme": "material-icon-theme"
@@ -3000,7 +2674,7 @@ $jsonContent = @"
         
         InstallSoftwares
 
-        function Get-InstalledProgram {
+        Function Get-InstalledProgram {
             param (
                 [Parameter(Mandatory = $true)]
                 [string]$programName
@@ -3072,11 +2746,12 @@ Detecting programs that cannot be installed with chocolatey...
                     $result = & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
         
                     if ($LASTEXITCODE -ne 0) {
-                        Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "[WARNING]:" -ForegroundColor Red -BackgroundColor Black
                         $logFile = "C:\$($matchingPackage.PackageIdentifier)_winget_install.log"
                         $result | Out-File -FilePath $logFile -Force
                         Write-Host "Check the log file at $logFile for details."
-                    } else {
+                    }
+                    else {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
         
@@ -3087,7 +2762,7 @@ Detecting programs that cannot be installed with chocolatey...
             }
         }
 
-        function Safe-TaskKill {
+        Function Safe-TaskKill {
             param($processName)
         
             taskkill /f /im $processName *>$null
@@ -3111,7 +2786,7 @@ Detecting programs that cannot be installed with chocolatey...
             if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
         }
         catch {
-            Write-Host "[WARNING]: $_" -ForegroundColor Red
+            Write-Host "[WARNING]: Unable to set 7zip for powershell. $_" -ForegroundColor Red
         }
 
         Write-Host "--------"
@@ -3153,9 +2828,9 @@ Detecting programs that cannot be installed with chocolatey...
         
             $chromeDirectory = "C:\Program Files\Google\Chrome\Application\"
             $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory -ErrorAction SilentlyContinue | 
-                Where-Object { $_.Name -match '^1\d+' } | 
-                Sort-Object { [Version]($_.Name) } | 
-                Select-Object -Last 1
+            Where-Object { $_.Name -match '^1\d+' } | 
+            Sort-Object { [Version]($_.Name) } | 
+            Select-Object -Last 1
         
             if ($chromeVersion -eq $null) {
                 Write-Host "[WARNING]: Chrome version not found." -ForegroundColor Red
@@ -3182,7 +2857,7 @@ Detecting programs that cannot be installed with chocolatey...
             Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
         }
         catch {
-            Write-Host "[WARNING]: $_" -ForegroundColor Red
+            Write-Host "[WARNING]: Vmware Workstation could not to be set serial key. $_" -ForegroundColor Red
         }
         
     }
@@ -3251,7 +2926,7 @@ Function UnusedApps {
                     }
                 }
                 catch {
-                    Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    Write-Host "[WARNING]: Windows 3party applications could not be deleted. $_" -ForegroundColor Red
                 }
             }
 
@@ -3262,7 +2937,7 @@ Function UnusedApps {
                 Get-CimInstance -ClassName Win32_Product -Filter "Name = 'Microsoft.WindowsPCHealthCheck'" | ForEach-Object { $_.Uninstall() } *>$null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Health Check could not be deleted. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -3279,7 +2954,7 @@ Function UnusedApps {
                 Get-WindowsCapability -Online | Where-Object { $_.Name -like "Media.WindowsMediaPlayer*" } | Remove-WindowsCapability -Online | Out-Null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Windows media player could not be deleted. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -3295,7 +2970,7 @@ Function UnusedApps {
                 Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Work folders could not be deleted. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -3309,7 +2984,7 @@ Function UnusedApps {
                 Remove-Printer -Name "Microsoft XPS Document Writer" -ErrorAction SilentlyContinue 
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: XPS printer could not be deleted. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -3323,7 +2998,7 @@ Function UnusedApps {
                 Remove-Printer -Name "Fax" -ErrorAction SilentlyContinue
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Fax printer could not be deleted. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -3340,7 +3015,7 @@ Function UnusedApps {
                 Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online | Out-Null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: Fax and scan services could not to be deleted. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -3355,7 +3030,7 @@ Function UnusedApps {
                 Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
+                Write-Host "[WARNING]: 3d folders could not to be removed. $_" -ForegroundColor Red
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
@@ -3363,7 +3038,7 @@ Function UnusedApps {
         Remove3D
 
         # Remove Tasks in Task Scheduler
-        function RemoveTasks {
+        Function RemoveTasks {
             Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
             
             $description = @"
@@ -3416,7 +3091,8 @@ Function UnusedApps {
                     if ($remove) {
                         try {
                             Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
-                        } catch {
+                        }
+                        catch {
                             Write-Host "`n[WARNING]: Error: $_" -ForegroundColor Red
                         }
                     }
@@ -3424,9 +3100,11 @@ Function UnusedApps {
 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
 
-            } elseif ($response -eq 'n' -or $response -eq 'N') {
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Update tasks will not be deleted.]" -ForegroundColor Red -BackgroundColor Black
-            } else {
+            }
+            else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 RemoveTasks
             }
@@ -3456,7 +3134,7 @@ Function UnusedApps {
                     }
                 }
                 catch {
-                    Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING]: Onedrive could not to be deleted. $_" -ForegroundColor Red -BackgroundColor Black
                 }
                 finally {
                     $Global:ProgressPreference = $OriginalProgressPreference
@@ -3485,67 +3163,41 @@ Function UnusedApps {
                 try {
                     taskkill /f /im msedge.exe *>$null 2>&1
                     taskkill /f /im explorer.exe *>$null 2>&1
-        
-                    #Edge Services
+                
+                    # Edge Services
                     $edgeservices = "edgeupdate", "edgeupdatem"
                     foreach ($service in $edgeservices) {
-                        Stop-Service -Name $service -Force -ErrorAction Stop
-                        Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction Stop
+                        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                        Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
                         sc.exe delete $service *>$null 2>&1
                     }
-        
+                
                     # Uninstall - Edge
-                    try {
-                        $regView = [Microsoft.Win32.RegistryView]::Registry32
-                        $microsoft = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $regView).OpenSubKey('SOFTWARE\Microsoft', $true)
-                    
-                        $edgeClient = $microsoft.OpenSubKey('EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}', $true)
-                        if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
-                            $edgeClient.DeleteValue('experiment_control_labels')
-                        }
+                    $regView = [Microsoft.Win32.RegistryView]::Registry32
+                    $microsoft = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $regView).OpenSubKey('SOFTWARE\Microsoft', $true)
+                    $edgeClient = $microsoft.OpenSubKey('EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}', $true)
+                    if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
+                        $edgeClient.DeleteValue('experiment_control_labels')
                     }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                    
-                    try {
-                        $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                    
-                    try {
-                        $uninstallRegKey = $microsoft.OpenSubKey('Windows\CurrentVersion\Uninstall\Microsoft Edge')
-                        $uninstallString = $uninstallRegKey.GetValue('UninstallString') + ' --force-uninstall'
-                        $OriginalProgressPreference = $Global:ProgressPreference
-                        $Global:ProgressPreference = 'SilentlyContinue'
-                        Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                    
-                    try {
-                        $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
-                        $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
-                        $key = (Get-Item -Path $pattern).PSChildName
-                        reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                    
-                    try {
-                        $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
-                        New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
-                        Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction Stop
-                        Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction Stop
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-        
+                
+                    $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
+                
+                    $uninstallRegKey = $microsoft.OpenSubKey('Windows\CurrentVersion\Uninstall\Microsoft Edge')
+                    $uninstallString = $uninstallRegKey.GetValue('UninstallString') + ' --force-uninstall'
+                    $OriginalProgressPreference = $Global:ProgressPreference
+                    $Global:ProgressPreference = 'SilentlyContinue'
+                    Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
+                
+                    $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
+                    $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
+                    $key = (Get-Item -Path $pattern).PSChildName
+                    reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
+                
+                    $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
+                    New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
+                    Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction SilentlyContinue
+                    Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction SilentlyContinue
+                
                     # Delete additional files
                     $additionalFilesPath = "C:\Windows\System32\MicrosoftEdgeCP.exe"
                     if (Test-Path -Path $additionalFilesPath) {
@@ -3558,87 +3210,44 @@ Function UnusedApps {
                             Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
                         }
                     }
-
-                    try {
-                        $keyPath = "HKLM:\SOFTWARE\Microsoft\EdgeUpdate"
-                        $propertyName = "DoNotUpdateToEdgeWithChromium"
-                        
-                        # Check if the key exists
-                        if (-not (Test-Path $keyPath)) {
-                            # Create the key if it doesn't exist
-                            New-Item -Path $keyPath -Force | Out-Null
-                        }
-                        
-                        # Set the property value (this will create the property if it doesn't exist, or update it if it does)
-                        Set-ItemProperty -Path $keyPath -Name $propertyName -Value 1 -Type DWord -Force -ErrorAction Stop
-                        
+                
+                    $keyPath = "HKLM:\SOFTWARE\Microsoft\EdgeUpdate"
+                    $propertyName = "DoNotUpdateToEdgeWithChromium"
+                    if (-not (Test-Path $keyPath)) {
+                        New-Item -Path $keyPath -Force | Out-Null
                     }
-                    catch {
-                        # If there's an error, display a warning
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    Set-ItemProperty -Path $keyPath -Name $propertyName -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                
+                    taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
+                
+                    $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
+                    if ($edgeDirectories) {
+                        $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
                     }
-                        
-                    try {
-                        taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                        
-                    try {
-                        $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
-                        if ($edgeDirectories) {
-                            $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction Stop
-                        }
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                        
-                    try {
-                        Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
-                        Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction Stop } *>$null
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                        
-                    try {
-                        Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction Stop
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                        
-                    try {
-                        $progressPreference = 'SilentlyContinue'
-                        Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction Stop | Out-Null
-                    }
-                    catch {
-                        #Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                        
+                
+                    Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
+                    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
+                
+                    Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+                
+                    $progressPreference = 'SilentlyContinue'
+                    Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction SilentlyContinue | Out-Null
+                
                     $paths = @(
                         "C:\Program Files (x86)\Microsoft\*edge*",
                         "C:\Program Files (x86)\Microsoft\Edge",
                         "C:\Program Files (x86)\Microsoft\Temp",
                         "C:\Program Files (x86)\Microsoft\*"
                     )
-
+                
                     foreach ($path in $paths) {
-                        try {
-                            $items = Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue
-
-                            if ($items) {
-                                Remove-Item -Path $path -Force -Recurse -ErrorAction Stop *>$null
-                            }
-                        }
-                        catch {
-                            #Write-Host "[WARNING]: Error: $_" -ForegroundColor Red
+                        $items = Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue
+                        if ($items) {
+                            Remove-Item -Path $path -Force -Recurse -ErrorAction SilentlyContinue *>$null
                         }
                     }
-                        
-                    # Check if Edge is still installed
+                
+                    # Final check if Edge is still installed
                     if (!(Get-Process "msedge" -ErrorAction SilentlyContinue)) {
                         Start-Process explorer.exe
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -3648,8 +3257,9 @@ Function UnusedApps {
                     }
                 }
                 catch {
-                    #Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING]: Windows Edge could not to be removed. $_" -ForegroundColor Red -BackgroundColor Black
                 }
+                
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
@@ -3668,8 +3278,9 @@ Function UnusedApps {
                     Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
                     Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                } catch {
-                    Write-Host "[WARNING]: Failed to apply Edge privacy settings" -ForegroundColor Yellow -BackgroundColor Black
+                }
+                catch {
+                    Write-Host "[WARNING]: Failed to apply Edge privacy settings $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
             else {
