@@ -44,6 +44,19 @@ Function SystemSettings {
 
     if ($response -eq 'y' -or $response -eq 'Y') {
 
+        #Default .ps1 file for Powershell
+        Function Defaultps1 {
+            New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+            try {
+                Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\Open\Command" -Name "(Default)" -Value '"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "%1"'
+            }
+            catch {
+                Write-Host "[WARNING]: $_" -ForegroundColor Red
+            }
+        }
+
+        Defaultps1
+
         #Set TR Formats
         Function TRFormats {
             Write-Host `n"Do you want to " -NoNewline
@@ -82,7 +95,7 @@ Function SystemSettings {
         }
         
         TRFormats
-        
+
         Function SetHostname {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "change your hostname?" -ForegroundColor Yellow -NoNewline
@@ -237,9 +250,15 @@ Function SystemSettings {
                                 Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
                             }
                         }
+
+                        # Set keyboard layout to TR
                         Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
+                        Set-WinLanguageBarOption -UseLegacyLanguageBar
+
+                        #disable different input for each app 
+                        Set-WinLanguageBarOption
                     }
                     "2" {
                         # UK keyboard layout
@@ -256,9 +275,15 @@ Function SystemSettings {
                                 Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
                             }
                         }
+
+                        # Set keyboard layout to UK
                         Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                        Set-WinLanguageBarOption -UseLegacyLanguageBar
+
+                        #disable different input for each app 
+                        Set-WinLanguageBarOption
                     }
                     "3" {
                         # Both TR and UK keyboard layout
@@ -275,11 +300,16 @@ Function SystemSettings {
                                 Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
                             }
                         }
+                        # Set keyboard layout to TR and UK
                         Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
                         Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
+                        Set-WinLanguageBarOption -UseLegacyLanguageBar
+
+                        #disable different input for each app 
+                        Set-WinLanguageBarOption
                     }
                     default {
                         Write-Host "Invalid input. Please enter 1, 2 or 3."
@@ -349,7 +379,7 @@ Function SystemSettings {
         }
         
         ImportStartup
-        
+
         # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {
             Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
@@ -379,24 +409,6 @@ Function SystemSettings {
         }
 
         TaskbarAlignLeft
-
-        # Enable task manager button on taskbar
-        Function taskmanagermenu {
-            Write-Host "Enable TaskManager button on taskbar..." -NoNewline
-            try {
-                If (!(Test-Path "SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4")) {
-                    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4\1887869580" -Force *>$null
-                }
-                New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4\1887869580" -Name "EnabledState" -PropertyType Dword -Value "2" *>$null
-                New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\4\1887869580" -Name "EnabledStateOptions" -PropertyType Dword -Value "0" *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red
-            }
-        }
-
-        taskmanagermenu
 
         # Disable Sync your settings
         Function DisableSync {
@@ -448,7 +460,7 @@ Function SystemSettings {
                 Write-Host "[WARNING]" -ForegroundColor Yellow -BackgroundColor Black
             }
         }
-        
+
         DisableSpotlight
 
         # Disable Lock Screen Notifications
@@ -575,7 +587,7 @@ Function SystemSettings {
             Write-Host "Setting Dark Mode for System..." -NoNewline
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
-                
+
                 # Disable transparency
                 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
             }
@@ -2057,7 +2069,7 @@ Function SystemSettings {
         #endregion Taskbar Settings
         ##########
 
- }
+    }
     elseif ($response -eq 'n' -or $response -eq 'N') {
         Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
     }
@@ -3000,7 +3012,7 @@ Function GithubSoftwares {
             }
 
             Install-VSCodeExtensions
-            
+
             # Visual Studio Code json path
             $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
 
@@ -3237,18 +3249,22 @@ Function UnusedApps {
         Function UninstallThirdPartyBloat {
             Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
         
-            $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.YourPhone", "Microsoft.Bing*", "Microsoft.WindowsFeedbackHub",
-            "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZune*", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
-            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.Office*", "Microsoft.OneConnect", "Microsoft.People", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-            "Microsoft.Reader", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
+            $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
+            "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
+            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
+            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "Microsoft.XboxApp", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
             "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
-            "Microsoft.NetworkSpeedTest", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.*", "*Microsoft.ScreenSketch*"
-
+            "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*", "Microsoft.XboxGamingOverlay"
+            
             $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
-            "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.*", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.*", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
+            "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
+            "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
             "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
-            "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.*", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING"
-
+            "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
+            "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
+            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
         
             $allPackages = $Uninstall3Party + $UninstallAppxPackages
         
@@ -3381,11 +3397,11 @@ Function UnusedApps {
             Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
             
             $description = @"
-        +---------------------------------------------+
-        |    If you apply it,                         |
-        |    it turns off windows automatic updates,  |
-        |    you can only update manually.            |
-        +---------------------------------------------+
++---------------------------------------------+
+|    If you apply it,                         |
+|    it turns off windows automatic updates,  |
+|    you can only update manually.            |
++---------------------------------------------+
 "@
             Write-Host `n$description -ForegroundColor Yellow
         
@@ -3462,8 +3478,6 @@ Function UnusedApps {
                     taskkill /f /im onedrive.exe *>$null 2>&1
                     cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null 2>&1
                     Start-Sleep -Seconds 3  # Give OneDrive setup some time to complete
-                    Get-AppxPackage *OneDrive* | Remove-AppxProvisionedPackage
-                    winget uninstall Microsoft.OneDrive --accept-source-agreements --force *>$null
                     if (!(Get-Process "OneDrive" -ErrorAction SilentlyContinue)) {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
