@@ -527,7 +527,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             try {
                 $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
                 $filePath = "C:\DNGCodec_Installer.exe"
-                $programName = "Adobe DNG Codec"
+                $programName = "*Adobe DNG Codec*"
         
                 Invoke-WebRequest -Uri $url -OutFile $filePath
         
@@ -536,11 +536,32 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         
                     Remove-Item -Path $filePath
         
-                    $program = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "*$programName*" }
-                    if ($program) {
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    # Set registry paths
+                    $registryPaths = @(
+                        "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall",
+                        "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+                        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall"
+                    )
+        
+                    # Check if DNG Codec is installed
+                    $dngCodec = $null
+                    foreach ($path in $registryPaths) {
+                        try {
+                            # Get registry items
+                            $items = Get-ItemProperty $path\* -ErrorAction SilentlyContinue
+                            # Search for DNG Codec
+                            $dngCodec = $items | Where-Object { $_.DisplayName -like "*$programName*" }
+                            if ($dngCodec) {
+                                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                                break
+                            }
+                        }
+                        catch {
+                            Write-Host "[WARNING] $_"
+                        }
                     }
-                    else {
+        
+                    if (-not $dngCodec) {
                         Write-Host "[WARNING] Failed to load Adobe DNG Codec." -ForegroundColor Red
                     }
                 }
@@ -553,7 +574,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
         }
         
-        DNGCodec            
+        DNGCodec
+
     }
 
     Own
