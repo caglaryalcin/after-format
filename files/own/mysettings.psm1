@@ -36,7 +36,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 taskkill /f /im FanControl.exe *>$null
             }
             catch {
-                Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING]: There was an error loading FanControl. $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -191,68 +191,122 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             CreateShortcuts
 
-            #copy fan control to startup folder
-            Copy-Item C:\icons\FanControl.lnk "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
+            # Copy fan control to startup folder
+            try {
+                Copy-Item "C:\icons\FanControl.lnk" "$env:USERPROFILE\Appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\FanControl.lnk" -Force
+            }
+            catch {
+                Write-Host "[WARNING] Error copying FanControl to startup folder. $_" -ForegroundColor Red
+            }
+            
+            # Delete all files on desktop
+            try {
+                Get-ChildItem "$env:USERPROFILE\Desktop\*" | ForEach-Object { Remove-Item $_ -ErrorAction Stop }
+                Get-ChildItem "C:\users\Public\Desktop\*.lnk" | ForEach-Object { Remove-Item $_ -ErrorAction Stop }
+            }
+            catch {
+                Write-Host "[WARNING] Error deleting all files on the desktop. $_" -ForegroundColor Red
+            }
+            
 
-            #delete all files on desktop
-            Get-ChildItem $env:USERPROFILE\Desktop\* | ForEach-Object { Remove-Item $_ }
-            Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ }
-
-            # Remove Brave and Firefox shortcuts from startup folder
+            # Remove Brave and Firefox shortcuts from taskbar
             $braveShortcut = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Brave.lnk"
             $firefoxShortcut = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Firefox.lnk"
 
-            if (Test-Path $braveShortcut) {
-                Remove-Item -Path $braveShortcut
+            try {
+                if (Test-Path $braveShortcut) {
+                    Remove-Item -Path $braveShortcut -ErrorAction Stop
+                }
+            
+                if (Test-Path $firefoxShortcut) {
+                    Remove-Item -Path $firefoxShortcut -ErrorAction Stop
+                }
             }
-
-            if (Test-Path $firefoxShortcut) {
-                Remove-Item -Path $firefoxShortcut
+            catch {
+                Write-Host "[WARNING] Unable to delete Brave and Firefox shortcut from taskbar. $_" -ForegroundColor Red
             }
             
-            Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse -Force
+            # Remove registry path of all taskbar icons
+            try {
+                Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse -Force -ErrorAction Stop
+            }
+            catch {
+                Write-Host "[WARNING] Error removing the registry path of taskbar icons. $_" -ForegroundColor Red
+            }
+            
 
-            # set taskbar icons and pin to taskbar
-            $progressPreference = 'silentlyContinue'
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile C:\taskbar_pin.reg
-            reg import "C:\taskbar_pin.reg" *>$null
-            Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force
-            reg import "C:\taskbar_pin.reg" *>$null
-            taskkill /f /im explorer.exe *>$null
+            # Set taskbar icons and pin to taskbar
+            try {
+                # Download the registry file
+                $progressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile "C:\taskbar_pin.reg" -ErrorAction Stop
+                
+                # Import the registry file
+                reg import "C:\taskbar_pin.reg" *>$null
+            
+                # Copy the icons to the taskbar
+                Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force -ErrorAction Stop
+            
+                # Apply the registry file import again
+                reg import "C:\taskbar_pin.reg" *>$null
+            
+                # Restart explorer
+                taskkill /f /im explorer.exe *>$null
+            }
+            catch {
+                Write-Host "[WARNING] Error while importing and setting taskbar icons. $_" -ForegroundColor Red
+            }
 
-            #delete taskbar_pin.reg
-            Remove-Item C:\taskbar_pin.reg -recurse -ErrorAction SilentlyContinue
-            Start-Sleep 1
-            start explorer.exe
-            Start-Sleep 2
+            # Delete registry file and icons folder
+            try {
+                Remove-Item "C:\taskbar_pin.reg" -Recurse -ErrorAction Stop
+                Start-Sleep 1
 
-            #delete c:\icons folder
-            Remove-Item C:\icons\ -recurse -ErrorAction SilentlyContinue
+                Start-Process "explorer.exe" -ErrorAction Stop
+                Start-Sleep 2
+
+                Remove-Item "C:\icons\" -Recurse -ErrorAction Stop
+            }
+            catch {
+                Write-Host "[WARNING] Error deleting registry file and icons folder. $_" -ForegroundColor Red
+            }
+            
         }
 
         SetPins
 
         Function Drivers {
-            #Chipset
-            Write-Host `n"Installing Chipset Driver..." -NoNewline
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip -OutFile C:\Asus.zip
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            Expand-Archive -Path 'C:\Asus.zip' -DestinationPath C:\Asus\ -Force *>$null
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            C:\Asus\SetupChipset.exe -s -NoNewWindow -Wait
-            Remove-Item C:\Asus.zip -recurse -ErrorAction SilentlyContinue
-            Start-Sleep 1
-            Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
-            Start-Sleep 5
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            # Chipset
+            Write-Host "`nInstalling Chipset Driver..." -NoNewline
+            try {
+                # Download the driver file
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri "https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip" -OutFile "C:\Asus.zip" -ErrorAction Stop
+            
+                # Extract the driver files
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Expand-Archive -Path "C:\Asus.zip" -DestinationPath "C:\Asus\" -Force -ErrorAction Stop
+
+                # Run the driver installer
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Start-Process "C:\Asus\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
+            
+                # Delete the driver files
+                Remove-Item "C:\Asus.zip" -Recurse -ErrorAction SilentlyContinue
+                Start-Sleep 1
+                Remove-Item "C:\Asus" -Recurse -ErrorAction SilentlyContinue
+            
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] Error installing Chipset driver. $_" -ForegroundColor Red -BackgroundColor Black
+            }
 
             # NVIDIA Driver installation
             Write-Host "Installing Nvidia Driver..." -NoNewline
-
             try {
                 # Run Chocolatey install command and wait for it to finish
                 choco install nvidia-display-driver --force -y | Out-Null
@@ -260,95 +314,25 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
             catch {
                 # If an error occurred during installation, output a warning
-                Write-Host "[WARNING]: An error occurred during installation." -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING]: Error installing Nvidia driver.." -ForegroundColor Red -BackgroundColor Black
             }
-
         }
                 
         Drivers
 
-        #Restore Librewolf settings
-        function installLibreWolfAddIn() {
-            Write-Host "Librewolf settings are being restored..." -NoNewline
-
-            # Create librewolf profile directory
-            cd "C:\Program Files\LibreWolf\"
-            .\librewolf.exe
-            Start-Sleep 2
-            taskkill /f /im "librewolf.exe" *>$null
-        
-            # Initialize variables
-            $libreWolfDir = "C:\Program Files\LibreWolf"
-            $distributionDir = Join-Path $libreWolfDir 'distribution'
-            $extensionsDir = Join-Path $distributionDir 'extensions'
-        
-            # Ensure necessary directories exist
-            $distributionDir, $extensionsDir | ForEach-Object {
-                if (-Not (Test-Path $_)) { New-Item $_ -ItemType Directory | Out-Null }
-            }
-        
-            # Install Bitwarden add-in
-            try {
-                $addonName = "bitwarden-password-manager"
-                $addonId = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
-                $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$addonName/addon-$addonName-latest.xpi"
-                $addonPath = Join-Path $extensionsDir "$addonId.xpi"
-        
-                Invoke-WebRequest $addonUrl -Outfile $addonPath
-            }
-            catch {
-                Write-Host "Error downloading or getting info for addon $addonName $_" -ForegroundColor Red
-            }
-        
-            # Restore user profile settings
-            try {
-                # Get the user profile directory
-                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Filter "*.default-default" -Directory).FullName
-            
-                # Create user profile chrome directory
-                New-Item $userProfileDir\chrome -ItemType Directory *>$null
-            
-                $configUrls = @{
-                    "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
-                    "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
-                    "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
-                    "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css"
-                    "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
-                }
-            
-                foreach ($file in $configUrls.Keys) {
-                    # Download the file and save it to the user profile directory
-                    $filePath = if ($file -eq "user.js") {
-                        Join-Path $userProfileDir $file
-                    }
-                    else {
-                        Join-Path $userProfileDir "chrome\$file"
-                    }
-                    Invoke-WebRequest -Uri $configUrls[$file] -Outfile $filePath
-                }
-            }
-            catch {
-                Write-Host "[WARNING]  $_" -ForegroundColor Red
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-        
-        installLibreWolfAddIn        
-                
-        function Set-Configs {
+        Function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
 
             # Helper function to create directories
-            function Ensure-Directory($path) {
+            Function Ensure-Directory($path) {
                 try {
-                    if (-Not (Test-Path $path)) {
-                        New-Item -Path $path -ItemType "directory" | Out-Null
-                    }
+                    # Force creates the directory if it doesn't exist
+                    New-Item -ItemType Directory -Force -Path $path | Out-Null
                 }
                 catch {
                     Write-Host " [WARNING] Failed to create directory at path: $path. Error: $_" -ForegroundColor Red -BackgroundColor Black
                 }
-            }
+            }            
 
             # Helper function for web requests
             function Safe-Invoke-WebRequest($uri, $outFile) {
@@ -360,16 +344,78 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
             }
             
-            function Ensure-Directory($path) {
-                if (-Not (Test-Path $path)) {
-                    New-Item -ItemType Directory -Force -Path $path | Out-Null
+            # Restore Librewolf settings
+            function installLibreWolfAddIn() {
+                Write-Host "Librewolf settings are being restored..." -NoNewline
+
+                # Create librewolf profile directory
+                cd "C:\Program Files\LibreWolf\"
+                .\librewolf.exe
+                Start-Sleep 2
+                taskkill /f /im "librewolf.exe" *>$null
+        
+                # Initialize variables
+                $libreWolfDir = "C:\Program Files\LibreWolf"
+                $distributionDir = Join-Path $libreWolfDir 'distribution'
+                $extensionsDir = Join-Path $distributionDir 'extensions'
+        
+                # Ensure necessary directories exist
+                $distributionDir, $extensionsDir | ForEach-Object {
+                    if (-Not (Test-Path $_)) { New-Item $_ -ItemType Directory | Out-Null }
                 }
+        
+                # Install Bitwarden add-in
+                try {
+                    $addonName = "bitwarden-password-manager"
+                    $addonId = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
+                    $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$addonName/addon-$addonName-latest.xpi"
+                    $addonPath = Join-Path $extensionsDir "$addonId.xpi"
+        
+                    Invoke-WebRequest $addonUrl -Outfile $addonPath
+                }
+                catch {
+                    Write-Host "Error downloading or getting info for addon $addonName $_" -ForegroundColor Red
+                }
+        
+                # Restore user profile settings
+                try {
+                    # Get the user profile directory
+                    $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Filter "*.default-default" -Directory).FullName
+            
+                    # Create user profile chrome directory
+                    New-Item $userProfileDir\chrome -ItemType Directory *>$null
+            
+                    $configUrls = @{
+                        "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
+                        "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
+                        "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                        "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css"
+                        "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                    }
+            
+                    foreach ($file in $configUrls.Keys) {
+                        # Download the file and save it to the user profile directory
+                        $filePath = if ($file -eq "user.js") {
+                            Join-Path $userProfileDir $file
+                        }
+                        else {
+                            Join-Path $userProfileDir "chrome\$file"
+                        }
+                        Invoke-WebRequest -Uri $configUrls[$file] -Outfile $filePath
+                    }
+                }
+                catch {
+                    Write-Host "[WARNING]  $_" -ForegroundColor Red
+                }
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
+        
+            installLibreWolfAddIn  
 
             # Stop all SteelSeries processes
             Get-Process | Where-Object { $_.Name -like "steel*" } | ForEach-Object { Stop-Process -Name $_.Name -Force }
 
-            # Define directories and files to be downloaded
+            # Define config directories and files to download
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
             $downloads = @{
@@ -422,29 +468,41 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Restore SteelSeries keyboard settings
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            Expand-Archive -Path 'C:\programdata\SteelSeries\GG.zip' -DestinationPath C:\programdata\SteelSeries\ -Force *>$null
-            Remove-Item C:\programdata\SteelSeries\GG.zip -recurse -ErrorAction SilentlyContinue
+            try {
+                # Restore SteelSeries keyboard settings
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
             
-            #create config folder
-            $job = Start-Job -ScriptBlock { 
-                & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
-            } *>$null
-         
-            Start-Sleep 10
-            taskkill.exe /f /im OpenRGB.exe *>$null
+                # Expand the zip file
+                Expand-Archive -Path 'C:\programdata\SteelSeries\GG.zip' -DestinationPath 'C:\programdata\SteelSeries\' -Force -ErrorAction Stop
+            
+                # Remove the zip file
+                Remove-Item 'C:\programdata\SteelSeries\GG.zip' -Recurse -ErrorAction Stop
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red
+            }
+            
+            # Create openrgb config folder
+            try {
+                $job = Start-Job -ScriptBlock { 
+                    & "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe" *>$null 2>&1
+                } -ErrorAction Stop
+            
+                Start-Sleep 10
 
+                taskkill.exe /f /im OpenRGB.exe *>$null
+            }
+            catch {
+                Write-Host "[WARNING] Error creating OpenRGB config file. $_" -ForegroundColor Red
+            }
+            
             # Restore PowerToys settings
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -Value "0" | Out-Null
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -Value "0" | Out-Null
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 | Out-Null
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -Value 1 | Out-Null
             }
             catch {
-                Write-Host " [WARNING] Failed in additional configurations. Error: $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host " [WARNING] Error restoring Powertoys config file. $_" -ForegroundColor Red -BackgroundColor Black
             }
                     
             # Monitor settings prompt
@@ -472,7 +530,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     
         Set-Configs
         
-        function MediaFeaturePack {
+        Function MediaFeaturePack {
             try {
                 Write-Host "Installing Media Feature Pack..." -NoNewline
                 # check new version
@@ -524,53 +582,59 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         #Adobe DNG Codec
         Function DNGCodec {
             Write-Host "Installing DNG Codec..." -NoNewline
+            $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
+            $filePath = "C:\DNGCodec_Installer.exe"
+            $programName = "*Adobe DNG Codec*"
+        
+            # Download and install DNG Codec
             try {
-                $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
-                $filePath = "C:\DNGCodec_Installer.exe"
-                $programName = "*Adobe DNG Codec*"
-        
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
                 Invoke-WebRequest -Uri $url -OutFile $filePath
-        
-                if (Test-Path -Path $filePath) {
-                    Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
-        
-                    Remove-Item -Path $filePath
-        
-                    # Set registry paths
-                    $registryPaths = @(
-                        "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall",
-                        "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
-                        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall"
-                    )
-        
-                    # Check if DNG Codec is installed
-                    $dngCodec = $null
-                    foreach ($path in $registryPaths) {
-                        try {
-                            # Get registry items
-                            $items = Get-ItemProperty $path\* -ErrorAction SilentlyContinue
-                            # Search for DNG Codec
-                            $dngCodec = $items | Where-Object { $_.DisplayName -like "*$programName*" }
-                            if ($dngCodec) {
-                                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                                break
-                            }
-                        }
-                        catch {
-                            Write-Host "[WARNING] $_"
-                        }
-                    }
-        
-                    if (-not $dngCodec) {
-                        Write-Host "[WARNING] Failed to load Adobe DNG Codec." -ForegroundColor Red
-                    }
-                }
-                else {
-                    Write-Host "[WARNING] Failed to download file." -ForegroundColor Red
-                }
             }
             catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Yellow
+                Write-Host "[WARNING] Failed to download Adobe DNG Codec file. $_" -ForegroundColor Red
+            }
+            
+            # Install DNG Codec
+            try {
+                Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
+            } catch {
+                Write-Host "[WARNING] Failed to install Adobe DNG Codec. $_" -ForegroundColor Red
+            }
+        
+            # Delete the installer file
+            try {
+                Start-Sleep 1
+                Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
+            }
+            catch {
+                Write-Host "[WARNING] Failed to delete Adobe DNG Codec installer file. $_" -ForegroundColor Red
+            }
+        
+            # Check if DNG Codec is installed
+            # Set registry paths
+            $registryPaths = @(
+                "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall",
+                "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall"
+            )
+        
+            # Check if DNG Codec is installed
+            $dngCodec = $null
+            foreach ($path in $registryPaths) {
+                # Get registry items
+                $items = Get-ItemProperty $path\* -ErrorAction SilentlyContinue
+                # Search for DNG Codec
+                $dngCodec = $items | Where-Object { $_.DisplayName -like $programName }
+                if ($dngCodec) {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    break
+                }
+            }
+        
+            if (-not $dngCodec) {
+                Write-Host "[WARNING] Adobe DNG Codec not found after install check." -ForegroundColor Yellow
             }
         }
         

@@ -628,6 +628,28 @@ Function SystemSettings {
         
         SetControlPanelLargeIcons
 
+        # Disable user interface and device recognition features
+        Function DisableDeviceEnumeration {
+            try {
+                # Disable devicemanager updates
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowDevMgrUpdates" -Value "0" -ErrorAction Stop
+        
+                # Disable Windows sync notifications
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -Value "0" -ErrorAction Stop
+        
+                # Disable Multimedia Device Enumeration
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMDevicesEnumerationEnabled" -Value 0 -ErrorAction Stop
+        
+                # Disable device enumeration in File Explorer
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableDeviceEnumeration" -Value 1 -ErrorAction Stop
+            }
+            catch {
+                Write-Host "Hata oluştu: $_" -ForegroundColor Red
+            }
+        }
+        
+        DisableDeviceEnumeration
+
         # Enable NumLock after startup
         Function EnableNumlock {
             Write-Host "Enabling NumLock after startup..." -NoNewline
