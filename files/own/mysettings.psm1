@@ -344,73 +344,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
             }
             
-            # Restore Librewolf settings
-            function installLibreWolfAddIn() {
-                Write-Host "Librewolf settings are being restored..." -NoNewline
-
-                # Create librewolf profile directory
-                cd "C:\Program Files\LibreWolf\"
-                .\librewolf.exe
-                Start-Sleep 2
-                taskkill /f /im "librewolf.exe" *>$null
-        
-                # Initialize variables
-                $libreWolfDir = "C:\Program Files\LibreWolf"
-                $distributionDir = Join-Path $libreWolfDir 'distribution'
-                $extensionsDir = Join-Path $distributionDir 'extensions'
-        
-                # Ensure necessary directories exist
-                $distributionDir, $extensionsDir | ForEach-Object {
-                    if (-Not (Test-Path $_)) { New-Item $_ -ItemType Directory | Out-Null }
-                }
-        
-                # Install Bitwarden add-in
-                try {
-                    $addonName = "bitwarden-password-manager"
-                    $addonId = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
-                    $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$addonName/addon-$addonName-latest.xpi"
-                    $addonPath = Join-Path $extensionsDir "$addonId.xpi"
-        
-                    Invoke-WebRequest $addonUrl -Outfile $addonPath
-                }
-                catch {
-                    Write-Host "Error downloading or getting info for addon $addonName $_" -ForegroundColor Red
-                }
-        
-                # Restore user profile settings
-                try {
-                    # Get the user profile directory
-                    $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Filter "*.default-default" -Directory).FullName
-            
-                    # Create user profile chrome directory
-                    New-Item $userProfileDir\chrome -ItemType Directory *>$null
-            
-                    $configUrls = @{
-                        "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
-                        "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
-                        "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
-                        "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css"
-                        "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
-                    }
-            
-                    foreach ($file in $configUrls.Keys) {
-                        # Download the file and save it to the user profile directory
-                        $filePath = if ($file -eq "user.js") {
-                            Join-Path $userProfileDir $file
-                        }
-                        else {
-                            Join-Path $userProfileDir "chrome\$file"
-                        }
-                        Invoke-WebRequest -Uri $configUrls[$file] -Outfile $filePath
-                    }
-                }
-                catch {
-                    Write-Host "[WARNING]:  $_" -ForegroundColor Red
-                }
-            }
-        
-            installLibreWolfAddIn  
-
             # Stop all SteelSeries processes
             Get-Process | Where-Object { $_.Name -like "steel*" } | ForEach-Object { Stop-Process -Name $_.Name -Force }
 
@@ -528,6 +461,73 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         }
                     
         Set-Configs
+
+        # Restore Librewolf settings
+        function installLibreWolfAddIn() {
+            Write-Host "Librewolf settings are being restored..." -NoNewline
+
+            # Create librewolf profile directory
+            cd "C:\Program Files\LibreWolf\"
+            .\librewolf.exe
+            Start-Sleep 2
+            taskkill /f /im "librewolf.exe" *>$null
+    
+            # Initialize variables
+            $libreWolfDir = "C:\Program Files\LibreWolf"
+            $distributionDir = Join-Path $libreWolfDir 'distribution'
+            $extensionsDir = Join-Path $distributionDir 'extensions'
+    
+            # Ensure necessary directories exist
+            $distributionDir, $extensionsDir | ForEach-Object {
+                if (-Not (Test-Path $_)) { New-Item $_ -ItemType Directory | Out-Null }
+            }
+    
+            # Install Bitwarden add-in
+            try {
+                $addonName = "bitwarden-password-manager"
+                $addonId = '{446900e4-71c2-419f-a6a7-df9c091e268b}'
+                $addonUrl = "https://addons.mozilla.org/firefox/downloads/latest/$addonName/addon-$addonName-latest.xpi"
+                $addonPath = Join-Path $extensionsDir "$addonId.xpi"
+    
+                Invoke-WebRequest $addonUrl -Outfile $addonPath
+            }
+            catch {
+                Write-Host "Error downloading or getting info for addon $addonName $_" -ForegroundColor Red
+            }
+    
+            # Restore user profile settings
+            try {
+                # Get the user profile directory
+                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Filter "*.default-default" -Directory).FullName
+        
+                # Create user profile chrome directory
+                New-Item $userProfileDir\chrome -ItemType Directory *>$null
+        
+                $configUrls = @{
+                    "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
+                    "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
+                    "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                    "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css"
+                    "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                }
+        
+                foreach ($file in $configUrls.Keys) {
+                    # Download the file and save it to the user profile directory
+                    $filePath = if ($file -eq "user.js") {
+                        Join-Path $userProfileDir $file
+                    }
+                    else {
+                        Join-Path $userProfileDir "chrome\$file"
+                    }
+                    Invoke-WebRequest -Uri $configUrls[$file] -Outfile $filePath
+                }
+            }
+            catch {
+                Write-Host "[WARNING]:  $_" -ForegroundColor Red
+            }
+        }
+    
+        installLibreWolfAddIn
         
         Function MediaFeaturePack {
             try {
@@ -550,7 +550,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     }
                 }
                 else {
-                    Write-Host "[WARNING]: Media Feature Pack capability not found." -ForegroundColor Yellow -BackgroundColor Black
+                    Write-Host "[INFO]: Media Feature Pack capability not found." -ForegroundColor Yellow -BackgroundColor Black
                 }
             }
             catch {

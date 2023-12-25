@@ -799,7 +799,7 @@ Function SystemSettings {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black        
         }
 
-        #DisableHiberfil
+        DisableHiberfil
 
         # Disable Display and Sleep mode timeouts 
         Function DisableSleepTimeout {
@@ -2792,7 +2792,7 @@ Detecting programs that cannot be installed with chocolatey...
         Write-Host "--------"
 
         Function Remove-ChromeComponents {
-            Write-Host `n"Disabling and removing Chrome services..." -NoNewline
+            Write-Host `n"Disabling and removing Chrome Update services..." -NoNewline
             $chromeservices = "gupdate", "gupdatem"
             foreach ($service in $chromeservices) {
                 $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
@@ -2853,8 +2853,10 @@ Detecting programs that cannot be installed with chocolatey...
 
         #workstation key
         try {
+            Write-Host "Vmware serial number is being set...." -NoNewline
             $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208"
             Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         catch {
             Write-Host "[WARNING]: Vmware Workstation could not to be set serial key. $_" -ForegroundColor Red
