@@ -519,12 +519,16 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     else {
                         Join-Path $userProfileDir "chrome\$file"
                     }
+                    $OriginalProgressPreference = $Global:ProgressPreference
+                    $Global:ProgressPreference = 'SilentlyContinue'
                     Invoke-WebRequest -Uri $configUrls[$file] -Outfile $filePath
                 }
             }
             catch {
                 Write-Host "[WARNING]:  $_" -ForegroundColor Red
             }
+
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
     
         installLibreWolfAddIn

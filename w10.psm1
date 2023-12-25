@@ -182,17 +182,18 @@ Function SystemSettings {
                 catch {
                     Write-Host "[WARNING]: An error occurred while disabling Windows Defender. $_" -ForegroundColor Red -BackgroundColor Black
                 }
-                elseif ($response -eq 'n' -or $response -eq 'N') {
-                    Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
-                }
-                else {
-                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                    DisableDefender
-                }
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                DisableDefender
             }
         }
         
         DisableDefender
+        
         Function SetKeyboardLayout {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "set the keyboard layout to UK or TR?" -ForegroundColor Yellow -NoNewline

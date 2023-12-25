@@ -182,13 +182,13 @@ Function SystemSettings {
                 catch {
                     Write-Host "[WARNING]: An error occurred while disabling Windows Defender. $_" -ForegroundColor Red -BackgroundColor Black
                 }
-                elseif ($response -eq 'n' -or $response -eq 'N') {
-                    Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
-                }
-                else {
-                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                    DisableDefender
-                }
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                DisableDefender
             }
         }
         
@@ -357,7 +357,7 @@ Function SystemSettings {
 
         ImportStartup
 
-# Enable Right-Click Menu for Windows 11
+        # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {
             Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
             try {
