@@ -2,9 +2,9 @@
 
 ## Description
 
-If you new formatted your computer on Windows 10/11(all versions) you can run this script.
+If you new formatted your computer on Windows 10 or Windows 11(all versions) you can run this script.
 
-This script does exactly the following; (Some are optional(y/n))
+This script does exactly the following; (Some are optional: y/n)
 
 <details><summary>System Settings</summary>&nbsp;
   
