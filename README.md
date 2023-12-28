@@ -4,7 +4,7 @@
 
 If you new formatted your computer on Windows 10 or Windows 11(all versions) you can run this script.
 
-This script does exactly the following; (Some are optional: y/n)
+This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 
 <details><summary>System Settings</summary>&nbsp;
   
@@ -191,7 +191,7 @@ This script adds a task named 'startup' to the task scheduler. This task does ex
 
 My Custom Drivers
 
-🟠 When this question is asked, you must answer by saying 'n'. Because the settings here 
+🟠 When this question is asked, you must answer by saying <kbd>n</kbd>. Because the settings here 
 are my specific settings.
 
 
