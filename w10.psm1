@@ -294,7 +294,6 @@ Function SystemSettings {
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Keyboard layout will not be changed.]" -ForegroundColor Red -BackgroundColor Black
-                Write-Host ""
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
