@@ -46,7 +46,8 @@
         {"PackageIdentifier": "Tonec.InternetDownloadManager"},
         {"PackageIdentifier": "Cloudflare.Warp"},
         {"PackageIdentifier": "CalcProgrammer1.OpenRGB"},
-        {"PackageIdentifier": "tailscale.tailscale"}
+        {"PackageIdentifier": "tailscale.tailscale"},
+        {"PackageIdentifier": "WinFsp.WinFsp"}
       ]
     }
   ]

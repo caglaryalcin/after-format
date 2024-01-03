@@ -46,7 +46,8 @@
         {"PackageIdentifier": "Internet Download Manager"},
         {"PackageIdentifier": "Warp"},
         {"PackageIdentifier": "OpenRGB"},
-        {"PackageIdentifier": "tailscale"}
+        {"PackageIdentifier": "tailscale"},
+        {"PackageIdentifier": "WinFsp"}
       ]
     }
   ]
