@@ -2649,10 +2649,10 @@ Function GithubSoftwares {
                 Start-Sleep 5
                 $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
             
-                $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint"
+                $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker"
                 $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
                 $design = "pkief.material-icon-theme"
-                $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell"
+                $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
                 $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode","
                 ms-python.python"
                 $github = "github.vscode-pull-request-github", "github.copilot"
