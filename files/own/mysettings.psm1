@@ -152,10 +152,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                         "Path"             = "C:\Program Files\Cryptomator\Cryptomator.exe";
                         "WorkingDirectory" = "C:\Program Files\Cryptomator\";
                     };
-                    "PowerToys"               = @{
-                        "Path"             = "C:\Program Files\PowerToys\WinUI3Apps\PowerToys.Settings.exe";
-                        "WorkingDirectory" = "C:\Program Files\PowerToys\WinUI3Apps\";
-                    };
                     "Microsoft Teams classic" = @{
                         "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
                         "Arguments"        = "--process Start Teams.exe";
@@ -359,11 +355,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/config.xml"
                 )
             
-                # power toys
-                "$env:UserProfile\Documents\PowerToys\Backup"       = @(
-                    "https://github.com/caglaryalcin/after-format/raw/main/files/own/settings_133264013067260668.ptb"
-                )
-            
                 # browser restore files
                 "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
@@ -429,14 +420,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "[WARNING]: Error creating OpenRGB config file. $_" -ForegroundColor Red
             }
             
-            # Restore PowerToys settings
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "electron.app.Twinkle Tray" -Value "$env:userprofile\AppData\Local\Programs\twinkle-tray\Twinkle Tray.exe" | Out-Null
-            }
-            catch {
-                Write-Host " [WARNING]: Error restoring Powertoys config file. $_" -ForegroundColor Red -BackgroundColor Black
-            }
-                    
             # Monitor settings prompt
             try {
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait

@@ -139,7 +139,6 @@ RemoveToggleKeys
 Function RemoveTasks {
     Write-Host "Removing Unnecessary Tasks..." -NoNewline
     
-    #Autorun - Powertoys
     #BackgroundDownload - VSCode Updates
     #ScheduledDefrag - Defrag
     #ProactiveScan - Checkdisk

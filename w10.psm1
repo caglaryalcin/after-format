@@ -2570,7 +2570,6 @@ Function GithubSoftwares {
 
             $appsToClose = @{
                 "github-desktop"  = "GithubDesktop";
-                "powertoys"       = "PowerToys";
                 "cloudflare-warp" = "Cloudflare WARP"
             }
 
@@ -2622,8 +2621,7 @@ Function GithubSoftwares {
                 $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
                 $design = "pkief.material-icon-theme"
                 $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
-                $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode","
-                ms-python.python"
+                $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python"
                 $github = "github.vscode-pull-request-github", "github.copilot"
                 $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github
             
@@ -2775,7 +2773,6 @@ Detecting programs that cannot be installed with chocolatey...
         }
         
         Safe-TaskKill "GithubDesktop.exe"
-        Safe-TaskKill "PowerToys.exe"
         Safe-TaskKill "Cloudflare WARP.exe"
 
         # 7-Zip on PS
