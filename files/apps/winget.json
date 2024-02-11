@@ -46,7 +46,8 @@
         {"PackageIdentifier": "Cloudflare.Warp"},
         {"PackageIdentifier": "CalcProgrammer1.OpenRGB"},
         {"PackageIdentifier": "tailscale.tailscale"},
-        {"PackageIdentifier": "WinFsp.WinFsp"}
+        {"PackageIdentifier": "WinFsp.WinFsp"},
+        {"PackageIdentifier": "TechPowerUp.NVCleanstall"}
       ]
     }
   ]

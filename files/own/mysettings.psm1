@@ -291,6 +291,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Start-Process "C:\Asus\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
             
                 # Delete the driver files
+                Start-Sleep 4
                 Remove-Item "C:\Asus.zip" -Recurse -ErrorAction SilentlyContinue
                 Start-Sleep 1
                 Remove-Item "C:\Asus" -Recurse -ErrorAction SilentlyContinue
@@ -304,8 +305,48 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             # NVIDIA Driver installation
             Write-Host "Installing Nvidia Driver..." -NoNewline
             try {
-                # Run Chocolatey install command and wait for it to finish
-                choco install nvidia-display-driver --force -y | Out-Null
+                # Run NVCleanInstaller and wait for it to finish
+                Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -Wait
+
+                # Alternative method to download Nvidia driver
+                <#
+                #NVIDIA API
+                $Parameters = @{
+                    Uri             = "https://www.nvidia.com/Download/API/lookupValueSearch.aspx?TypeID=3"
+                    UseBasicParsing = $true
+                }
+
+                #version parameters
+                [xml]$Content = (Invoke-WebRequest @Parameters).Content
+                $CardModelName = (Get-CimInstance -ClassName CIM_VideoController | Where-Object -FilterScript { $_.AdapterDACType -ne "Internal" }).Caption.Split(" ")
+                # Remove the first word in full model name. E.g. "NVIDIA"
+                $CardModelName = [string]$CardModelName[1..($CardModelName.Count)]
+                $ParentID = ($Content.LookupValueSearch.LookupValues.LookupValue | Where-Object -FilterScript { $_.Name -contains $CardModelName }).ParentID | Select-Object -First 1
+                $Value = ($Content.LookupValueSearch.LookupValues.LookupValue | Where-Object -FilterScript { $_.Name -contains $CardModelName }).Value | Select-Object -First 1
+
+                #set download url
+                $Parameters = @{
+                    Uri             = "https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php?func=DriverManualLookup&psid=$ParentID&pfid=$Value&osID=57&languageCode=1033&beta=null&isWHQL=1&dltype=-1&dch=1&upCRD=0"
+                    UseBasicParsing = $true
+                }
+
+                $Data = Invoke-RestMethod @Parameters
+
+                $LatestVersion = $Data.IDS.downloadInfo.Version	
+
+                $Parameters = @{
+                    Uri             = $Data.IDS.downloadInfo.DownloadURL
+                    OutFile         = "$env:USERPROFILE\Downloads\$LatestVersion-desktop-win10-win11-64bit-international-dch-whql.exe"
+                    UseBasicParsing = $true
+                    Verbose         = $true
+                }
+
+                #download lastest version
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Invoke-WebRequest @Parameters *>$null
+                #>
+
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -373,6 +414,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # keyboard
                 "C:\ProgramData\SteelSeries\"                       = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
+                )
+
+                # csgo2 config
+                "$env:userprofile\Desktop"                          = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg"
                 )
             }
                         
@@ -574,8 +620,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         
             # Download and install DNG Codec
             try {
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
                 Invoke-WebRequest -Uri $url -OutFile $filePath
             }
             catch {
@@ -585,7 +631,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             # Install DNG Codec
             try {
                 Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: Failed to install Adobe DNG Codec. $_" -ForegroundColor Red
             }
         

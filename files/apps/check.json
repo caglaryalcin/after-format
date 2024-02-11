@@ -46,7 +46,8 @@
         {"PackageIdentifier": "Warp"},
         {"PackageIdentifier": "OpenRGB"},
         {"PackageIdentifier": "tailscale"},
-        {"PackageIdentifier": "WinFsp"}
+        {"PackageIdentifier": "WinFsp"},
+        {"PackageIdentifier": "NVCleanstall"}
       ]
     }
   ]
