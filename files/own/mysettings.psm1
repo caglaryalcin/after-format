@@ -420,6 +420,10 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg"
                 )
+
+                "C:\programdata\NVIDIA Corporation\Drs\"                          = @(
+                    "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/nvdrsdb0.bin"
+                )
             }
                         
             # Process each directory and download files

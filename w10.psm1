@@ -1628,6 +1628,20 @@ Function SystemSettings {
 
         RemoveTaskbarWidgets
 
+        # Enable Windows Game Mode
+        Function Gamemode {
+            Write-Host "Enabling Windows Game Mode..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "UseNexusForGameDetection" -Value 1
+            }
+            catch {
+                Write-Host "[WARNING]: Game Mode could not be enabled. $_" -ForegroundColor Red
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        Gamemode
+
         # Hide Taskbar Remove Widgets from the Taskbar
         Function UnpinEverything {
             Param(

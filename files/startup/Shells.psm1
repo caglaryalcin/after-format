@@ -234,11 +234,14 @@ Function DisableStartupApps {
     )
     
     $removeList = @(
-        "*EADM*", "*Java*", "*CCX*", "*cisco*", "*vivaldi", "*NV*", "*npcap*", "*Edge*", 
-        "*Brave*", "*Riot*", "*IDMan*", "*Teams*", "*Disc*", "*Epic*", "*CORS*", "*Next*", 
-        "*One*", "*Chrome*", "*Opera*", "*iTunes*", "*CC*", "*Vanguard*", "*Update*", 
-        "*iTunes*", "*Ai*", "*Skype*", "*Yandex*", "*uTorrent*", "*Deluge*", "*Blitz*", 
-        "*vmware*", "*Any*", "Teams*"
+        "Security*", "*Teams*", "Microsoft team*", "*Update*", #Microsoft & Updates
+        "*NV*", #Nvidia
+        "*CCX*", "Adobe*", "*CC*", #Adobe
+        "*uTorrent*", "*Deluge*", #Torrent
+        "FACEIT*", "*Riot*", "*Epic*", "*Vanguard*", "*Blitz*", #Gaming
+        "*Brave*", "Google*", "*Chrome*", "*Opera*", "*vivaldi", "*Edge*", "*Yandex*", "*Firefox*", "*Librewolf*", #Browsers
+        "*EADM*", "*Java*",  "*cisco*",   "*npcap*",  "*IDMan*",  "*Disc*",  "*CORS*", "*Next*", "*One*",  "*iTunes*",  "*iTunes*", "*Ai*", "*Skype*",  
+        "*vmware*", "*Any*",  "Tailscale*",  "Docker*" #Other
     )
     
     # Remove from registry
