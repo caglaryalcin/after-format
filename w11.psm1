@@ -2895,7 +2895,7 @@ Detecting programs that cannot be installed with chocolatey...
             }
         }
         
-        Remove-ChromeComponents
+        #Remove-ChromeComponents
 
         #workstation key
         try {
