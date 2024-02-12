@@ -306,7 +306,7 @@ Function RemoveChromeUpdates {
     }
 }
 
-RemoveChromeUpdates
+#RemoveChromeUpdates
 
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
