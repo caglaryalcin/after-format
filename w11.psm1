@@ -1664,6 +1664,8 @@ Function SystemSettings {
             Write-Host "Enabling Windows Game Mode..." -NoNewline
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "UseNexusForGameDetection" -Value 1
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMode" -Value 1
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Value 1
             }
             catch {
                 Write-Host "[WARNING]: Game Mode could not be enabled. $_" -ForegroundColor Red
