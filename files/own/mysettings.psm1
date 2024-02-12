@@ -396,11 +396,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/config.xml"
                 )
             
-                # browser restore files
-                "$env:userprofile\Desktop"                          = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
-                )
-            
                 # fan control
                 "C:\fan_control\Configurations"                     = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/fan/my_fan_config.json"
@@ -416,13 +411,20 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
                 )
 
-                # csgo2 config
+                # ublock, ublacklist and cs2
                 "$env:userprofile\Desktop"                          = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
                 )
 
+                # nvidia 3d settings
                 "C:\programdata\NVIDIA Corporation\Drs\"                          = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/nvdrsdb0.bin"
+                )
+
+                # twinkle tray
+                "$env:userprofile\AppData\Roaming\twinkle-tray"                          = @(
+                "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json"
                 )
             }
                         

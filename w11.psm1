@@ -2582,7 +2582,7 @@ Function GithubSoftwares {
                 Start-Sleep 10
         
                 #install vcredist 2015
-                $output = choco install microsoft-vclibs-140-00 --force -y -Verbose
+                $output = choco install microsoft-vclibs --ignore-checksums --force -y
                 If ($output -match "successful") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
