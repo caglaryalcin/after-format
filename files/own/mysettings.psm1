@@ -294,33 +294,75 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function Drivers {
             # Chipset
-            Write-Host "`nInstalling Chipset Driver..." -NoNewline
+            Write-Host "`nInstalling Chipset Drivers..." -NoNewline
             try {
-                # Download the driver file
+                # Download the Chipset driver files
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Invoke-WebRequest -Uri "https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip" -OutFile "C:\Asus.zip" -ErrorAction Stop
+                $ChipsetUri = "https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_Chipset_Intel_CML_TP_W10_64_V101182958201_20200423R.zip"
+                $ChipsetEngineUri = "https://dlcdnets.asus.com/pub/ASUS/mb/03CHIPSET/DRV_MEI_Intel_Cons_19H1_TP_W10_64_VER19141201256_20191104R.zip"
+                Invoke-WebRequest -Uri $ChipsetUri -OutFile "C:\Chipset.zip" -ErrorAction Stop
+                Invoke-WebRequest -Uri $ChipsetEngineUri -OutFile "C:\ChipsetEngine.zip" -ErrorAction Stop
             
                 # Extract the driver files
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Expand-Archive -Path "C:\Asus.zip" -DestinationPath "C:\Asus\" -Force -ErrorAction Stop
+                Expand-Archive -Path "C:\Chipset.zip" -DestinationPath "C:\Chipset\" -Force -ErrorAction Stop
+                Expand-Archive -Path "C:\ChipsetEngine.zip" -DestinationPath "C:\ChipsetEngine\" -Force -ErrorAction Stop
 
-                # Run the driver installer
+                # Run the Chipset drivers installer
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Start-Process "C:\Asus\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
+                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\Chipset && SetupChipset.exe" -Wait
+                #Start-Process "C:\ChipsetEngine\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop #force restart
+
+                # Run the Chipset Engine driver installer
+                Start-Process "C:\ChipsetEngine\SetupME.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
             
                 # Delete the driver files
                 Start-Sleep 4
-                Remove-Item "C:\Asus.zip" -Recurse -ErrorAction SilentlyContinue
+                Remove-Item "C:\Chipset.zip" -Recurse -ErrorAction SilentlyContinue
                 Start-Sleep 1
-                Remove-Item "C:\Asus" -Recurse -ErrorAction SilentlyContinue
+                Remove-Item "C:\ChipsetEngine.zip" -Recurse -ErrorAction SilentlyContinue
+                Start-Sleep 1
+                Remove-Item "C:\Chipset" -Recurse -ErrorAction SilentlyContinue
+                Start-Sleep 1
+                Remove-Item "C:\ChipsetEngine" -Recurse -ErrorAction SilentlyContinue
             
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING]: Error installing Chipset driver. $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING]: Error installing Chipset drivers. $_" -ForegroundColor Red -BackgroundColor Black
+            }
+
+            # LAN
+            Write-Host "`nInstalling LAN Driver..." -NoNewline
+            try {
+                # Download the driver file
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri "https://dlcdnets.asus.com/pub/ASUS/mb/04LAN/DRV_LAN_Intel_I219_UWD_TP_W10_64_V1219137_20210830R.zip" -OutFile "C:\LAN.zip" -ErrorAction Stop
+            
+                # Extract the driver files
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Expand-Archive -Path "C:\LAN.zip" -DestinationPath "C:\LAN\" -Force -ErrorAction Stop
+
+                # Run the driver installer
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\LAN && Install.bat" -Wait
+            
+                # Delete the driver files
+                Start-Sleep 4
+                Remove-Item "C:\LAN.zip" -Recurse -ErrorAction SilentlyContinue
+                Start-Sleep 1
+                Remove-Item "C:\LAN" -Recurse -ErrorAction SilentlyContinue
+            
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Error installing LAN driver. $_" -ForegroundColor Red -BackgroundColor Black
             }
 
             # NVIDIA Driver installation
