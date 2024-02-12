@@ -235,7 +235,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             try {
                 # Download the registry file
                 $progressPreference = 'SilentlyContinue'
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar_pin.reg" -Outfile "C:\taskbar_pin.reg" -ErrorAction Stop
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/raw/taskbar_pin.reg" -Outfile "C:\taskbar_pin.reg" -ErrorAction Stop
                 
                 # Import the registry file
                 reg import "C:\taskbar_pin.reg" *>$null
@@ -253,9 +253,30 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "[WARNING]: Error while importing and setting taskbar icons. $_" -ForegroundColor Red
             }
 
+            # Set taskbar right side layout
+            try {
+                $progressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/raw/taskbar-rightside-layout.reg" -Outfile "C:\taskbar-rightside-layout.reg" -ErrorAction Stop
+
+                # Import the registry file
+                reg import "C:\taskbar-rightside-layout.reg" *>$null
+
+                Start-Sleep 2
+
+                # Apply the registry file import again
+                reg import "C:\taskbar-rightside-layout.reg" *>$null
+
+                # Restart explorer
+                taskkill /f /im explorer.exe *>$null
+            }
+            catch {
+                Write-Host "[WARNING]: Error while importing and setting taskbar icons. $_" -ForegroundColor Red
+            }
+
             # Delete registry file and icons folder
             try {
                 Remove-Item "C:\taskbar_pin.reg" -Recurse -ErrorAction Stop
+                Remove-Item "C:\taskbar-rightside-layout.reg" -Recurse -ErrorAction Stop
                 Start-Sleep 1
 
                 Start-Process "explorer.exe" -ErrorAction Stop
@@ -418,13 +439,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 )
 
                 # nvidia 3d settings
-                "C:\programdata\NVIDIA Corporation\Drs\"                          = @(
+                "C:\programdata\NVIDIA Corporation\Drs\"            = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/nvdrsdb0.bin"
                 )
 
                 # twinkle tray
-                "$env:userprofile\AppData\Roaming\twinkle-tray"                          = @(
-                "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json"
+                "$env:userprofile\AppData\Roaming\twinkle-tray"     = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json"
                 )
             }
                         
