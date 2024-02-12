@@ -259,7 +259,15 @@ Function DisableStartupApps {
     # Remove from startup folders
     foreach ($folder in $StartFilePaths) {
         Get-ChildItem -Path $folder -Recurse | 
-        Where-Object { $removeList -contains $_.Name } | 
+        Where-Object { 
+            $item = $_.Name
+            foreach ($pattern in $removeList) {
+                if ($item -like $pattern) {
+                    return $true
+                }
+            }
+            return $false
+        } | 
         Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
     }
     
