@@ -336,7 +336,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
 
             # LAN
-            Write-Host "`nInstalling LAN Driver..." -NoNewline
+            Write-Host "Installing LAN Driver..." -NoNewline
             try {
                 # Download the driver file
                 $OriginalProgressPreference = $Global:ProgressPreference
