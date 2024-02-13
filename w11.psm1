@@ -193,6 +193,7 @@ Function SystemSettings {
         }
         
         DisableDefender
+        
         Function SetKeyboardLayout {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "set the keyboard layout to UK or TR?" -ForegroundColor Yellow -NoNewline
@@ -354,15 +355,13 @@ Function SystemSettings {
         
         ImportStartup
 
-        ImportStartup
-
         # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {
             Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
             try {
                 New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" *>$null
                 New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" *>$null
-                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value $null *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -386,6 +385,20 @@ Function SystemSettings {
 
         TaskbarAlignLeft
 
+        Function DisableGallery {
+            Write-Host "Disabling gallery folder..." -NoNewline
+            try {
+                New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
+                New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "1" -PropertyType Dword *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: The gallery folder could not be disabled. $_" -ForegroundColor Red
+            }
+        }
+
+        DisableGallery
+        
         # Disable Sync your settings
         Function DisableSync {
             Write-Host `n"Disabling Sync your settings..." -NoNewline
