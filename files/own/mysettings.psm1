@@ -477,8 +477,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # ublock, ublacklist and cs2
                 "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
                 )
 
                 # nvidia 3d settings
@@ -505,6 +505,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             # Download ublacklist config file to desktop
             "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
+
+            # Create a batch file to move the cs2 video and cs.cfg files to the correct directories
+            New-Item -Path "$env:userprofile\Desktop" -Name "cs_script.bat" -ItemType "File" -Value "@echo off`r`nPowerShell -NoProfile -ExecutionPolicy Bypass -Command `"Set-ExecutionPolicy RemoteSigned -Scope Process -Force; `$cs2cfgpath = 'C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg'; `$destpath = 'C:\Program Files (x86)\Steam\userdata\'; Set-Location `$destpath; `$destfolders = Get-ChildItem -Directory; foreach (`$folder in `$destfolders) { Set-Location `$folder.FullName; Set-Location .\730\local\cfg; `$cs2videopath = Get-Location }; Move-Item -Force `%USERPROFILE%\Desktop\cs2_video.txt `$cs2videopath; Move-Item -Force `%USERPROFILE%\Desktop\cs.cfg `$cs2cfgpath`"" -Force
 
             # Restore SteelSeries keyboard settings
             try {
