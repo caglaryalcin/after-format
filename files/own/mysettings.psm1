@@ -477,7 +477,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # ublock, ublacklist and cs2
                 "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt"
                 )
 
                 # nvidia 3d settings
@@ -537,6 +538,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             
             # Monitor settings prompt
             try {
+                Start-Process "control" -ArgumentList "desk.cpl" -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
             }
