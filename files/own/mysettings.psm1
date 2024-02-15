@@ -313,7 +313,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # Run the Chipset drivers installer
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\Chipset && SetupChipset.exe" -Wait
+                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\Chipset && SetupChipset.exe" -NoNewWindow -Wait
                 #Start-Process "C:\ChipsetEngine\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop #force restart
 
                 # Run the Chipset Engine driver installer
@@ -351,7 +351,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # Run the driver installer
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\LAN && Install.bat" -Wait
+                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\LAN && Install.bat" -NoNewWindow -Wait
             
                 # Delete the driver files
                 Start-Sleep 4
@@ -369,7 +369,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host "Installing Nvidia Driver..." -NoNewline
             try {
                 # Run NVCleanInstaller and wait for it to finish
-                Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -Wait
+                Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -NoNewWindow -Wait
 
                 # Alternative method to download Nvidia driver
                 <#
@@ -541,7 +541,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             
             # Monitor settings prompt
             try {
-                Start-Process "control" -ArgumentList "desk.cpl" -Wait
+                Start-Process "control" -ArgumentList "desk.cpl" -NoNewWindow -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
             }
@@ -704,7 +704,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             
             # Install DNG Codec
             try {
-                Start-Process -FilePath $filePath -ArgumentList "/S" -Wait -PassThru *>$null
+                Start-Process -FilePath $filePath -ArgumentList "/S" -NoNewWindow -Wait -PassThru *>$null
             }
             catch {
                 Write-Host "[WARNING]: Failed to install Adobe DNG Codec. $_" -ForegroundColor Red
