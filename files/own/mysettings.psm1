@@ -479,7 +479,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/ExplorerPatcher.reg"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/w11/ExplorerPatcher.reg"
                 )
 
                 # nvidia 3d settings
