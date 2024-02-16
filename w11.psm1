@@ -44,19 +44,6 @@ Function SystemSettings {
 
     if ($response -eq 'y' -or $response -eq 'Y') {
 
-        #Default .ps1 file for Powershell
-        Function Defaultps1 {
-            New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-            try {
-                Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\Open\Command" -Name "(Default)" -Value '"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "%1"'
-            }
-            catch {
-                Write-Host "[WARNING]: .ps1 could not be set as default for powershell. $_" -ForegroundColor Red
-            }
-        }
-
-        Defaultps1
-
         #Set TR Formats
         Function TRFormats {
             Write-Host `n"Do you want to " -NoNewline
@@ -359,9 +346,7 @@ Function SystemSettings {
         Function RightClickMenu {
             Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
             try {
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" *>$null
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" *>$null
-                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value *>$null
+                reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -389,7 +374,7 @@ Function SystemSettings {
             Write-Host "Disabling gallery folder..." -NoNewline
             try {
                 New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
-                New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "1" -PropertyType Dword *>$null
+                New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -1885,20 +1870,21 @@ Function PrivacySettings {
         # Block Telemetry Url's to host file
         Function BlockUrlsToHost {
             Write-Host "Blocking Telemetry in Host File..." -NoNewline
+            $file = "C:\Windows\System32\drivers\etc\hosts"
             if ((Test-Path -Path $file) -and (Get-Item $file).IsReadOnly -eq $false) {
                 try {
                     # hosts file url
                     $url = "https://raw.githubusercontent.com/caglaryalcin/block-windows-telemetry/main/hosts"
-
+        
                     # get the content of the url
                     $text = Invoke-WebRequest -Uri $url | Select-Object -ExpandProperty Content
-
+        
                     # add a new line to the beginning of the text
                     $emptyLine = [Environment]::NewLine
                     $text = $emptyLine + $text
-
+        
                     # add the content to the hosts file
-                    Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value $text
+                    Add-Content -Path $file -Value $text
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
@@ -3157,15 +3143,55 @@ Function UnusedApps {
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
                 try {
-                    taskkill /f /im onedrive.exe *>$null 2>&1
-                    cmd /c "%SystemRoot%\SysWOW64\OneDriveSetup.exe /uninstall" *>$null 2>&1
-                    Start-Sleep -Seconds 3  # Give OneDrive setup some time to complete
-                    if (!(Get-Process "OneDrive" -ErrorAction SilentlyContinue)) {
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    # Stop OneDrive and Explorer processes
+                    Stop-Process -Name "OneDrive", "explorer" -Force -ErrorAction SilentlyContinue
+                    # Uninstall OneDrive
+                    $OneDriveSetupPaths = @(
+                        "$env:systemroot\System32\OneDriveSetup.exe",
+                        "$env:systemroot\SysWOW64\OneDriveSetup.exe"
+                    )
+
+                    foreach ($Path in $OneDriveSetupPaths) {
+                        if (Test-Path $Path) {
+                            & $Path /uninstall
+                        }
                     }
-                    else {
-                        throw "OneDrive process is still running."
+
+                    $OneDriveFolders = @(
+                        "$env:localappdata\Microsoft\OneDrive",
+                        "$env:programdata\Microsoft OneDrive",
+                        "$env:systemdrive\OneDriveTemp",
+                        "$env:userprofile\OneDrive"
+                    )
+
+                    $OneDriveFolders | ForEach-Object {
+                        Remove-Item -Path $_ -Recurse -Force -ErrorAction SilentlyContinue
                     }
+
+                    $OneDriveClsid = "{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
+                    $ClsidPaths = @(
+                        "HKCR:\CLSID\$OneDriveClsid",
+                        "HKCR:\Wow6432Node\CLSID\$OneDriveClsid"
+                    )
+
+                    foreach ($Path in $ClsidPaths) {
+                        if (-not (Test-Path $Path)) {
+                            New-Item -Path $Path -Force | Out-Null
+                            Set-ItemProperty -Path $Path -Name "System.IsPinnedToNameSpaceTree" -Value 0
+                        }
+                    }
+                    # Disable OneDriveFileSyncNGSC
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Value 1 -Force
+
+                    reg load "HKU\Default" "C:\Users\Default\NTUSER.DAT" | Out-Null
+                    reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f -ErrorAction SilentlyContinue
+                    reg unload "HKU\Default" | Out-Null
+
+                    Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
+
+                    Start-Process "explorer.exe"
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
                 }
                 catch {
                     Write-Host "[WARNING]: Onedrive could not to be deleted. $_" -ForegroundColor Red -BackgroundColor Black

@@ -351,7 +351,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # Run the driver installer
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\LAN && Install.bat" -NoNewWindow -Wait
+                Invoke-Expression -Command "cd C:\LAN ; .\Install.bat" *>$null
             
                 # Delete the driver files
                 Start-Sleep 4
@@ -507,7 +507,34 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Create a batch file to move the cs2 video and cs.cfg files to the correct directories
-            New-Item -Path "$env:userprofile\Desktop" -Name "cs_script.bat" -ItemType "File" -Value "@echo off`r`nPowerShell -NoProfile -ExecutionPolicy Bypass -Command `"Set-ExecutionPolicy RemoteSigned -Scope Process -Force; `$cs2cfgpath = 'C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg'; `$destpath = 'C:\Program Files (x86)\Steam\userdata\'; Set-Location `$destpath; `$destfolders = Get-ChildItem -Directory; foreach (`$folder in `$destfolders) { Set-Location `$folder.FullName; Set-Location .\730\local\cfg; `$cs2videopath = Get-Location }; Move-Item -Force `%USERPROFILE%\Desktop\cs2_video.txt `$cs2videopath; Move-Item -Force `%USERPROFILE%\Desktop\cs.cfg `$cs2cfgpath`"" -Force
+            $batScript = @"
+@echo off
+@echo off
+set "cs2cfgpath=C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
+set "destpath=C:\Program Files (x86)\Steam\userdata\"
+
+cd /D "%destpath%"
+
+for /D %%F in (*) do (
+    pushd "%%F"
+)
+
+cd /D ".\730"
+set "testlocalfolder=%CD%"
+
+set "cs2videopath=%testlocalfolder%\local\cfg"
+
+if exist "%testlocalfolder%\local\" (
+    move "%USERPROFILE%\Desktop\cs2_video.txt" "%cs2videopath%\"
+) else (
+    mkdir "%cs2videopath%"
+    move "%USERPROFILE%\Desktop\cs2_video.txt" "%cs2videopath%\"
+)
+
+move "%USERPROFILE%\Desktop\cs.cfg" "%cs2cfgpath%"
+"@
+
+            $batScript | Out-File -FilePath "$env:userprofile\Desktop\cs-script.bat" -Encoding ASCII -Force *>$null
 
             # Restore SteelSeries keyboard settings
             try {
@@ -566,13 +593,12 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         Set-Configs
 
         # Restore Librewolf settings
-        function installLibreWolfAddIn() {
+        Function installLibreWolfAddIn() {
             Write-Host "Librewolf settings are being restored..." -NoNewline
 
             # Create librewolf profile directory
-            cd "C:\Program Files\LibreWolf\"
-            .\librewolf.exe
-            Start-Sleep 2
+            Start-Process -FilePath "C:\Program Files\LibreWolf\librewolf.exe" -Wait
+            Start-Sleep -Seconds 10
             taskkill /f /im "librewolf.exe" *>$null
     
             # Initialize variables
@@ -635,25 +661,40 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         }
     
         installLibreWolfAddIn
+
+        Function DisableChromeBackgroundRunning {
+            Write-Host "Disabling the 'Continue running background apps when Google Chrome is closed' setting in Chrome System settings..." -NoNewline
+            try {
+                $registryValue = 0
+                $registryKey = "HKLM:\SOFTWARE\Policies\Google\Chrome"
+        
+                if (-not (Test-Path $registryKey)) {
+                    New-Item -Path $registryKey -Force | Out-Null
+                }
+        
+                Set-ItemProperty -Path $registryKey -Name "BackgroundModeEnabled" -Value $registryValue -Type DWORD -Force *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            } catch {
+                Write-Host "An error occurred while disabling Chrome background running: $_" -ForegroundColor Red
+            }
+        }
+        
+        DisableChromeBackgroundRunning        
         
         Function MediaFeaturePack {
             try {
                 Write-Host "Installing Media Feature Pack..." -NoNewline
                 # check new version
-                $capability = DISM /Online /Get-Capabilities | Select-String 'Media.MediaFeaturePack~~~~'
-                if ($capability) {
-                    $newVersion = $capability.ToString().Trim()
-                    $newVersion = $newVersion -replace 'Capability Identity : ', '' -replace '\s', ''
-                    
-                    # Add the capability
-                    $installResult = DISM /Online /Add-Capability /CapabilityName:$newVersion /Quiet /NoRestart
-                    
-                    # 0 success, 3010 restart required
-                    if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 3010) {
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    }
-                    else {
-                        # throw "DISM exited with code $LASTEXITCODE. Message: $installResult"
+                $output = DISM /Online /Get-Capabilities
+                $capabilityLines = $output | Select-String -Pattern "Capability Identity" | Where-Object { $_ -like "*Media.MediaFeaturePack*" }
+            
+                if ($capabilityLines) {
+                    foreach ($line in $capabilityLines) {
+                        if ($line -match 'Capability Identity\s*:\s*(.+)') {
+                            $capabilityIdentity = $matches[1]
+                            DISM /Online /Add-Capability /CapabilityName:$capabilityIdentity *>$null 2>&1
+                            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+                        }
                     }
                 }
                 else {
@@ -663,6 +704,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             catch {
                 Write-Host " [WARNING]: Failed. Error: $_" -ForegroundColor Red
             }
+            
         }
         
         MediaFeaturePack

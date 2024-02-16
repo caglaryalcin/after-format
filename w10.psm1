@@ -1841,20 +1841,21 @@ Function PrivacySettings {
         # Block Telemetry Url's to host file
         Function BlockUrlsToHost {
             Write-Host "Blocking Telemetry in Host File..." -NoNewline
+            $file = "C:\Windows\System32\drivers\etc\hosts"
             if ((Test-Path -Path $file) -and (Get-Item $file).IsReadOnly -eq $false) {
                 try {
                     # hosts file url
                     $url = "https://raw.githubusercontent.com/caglaryalcin/block-windows-telemetry/main/hosts"
-
+        
                     # get the content of the url
                     $text = Invoke-WebRequest -Uri $url | Select-Object -ExpandProperty Content
-
+        
                     # add a new line to the beginning of the text
                     $emptyLine = [Environment]::NewLine
                     $text = $emptyLine + $text
-
+        
                     # add the content to the hosts file
-                    Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value $text
+                    Add-Content -Path $file -Value $text
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
