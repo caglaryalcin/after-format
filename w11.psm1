@@ -2807,14 +2807,6 @@ Detecting programs that cannot be installed with chocolatey...
             Write-Host "[WARNING]: Unable to set 7zip for powershell. $_" -ForegroundColor Red
         }
 
-        # ExplorerPatcher
-        try {
-            winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
-        }
-        catch {
-            Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_" -ForegroundColor Red
-        }
-
         Write-Host "--------"
 
         Function Remove-ChromeComponents {

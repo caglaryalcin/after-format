@@ -478,7 +478,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
+                    "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/ExplorerPatcher.reg"
                 )
 
                 # nvidia 3d settings
@@ -566,6 +567,14 @@ move "%USERPROFILE%\Desktop\cs.cfg" "%cs2cfgpath%"
                 Write-Host "[WARNING]: Error creating OpenRGB config file. $_" -ForegroundColor Red
             }
             
+            # ExplorerPatcher
+            try {
+                winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+            }
+            catch {
+                Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_" -ForegroundColor Red
+            }
+
             # Monitor settings prompt
             try {
                 Start-Process "control" -ArgumentList "desk.cpl" -NoNewWindow -Wait
