@@ -21,7 +21,7 @@ Function Priority {
     $ErrorActionPreference = 'SilentlyContinue'
     $checkQuickAssist = Get-WindowsCapability -online | where-object { $_.name -like "*QuickAssist*" }
     Remove-WindowsCapability -online -name $checkQuickAssist.name -ErrorAction Stop *>$null
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+    Set-ExecutionPolicy RemoteSigned -Force -Scope CurrentUser
     $ErrorActionPreference = 'Continue'
 }
 
@@ -386,7 +386,7 @@ Function SystemSettings {
         
         # Disable Sync your settings
         Function DisableSync {
-            Write-Host `n"Disabling Sync your settings..." -NoNewline
+            Write-Host "Disabling Sync your settings..." -NoNewline
             $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
 
             if (-not (Test-Path $registryPath)) {
@@ -1676,7 +1676,7 @@ Function SystemSettings {
         Function Telnet {
             Write-Host "Enabling Telnet Client..." -NoNewline
             try {
-                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart
+                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart  | Out-Null
             }
             catch {
                 Write-Host "[WARNING]: Telnet Client could not be enabled. $_" -ForegroundColor Red
@@ -2556,7 +2556,7 @@ Function GithubSoftwares {
                 Start-Sleep 10
         
                 #install vcredist 2015
-                $output = choco install microsoft-vclibs --ignore-checksums --force -y
+                $output = choco install microsoft-vclibs --ignore-checksums --force -y -Timeout 0
                 If ($output -match "successful") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
@@ -2612,7 +2612,7 @@ Function GithubSoftwares {
                 Write-Host "Installing $packageName..." -NoNewline
 
                 # Capture the result of the installation
-                $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
+                $result = choco install $packageName --force -y -Verbose -Timeout 0 2>&1 | Out-String
 
                 # Check the installation result for errors
                 if ($result -like "*The install of $packageName was successful*") {
@@ -3180,12 +3180,11 @@ Function UnusedApps {
                             Set-ItemProperty -Path $Path -Name "System.IsPinnedToNameSpaceTree" -Value 0
                         }
                     }
-                    # Disable OneDriveFileSyncNGSC
-                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Value 1 -Force
 
-                    reg load "HKU\Default" "C:\Users\Default\NTUSER.DAT" | Out-Null
-                    reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f -ErrorAction SilentlyContinue
-                    reg unload "HKU\Default" | Out-Null
+                    # Remove OneDrive from the registry
+                    reg load "HKU\Default" "C:\Users\Default\NTUSER.DAT" *>$null
+                    reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f *>$null
+                    reg unload "HKU\Default" *>$null
 
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 

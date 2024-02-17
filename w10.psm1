@@ -2527,7 +2527,7 @@ Function GithubSoftwares {
                 Start-Sleep 10
         
                 #install vcredist 2015
-                $output = choco install microsoft-vclibs --ignore-checksums --force -y
+                $output = choco install microsoft-vclibs --ignore-checksums --force -y -Timeout 0
                 If ($output -match "successful") {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
@@ -2583,7 +2583,7 @@ Function GithubSoftwares {
                 Write-Host "Installing $packageName..." -NoNewline
 
                 # Capture the result of the installation
-                $result = choco install $packageName --force -y -Verbose 2>&1 | Out-String
+                $result = choco install $packageName --force -y -Verbose -Timeout 0 2>&1 | Out-String
 
                 # Check the installation result for errors
                 if ($result -like "*The install of $packageName was successful*") {

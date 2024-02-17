@@ -154,7 +154,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     };
                     "Microsoft Teams classic" = @{
                         "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
-                        "Arguments"        = "--process Start Teams.exe";
+                        "Arguments"        = "--processStart Teams.exe";
                         "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
                     };
                     "dupeGuru"                = @{
@@ -256,7 +256,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             # Set taskbar right side layout
             try {
                 $progressPreference = 'SilentlyContinue'
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/taskbar-rightside-layout.reg" -Outfile "C:\taskbar-rightside-layout.reg" -ErrorAction Stop
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/taskbar-rightside-layout.reg" -Outfile "C:\taskbar-rightside-layout.reg" -ErrorAction Stop
 
                 # Import the registry file
                 reg import "C:\taskbar-rightside-layout.reg" *>$null
@@ -474,17 +474,13 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
                 )
 
-                # ublock and cs2 to desktop
+                # cs2, twinkle tray, explorer patcher, nvidia profile
                 "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/w11/ExplorerPatcher.reg"
-                )
-
-                # nvidia 3d settings
-                "C:\programdata\NVIDIA Corporation\Drs\"            = @(
-                    "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/nvdrsdb0.bin"
+                    #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt", #in cloud
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
+                    "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/Base-Profile.nip"
                 )
 
                 # twinkle tray
@@ -504,38 +500,49 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 }
             }
 
+            # Run Nvidia Profile Inspector for importing the base profile
+            try {
+                Start-Process "C:\ProgramData\chocolatey\lib\nvidia-profile-inspector\tools\nvidiaProfileInspector.exe" -NoNewWindow -Wait
+            }
+            catch {
+                Write-Host " [WARNING]: Failed to run Nvidia Profile Inspector. Error: $_" -ForegroundColor Red -BackgroundColor Black
+            }
+
             # Download ublacklist config file to desktop
             "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Create a batch file to move the cs2 video and cs.cfg files to the correct directories
-            $batScript = @"
-@echo off
-@echo off
-set "cs2cfgpath=C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
-set "destpath=C:\Program Files (x86)\Steam\userdata\"
+            # Dosyanın içeriğini oluşturun
+$filecontent = @'
+$soru = "CS2 kuruldu mu? (E/H): "
+$cevap = Read-Host -Prompt $soru
 
-cd /D "%destpath%"
+if ($cevap -eq "E" -or $cevap -eq "e") {
+    Write-Host "CS konfigleri gonderiliyor.."
+    $destpath = "C:\Program Files (x86)\Steam\userdata\"
+    Set-Location -Path $destpath
 
-for /D %%F in (*) do (
-    pushd "%%F"
-)
+    Get-ChildItem -Directory | ForEach-Object {
+        Push-Location $_.FullName
+    }
 
-cd /D ".\730"
-set "testlocalfolder=%CD%"
+    Set-Location -Path ".\730"
+    $testlocalfolder = Get-Location
 
-set "cs2videopath=%testlocalfolder%\local\cfg"
+    $cs2videopath = Join-Path -Path $testlocalfolder -ChildPath "local\cfg"
+    $cs2configpath = "C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
+    Move-Item -Path $env:userprofile\Desktop\cs.cfg -Destination $cs2configpath -Force
+    Move-Item -Path $env:userprofile\Desktop\cs2_video.txt $cs2videopath -Force
+}
+elseif ($cevap -eq "H" -or $cevap -eq "h") {
+    Write-Host "Once CS2 kurulumu yapin."
+}
+else {
+    Write-Host "Gecersiz cevap. Sadece Evet (E) veya Hayir (H) yazin."
+}
+'@
 
-if exist "%testlocalfolder%\local\" (
-    move "%USERPROFILE%\Desktop\cs2_video.txt" "%cs2videopath%\"
-) else (
-    mkdir "%cs2videopath%"
-    move "%USERPROFILE%\Desktop\cs2_video.txt" "%cs2videopath%\"
-)
-
-move "%USERPROFILE%\Desktop\cs.cfg" "%cs2cfgpath%"
-"@
-
-            $batScript | Out-File -FilePath "$env:userprofile\Desktop\cs-script.bat" -Encoding ASCII -Force *>$null
+$filecontent | Out-File -FilePath "C:\Users\m4a1-s\Desktop\cs-script.ps1" -Encoding UTF8
 
             # Restore SteelSeries keyboard settings
             try {
@@ -575,8 +582,17 @@ move "%USERPROFILE%\Desktop\cs.cfg" "%cs2cfgpath%"
                 Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_" -ForegroundColor Red
             }
 
+            # Adobe Creative Cloud
+            try {
+            winget install --id XPDLPKWG9SW2WD -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+            }
+            catch {
+                Write-Host "[WARNING]: Adobe Creative Cloud could not to be installed. $_" -ForegroundColor Red
+            }
+
             # Monitor settings prompt
             try {
+                Start-Sleep 5
                 Start-Process "control" -ArgumentList "desk.cpl" -NoNewWindow -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
@@ -672,7 +688,7 @@ move "%USERPROFILE%\Desktop\cs.cfg" "%cs2cfgpath%"
         installLibreWolfAddIn
 
         Function DisableChromeBackgroundRunning {
-            Write-Host "Disabling the 'Continue running background apps when Google Chrome is closed' setting in Chrome System settings..." -NoNewline
+            Write-Host "Disabling the 'Continue running background apps' setting in Chrome..." -NoNewline
             try {
                 $registryValue = 0
                 $registryKey = "HKLM:\SOFTWARE\Policies\Google\Chrome"

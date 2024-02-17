@@ -47,7 +47,8 @@
         {"PackageIdentifier": "OpenRGB"},
         {"PackageIdentifier": "tailscale"},
         {"PackageIdentifier": "WinFsp"},
-        {"PackageIdentifier": "NVCleanstall"}
+        {"PackageIdentifier": "NVCleanstall"},
+        {"PackageIdentifier": "nvidia"}
       ]
     }
   ]
