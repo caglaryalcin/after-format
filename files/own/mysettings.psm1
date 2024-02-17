@@ -452,25 +452,25 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $Global:ProgressPreference = 'SilentlyContinue'
             $downloads = @{
                 # notepad++
-                "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes" = @(
+                "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes"                                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/VS2018-Dark_plus.xml"
                 )
-                "$env:USERPROFILE\Appdata\Roaming\Notepad++\"       = @(
+                "$env:USERPROFILE\Appdata\Roaming\Notepad++\"                                                = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/config.xml"
                 )
             
                 # fan control
-                "C:\fan_control\Configurations"                     = @(
+                "C:\fan_control\Configurations"                                                              = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/fan/my_fan_config.json"
                 )
             
                 # openrgb
-                "$env:USERPROFILE\Appdata\Roaming\Openrgb"          = @(
+                "$env:USERPROFILE\Appdata\Roaming\Openrgb"                                                   = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/led/my_led_config.orp"
                 )
             
                 # keyboard
-                "C:\ProgramData\SteelSeries\"                       = @(
+                "C:\ProgramData\SteelSeries\"                                                                = @(
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
                 )
 
@@ -480,16 +480,16 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 )
 
                 # cs2, twinkle tray, explorer patcher, nvidia profile
-                "$env:userprofile\Desktop"                          = @(
+                "$env:userprofile\Desktop"                                                                   = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt",
                     #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt", #in cloud
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
+                    #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg", #will not use it for now
                     "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/Base-Profile.nip"
                 )
 
                 # twinkle tray
-                "$env:userprofile\AppData\Roaming\twinkle-tray"     = @(
+                "$env:userprofile\AppData\Roaming\twinkle-tray"                                              = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json"
                 )
             }
@@ -517,8 +517,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Create a batch file to move the cs2 video and cs.cfg files to the correct directories
-$filecontent = @'
-$soru = "CS2 kuruldu mu? (E/H): "
+            $filecontent = @'
+$soru = "CS2 kuruldu mu? (E/H)"
 $cevap = Read-Host -Prompt $soru
 
 if ($cevap -eq "E" -or $cevap -eq "e") {
@@ -531,12 +531,18 @@ if ($cevap -eq "E" -or $cevap -eq "e") {
     }
 
     Set-Location -Path ".\730"
-    $testlocalfolder = Get-Location
 
-    $cs2videopath = Join-Path -Path $testlocalfolder -ChildPath "local\cfg"
+    $localFolderPath = Join-Path -Path (Get-Location) -ChildPath "local"
+    if (-not (Test-Path -Path $localFolderPath)) {
+        New-Item -Name "local" -ItemType Directory | Out-Null
+    }
+
+    Set-Location -Path ".\local\cfg"
+
     $cs2configpath = "C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
+
     Move-Item -Path $env:userprofile\Desktop\cs.cfg -Destination $cs2configpath -Force
-    Move-Item -Path $env:userprofile\Desktop\cs2_video.txt $cs2videopath -Force
+    Move-Item -Path $env:userprofile\Desktop\cs2_video.txt -Destination (Get-Location) -Force
 }
 elseif ($cevap -eq "H" -or $cevap -eq "h") {
     Write-Host "Once CS2 kurulumu yapin."
@@ -546,7 +552,7 @@ else {
 }
 '@
 
-$filecontent | Out-File -FilePath "C:\Users\m4a1-s\Desktop\cs-script.ps1" -Encoding UTF8
+            $filecontent | Out-File -FilePath "$env:userprofile\Desktop\cs-script.ps1" -Encoding UTF8
 
             # Restore SteelSeries keyboard settings
             try {
@@ -588,7 +594,9 @@ $filecontent | Out-File -FilePath "C:\Users\m4a1-s\Desktop\cs-script.ps1" -Encod
 
             # Adobe Creative Cloud
             try {
-            winget install --id XPDLPKWG9SW2WD -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+                winget install --id XPDLPKWG9SW2WD -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+                Start-Sleep 5
+                taskkill.exe /f /im "Creative Cloud.exe" *>$null
             }
             catch {
                 Write-Host "[WARNING]: Adobe Creative Cloud could not to be installed. $_" -ForegroundColor Red
@@ -703,7 +711,8 @@ $filecontent | Out-File -FilePath "C:\Users\m4a1-s\Desktop\cs-script.ps1" -Encod
         
                 Set-ItemProperty -Path $registryKey -Name "BackgroundModeEnabled" -Value $registryValue -Type DWORD -Force *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            } catch {
+            }
+            catch {
                 Write-Host "An error occurred while disabling Chrome background running: $_" -ForegroundColor Red
             }
         }

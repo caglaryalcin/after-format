@@ -1883,17 +1883,8 @@ Function PrivacySettings {
             if ((Test-Path -Path $file) -and (Get-Item $file).IsReadOnly -eq $false) {
                 try {
                     # hosts file url
-                    $url = "https://raw.githubusercontent.com/caglaryalcin/block-windows-telemetry/main/hosts"
-        
-                    # get the content of the url
-                    $text = Invoke-WebRequest -Uri $url | Select-Object -ExpandProperty Content
-        
-                    # add a new line to the beginning of the text
-                    $emptyLine = [Environment]::NewLine
-                    $text = $emptyLine + $text
-        
-                    # add the content to the hosts file
-                    Add-Content -Path $file -Value $text
+                    iwr -Uri "https://raw.githubusercontent.com/caglaryalcin/block-windows-telemetry/main/host" -OutFile "$env:USERPROFILE\Desktop\host"
+                    Move-Item -Path "$env:userprofile\Desktop\host" -Destination C:\windows\system32\drivers\etc\hosts -Force
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
@@ -3197,7 +3188,6 @@ Function UnusedApps {
 
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 
-                    Start-Process "explorer.exe"
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
                 }
