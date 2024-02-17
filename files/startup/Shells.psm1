@@ -108,6 +108,13 @@ Function SetWinLanguageBarOption {
 
 SetWinLanguageBarOption
 
+Function disablef12 {
+    # Disable Print Screen key for Snipping Tool
+    Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
+}
+
+disablef12
+
 # Remove Toggle Keys
 Function RemoveToggleKeys {
     $registryPaths = @(

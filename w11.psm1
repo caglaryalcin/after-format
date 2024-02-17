@@ -222,6 +222,9 @@ Function SystemSettings {
 
                         #disable different input for each app 
                         Set-WinLanguageBarOption
+
+                        # Disable Print Screen key for Snipping Tool
+                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                     }
                     "2" {
                         # UK keyboard layout
@@ -247,6 +250,9 @@ Function SystemSettings {
 
                         #disable different input for each app 
                         Set-WinLanguageBarOption
+
+                        # Disable Print Screen key for Snipping Tool
+                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                     }
                     "3" {
                         # Both TR and UK keyboard layout
@@ -273,6 +279,9 @@ Function SystemSettings {
 
                         #disable different input for each app 
                         Set-WinLanguageBarOption
+
+                        # Disable Print Screen key for Snipping Tool
+                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                     }
                     default {
                         Write-Host "Invalid input. Please enter 1, 2 or 3."

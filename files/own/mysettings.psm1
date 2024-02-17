@@ -474,6 +474,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
                 )
 
+                # terminal
+                "$env:USERPROFILE\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState" = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/terminal/settings.json"
+                )
+
                 # cs2, twinkle tray, explorer patcher, nvidia profile
                 "$env:userprofile\Desktop"                          = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
@@ -512,7 +517,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Create a batch file to move the cs2 video and cs.cfg files to the correct directories
-            # Dosyanın içeriğini oluşturun
 $filecontent = @'
 $soru = "CS2 kuruldu mu? (E/H): "
 $cevap = Read-Host -Prompt $soru
