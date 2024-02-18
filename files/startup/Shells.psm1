@@ -297,7 +297,7 @@ Function RemoveEdgeUpdates {
     }
 }
 
-RemoveEdgeUpdates
+#RemoveEdgeUpdates
 
 Function RemoveChromeUpdates {
     # Registry keys and files to remove
