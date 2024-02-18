@@ -379,6 +379,7 @@ Function SystemSettings {
 
         TaskbarAlignLeft
 
+        # Disable Gallery for Windows 11
         Function DisableGallery {
             Write-Host "Disabling gallery folder..." -NoNewline
             try {
@@ -393,6 +394,20 @@ Function SystemSettings {
 
         DisableGallery
         
+        # Enable Show Desktop Button for Windows 11
+        Function EnableShowDesktop {
+            Write-Host "Enabling Show Desktop Button..." -NoNewline
+            try {
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Show Desktop could not be enabled. $_" -ForegroundColor Red
+            }
+        }
+        
+        EnableShowDesktop
+
         # Disable Sync your settings
         Function DisableSync {
             Write-Host "Disabling Sync your settings..." -NoNewline
