@@ -3104,7 +3104,7 @@ Function UnusedApps {
 
         # Remove Tasks in Task Scheduler
         Function RemoveTasks {
-            Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Gray
+            Write-Host "Removing unused tasks..." -ForegroundColor Blue -BackgroundColor Gray
             
             $description = @"
 +---------------------------------------------+
@@ -3367,7 +3367,7 @@ Function UnusedApps {
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-                Write-Host "Microsoft Edge privacy settings are being adjusted..." -NoNewline
+                Write-Host `n"Microsoft Edge privacy settings are being adjusted..." -NoNewline
                 # Registry path for Edge privacy settings
                 $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
         
