@@ -112,48 +112,56 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
   
 It asks if you want to install the following softwares or not.
 
-- Winget for Windows 10
-- Mozilla Firefox
-- Opera
-- Google Chrome
-- Libre Wolf
-- Brave Browser
+- Chrome
+- Brave
+- Firefox
+- LibreWolf
 - Steam
 - Epic Games
 - HWMonitor
-- Crystal Disk Info
-- VMWare Workstation Pro
+- CrystalDisk Info
+- VMware Workstation
 - VirtualBox
-- Signal Desktop
-- Softwares for developers(MSVS Community, MSVS Buildtools, WindowsSDK, NodeJS, Python and Git)
-- Microsoft Visual Studio Code (with extensions)
+- Signal
+- VSCode Community
+- VSCode Build
+- VSCode (with extensions)
+- Notepad
+- Windows SDK
+- Node.js
+- Python
+- Git
 - AnyDesk
-- Windows Terminal
-- Speedtest
-- Sublime Text 4
-- Github Desktop
-- VLC Media Player
-- TreeSize Free
+- Terminal
+- Speedtest for terminal
+- GitHub
+- VLC
+- TreeSize
 - Total Commander
-- Rufus
 - Wireshark
-- PuTTY
 - Deluge
 - DBeaver
 - Cryptomator
 - Microsoft Teams
-- Powertoys
 - DupeGuru
-- WinFsp for Cryptomator
-- 7-Zip
+- SteelSeries
+- Java
+- 7zip
 - Lightshot
-- Twinkle-Tray
-- K-Lite Codec Pack Mega
-- Nvidia GeForce Experience
+- Twinkle Tray
+- Codec Pack Mega
 - Malwarebytes
 - Internet Download Manager
-- CloudFlare WARP
-- Valorant
+- Cloudflare Warp
+- OpenRGB
+- Tailscale
+- WinFsp for Cryptomator
+- NVCleanstall
+- Nvidia Inspector
+
+If an error is received while loading packets with chocolatey, it will try to load them with winget.
+
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/5.png)
 
 </details>
 
