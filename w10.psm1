@@ -35,7 +35,7 @@ Priority
 #region System Settings 
 ##########
 Function SystemSettings {
-    Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want " -NoNewline
     Write-Host "System Settings?" -ForegroundColor Yellow -NoNewline
@@ -1767,7 +1767,7 @@ SystemSettings
 #region Privacy Settings
 ##########
 Function PrivacySettings {
-    Write-Host `n"---------Adjusting Privacy Settings" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Adjusting Privacy Settings" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want " -NoNewline
     Write-Host "Privacy Settings?" -ForegroundColor Yellow -NoNewline
@@ -2504,7 +2504,7 @@ PrivacySettings
 #region Install Softwares
 ##########
 Function GithubSoftwares {
-    Write-Host `n"---------Installing Softwares" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Installing Softwares" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want to " -NoNewline
     Write-Host "install applications that are written on github?" -ForegroundColor Yellow -NoNewline
@@ -2872,7 +2872,7 @@ GithubSoftwares
 #region Remove Unused Apps/Softwares
 ##########
 Function UnusedApps {
-    Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want " -NoNewline
     Write-Host "Uninstall Unused Apps & Softwares?" -ForegroundColor Yellow -NoNewline
@@ -3032,7 +3032,7 @@ Function UnusedApps {
 
         # Remove Tasks in Task Scheduler
         Function RemoveTasks {
-            Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
+            Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Gray
             
             $description = @"
 +---------------------------------------------+

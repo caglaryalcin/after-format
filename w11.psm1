@@ -2549,7 +2549,7 @@ PrivacySettings
 #region Install Softwares
 ##########
 Function GithubSoftwares {
-    Write-Host `n"---------Installing Softwares" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Installing Softwares" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want to " -NoNewline
     Write-Host "install applications that are written on github?" -ForegroundColor Yellow -NoNewline
@@ -2917,7 +2917,7 @@ GithubSoftwares
 #region Remove Unused Apps/Softwares
 ##########
 Function UnusedApps {
-    Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want " -NoNewline
     Write-Host "Uninstall Unused Apps & Softwares?" -ForegroundColor Yellow -NoNewline
@@ -3104,7 +3104,7 @@ Function UnusedApps {
 
         # Remove Tasks in Task Scheduler
         Function RemoveTasks {
-            Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor White
+            Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Gray
             
             $description = @"
 +---------------------------------------------+
