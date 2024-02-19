@@ -353,7 +353,7 @@ Function SystemSettings {
 
         # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {
-            Write-Host "Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
+            Write-Host `n"Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
             try {
                 reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
