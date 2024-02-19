@@ -302,7 +302,7 @@ Function SystemSettings {
         #Import Batch to Startup
         Function ImportStartup {
             Write-Host `n"For detailed information " -NoNewline
-            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor Gray
+            Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor DarkCyan
             Write-Host "Do you want to " -NoNewline
             Write-Host "add the start task to the task scheduler?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
