@@ -397,8 +397,9 @@ Function SystemSettings {
         # Enable Show Desktop Button for Windows 11
         Function EnableShowDesktop {
             Write-Host "Enabling Show Desktop Button..." -NoNewline
+            
             try {
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
