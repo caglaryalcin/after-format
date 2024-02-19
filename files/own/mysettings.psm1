@@ -606,12 +606,9 @@ else {
 
             # Monitor settings prompt
             try {
-                Start-Sleep 5
-                Start-Process "control" -ArgumentList "desk.cpl" -NoNewWindow -Wait
-                Start-Sleep 2
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
-                Start-Sleep 2
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
+                Start-Process "control" -ArgumentList "desk.cpl" -NoNewWindow -Wait
             }
             catch {
                 Write-Host " [WARNING]: Failed to set monitor settings. Error: $_" -ForegroundColor Red -BackgroundColor Black

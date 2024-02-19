@@ -2711,8 +2711,8 @@ Function GithubSoftwares {
         $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
+        Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
         Write-Host @"
---------
 Detecting programs that cannot be installed with chocolatey...
 
 "@
@@ -2778,7 +2778,7 @@ Detecting programs that cannot be installed with chocolatey...
             Write-Host "[WARNING]: Unable to set 7zip for powershell. $_" -ForegroundColor Red
         }
 
-        Write-Host "--------"
+        Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
 
         Function Remove-ChromeComponents {
             Write-Host `n"Disabling and removing Chrome Update services..." -NoNewline
@@ -3095,7 +3095,7 @@ Function UnusedApps {
 
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Update tasks will not be deleted.]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[Unused tasks will not be deleted.]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
