@@ -369,7 +369,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host "Installing Nvidia Driver..." -NoNewline
             try {
                 # Run NVCleanInstaller and wait for it to finish
-                Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -NoNewWindow -Wait
+                Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -NoNewWindow -Wait | Out-Null *>$null
 
                 # Alternative method to download Nvidia driver
                 <#
@@ -507,7 +507,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
             # Run Nvidia Profile Inspector for importing the base profile
             try {
-                Start-Process "C:\ProgramData\chocolatey\lib\nvidia-profile-inspector\tools\nvidiaProfileInspector.exe" -NoNewWindow -Wait
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Start-Process "C:\ProgramData\chocolatey\lib\nvidia-profile-inspector\tools\nvidiaProfileInspector.exe" -NoNewWindow -Wait | Out-Null *>$null
             }
             catch {
                 Write-Host " [WARNING]: Failed to run Nvidia Profile Inspector. Error: $_" -ForegroundColor Red -BackgroundColor Black
@@ -586,10 +588,10 @@ else {
             
             # ExplorerPatcher
             try {
-                winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+                #winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null #will not use it for now
             }
             catch {
-                Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_" -ForegroundColor Red
+                #Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_" -ForegroundColor Red
             }
 
             # Adobe Creative Cloud
@@ -606,7 +608,9 @@ else {
             try {
                 Start-Sleep 5
                 Start-Process "control" -ArgumentList "desk.cpl" -NoNewWindow -Wait
+                Start-Sleep 2
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
+                Start-Sleep 2
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
             }
             catch {

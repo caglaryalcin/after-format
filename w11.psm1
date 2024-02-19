@@ -2968,33 +2968,6 @@ Function UnusedApps {
                 }
             }
 
-            # Disable Copilot
-            Function DisableCopilot {
-                Write-Host `n"Do you want " -NoNewline
-                Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
-                Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-                $response = Read-Host
-            
-                if ($response -eq 'y' -or $response -eq 'Y') {
-                    if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
-                        New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
-                    }
-                    
-                    New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
-                    
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                elseif ($response -eq 'n' -or $response -eq 'N') {
-                    Write-Host "[Copilot will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-                }
-                else {
-                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                    DisableCopilot
-                }
-            }
-
-            DisableCopilot
-
             # Uninstall Health Check
             try {
                 $progressPreference = 'silentlyContinue'
@@ -3008,6 +2981,33 @@ Function UnusedApps {
         }
 
         UninstallThirdPartyBloat
+
+        # Disable Copilot
+        Function DisableCopilot {
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+        
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
+                    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                }
+                
+                New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
+                
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Copilot will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                DisableCopilot
+            }
+        }
+
+        DisableCopilot
 
         # Uninstall Windows Media Player
         Function UninstallMediaPlayer {
@@ -3258,6 +3258,7 @@ Function UnusedApps {
         Function UninstallEdge {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "uninstall Microsoft Edge?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(Not recommended for Windows 11)" -ForegroundColor Red -BackgroundColor Black -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
