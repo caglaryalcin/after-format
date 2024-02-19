@@ -592,15 +592,6 @@ else {
                 Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_" -ForegroundColor Red
             }
 
-            # Instagram
-
-            try {
-                winget install --id 9NBLGGH5L9XT -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
-            }
-            catch {
-                Write-Host "[WARNING]: Instagram could not to be installed. $_" -ForegroundColor Red
-            }
-
             # Adobe Creative Cloud
             try {
                 winget install --id XPDLPKWG9SW2WD -e --silent --accept-source-agreements --accept-package-agreements --force *>$null

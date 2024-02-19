@@ -2912,6 +2912,8 @@ Function UnusedApps {
                         $OriginalProgressPreference = $Global:ProgressPreference
                         $Global:ProgressPreference = 'SilentlyContinue'
                         $app | Remove-AppxPackage -ErrorAction Stop
+                        Start-Sleep 2
+                        Start-Process msiexec.exe -ArgumentList '/x', '{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}', '/qn', '/norestart' -NoNewWindow -Wait *>$null #Microsoft Teams Outlook Add-in
                     }
                     else {
                     }
