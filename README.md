@@ -183,7 +183,9 @@ If an error is received while loading packets with chocolatey, it will try to lo
 </details>
 
 <details><summary>Startup Script</summary>&nbsp;
-  
+
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/startup.png)
+
 This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
 
 - Remove En-US Keyboard
