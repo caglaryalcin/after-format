@@ -35,7 +35,7 @@ Priority
 #region System Settings 
 ##########
 Function SystemSettings {
-    Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want " -NoNewline
     Write-Host "System Settings?" -ForegroundColor Yellow -NoNewline
@@ -1821,7 +1821,7 @@ SystemSettings
 #region Privacy Settings
 ##########
 Function PrivacySettings {
-    Write-Host `n"---------Adjusting Privacy Settings" -ForegroundColor Blue -BackgroundColor White
+    Write-Host `n"---------Adjusting Privacy Settings" -ForegroundColor Blue -BackgroundColor Gray
 
     Write-Host `n"Do you want " -NoNewline
     Write-Host "Privacy Settings?" -ForegroundColor Yellow -NoNewline
