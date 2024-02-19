@@ -2883,7 +2883,7 @@ Function UnusedApps {
 
         # Remove Apps 
         Function UninstallThirdPartyBloat {
-            Write-Host `n"Uninstalling Default Third Party Applications..." -NoNewline
+            Write-Host "Uninstalling Default Third Party Applications..." -NoNewline
         
             $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
             "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
@@ -3029,11 +3029,33 @@ Function UnusedApps {
         }
     
         Remove3D
+        # Block Microsoft Edge telemetry
+        Function EdgePrivacy {
+            Write-Host `n"Microsoft Edge privacy settings are being adjusted..." -NoNewline
+                # Registry path for Edge privacy settings
+                $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+        
+                if (-not (Test-Path $registryPath)) {
+                    New-Item -Path $registryPath -Force *>$null
+                }
+        
+                try {
+                    Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
+                    Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
+                    Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                catch {
+                    Write-Host "[WARNING]: Failed to apply Edge privacy settings $_" -ForegroundColor Red -BackgroundColor Black
+                }
+        }
+        
+        EdgePrivacy
 
         # Remove Tasks in Task Scheduler
         Function RemoveTasks {
-            Write-Host "Removing unused tasks..." -ForegroundColor Blue -BackgroundColor Gray
-            
             $description = @"
 +---------------------------------------------+
 |    If you apply it,                         |
@@ -3256,25 +3278,6 @@ Function UnusedApps {
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-                Write-Host `n"Microsoft Edge privacy settings are being adjusted..." -NoNewline
-                # Registry path for Edge privacy settings
-                $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
-        
-                if (-not (Test-Path $registryPath)) {
-                    New-Item -Path $registryPath -Force *>$null
-                }
-        
-                try {
-                    Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
-                    Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
-                    Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
-                    Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
-                    Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                catch {
-                    Write-Host "[WARNING]: Failed to apply Edge privacy settings $_" -ForegroundColor Red -BackgroundColor Black
-                }
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."

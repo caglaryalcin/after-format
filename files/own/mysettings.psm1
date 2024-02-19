@@ -1,8 +1,10 @@
 
 $myText = @"
-###############################
-######## DO NOT ACCEPT ########
-###############################
++---------------------------------------------+
+|                                             |
+|               DO NOT ACCEPT                 |
+|                                             |
++---------------------------------------------+
 "@
 
 Write-Host `n$myText -ForegroundColor Red
@@ -609,6 +611,7 @@ else {
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 0" -NoNewWindow -Wait
                 Start-Process "rundll32.exe" -ArgumentList "display.dll, ShowAdapterSettings 1" -NoNewWindow -Wait
                 Start-Process "control" -ArgumentList "desk.cpl" -NoNewWindow -Wait
+                Start-Sleep 10
             }
             catch {
                 Write-Host " [WARNING]: Failed to set monitor settings. Error: $_" -ForegroundColor Red -BackgroundColor Black
