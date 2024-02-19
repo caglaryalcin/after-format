@@ -1,23 +1,13 @@
 ##########
-#region Set MAP
-##########
-
-$ErrorActionPreference = 'SilentlyContinue'
-New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
-New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
-New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
-New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-$ErrorActionPreference = 'Continue'
-    
-##########
-#endregion MAP
-##########
-
-##########
 #region Priority
 ##########
 
 Function Priority {
+    $ErrorActionPreference = 'SilentlyContinue'
+    New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+    New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
+    New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+    New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
     $ErrorActionPreference = 'SilentlyContinue'
     $checkQuickAssist = Get-WindowsCapability -online | where-object { $_.name -like "*QuickAssist*" }
     Remove-WindowsCapability -online -name $checkQuickAssist.name -ErrorAction Stop *>$null
@@ -3012,7 +3002,7 @@ Function UnusedApps {
 
         # Uninstall Windows Media Player
         Function UninstallMediaPlayer {
-            Write-Host "Uninstalling Windows Media Player..." -NoNewline
+            Write-Host `n"Uninstalling Windows Media Player..." -NoNewline
             try {
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
@@ -3105,7 +3095,7 @@ Function UnusedApps {
 
         # Block Microsoft Edge telemetry
         Function EdgePrivacy {
-            Write-Host `n"Microsoft Edge privacy settings are being adjusted..." -NoNewline
+            Write-Host "Microsoft Edge privacy settings are being adjusted..." -NoNewline
                 # Registry path for Edge privacy settings
                 $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
         

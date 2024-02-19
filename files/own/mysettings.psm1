@@ -759,6 +759,9 @@ else {
             try {
                 $wc.DownloadFile($url, $filePath)
                 Set-Itemproperty -path "HKCU:Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
+                Start-Sleep 2
+                taskkill /f /im explorer.exe *>$null
+                Start-Process explorer.exe -ErrorAction *>$null 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
