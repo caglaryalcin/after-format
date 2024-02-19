@@ -315,6 +315,20 @@ Function RemoveChromeUpdates {
 
 #RemoveChromeUpdates
 
+# Show Desktop Button
+Function EnableShowDesktop {
+    Write-Host "Enabling Show Desktop Button..." -NoNewline
+    try {
+        New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+    catch {
+        Write-Host "[WARNING]: Show Desktop could not be enabled. $_" -ForegroundColor Red
+    }
+}
+
+EnableShowDesktop
+
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
 
