@@ -109,8 +109,10 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 <details><summary>Install Softwares</summary>&nbsp;
 
 ![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/3.png)
-  
-It asks if you want to install the following softwares or not.
+
+> 💡It asks if you want to install the following softwares or not. If an error is received while loading packets with chocolatey, it will try to load them with winget.
+
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/5.png)
 
 - Chrome
 - Brave
@@ -158,10 +160,6 @@ It asks if you want to install the following softwares or not.
 - WinFsp for Cryptomator
 - NVCleanstall
 - Nvidia Inspector
-
-If an error is received while loading packets with chocolatey, it will try to load them with winget.
-
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/5.png)
 
 </details>
 
