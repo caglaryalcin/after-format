@@ -341,6 +341,43 @@ Function SystemSettings {
         
         ImportStartup
 
+        Function DisableSnap {
+            Write-Host "Do you want to " -NoNewline
+            Write-Host "disable the Snap windows feature?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host `n"Disabling Snap windows feature..." -NoNewline
+                try {
+                    #Disable Snap windows
+                    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
+
+                    #Disable "When I snap a window, suggest what I can snap next to it"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
+
+                    #Disable "Show snap layouts when I hover over a window's maximize button"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
+
+                    #Disable "Show snap layouts when I drag a window to the top of my screen"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
+
+                    #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
+
+                    #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
+
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                catch {
+                    Write-Host "[WARNING]: Snap windows feature could not be disabled. $_" -ForegroundColor Red
+                }
+            }
+        }
+
+        DisableSnap
+
         # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {
             Write-Host `n"Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
@@ -2935,7 +2972,7 @@ Function UnusedApps {
             "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
             "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
             "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
-            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
+            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI", "*WebExperience*"
         
             $allPackages = $Uninstall3Party + $UninstallAppxPackages
         

@@ -481,6 +481,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/terminal/settings.json"
                 )
 
+                # taskmanager
+                "$env:USERPROFILE\AppData\Local\Microsoft\Windows\TaskManager"                               = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/taskmgr/settings.json"
+                )
+
                 # cs2, twinkle tray, explorer patcher, nvidia profile
                 "$env:userprofile\Desktop"                                                                   = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
@@ -748,7 +753,168 @@ else {
             
         }
         
-        MediaFeaturePack
+        #MediaFeaturePack problematic
+
+        Function MediaFeaturePackManual {
+            Write-Host "Installing Media Feature Pack manually..." -NoNewline
+            try {
+                $source = @"
+using System;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+namespace KeyboardSend
+{
+    public class KeyboardSend
+    {
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
+        private const int KEYEVENTF_EXTENDEDKEY = 0;
+        private const int KEYEVENTF_KEYUP = 2;
+
+        public static void KeyDown(Keys vKey)
+        {
+            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY, 0);
+        }
+
+        public static void KeyUp(Keys vKey)
+        {
+            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+        }
+    }
+}
+"@
+                Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
+
+                Function SettingsPanel {
+                    [KeyboardSend.KeyboardSend]::KeyDown("LWin")
+                    [KeyboardSend.KeyboardSend]::KeyDown("I")
+                    [KeyboardSend.KeyboardSend]::KeyUp("I")
+                    [KeyboardSend.KeyboardSend]::KeyUp("LWin")
+                    Start-Sleep -Milliseconds 1500
+                    [System.Windows.Forms.SendKeys]::SendWait("Optional")
+                    Start-Sleep -Milliseconds 1800
+                    [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
+                    Start-Sleep -Milliseconds 500
+                    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+                    Start-Sleep -Milliseconds 1000
+                    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+                    Start-Sleep -Milliseconds 500
+                    [System.Windows.Forms.SendKeys]::SendWait("Media")
+                    Start-Sleep -Milliseconds 500
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    Start-Sleep -Milliseconds 100
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    Start-Sleep -Milliseconds 100
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    Start-Sleep -Milliseconds 300
+                    [System.Windows.Forms.SendKeys]::SendWait(" ")
+                    Start-Sleep -Milliseconds 100
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    Start-Sleep -Milliseconds 100
+                    [System.Windows.Forms.SendKeys]::SendWait(" ")
+                    Start-Sleep -Milliseconds 50
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    Start-Sleep -Milliseconds 50
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    Start-Sleep -Milliseconds 50
+                    [System.Windows.Forms.SendKeys]::SendWait(" ")
+
+                    taskkill /f /im SystemSettings.exe *>$null
+                }
+
+                SettingsPanel
+
+            
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            }
+            catch {
+                Write-Host " [WARNING]: Failed. Error: $_" -ForegroundColor Red
+            }
+        }
+
+        MediaFeaturePackManual
+
+        # Disable do not disturb mode
+        Function DisableDoNotDisturb {
+            Write-Host "Disabling do not disturb mode..." -NoNewline
+            try {
+                $source = @"
+using System;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+namespace KeyboardSend
+{
+    public class KeyboardSend
+    {
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
+        private const int KEYEVENTF_EXTENDEDKEY = 0;
+        private const int KEYEVENTF_KEYUP = 2;
+
+        public static void KeyDown(Keys vKey)
+        {
+            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY, 0);
+        }
+
+        public static void KeyUp(Keys vKey)
+        {
+            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+        }
+    }
+}
+"@
+                Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
+
+                Function SettingsPanel {
+                    [KeyboardSend.KeyboardSend]::KeyDown("LWin")
+                    [KeyboardSend.KeyboardSend]::KeyDown("I")
+                    [KeyboardSend.KeyboardSend]::KeyUp("I")
+                    [KeyboardSend.KeyboardSend]::KeyUp("LWin")
+                    Start-Sleep -Milliseconds 1500
+                    [System.Windows.Forms.SendKeys]::SendWait("do not disturb")
+                    Start-Sleep -Milliseconds 600
+                    [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
+                    Start-Sleep -Milliseconds 500
+                    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+                    Start-Sleep -Milliseconds 1000
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
+                    
+                    Start-Sleep -Milliseconds 100
+                    [System.Windows.Forms.SendKeys]::SendWait(" ")
+                    
+                    Start-Sleep 2
+
+                    taskkill /f /im SystemSettings.exe *>$null
+                }
+
+                SettingsPanel
+
+            
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            }
+            catch {
+                Write-Host " [WARNING]: Failed. Error: $_" -ForegroundColor Red
+            }
+        }
+
+        DisableDoNotDisturb
 
         #Set Wallpaper
         Function SetWallpaper {
@@ -762,7 +928,7 @@ else {
                 Start-Sleep 2
                 taskkill /f /im explorer.exe *>$null
                 Start-Process explorer.exe -ErrorAction *>$null 
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+                Write-Host "[Media feature pack keeps loading in the background.]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
                 Write-Host "[WARNING]: Failed to set wallpaper: $_" -ForegroundColor Yellow
