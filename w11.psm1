@@ -351,7 +351,7 @@ Function SystemSettings {
                 Write-Host `n"Disabling Snap windows feature..." -NoNewline
                 try {
                     #Disable Snap windows
-                    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
+                    #Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
 
                     #Disable "When I snap a window, suggest what I can snap next to it"
                     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
