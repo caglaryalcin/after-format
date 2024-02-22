@@ -637,18 +637,18 @@ else {
                     
         Set-Configs
 
-        # Restore Librewolf settings
-        Function installLibreWolfAddIn() {
-            Write-Host "Librewolf settings are being restored..." -NoNewline
+        # Restore Firefox settings
+        Function installFirefoxAddIn() {
+            Write-Host "Firefox settings are being restored..." -NoNewline
 
-            # Create librewolf profile directory
-            Start-Process -FilePath "C:\Program Files\LibreWolf\librewolf.exe" -Wait
+            # Create Firefox profile directory
+            Start-Process -FilePath "C:\Program Files\Mozilla Firefox\firefox.exe" -Wait
             Start-Sleep -Seconds 10
-            taskkill /f /im "librewolf.exe" *>$null
+            taskkill /f /im "firefox.exe" *>$null
     
             # Initialize variables
-            $libreWolfDir = "C:\Program Files\LibreWolf"
-            $distributionDir = Join-Path $libreWolfDir 'distribution'
+            $firefoxDir = "C:\Program Files\Mozilla Firefox"
+            $distributionDir = Join-Path $firefoxWolfDir 'distribution'
             $extensionsDir = Join-Path $distributionDir 'extensions'
     
             # Ensure necessary directories exist
@@ -672,7 +672,7 @@ else {
             # Restore user profile settings
             try {
                 # Get the user profile directory
-                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\librewolf\Profiles" -Filter "*.default-default" -Directory).FullName
+                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Mozilla\Firefox\Profiles" -Filter "*.default-default" -Directory).FullName
         
                 # Create user profile chrome directory
                 New-Item $userProfileDir\chrome -ItemType Directory *>$null
@@ -705,7 +705,7 @@ else {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
     
-        installLibreWolfAddIn
+        installFirefoxAddIn
 
         Function DisableChromeBackgroundRunning {
             Write-Host "Disabling the 'Continue running background apps' setting in Chrome..." -NoNewline
