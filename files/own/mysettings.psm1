@@ -78,10 +78,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                         "Path"             = "C:\Program Files\Mozilla Firefox\firefox.exe";
                         "WorkingDirectory" = "C:\Program Files\Mozilla Firefox\";
                     };
-                    "LibreWolf"               = @{
-                        "Path"             = "C:\Program Files\LibreWolf\librewolf.exe";
-                        "WorkingDirectory" = "C:\Program Files\LibreWolf\";
-                    };
                     "Steam"                   = @{
                         "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
                         "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
@@ -101,10 +97,6 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "VMware Workstation Pro"  = @{
                         "Path"             = "C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe";
                         "WorkingDirectory" = "C:\Program Files (x86)\VMware\VMware Workstation\";
-                    };
-                    "Oracle VM VirtualBox"    = @{
-                        "Path"             = "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe";
-                        "WorkingDirectory" = "C:\Program Files\Oracle\VirtualBox\";
                     };
                     "Signal"                  = @{
                         "Path"             = "$env:USERPROFILE\AppData\Local\Programs\signal-desktop\Signal.exe";
@@ -134,46 +126,26 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                         "Path"             = "C:\Program Files\totalcmd\TOTALCMD64.EXE";
                         "WorkingDirectory" = "C:\Program Files\totalcmd\";
                     };
-                    "Putty"                   = @{
-                        "Path"             = "C:\Program Files\PuTTY\putty.exe";
-                        "WorkingDirectory" = "C:\Program Files\PuTTY\";
-                    };
-                    "Deluge"                  = @{
-                        "Path"             = "C:\Program Files\Deluge\deluge.exe";
-                        "WorkingDirectory" = "C:\Program Files\Deluge\";
-                    };
                     "WireShark"               = @{
                         "Path"             = "C:\Program Files\Wireshark\Wireshark.exe";
                         "WorkingDirectory" = "C:\Program Files\Wireshark\";
-                    };
-                    "DBeaver"                 = @{
-                        "Path"             = "C:\Program Files\DBeaver\dbeaver.exe";
-                        "WorkingDirectory" = "C:\Program Files\DBeaver\";
                     };
                     "Cryptomator"             = @{
                         "Path"             = "C:\Program Files\Cryptomator\Cryptomator.exe";
                         "WorkingDirectory" = "C:\Program Files\Cryptomator\";
                     };
-                    "Microsoft Teams classic" = @{
-                        "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
-                        "Arguments"        = "--processStart Teams.exe";
-                        "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
-                    };
-                    "dupeGuru"                = @{
-                        "Path"             = "C:\Program Files\Hardcoded Software\dupeGuru\dupeguru-win64.exe";
-                        "WorkingDirectory" = "C:\Program Files\Hardcoded Software\dupeGuru\";
+                    "OpenRGB"                 = @{
+                        "Path"             = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe";
+                        "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
                     };
                     "FanControl"              = @{
                         "Path"             = "C:\fan_control\FanControl.exe";
                         "WorkingDirectory" = "C:\fan_control\";
                     };
-                    "OpenRGB"                 = @{
-                        "Path"             = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\OpenRGB.exe";
-                        "WorkingDirectory" = "C:\ProgramData\chocolatey\lib\openrgb\tools\OpenRGB Windows 64-bit\";
-                    };
-                    "Cloudflare WARP"         = @{
-                        "Path"             = "C:\Program Files\Cloudflare\Cloudflare WARP\Cloudflare WARP.exe";
-                        "WorkingDirectory" = "C:\Program Files\Cloudflare\Cloudflare WARP\";
+                    "Microsoft Teams classic" = @{
+                        "Path"             = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe";
+                        "Arguments"        = "--processStart Teams.exe";
+                        "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
                     };
                 }
 

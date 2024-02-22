@@ -7,13 +7,11 @@
         {"PackageIdentifier": "Google.Chrome"},
         {"PackageIdentifier": "Brave.Brave"},
         {"PackageIdentifier": "Mozilla.Firefox"},
-        {"PackageIdentifier": "LibreWolf.LibreWolf"},
         {"PackageIdentifier": "Valve.Steam"},
         {"PackageIdentifier": "EpicGames.EpicGamesLauncher"},
         {"PackageIdentifier": "CPUID.HWMonitor"},
         {"PackageIdentifier": "CrystalDewWorld.CrystalDiskInfo"},
         {"PackageIdentifier": "VMware.WorkstationPro"},
-        {"PackageIdentifier": "Oracle.VirtualBox"},
         {"PackageIdentifier": "OpenWhisperSystems.Signal"},
         {"PackageIdentifier": "Microsoft.VisualStudio.2022.Community"},
         {"PackageIdentifier": "Microsoft.VisualStudio.2022.BuildTools"},
@@ -34,7 +32,6 @@
         {"PackageIdentifier": "dbeaver.dbeaver"},
         {"PackageIdentifier": "Cryptomator.Cryptomator"},
         {"PackageIdentifier": "Microsoft.Teams"},
-        {"PackageIdentifier": "DupeGuru.DupeGuru"},
         {"PackageIdentifier": "SteelSeries.GG"},
         {"PackageIdentifier": "Oracle.JavaRuntimeEnvironment"},
         {"PackageIdentifier": "7zip.7zip"},
@@ -47,7 +44,8 @@
         {"PackageIdentifier": "CalcProgrammer1.OpenRGB"},
         {"PackageIdentifier": "tailscale.tailscale"},
         {"PackageIdentifier": "WinFsp.WinFsp"},
-        {"PackageIdentifier": "TechPowerUp.NVCleanstall"}
+        {"PackageIdentifier": "TechPowerUp.NVCleanstall"},
+        {"PackageIdentifier": "Rufus.Rufus"}
       ]
     }
   ]

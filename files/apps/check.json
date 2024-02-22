@@ -7,13 +7,11 @@
         {"PackageIdentifier": "Chrome"},
         {"PackageIdentifier": "Brave"},
         {"PackageIdentifier": "Firefox"},
-        {"PackageIdentifier": "LibreWolf"},
         {"PackageIdentifier": "Steam"},
         {"PackageIdentifier": "Epic"},
         {"PackageIdentifier": "HWMonitor"},
         {"PackageIdentifier": "Crystal"},
         {"PackageIdentifier": "VMware"},
-        {"PackageIdentifier": "VirtualBox"},
         {"PackageIdentifier": "Signal"},
         {"PackageIdentifier": "Community"},
         {"PackageIdentifier": "Build"},
@@ -34,7 +32,6 @@
         {"PackageIdentifier": "dbeaver"},
         {"PackageIdentifier": "Cryptomator"},
         {"PackageIdentifier": "Teams"},
-        {"PackageIdentifier": "DupeGuru"},
         {"PackageIdentifier": "SteelSeries"},
         {"PackageIdentifier": "Java"},
         {"PackageIdentifier": "7zip"},
@@ -48,7 +45,8 @@
         {"PackageIdentifier": "tailscale"},
         {"PackageIdentifier": "WinFsp"},
         {"PackageIdentifier": "NVCleanstall"},
-        {"PackageIdentifier": "nvidia"}
+        {"PackageIdentifier": "nvidia"},
+        {"PackageIdentifier": "rufus"}
       ]
     }
   ]
