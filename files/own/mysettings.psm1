@@ -491,7 +491,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt",
                     #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt", #in cloud
-                    #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg", #will not use it for now
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
                     "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/Base-Profile.nip"
                 )
 
@@ -595,10 +595,14 @@ else {
             
             # ExplorerPatcher
             try {
-                #winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null #will not use it for now
-            }
-            catch {
-                #Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_" -ForegroundColor Red
+                $osName = (systeminfo.exe | Select-String "OS Name").ToString()
+                if ($osName -like "*Windows 11*") {
+                    winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+                } else {
+                    Write-Host "The OS is not Windows 11."
+                }
+            } catch {
+                Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_"
             }
 
             # Adobe Creative Cloud
