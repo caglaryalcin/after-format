@@ -122,9 +122,9 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                         "Path"             = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe";
                         "WorkingDirectory" = "C:\Program Files\JAM Software\TreeSize Free";
                     };
-                    "Total Commander"         = @{
+                    "Total Commander 64 bit"         = @{
                         "Path"             = "C:\Program Files\totalcmd\TOTALCMD64.EXE";
-                        "WorkingDirectory" = "C:\Program Files\totalcmd\";
+                        "WorkingDirectory" = "";
                     };
                     "WireShark"               = @{
                         "Path"             = "C:\Program Files\Wireshark\Wireshark.exe";
@@ -550,6 +550,14 @@ else {
             catch {
                 Write-Host "[WARNING]: $_" -ForegroundColor Red
             }
+
+            # Run the SteelSeries Engine
+            Start-Process -FilePath "C:\Program Files\SteelSeries\GG\SteelSeriesGG.exe" -ArgumentList '-dataPath="C:\ProgramData\SteelSeries\GG"', '-dbEnv=production'
+
+            Start-Sleep 10
+
+            # Stop the SteelSeries Engine Client
+            taskkill.exe /f /im SteelSeriesGGClient.exe *>$null
             
             # Create openrgb config folder
             try {
