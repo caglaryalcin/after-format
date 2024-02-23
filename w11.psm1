@@ -2972,7 +2972,7 @@ Function UnusedApps {
             "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
             "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
             "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
-            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI", "*WebExperience*"
+            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI", "*WebExperience*", "*PowerAutomate*"
         
             $allPackages = $Uninstall3Party + $UninstallAppxPackages
         
