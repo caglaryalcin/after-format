@@ -3175,7 +3175,10 @@ Function UnusedApps {
         
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Unnecessary Tasks..." -NoNewline
-                $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
+                $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", 
+                "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
+                "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", 
+                "*OfficeTelemetry*", "*GPU*", "Xbl*", "Firefox Back*")
                         
                 $windowsUpdateTasks = @(
                     "\Microsoft\Windows\WindowsUpdate\Scheduled Start",
@@ -3320,7 +3323,7 @@ Function UnusedApps {
                     taskkill /f /im msedge.exe *>$null 2>&1
                     taskkill /f /im explorer.exe *>$null 2>&1
                 
-                    # Edge Services
+                    # Remove Edge Services
                     $edgeservices = "edgeupdate", "edgeupdatem"
                     foreach ($service in $edgeservices) {
                         Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
@@ -3418,7 +3421,14 @@ Function UnusedApps {
                 
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red
+
+                # Disable Edge Services
+                $edgeservices = "edgeupdate", "edgeupdatem"
+                foreach ($service in $edgeservices) {
+                    Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                    Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+                }
+                Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
                 
             }
             else {

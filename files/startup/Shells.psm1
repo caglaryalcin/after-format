@@ -242,7 +242,7 @@ Function DisableStartupApps {
     
     $removeList = @(
         "Security*", "*Teams*", "Microsoft team*", "*Update*", #Microsoft & Updates
-        "*NV*", #Nvidia
+        "NVD*", "NVI*", "NVN*", "NVP*", "*NVT*", #Nvidia
         "*CCX*", "Adobe*", "*CC*", #Adobe
         "*uTorrent*", "*Deluge*", #Torrent
         "FACEIT*", "*Riot*", "*Epic*", "*Vanguard*", "*Blitz*", #Gaming
@@ -284,20 +284,27 @@ Function DisableStartupApps {
 DisableStartupApps
 
 Function RemoveEdgeUpdates {
-    $edgeFolders = @(
-        "C:\Program Files (x86)\Microsoft\*edge*",
-        "C:\Program Files (x86)\Microsoft\Edge",
-        "C:\Program Files (x86)\Microsoft\Temp"
-    )
+    # Registry keys and files to remove
+    $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdate",
+    "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdatem",
+    "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{9459C573-B17A-45AE-9F64-1857B5D58CEE}"
 
-    foreach ($folder in $edgeFolders) {
-        if (Test-Path $folder) {
-            Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue
+    foreach ($path in $registryPaths) {
+        if (Test-Path $path) {
+            Remove-Item -Path $path -Recurse -ErrorAction Stop
         }
+            
+    }
+
+    $edgeservices = "edgeupdate", "edgeupdatem"
+    foreach ($service in $edgeservices) {
+        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+        Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+        sc.exe delete $service *>$null 2>&1
     }
 }
 
-#RemoveEdgeUpdates
+RemoveEdgeUpdates
 
 Function RemoveChromeUpdates {
     # Registry keys and files to remove
@@ -311,9 +318,42 @@ Function RemoveChromeUpdates {
         }
             
     }
+
+    $chromeservices = "gupdate", "gupdatem"
+    foreach ($service in $chromeservices) {
+        $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
+        
+        if ($serviceObject) {
+            if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
+                # The service is already stopped and disabled, so there is no need to do anything.
+                continue
+            }
+        
+            try {
+                Stop-Service -Name $service -Force -ErrorAction Stop
+                Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
+            }
+            catch {
+                $errorMessage = $_.Exception.Message
+                Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
+            }
+        
+            try {
+                sc.exe delete $service *>$null
+                if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
+            }
+            catch {
+                $errorMessage = $_.Exception.Message
+                Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
+            }
+        }
+        else {
+            # The service is not available, so there is no need to do anything.
+        }
+    }
 }
 
-#RemoveChromeUpdates
+RemoveChromeUpdates
 
 # Show Desktop Button
 Function EnableShowDesktop {

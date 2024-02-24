@@ -19,6 +19,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
     Function Own {
 
+        # FanControl
         Function InstallFanControl {
             try {
                 $OriginalProgressPreference = $Global:ProgressPreference
@@ -44,6 +45,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         
         InstallFanControl
 
+        # SetPins
         Function SetPins {
             ##Create Icons folder
             New-Item -Path 'C:\icons' -ItemType Directory *>$null
@@ -122,7 +124,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                         "Path"             = "C:\Program Files\JAM Software\TreeSize Free\TreeSizeFree.exe";
                         "WorkingDirectory" = "C:\Program Files\JAM Software\TreeSize Free";
                     };
-                    "Total Commander 64 bit"         = @{
+                    "Total Commander 64 bit"  = @{
                         "Path"             = "C:\Program Files\totalcmd\TOTALCMD64.EXE";
                         "WorkingDirectory" = "";
                     };
@@ -266,6 +268,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
         SetPins
 
+        # Drivers
         Function Drivers {
             # Chipset
             Write-Host "`nInstalling Chipset Drivers..." -NoNewline
@@ -394,6 +397,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 
         Drivers
 
+        # MyConfigs
         Function Set-Configs {
             Write-Host "Setting my configs..." -NoNewline
 
@@ -578,10 +582,12 @@ else {
                 $osName = (systeminfo.exe | Select-String "OS Name").ToString()
                 if ($osName -like "*Windows 11*") {
                     winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
-                } else {
+                }
+                else {
                     Write-Host "The OS is not Windows 11."
                 }
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_"
             }
 
@@ -691,6 +697,7 @@ else {
     
         installFirefoxAddIn
 
+        # Disable Chrome background running
         Function DisableChromeBackgroundRunning {
             Write-Host "Disabling the 'Continue running background apps' setting in Chrome..." -NoNewline
             try {
@@ -711,6 +718,7 @@ else {
         
         DisableChromeBackgroundRunning        
         
+        # Media Feature Pack
         Function MediaFeaturePack {
             try {
                 Write-Host "Installing Media Feature Pack..." -NoNewline
@@ -900,7 +908,7 @@ namespace KeyboardSend
 
         DisableDoNotDisturb
 
-        #Set Wallpaper
+        # Set Wallpaper
         Function SetWallpaper {
             Write-Host "Setting Desktop Wallpaper..." -NoNewline
             $url = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/hello.png"
@@ -921,7 +929,7 @@ namespace KeyboardSend
         
         SetWallpaper
 
-        #Adobe DNG Codec
+        # Adobe DNG Codec
         Function DNGCodec {
             Write-Host "Installing DNG Codec..." -NoNewline
             $url = "https://download.adobe.com/pub/adobe/dng/win/DNGCodec_2_0_Installer.exe"
@@ -982,6 +990,51 @@ namespace KeyboardSend
         }
         
         DNGCodec
+
+        # Google Play Games Beta
+        Function GooglePlayGamesBeta {
+            Write-Host "Installing Google Play Games Beta..." -NoNewline
+            Write-Host "Kill client in taskbar after installation" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            $url = "https://dl.google.com/tag/s/CiZ7NDdCMDdENzEtNTA1RC00NjY1LUFGRDQtNDk3MkEzMEM2NTMwfRIEYmV0YRo8CjoIAhIZb3JnYW5pYy1taWNyb3NpdGUtd2luZG93cxoWaHR0cHM6Ly93d3cuZ29vZ2xlLmNvbSjgrtMJKisI7gsSJns3ZmQyNTRiMC1mOWZmLTRjNTUtYWI0YS1iYjE5ZjYzNjY1ODF9QAFKAmVuUgViMmkyZQ/play/games/install/Install-GooglePlayGames-Beta.exe"
+            $filePath = "C:\GPGB.exe"
+            
+            # Install Google Services
+            $gupdate = 'sc create gupdate binPath= "\"C:\Program Files (x86)\Google\Update\GoogleUpdate.exe\" /svc" DisplayName= "Google Update Service (gupdate)"'
+            $gupdatem = 'sc create gupdatem binPath= "\"C:\Program Files (x86)\Google\Update\GoogleUpdate.exe\" /medsvc" DisplayName= "Google Update Service (gupdatem)"'
+            $updates = $gupdate + "`r`n" + $gupdatem
+            $updates | Out-File -FilePath "C:\test.bat" -Encoding Default
+            Start-Process "C:\test.bat" *>$null
+            Start-Sleep 2
+            Remove-Item "C:\test.bat" -Recurse -ErrorAction SilentlyContinue
+ 
+
+            # Download and install Google Play Games Beta
+            try {
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri $url -OutFile $filePath
+            }
+            catch {
+                Write-Host "[WARNING]: Failed to download Google Play Games Beta file. $_" -ForegroundColor Red
+            }
+            
+            # Install Google Play Games Beta
+            try {
+                Start-Process -FilePath $filePath -Wait *>$null
+            }
+            catch {
+                Write-Host "[WARNING]: Failed to install Google Play Games Beta. $_" -ForegroundColor Red
+            }
+        
+            # Delete Google Services and setup
+            sc.exe delete gupdate *>$null
+            sc.exe delete gupdatem *>$null
+            Remove-Item $filePath -Recurse -ErrorAction SilentlyContinue
+
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        GooglePlayGamesBeta
 
     }
 

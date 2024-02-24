@@ -3022,24 +3022,24 @@ Function UnusedApps {
         # Block Microsoft Edge telemetry
         Function EdgePrivacy {
             Write-Host "Microsoft Edge privacy settings are being adjusted..." -NoNewline
-                # Registry path for Edge privacy settings
-                $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+            # Registry path for Edge privacy settings
+            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
         
-                if (-not (Test-Path $registryPath)) {
-                    New-Item -Path $registryPath -Force *>$null
-                }
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force *>$null
+            }
         
-                try {
-                    Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
-                    Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
-                    Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
-                    Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
-                    Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                catch {
-                    Write-Host "[WARNING]: Failed to apply Edge privacy settings $_" -ForegroundColor Red -BackgroundColor Black
-                }
+            try {
+                Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
+                Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
+                Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
+                Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
+                Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: Failed to apply Edge privacy settings $_" -ForegroundColor Red -BackgroundColor Black
+            }
         }
         
         EdgePrivacy
@@ -3063,7 +3063,10 @@ Function UnusedApps {
         
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Unnecessary Tasks..." -NoNewline
-                $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", "*GPU*", "Xbl*")
+                $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", 
+                    "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
+                    "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", 
+                    "*OfficeTelemetry*", "*GPU*", "Xbl*", "Firefox Back*")
                         
                 $windowsUpdateTasks = @(
                     "\Microsoft\Windows\WindowsUpdate\Scheduled Start",
@@ -3169,7 +3172,7 @@ Function UnusedApps {
                     taskkill /f /im msedge.exe *>$null 2>&1
                     taskkill /f /im explorer.exe *>$null 2>&1
                 
-                    # Edge Services
+                    # Remove Edge Services
                     $edgeservices = "edgeupdate", "edgeupdatem"
                     foreach ($service in $edgeservices) {
                         Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
@@ -3267,7 +3270,15 @@ Function UnusedApps {
                 
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
+
+                # Disable Edge Services
+                $edgeservices = "edgeupdate", "edgeupdatem"
+                foreach ($service in $edgeservices) {
+                    Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                    Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+                }
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
+                
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
