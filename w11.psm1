@@ -2783,7 +2783,7 @@ Function GithubSoftwares {
         $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
-        Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host `n"--------" -ForegroundColor Yellow -BackgroundColor Black
         Write-Host @"
 Detecting programs that cannot be installed with chocolatey...
 
@@ -2824,6 +2824,8 @@ Detecting programs that cannot be installed with chocolatey...
             }
         }
 
+        Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
+
         Function Safe-TaskKill {
             param($processName)
         
@@ -2849,8 +2851,6 @@ Detecting programs that cannot be installed with chocolatey...
         catch {
             Write-Host "[WARNING]: Unable to set 7zip for powershell. $_" -ForegroundColor Red
         }
-
-        Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
 
         Function Remove-ChromeComponents {
             Write-Host `n"Disabling and removing Chrome Update services..." -NoNewline
@@ -2911,6 +2911,42 @@ Detecting programs that cannot be installed with chocolatey...
         }
         
         #Remove-ChromeComponents
+
+        # Malwarebytes trial reset
+        Function MalwarebytesReset {
+            Write-Host "Adding task for Malwarebytes trial version reset..." -NoNewline
+
+            $taskName = "Malwarebytes-Reset"
+            $taskPath = "\"
+            $taskDescription = "A task that resets the Malwarebytes Premium trial by changing the MachineGuid registry value"
+            $currentTime = (Get-Date).ToString("HH:mm")
+
+            $powerShellScript = {
+                New-Guid | ForEach-Object {
+                    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Cryptography' -Name 'MachineGuid' -Value $_.Guid
+                }
+            }
+
+            $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-Command $powerShellScript"
+
+            $taskTrigger = New-ScheduledTaskTrigger -Daily -DaysInterval 13 -At $currentTime
+            $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+            $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden
+            $taskPrincipal = New-ScheduledTaskPrincipal -UserId $currentUser -RunLevel Highest
+
+            $task = New-ScheduledTask -Action $taskAction -Principal $taskPrincipal -Trigger $taskTrigger -Settings $taskSettings -Description $taskDescription
+
+            $result = Register-ScheduledTask -TaskName $taskName -TaskPath $taskPath -InputObject $task
+
+            if ($result) {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            else {
+                Write-Host "[WARNING]: Failed to add Malwarebytes-reset task.. $_" -ForegroundColor Red
+            }
+        }
+
+        MalwarebytesReset
 
         #workstation key
         try {
