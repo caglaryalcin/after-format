@@ -224,6 +224,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             
                 # Restart explorer
                 taskkill /f /im explorer.exe *>$null
+                Start-Process explorer.exe *>$null 
             }
             catch {
                 Write-Host "[WARNING]: Error while importing and setting taskbar icons. $_" -ForegroundColor Red
@@ -579,6 +580,9 @@ else {
             }
             
             # ExplorerPatcher
+            # Exclude the WinGet directory from Windows Defender
+            Add-MpPreference -ExclusionPath "$env:USERPROFILE\AppData\Local\Temp\WinGet\"
+
             try {
                 $osName = (systeminfo.exe | Select-String "OS Name").ToString()
                 if ($osName -like "*Windows 11*") {
@@ -615,6 +619,7 @@ else {
             
                 # Restart explorer
                 taskkill /f /im explorer.exe *>$null
+                Start-Process explorer.exe *>$null
             }
             catch {
                 Write-Host " [WARNING]: Failed to set monitor settings. Error: $_" -ForegroundColor Red -BackgroundColor Black
@@ -641,13 +646,13 @@ else {
             Write-Host "Firefox settings are being restored..." -NoNewline
 
             # Create Firefox profile directory
-            Start-Process -FilePath "C:\Program Files\Mozilla Firefox\firefox.exe" -Wait
-            Start-Sleep -Seconds 10
+            Start-Process -FilePath "C:\Program Files\Mozilla Firefox\firefox.exe" -NoNewWindow
+            Start-Sleep -Seconds 6
             taskkill /f /im "firefox.exe" *>$null
     
             # Initialize variables
             $firefoxDir = "C:\Program Files\Mozilla Firefox"
-            $distributionDir = Join-Path $firefoxWolfDir 'distribution'
+            $distributionDir = Join-Path $firefoxDir 'distribution'
             $extensionsDir = Join-Path $distributionDir 'extensions'
     
             # Ensure necessary directories exist
@@ -671,7 +676,7 @@ else {
             # Restore user profile settings
             try {
                 # Get the user profile directory
-                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Mozilla\Firefox\Profiles" -Filter "*.default-default" -Directory).FullName
+                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\Mozilla\Firefox\Profiles" -Filter "*.default-default" -Directory).FullName
         
                 # Create user profile chrome directory
                 New-Item $userProfileDir\chrome -ItemType Directory *>$null
@@ -1016,7 +1021,7 @@ namespace KeyboardSend
                 Set-Itemproperty -path "HKCU:Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
                 Start-Sleep 2
                 taskkill /f /im explorer.exe *>$null
-                Start-Process explorer.exe -ErrorAction *>$null 
+                Start-Process explorer.exe *>$null  
                 Write-Host "[Media feature pack keeps loading in the background.]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
@@ -1091,7 +1096,7 @@ namespace KeyboardSend
         # Google Play Games Beta
         Function GooglePlayGamesBeta {
             Write-Host "Installing Google Play Games Beta..." -NoNewline
-            Write-Host "Kill client in taskbar after installation" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            Write-Host "(Kill client in taskbar after installation)" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $url = "https://dl.google.com/tag/s/CiZ7NDdCMDdENzEtNTA1RC00NjY1LUFGRDQtNDk3MkEzMEM2NTMwfRIEYmV0YRo8CjoIAhIZb3JnYW5pYy1taWNyb3NpdGUtd2luZG93cxoWaHR0cHM6Ly93d3cuZ29vZ2xlLmNvbSjgrtMJKisI7gsSJns3ZmQyNTRiMC1mOWZmLTRjNTUtYWI0YS1iYjE5ZjYzNjY1ODF9QAFKAmVuUgViMmkyZQ/play/games/install/Install-GooglePlayGames-Beta.exe"
             $filePath = "C:\GPGB.exe"
             

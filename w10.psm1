@@ -184,6 +184,7 @@ Function SystemSettings {
         
         DisableDefender
         
+        # Keyboard Layout
         Function SetKeyboardLayout {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "set the keyboard layout to UK or TR?" -ForegroundColor Yellow -NoNewline
@@ -191,7 +192,7 @@ Function SystemSettings {
             $response = Read-Host
         
             if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "`nWhich keyboard layout do you want to set? Write 1, 2 or 3."
+                Write-Host "Which keyboard layout do you want to set? Write 1, 2 or 3."
                 Write-Host "[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                 Write-Host " - Turkish keyboard layout"
                 Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
@@ -203,6 +204,9 @@ Function SystemSettings {
                 switch ($choice) {
                     "1" {
                         # TR keyboard layout
+                        New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+                        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+
                         # Remove all keyboard layouts under HKCU
                         Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
                             $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
@@ -225,9 +229,15 @@ Function SystemSettings {
 
                         #disable different input for each app 
                         Set-WinLanguageBarOption
+
+                        # Disable Print Screen key for Snipping Tool
+                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                     }
                     "2" {
                         # UK keyboard layout
+                        New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+                        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+
                         # Remove all keyboard layouts under HKCU
                         Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
                             $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
@@ -250,9 +260,15 @@ Function SystemSettings {
 
                         #disable different input for each app 
                         Set-WinLanguageBarOption
+
+                        # Disable Print Screen key for Snipping Tool
+                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                     }
                     "3" {
                         # Both TR and UK keyboard layout
+                        New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+                        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+
                         # Remove all keyboard layouts under HKCU
                         Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
                             $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
@@ -276,6 +292,9 @@ Function SystemSettings {
 
                         #disable different input for each app 
                         Set-WinLanguageBarOption
+
+                        # Disable Print Screen key for Snipping Tool
+                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                     }
                     default {
                         Write-Host "Invalid input. Please enter 1, 2 or 3."
@@ -1492,6 +1511,9 @@ Function SystemSettings {
         
                 # Disable news and interests in the taskbar
                 $taskbarFeedsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds"
+                if (-not (Test-Path $taskbarFeedsPath)) {
+                    New-Item -Path $taskbarFeedsPath -Force | Out-Null
+                }
                 Set-ItemProperty -Path $taskbarFeedsPath -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
         
                 # Disable news and interests via Policies\Explorer
@@ -2828,7 +2850,7 @@ Detecting programs that cannot be installed with chocolatey...
             }
         }
         
-        #Remove-ChromeComponents
+        Remove-ChromeComponents
 
         # Malwarebytes trial reset
         Function MalwarebytesReset {
