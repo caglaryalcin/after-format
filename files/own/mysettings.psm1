@@ -869,8 +869,6 @@ namespace KeyboardSend
                 [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
                 [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
                 [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
                     
                 Start-Sleep -Milliseconds 100
                 [System.Windows.Forms.SendKeys]::SendWait(" ")
