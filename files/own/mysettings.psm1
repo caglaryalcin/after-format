@@ -149,6 +149,10 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                         "Arguments"        = "--processStart Teams.exe";
                         "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Microsoft\Teams\";
                     };
+                    "Google Play Games" = @{
+                        "Path"             = "C:\Program Files\Google\Play Games\current\client\client.exe";
+                        "WorkingDirectory" = "C:\Program Files\Google\Play Games\current\client";
+                    };
                 }
 
                 foreach ($name in $shortcutPaths.Keys) {
@@ -347,7 +351,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host "Installing Nvidia Driver..." -NoNewline
             try {
                 # Run NVCleanInstaller and wait for it to finish
-                Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -NoNewWindow -Wait | Out-Null *>$null
+                #used manual archive Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -NoNewWindow -Wait | Out-Null *>$null
+                ren $env:USERPROFILE\Desktop\file file.7z
+                & "C:\Program Files\7-Zip\7z.exe" x "$env:USERPROFILE\Desktop\file.7z" -o"C:\" *>$null
+                cd C:\NVCleanstall\
+                .\setup.exe -ArgumentList "-s" -NoNewWindow -Wait
 
                 # Alternative method to download Nvidia driver
                 <#
@@ -470,7 +478,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt", #in cloud
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
                     "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/Base-Profile.nip",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/display/display-layout.reg"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/display/display-layout.reg",
+                    "https://uc1f0dfcbc80d586940de23aa46c.dl.dropboxusercontent.com/cd/0/get/CN--hpx9d18caeytIQHinPCRtII7zhsxB-pA8HBynSDz8HaRvQGFbdiP1vJpdCaLH2eTeY7qlVgEZ_YS8QPKkfyDqDIMYjZfnfCHoVoe_2d13iQUy8vquMZuZDQKWvwH5zlNlaD3Q4fY8wYdQjjztE1p/file?dl=1" #nvidia
                 )
 
                 # twinkle tray
@@ -676,7 +685,7 @@ else {
             # Restore user profile settings
             try {
                 # Get the user profile directory
-                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\Mozilla\Firefox\Profiles" -Filter "*.default-default" -Directory).FullName
+                $userProfileDir = (Get-ChildItem -Path "$env:USERPROFILE\AppData\Roaming\Mozilla\Firefox\Profiles" -Filter "*.default-release" -Directory).FullName
         
                 # Create user profile chrome directory
                 New-Item $userProfileDir\chrome -ItemType Directory *>$null
@@ -796,13 +805,13 @@ namespace KeyboardSend
                 [KeyboardSend.KeyboardSend]::KeyDown("I")
                 [KeyboardSend.KeyboardSend]::KeyUp("I")
                 [KeyboardSend.KeyboardSend]::KeyUp("LWin")
-                Start-Sleep -Milliseconds 4000
+                Start-Sleep 3
                 [System.Windows.Forms.SendKeys]::SendWait("Optional")
-                Start-Sleep -Milliseconds 4000
+                Start-Sleep 3
                 [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
                 Start-Sleep -Milliseconds 500
                 [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-                Start-Sleep -Milliseconds 1000
+                Start-Sleep 1
                 [System.Windows.Forms.SendKeys]::SendWait(" ")
                 Start-Sleep -Milliseconds 100
                 [System.Windows.Forms.SendKeys]::SendWait("Media")
@@ -825,11 +834,9 @@ namespace KeyboardSend
                 Start-Sleep -Milliseconds 50
                 [System.Windows.Forms.SendKeys]::SendWait(" ")
 
-                Start-Sleep 2
+                Start-Sleep 6
                 taskkill /f /im SystemSettings.exe *>$null
-
-            
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+                Write-Host "[Media feature pack keeps loading in the background.]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
                 Write-Host " [WARNING]: Error installing Media Feature Pack manually. Error: $_" -ForegroundColor Red
@@ -847,14 +854,14 @@ namespace KeyboardSend
                 [KeyboardSend.KeyboardSend]::KeyDown("I")
                 [KeyboardSend.KeyboardSend]::KeyUp("I")
                 [KeyboardSend.KeyboardSend]::KeyUp("LWin")
-                Start-Sleep -Milliseconds 2500
+                Start-Sleep -Milliseconds 2000
                 [System.Windows.Forms.SendKeys]::SendWait("do not disturb")
-                Start-Sleep -Milliseconds 2500
+                Start-Sleep -Milliseconds 2000
                 [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
                 [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
                 Start-Sleep -Milliseconds 800
                 [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-                Start-Sleep -Milliseconds 1500
+                Start-Sleep -Milliseconds 1000
                 [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
                 [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
                 [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
@@ -876,8 +883,6 @@ namespace KeyboardSend
                 Start-Sleep 2
 
                 taskkill /f /im SystemSettings.exe *>$null
-
-            
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
@@ -891,14 +896,13 @@ namespace KeyboardSend
         Function SetNightlight {
             Write-Host "Enabling Night Mode..." -NoNewline
             try {
+                [System.Windows.Forms.SendKeys]::SendWait('^{ESC}') #windows key
+                Start-Sleep -Milliseconds 1500
+                [System.Windows.Forms.SendKeys]::SendWait("Night")
+
+                [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+
                 Start-Sleep 2
-                [System.Windows.Forms.SendKeys]::SendWait('^{ESC}') #windows key
-                Start-Sleep -Milliseconds 1500
-                [System.Windows.Forms.SendKeys]::SendWait("Night")
-
-                [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-
-                Start-Sleep 3
 
                 [System.Windows.Forms.SendKeys]::SendWait(" ")
 
@@ -937,68 +941,6 @@ namespace KeyboardSend
                 [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
 
                 taskkill /f /im SystemSettings.exe *>$null
-
-            
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host " [WARNING]: There was an error enabling night mode.. Error: $_" -ForegroundColor Red
-            }
-        }
-
-        SetNightlight
-
-        # Set night light
-        Function SetNightlight {
-            Write-Host "Enabling Night Mode..." -NoNewline
-            try {
-                [System.Windows.Forms.SendKeys]::SendWait('^{ESC}') #windows key
-                Start-Sleep -Milliseconds 1500
-                [System.Windows.Forms.SendKeys]::SendWait("Night")
-
-                [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-
-                Start-Sleep 3
-
-                [System.Windows.Forms.SendKeys]::SendWait(" ")
-
-                Start-Sleep -Milliseconds 500
-
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 1
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")
-
-                taskkill /f /im SystemSettings.exe *>$null
-
-            
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
@@ -1020,7 +962,6 @@ namespace KeyboardSend
                 Start-Sleep 2
                 taskkill /f /im explorer.exe *>$null
                 Start-Process explorer.exe *>$null  
-                Write-Host "[Media feature pack keeps loading in the background.]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
                 Write-Host "[WARNING]: Failed to set wallpaper: $_" -ForegroundColor Yellow
@@ -1095,17 +1036,17 @@ namespace KeyboardSend
         Function GooglePlayGamesBeta {
             Write-Host "Installing Google Play Games Beta..." -NoNewline
             Write-Host "(Kill client in taskbar after installation)" -ForegroundColor Red -BackgroundColor Black -NoNewline
-            $url = "https://dl.google.com/tag/s/CiZ7NDdCMDdENzEtNTA1RC00NjY1LUFGRDQtNDk3MkEzMEM2NTMwfRIEYmV0YRo8CjoIAhIZb3JnYW5pYy1taWNyb3NpdGUtd2luZG93cxoWaHR0cHM6Ly93d3cuZ29vZ2xlLmNvbSjgrtMJKisI7gsSJns3ZmQyNTRiMC1mOWZmLTRjNTUtYWI0YS1iYjE5ZjYzNjY1ODF9QAFKAmVuUgViMmkyZQ/play/games/install/Install-GooglePlayGames-Beta.exe"
+            $url = "https://dl.google.com/tag/s/CiZ7NDdCMDdENzEtNTA1RC00NjY1LUFGRDQtNDk3MkEzMEM2NTMwfRIEYmV0YRo8CjoIAhIZb3JnYW5pYy1taWNyb3NpdGUtd2luZG93cxoWaHR0cHM6Ly93d3cuZ29vZ2xlLmNvbSjhrtMJKisI7gsSJntlZTBkZWVjMC0wMjFkLTRiOGUtYTk0My04Zjk3NmExYzgyNmJ9QAFKAmVuUgViMmkyZQ/play/games/install/10/Install-GooglePlayGames-Beta.exe"
             $filePath = "C:\GPGB.exe"
             
             # Install Google Services
             $gupdate = 'sc create gupdate binPath= "\"C:\Program Files (x86)\Google\Update\GoogleUpdate.exe\" /svc" DisplayName= "Google Update Service (gupdate)"'
             $gupdatem = 'sc create gupdatem binPath= "\"C:\Program Files (x86)\Google\Update\GoogleUpdate.exe\" /medsvc" DisplayName= "Google Update Service (gupdatem)"'
             $updates = $gupdate + "`r`n" + $gupdatem
-            $updates | Out-File -FilePath "C:\test.bat" -Encoding Default
-            Start-Process "C:\test.bat" *>$null
+            $updates | Out-File -FilePath "C:\gservices.bat" -Encoding Default
+            Start-Process "C:\gservices.bat" *>$null
             Start-Sleep 2
-            Remove-Item "C:\test.bat" -Recurse -ErrorAction SilentlyContinue
+            Remove-Item "C:\gservices.bat" -Recurse -ErrorAction SilentlyContinue
  
 
             # Download and install Google Play Games Beta
