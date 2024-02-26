@@ -44,7 +44,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
         }
         
         InstallFanControl
-
+		
         # SetPins
         Function SetPins {
             ##Create Icons folder
@@ -339,7 +339,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 Start-Sleep 4
                 Remove-Item "C:\LAN.zip" -Recurse -ErrorAction SilentlyContinue
                 Start-Sleep 1
-                Remove-Item "C:\LAN" -Recurse -ErrorAction SilentlyContinue
+                Remove-Item "C:\LAN" -Recurse -Force -ErrorAction SilentlyContinue
             
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -351,12 +351,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             Write-Host "Installing Nvidia Driver..." -NoNewline
             try {
                 # Run NVCleanInstaller and wait for it to finish
-                #used manual archive Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -NoNewWindow -Wait | Out-Null *>$null
-                ren $env:USERPROFILE\Desktop\file file.7z
-                & "C:\Program Files\7-Zip\7z.exe" x "$env:USERPROFILE\Desktop\file.7z" -o"C:\" *>$null
-                cd C:\NVCleanstall\
-                .\setup.exe -ArgumentList "-s" -NoNewWindow -Wait
-
+                Start-Process "C:\Program Files\NVCleanstall\NVCleanstall.exe" -NoNewWindow -Wait | Out-Null *>$null
+				
                 # Alternative method to download Nvidia driver
                 <#
                 #NVIDIA API
@@ -478,8 +474,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt", #in cloud
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
                     "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/Base-Profile.nip",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/display/display-layout.reg",
-                    "https://uc1f0dfcbc80d586940de23aa46c.dl.dropboxusercontent.com/cd/0/get/CN--hpx9d18caeytIQHinPCRtII7zhsxB-pA8HBynSDz8HaRvQGFbdiP1vJpdCaLH2eTeY7qlVgEZ_YS8QPKkfyDqDIMYjZfnfCHoVoe_2d13iQUy8vquMZuZDQKWvwH5zlNlaD3Q4fY8wYdQjjztE1p/file?dl=1" #nvidia
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/display/display-layout.reg"
                 )
 
                 # twinkle tray
@@ -591,7 +586,8 @@ else {
             # ExplorerPatcher
             # Exclude the WinGet directory from Windows Defender
             Add-MpPreference -ExclusionPath "$env:USERPROFILE\AppData\Local\Temp\WinGet\"
-
+			$OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
             try {
                 $osName = (systeminfo.exe | Select-String "OS Name").ToString()
                 if ($osName -like "*Windows 11*") {
@@ -807,7 +803,7 @@ namespace KeyboardSend
                 [KeyboardSend.KeyboardSend]::KeyUp("LWin")
                 Start-Sleep 3
                 [System.Windows.Forms.SendKeys]::SendWait("Optional")
-                Start-Sleep 3
+                Start-Sleep 2
                 [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
                 Start-Sleep -Milliseconds 500
                 [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
@@ -856,7 +852,7 @@ namespace KeyboardSend
                 [KeyboardSend.KeyboardSend]::KeyUp("LWin")
                 Start-Sleep -Milliseconds 2000
                 [System.Windows.Forms.SendKeys]::SendWait("do not disturb")
-                Start-Sleep -Milliseconds 2000
+                Start-Sleep -Milliseconds 1500
                 [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
                 [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
                 Start-Sleep -Milliseconds 800
@@ -961,7 +957,8 @@ namespace KeyboardSend
                 Set-Itemproperty -path "HKCU:Control Panel\Desktop" -name WallPaper -value "$env:userprofile\Documents\hello.png"  | Out-Null
                 Start-Sleep 2
                 taskkill /f /im explorer.exe *>$null
-                Start-Process explorer.exe *>$null  
+                Start-Process explorer.exe *>$null
+				Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING]: Failed to set wallpaper: $_" -ForegroundColor Yellow
