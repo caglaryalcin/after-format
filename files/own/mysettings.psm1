@@ -338,7 +338,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # Delete the driver files
                 Start-Sleep 4
                 Remove-Item "C:\LAN.zip" -Recurse -ErrorAction SilentlyContinue
-                Start-Sleep 1
+                cd c:\
                 Remove-Item "C:\LAN" -Recurse -Force -ErrorAction SilentlyContinue
             
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -499,6 +499,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
                 Start-Process "C:\ProgramData\chocolatey\lib\nvidia-profile-inspector\tools\nvidiaProfileInspector.exe" -NoNewWindow -Wait | Out-Null *>$null
+                Start-Sleep 2
+                Remove-Item "$env:userprofile\Desktop\Base-Profile.nip" -Recurse -ErrorAction SilentlyContinue
             }
             catch {
                 Write-Host " [WARNING]: Failed to run Nvidia Profile Inspector. Error: $_" -ForegroundColor Red -BackgroundColor Black
@@ -589,7 +591,7 @@ else {
 			$OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
             try {
-                $osName = (systeminfo.exe | Select-String "OS Name").ToString()
+                $osName = (systeminfo.exe | Select-String "OS Name").ToString() 2>$null
                 if ($osName -like "*Windows 11*") {
                     winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
                 }
