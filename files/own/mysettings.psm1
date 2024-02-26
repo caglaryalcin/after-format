@@ -296,11 +296,11 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
                 Start-Process "C:\Chipset\SetupChipset.exe" /S -NoNewWindow -Wait -PassThru *>$null
-                #Start-Process "C:\ChipsetEngine\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop #force restart
+                #manual Start-Process "C:\ChipsetEngine\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop #force restart
 
                 # Run the Chipset Engine driver installer
                 Start-Process "C:\ChipsetEngine\SetupME.exe" /S -NoNewWindow -Wait -PassThru *>$null
-                #Start-Process "C:\ChipsetEngine\SetupME.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
+                #manual Start-Process "C:\ChipsetEngine\SetupME.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
             
                 # Delete the driver files
                 Start-Sleep 2
@@ -437,25 +437,25 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             $downloads = @{
                 # notepad++
                 "$env:USERPROFILE\Appdata\Roaming\Notepad++\themes"                                          = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/VS2018-Dark_plus.xml"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/notepad%2B%2B/VS2018-Dark_plus.xml"
                 )
                 "$env:USERPROFILE\Appdata\Roaming\Notepad++\"                                                = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/notepad%2B%2B/config.xml"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/notepad%2B%2B/config.xml"
                 )
             
                 # fan control
                 "C:\fan_control\Configurations"                                                              = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/fan/my_fan_config.json"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/hardware/fan/my_fan_config.json"
                 )
             
                 # openrgb
                 "$env:USERPROFILE\Appdata\Roaming\Openrgb"                                                   = @(
-                    "https://github.com/caglaryalcin/my-configs/raw/main/led/my_led_config.orp"
+                    "https://github.com/caglaryalcin/my-configs/raw/main/hardware/case-led/my_led_config.orp"
                 )
             
                 # keyboard
                 "C:\ProgramData\SteelSeries\"                                                                = @(
-                    "https://github.com/caglaryalcin/my-configs/raw/main/keyboard/GG.zip"
+                    "https://github.com/caglaryalcin/my-configs/raw/main/hardware/keyboard/GG.zip"
                 )
 
                 # terminal
@@ -470,17 +470,22 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
                 # cs2, twinkle tray, explorer patcher, nvidia profile
                 "$env:userprofile\Desktop"                                                                   = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs.cfg",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/cs2/cs2_video.txt",
-                    #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublock.txt", #in cloud
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/games/main/cs2/cs.cfg",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/games/main/cs2/cs2_video.txt",
+                    #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/extensions/ublock.txt", #in cloud
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
-                    "https://github.com/caglaryalcin/my-configs/raw/main/nvidia/Base-Profile.nip",
+                    "https://github.com/caglaryalcin/my-configs/raw/main/hardware/nvidia/Base-Profile.nip",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/display/display-layout.reg"
+                )
+
+                # Total Commander
+                "$env:userprofile\AppData\Roaming\GHISLER"                                              = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/total-comm/wincmd.ini"
                 )
 
                 # twinkle tray
                 "$env:userprofile\AppData\Roaming\twinkle-tray"                                              = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/twinkle-tray/settings.json"
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/twinkle-tray/settings.json"
                 )
             }
                         
@@ -508,7 +513,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
             }
 
             # Download ublacklist config file to desktop
-            "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
+            "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/extensions/ublacklist.txt" | Out-File -FilePath "$env:userprofile\Desktop\ublacklist.txt"
 
             # Create a batch file to move the cs2 video and cs.cfg files to the correct directories
             $filecontent = @'
@@ -687,11 +692,11 @@ else {
                 New-Item $userProfileDir\chrome -ItemType Directory *>$null
         
                 $configUrls = @{
-                    "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/user.js"
-                    "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/Tab%20Shapes.css"
-                    "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
-                    "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userContent.css"
-                    "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/browser-conf/appearance/userChrome.css"
+                    "user.js"         = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/user.js"
+                    "Tab Shapes.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/appearance/Tab%20Shapes.css"
+                    "Toolbar.css"     = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/appearance/userChrome.css"
+                    "userContent.css" = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/appearance/userContent.css"
+                    "userChrome.css"  = "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/appearance/userChrome.css"
                 }
         
                 foreach ($file in $configUrls.Keys) {
