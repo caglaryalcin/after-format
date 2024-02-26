@@ -295,20 +295,21 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # Run the Chipset drivers installer
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd C:\Chipset && SetupChipset.exe" -NoNewWindow -Wait
+                Start-Process "C:\Chipset\SetupChipset.exe" /S -NoNewWindow -Wait -PassThru *>$null
                 #Start-Process "C:\ChipsetEngine\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop #force restart
 
                 # Run the Chipset Engine driver installer
-                Start-Process "C:\ChipsetEngine\SetupME.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
+                Start-Process "C:\ChipsetEngine\SetupME.exe" /S -NoNewWindow -Wait -PassThru *>$null
+                #Start-Process "C:\ChipsetEngine\SetupME.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop
             
                 # Delete the driver files
-                Start-Sleep 4
+                Start-Sleep 2
                 Remove-Item "C:\Chipset.zip" -Recurse -ErrorAction SilentlyContinue
-                Start-Sleep 1
+                Start-Sleep -Milliseconds 500
                 Remove-Item "C:\ChipsetEngine.zip" -Recurse -ErrorAction SilentlyContinue
-                Start-Sleep 1
+                Start-Sleep -Milliseconds 500
                 Remove-Item "C:\Chipset" -Recurse -ErrorAction SilentlyContinue
-                Start-Sleep 1
+                Start-Sleep -Milliseconds 500
                 Remove-Item "C:\ChipsetEngine" -Recurse -ErrorAction SilentlyContinue
             
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
