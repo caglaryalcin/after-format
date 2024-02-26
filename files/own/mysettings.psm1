@@ -470,8 +470,8 @@ if ($response -eq 'y' -or $response -eq 'Y') {
 
                 # cs2, twinkle tray, explorer patcher, nvidia profile
                 "$env:userprofile\Desktop"                                                                   = @(
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/games/main/cs2/cs.cfg",
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/games/main/cs2/cs2_video.txt",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/games/cs2/cs.cfg",
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/games/cs2/cs2_video.txt",
                     #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/extensions/ublock.txt", #in cloud
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
                     "https://github.com/caglaryalcin/my-configs/raw/main/hardware/nvidia/Base-Profile.nip",
