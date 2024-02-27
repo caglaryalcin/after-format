@@ -1832,7 +1832,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: An error occurred: $($_.Exception.Message)"
+                Write-Host "[WARNING]: An error occurred: $($_.Exception.Message)" -ForegroundColor red
             }
         }
         

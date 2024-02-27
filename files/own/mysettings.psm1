@@ -295,8 +295,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # Run the Chipset drivers installer
                 $OriginalProgressPreference = $Global:ProgressPreference
                 $Global:ProgressPreference = 'SilentlyContinue'
-                Start-Process "C:\Chipset\SetupChipset.exe" /S -NoNewWindow -Wait -PassThru *>$null
-                #manual Start-Process "C:\ChipsetEngine\SetupChipset.exe" -ArgumentList "-s" -NoNewWindow -Wait -ErrorAction Stop #force restart
+                Start-Process "C:\Chipset\SetupChipset.exe" -Wait *>$null
 
                 # Run the Chipset Engine driver installer
                 Start-Process "C:\ChipsetEngine\SetupME.exe" /S -NoNewWindow -Wait -PassThru *>$null
@@ -473,7 +472,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/games/cs2/cs.cfg",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/games/cs2/cs2_video.txt",
                     #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/browser-conf/extensions/ublock.txt", #in cloud
-                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",
+                    #"https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/ExplorerPatcher.reg",#not used yet
                     "https://github.com/caglaryalcin/my-configs/raw/main/hardware/nvidia/Base-Profile.nip",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/display/display-layout.reg"
                 )
@@ -588,23 +587,23 @@ else {
                 Write-Host "[WARNING]: Error creating OpenRGB config file. $_" -ForegroundColor Red
             }
             
-            # ExplorerPatcher
-            # Exclude the WinGet directory from Windows Defender
-            Add-MpPreference -ExclusionPath "$env:USERPROFILE\AppData\Local\Temp\WinGet\"
-			$OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
-            try {
-                $osName = (systeminfo.exe | Select-String "OS Name").ToString() 2>$null
-                if ($osName -like "*Windows 11*") {
-                    winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
-                }
-                else {
-                    Write-Host "The OS is not Windows 11."
-                }
-            }
-            catch {
-                Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_"
-            }
+            # ExplorerPatcher //not used yet
+            # # Exclude the WinGet directory from Windows Defender
+            # Add-MpPreference -ExclusionPath "$env:USERPROFILE\AppData\Local\Temp\WinGet\"
+			# $OriginalProgressPreference = $Global:ProgressPreference
+            # $Global:ProgressPreference = 'SilentlyContinue'
+            # try {
+            #     $osName = (systeminfo.exe | Select-String "OS Name").ToString() 2>$null
+            #     if ($osName -like "*Windows 11*") {
+            #         winget install valinet.ExplorerPatcher -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+            #     }
+            #     else {
+            #         Write-Host "The OS is not Windows 11."
+            #     }
+            # }
+            # catch {
+            #     Write-Host "[WARNING]: ExplorerPatcher could not to be installed. $_"
+            # }
 
             # Adobe Creative Cloud
             try {
@@ -769,9 +768,9 @@ else {
 
         #MediaFeaturePack problematic
 
-        # Media Feature Pack Manual
-        Function MediaFeaturePackManual {
-            Write-Host "Installing Media Feature Pack manually..." -NoNewline
+        # Disable do not disturb mode
+        Function DisableDoNotDisturb {
+            Write-Host "Disabling do not disturb mode..." -NoNewline
             try {
                 $source = @"
 using System;
@@ -801,55 +800,6 @@ namespace KeyboardSend
 }
 "@
                 Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
-
-                [KeyboardSend.KeyboardSend]::KeyDown("LWin")
-                [KeyboardSend.KeyboardSend]::KeyDown("I")
-                [KeyboardSend.KeyboardSend]::KeyUp("I")
-                [KeyboardSend.KeyboardSend]::KeyUp("LWin")
-                Start-Sleep 3
-                [System.Windows.Forms.SendKeys]::SendWait("Optional")
-                Start-Sleep 2
-                [System.Windows.Forms.SendKeys]::SendWait("{DOWN}")
-                Start-Sleep -Milliseconds 500
-                [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-                Start-Sleep 1
-                [System.Windows.Forms.SendKeys]::SendWait(" ")
-                Start-Sleep -Milliseconds 100
-                [System.Windows.Forms.SendKeys]::SendWait("Media")
-                Start-Sleep -Milliseconds 1500
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                Start-Sleep -Milliseconds 100
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                Start-Sleep -Milliseconds 100
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                Start-Sleep -Milliseconds 100
-                [System.Windows.Forms.SendKeys]::SendWait(" ")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait(" ")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-                Start-Sleep -Milliseconds 50
-                [System.Windows.Forms.SendKeys]::SendWait(" ")
-
-                Start-Sleep 6
-                taskkill /f /im SystemSettings.exe *>$null
-                Write-Host "[Media feature pack keeps loading in the background.]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host " [WARNING]: Error installing Media Feature Pack manually. Error: $_" -ForegroundColor Red
-            }
-        }
-
-        MediaFeaturePackManual
-
-        # Disable do not disturb mode
-        Function DisableDoNotDisturb {
-            Write-Host "Disabling do not disturb mode..." -NoNewline
-            try {
                 Start-Sleep 2
                 [KeyboardSend.KeyboardSend]::KeyDown("LWin")
                 [KeyboardSend.KeyboardSend]::KeyDown("I")
@@ -1072,7 +1022,10 @@ namespace KeyboardSend
             # Delete Google Services and setup
             sc.exe delete gupdate *>$null
             sc.exe delete gupdatem *>$null
-            Remove-Item $filePath -Recurse -ErrorAction SilentlyContinue
+            Remove-Item "C:\GPGB.exe" -Recurse -ErrorAction SilentlyContinue
+
+            # Remove Google Play Games shortcuts
+            Get-ChildItem "C:\users\Public\Desktop\Google*.lnk" | ForEach-Object { Remove-Item $_ -ErrorAction Stop }
 
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
