@@ -467,7 +467,7 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/taskmgr/settings.json"
                 )
 
-                # cs2, twinkle tray, explorer patcher, nvidia profile
+                # some configs
                 "$env:userprofile\Desktop"                                                                   = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/games/cs2/cs.cfg",
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/games/cs2/cs2_video.txt",
@@ -485,6 +485,16 @@ if ($response -eq 'y' -or $response -eq 'Y') {
                 # twinkle tray
                 "$env:userprofile\AppData\Roaming\twinkle-tray"                                              = @(
                     "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/twinkle-tray/settings.json"
+                )
+
+                # cryptomator
+                "$env:userprofile\AppData\Roaming\Cryptomator"                                              = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/cryptomator/settings.json"
+                )
+
+                # speedtest
+                "$env:userprofile\AppData\Roaming\Ookla\Speedtest CLI"                                              = @(
+                    "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/softwares/speedtest/speedtest-cli.ini"
                 )
             }
                         
@@ -983,6 +993,43 @@ namespace KeyboardSend
         }
         
         DNGCodec
+
+        # f5 inspect
+        Function f5inspect {
+            Write-Host "Installing f5 inspect..." -NoNewline
+            $url = "https://ssl.intertech.com.tr/public/download/f5epi_setup.exe"
+            $filePath = "$env:TEMP\f5epi_setup.exe"
+        
+            # Download and install f5 inspect
+            try {
+                $OriginalProgressPreference = $Global:ProgressPreference
+                $Global:ProgressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri $url -OutFile $filePath
+            }
+            catch {
+                Write-Host "[WARNING]: Failed to download f5 inspect file. $_" -ForegroundColor Red
+            }
+            
+            # Install f5 inspect
+            try {
+                Start-Process -FilePath $filePath -ArgumentList "/S" -NoNewWindow -Wait -PassThru *>$null
+            }
+            catch {
+                Write-Host "[WARNING]: Failed to install f5 inspect. $_" -ForegroundColor Red
+            }
+        
+            # Delete the installer file
+            try {
+                Start-Sleep 1
+                Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
+            }
+            catch {
+                Write-Host "[WARNING]: Failed to delete f5 inspect installer file. $_" -ForegroundColor Red
+            }
+        
+        }
+        
+        f5inspect
 
         # Google Play Games Beta
         Function GooglePlayGamesBeta {
