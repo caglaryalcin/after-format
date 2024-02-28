@@ -311,34 +311,26 @@ Function SystemSettings {
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
         
-                $downloadUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/startup.xml"
-                $taskXmlPath = "$env:TEMP\startup.xml"
-        
+                # Import ScheduledTasks module
+                Import-Module ScheduledTasks
+
+                # Set the task action, trigger, settings, principal, and taskname
+                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"`$ScriptFromGitHub = iwr https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1 ; iex (`$ScriptFromGitHub.Content) ; winget upgrade --all`""
+                $trigger = New-ScheduledTaskTrigger -AtStartup
+                $settings = New-ScheduledTaskSettingsSet -Hidden:$true
+                $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $taskname = "startup"
+                $delay = "PT5M"  # 5 dakika gecikme
+                $trigger.Delay = $delay
+
                 try {
-                    Invoke-WebRequest -Uri $downloadUrl -OutFile $taskXmlPath -ErrorAction Stop
+                    Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description *>$null
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
-                    Write-Host "[WARNING]: Failed to download XML file: $_" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING]: The start task could not be added to the task scheduler. $_" -ForegroundColor Red
                 }
-        
-                $taskName = "startup"
-                $taskXmlContent = Get-Content $taskXmlPath -Raw
-        
-                $taskService = New-Object -ComObject "Schedule.Service"
-                $taskService.Connect()
-        
-                $taskFolder = $taskService.GetFolder("\")
-                $taskDefinition = $taskService.NewTask(0)
-                $taskDefinition.XmlText = $taskXmlContent
-        
-                try {
-                    $taskFolder.RegisterTaskDefinition($taskName, $taskDefinition, 6, $null, $null, 3) *>$null
-                }
-                catch {
-                    Write-Host "[WARNING]: Failed to register the task: $_" -ForegroundColor Red -BackgroundColor Black
-                }
-        
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
@@ -3226,9 +3218,9 @@ Function UnusedApps {
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Unnecessary Tasks..." -NoNewline
                 $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", 
-                "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
-                "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", 
-                "*OfficeTelemetry*", "*GPU*", "Xbl*", "Firefox Back*")
+                    "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
+                    "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", 
+                    "*OfficeTelemetry*", "*GPU*", "Xbl*", "Firefox Back*")
                         
                 $windowsUpdateTasks = @(
                     "\Microsoft\Windows\WindowsUpdate\Scheduled Start",
