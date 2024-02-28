@@ -3533,7 +3533,7 @@ Restart
 ##########
 
 Function MySettings {
-    iwr "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/own/mysettings.psm1" -UseB | iex
+    iwr "https://raw.githubusercontent.com/caglaryalcin/my-configs/main/win/mysettings.psm1" -UseB | iex
 }
 
 MySettings
