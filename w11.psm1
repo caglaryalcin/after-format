@@ -3401,6 +3401,7 @@ Function UnusedApps {
                     $key = (Get-Item -Path $pattern).PSChildName
                     reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
                 
+                    #if error use this > $SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
                     $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
                     New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
                     Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction SilentlyContinue
