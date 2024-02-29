@@ -1131,7 +1131,7 @@ Function SystemSettings {
             Write-Host "Disabling Xbox Features..." -NoNewline
         
             # Helper Function to create key if it doesn't exist and set the value
-            Function Set-RegistryValue($path, $name, $value) {
+            Function Set-ItemProperty($path, $name, $value) {
                 $keyPath = Split-Path -Path $path
                 $itemName = Split-Path -Path $path -Leaf
         
@@ -1152,21 +1152,34 @@ Function SystemSettings {
             $allSuccessful = $true
         
             try {
-                Set-RegistryValue -path "HKCU:\Software\Microsoft\GameBar" -name "AutoGameModeEnabled" -value 0
+                Set-ItemProperty -path "HKCU:\Software\Microsoft\GameBar" -name "AutoGameModeEnabled" -value 0
+                Set-ItemProperty -path "HKCU:\Software\Microsoft\GameBar" -name "AllowAutoGameMode" -value 0
+                Set-ItemProperty -path "HKCU:\Software\Microsoft\GameBar" -name "UseNexusForGameDetection" -value 0
+            }
+            catch {
+                $allSuccessful = $false
+            }
+
+            # gamebar disabled
+            try {
+                $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+                $registryPath = "Registry::HKEY_USERS\$currentSID\Software\Microsoft\GameBar"
+                Set-ItemProperty -Path $registryPath -Name "UseNexusForGameBarEnabled" -Value 0
+
             }
             catch {
                 $allSuccessful = $false
             }
         
             try {
-                Set-RegistryValue -path "HKCU:\System\GameConfigStore" -name "GameDVR_Enabled" -value 0
+                Set-ItemProperty -path "HKCU:\System\GameConfigStore" -name "GameDVR_Enabled" -value 0
             }
             catch {
                 $allSuccessful = $false
             }
         
             try {
-                Set-RegistryValue -path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -name "AllowGameDVR" -value 0
+                Set-ItemProperty -path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -name "AllowGameDVR" -value 0
             }
             catch {
                 $allSuccessful = $false
@@ -1590,7 +1603,16 @@ Function SystemSettings {
                     New-Item -Path $taskbarFeedsPath -Force | Out-Null
                 }
                 Set-ItemProperty -Path $taskbarFeedsPath -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
+
+                # Disable Show recommendations for tips, shortcuts, new apps
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_IrisRecommendations" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
         
+                # Start Menu Layout
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_Layout" -Type DWord -Value 1 -ErrorAction Stop | Out-Null
+
+                # Turn off "Show recently opened items in Start, Jump Lists, and File Explorer"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackDocs" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+
                 # Disable news and interests via Policies\Explorer
                 $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
                 if (-not (Test-Path $registryPath)) {
@@ -1714,22 +1736,6 @@ Function SystemSettings {
         }
 
         RemoveTaskbarWidgets
-
-        # Enable Windows Game Mode
-        Function Gamemode {
-            Write-Host "Enabling Windows Game Mode..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "UseNexusForGameDetection" -Value 1
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMode" -Value 1
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Value 1
-            }
-            catch {
-                Write-Host "[WARNING]: Game Mode could not be enabled. $_" -ForegroundColor Red
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        Gamemode
 
         Function Telnet {
             Write-Host "Enabling Telnet Client..." -NoNewline
@@ -3003,20 +3009,20 @@ Function UnusedApps {
             "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
             "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
             "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "Microsoft.XboxApp", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
+            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
             "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
             "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
-            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*", "Microsoft.XboxGamingOverlay",
-            "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*"
+            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
+            "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*", "Spotify*"
             
             $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
             "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
             "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
             "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
             "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
-            "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay",
-            "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI"
-        
+            "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING",
+            "Microsoft.XboxApp", "Microsoft.XboxGamingOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI" , "Microsoft.GamingApp"
+
             $allPackages = $Uninstall3Party + $UninstallAppxPackages
         
             foreach ($package in $allPackages) {

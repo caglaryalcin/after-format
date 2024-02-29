@@ -45,7 +45,8 @@
         {"PackageIdentifier": "WinFsp"},
         {"PackageIdentifier": "NVCleanstall"},
         {"PackageIdentifier": "nvidia"},
-        {"PackageIdentifier": "rufus"}
+        {"PackageIdentifier": "rufus"},
+        {"PackageIdentifier": "regshot"}
       ]
     }
   ]
