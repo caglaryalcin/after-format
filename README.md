@@ -10,65 +10,68 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
   
 ![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/1.png)
   
-- It asks if you want Region change to Turkey.  
+- It asks if you want region change to turkey.
 - It asks if you want change your hostname.
-- It asks if you want disable Windows Defender.
-- Date format is set to turkey
-- Disabling News and Interes on Taskbar
-- Default Old Photo Viewer
-- Setting Dark Mode for Applications
-- Setting Dark Mode for System
-- Setting Control Panel View to Large Icons
-- Enabling NumLock After Startup
-- Disabling Windows Beep Sound
-- Disabling IPv6 stack
-- Disabling Startup Apps
-- Setting Cloud Flare DNS
-- Hiding People Icon from Taskbar
-- Hiding Taskview Icon from Taskbar
-- Hiding MultiTaskview Icon from Taskbar
-- Showing Small Icons in Taskbar
-- Hiding Taskbar Search
-- Removing Chat from Taskbar
-- Removing Widgets from Taskbar
-- Hiding Recycle Bin Shortcut from Desktop
+- It asks if you want disable windows defender.
+- It asks if you want date format and keyboard layout
+- Ask if you want to add a "startup" task to run at startup (recommended)
+- Get the old classic right-click context menu (for windows 11)
+- Taskbar aligns left (win11)
+- Disabling gallery folder (win11)
+- Desktop button in taskbar is enabled (win11)
+- Disabling sync your settings
+- Disabling spotligt
+- Disabling toast and apps notifications on lock screen
+- Disabling windows media player diagnostics
+- Disabling extension of windows search with bing
+- Default old photo viewer
+- Setting dark mode for applications
+- Setting dark mode for system
+- Setting control panel view to large icons
+- Disabling user interface and device recognition features
+- Enabling numlock after startup
+- Disabling windows beep sound
+- Disabling ipv6 stack
+- Disabling virtual ethernet adapters...
+- Setting cloud flare dns
+- Configuring windows explorer settings
+- Expanding for file explorer
+- Hiding recycle bin shortcut from desktop
 - Disabling hiberfil.sys
-- Disabling Display and Sleep Mode Timeouts
-- Disabling Windows Defender
-- Get the Old Classic Right-Click Context Menu (for Windows 11)
-- Hide Taskbar Start button alignment left (for Windows 11)
-- Disabling Updates for Other Microsoft Products
-- Disabling Cortana
-- Disabling Bing Search in Start Menu
-- Disabling SmartScreen Filter
-- Disabling Sensors
-- Disabling Tailored Experiences
-- Disabling Xbox Gamebar
-- Disabling Xbox Features
-- Disabling Blocking of Downloaded Files
-- Setting 'This PC' for File Explorer
-- Expanding for File Explorer
-- Disabling Nightly Wake-up for Automatic Maintenance
-- Disabling Storage Sense
-- Unpinning all Start Menu tiles
-- Disabling Built-in Adobe Flash in IE and Edge
-- Disabling Edge Preload
-- Disabling Internet Explorer First Run Wizard
-- Disabling Windows Media Player Online Access
-- Showing Known File Extensions
-- Disabling Action Center (Notification Center)
-- Disabling System Restore for System Drive
-- Setting Low UAC Level
-- Removing Unnecessary Tasks
-- Enabling Clearing of Recent Files on Exit
-- Disabling Recent Files Lists
-- Disabling Search for App in Store for Unknown Extensions
-- Hiding 'Recently added' List from the Start Menu
-- Stopping and Disabling Unnecessary Services
-- Setting Desktop Wallpaper
-- Show All Icons on Taskbar
-- Copy Files to Documents
-- Importing Startup task in Task Scheduler
+- Disabling display and sleep mode timeouts
+- Disabling updates for other microsoft products
+- Disabling cortana
+- Disabling bing search in start menu
+- Disabling smartscreen filter
+- Disabling sensors
+- Disabling tailored experiences
+- Disabling xbox features
+- Disabling blocking of downloaded files
+- Disabling nightly wake-up for automatic maintenance
+- Disabling storage sense
+- Disabling built-in adobe flash in ie and edge
+- Disabling edge preload
+- Disabling internet explorer first run wizard
+- Disabling windows media player online access
+- Disabling action center (notification center)
+- Disabling system restore for system drive
+- Setting low uac level
+- Removing unnecessary tasks
+- Enabling clearing of recent files on exit
+- Disabling recent files lists
+- Disabling search for app in store for unknown extensions
+- Hiding 'recently added' list from the start menu
+- Stopping and disabling unnecessary services
+- Disabling news and interest on taskbar
+- Hiding people icon from taskbar
+- Hiding taskview icon from taskbar
+- Hiding multitaskview icon from taskbar
+- Showing small icons in taskbar
+- Hiding taskbar search
+- Removing chat from taskbar
+- Removing widgets from taskbar
+- Enabling telnet client
+- Unpinning all start menu tiles
 
 </details>
 
@@ -76,34 +79,38 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 
 ![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/2.png)
   
-- Disabling Telemetry
-- Blocking Telemetry in Host File
-- Disabling Feedback
-- Disabling Activity History
-- Disabling Website Access to Language List
-- Stopping and Disabling Connected User Experiences and Telemetry Service
-- Disabling Advertising ID
+- Disabling telemetry
+- Blocking telemetry in host file
+- Disabling feedback
+- Disabling activity history
+- Disabling clipboard history
+- Disabling user steps recorder
+- Turning off text suggestions for hardware keyboard
+- Disabling app launch tracking
+- Disabling website access to language list
+- Stopping and disabling Connected User Experiences and Telemetry service
+- Disabling advertising ID
 - Disabling Wi-Fi Sense
-- Disabling Application Suggestions
-- Disabling UWP Apps Background Access
-- Disabling Access to Voice Activation from UWP Apps
-- Disabling Access to Notifications from UWP Apps
-- Disabling Access to account Info from UWP Apps
-- Disabling Access to Contacts from UWP Apps
-- Disabling Access to Calendar from UWP Apps
-- Disabling Access to Phone Calls from UWP Apps
-- Disabling Access to Call History from UWP Apps
-- Disabling Access to Email from UWP Apps
-- Disabling Access to Tasks from UWP Apps
-- Disabling Access to Messaging from UWP Apps
-- Disabling Access to Radios from UWP Apps
-- Disabling Access to Other Devices from UWP Apps
-- Disabling Access to Diagnostic Information from UWP Apps
-- Disabling Access to Libraries and File System from UWP Apps
-- Disabling UWP Apps Swap File
-- Disabling Automatic Maps Updates
-- Disabling Windows Update Automatic Restart
-- Disabling Windows Update Automatic Downloads
+- Disabling application suggestions
+- Disabling UWP apps background access
+- Disabling access to voice activation from UWP apps
+- Disabling access to notifications from UWP apps
+- Disabling access to account info from UWP apps
+- Disabling access to contacts from UWP apps
+- Disabling access to calendar from UWP apps
+- Disabling access to phone calls from UWP apps
+- Disabling access to call history from UWP apps
+- Disabling access to email from UWP apps
+- Disabling access to tasks from UWP apps
+- Disabling access to messaging from UWP apps
+- Disabling access to radios from UWP apps
+- Disabling access to other devices from UWP apps
+- Disabling access to diagnostic information from UWP apps
+- Disabling access to libraries and file system from UWP apps
+- Disabling UWP apps swap file
+- Disabling automatic maps updates
+- Disabling windows update automatic restart
+- Disabling windows update automatic downloads
 
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
@@ -117,7 +124,6 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 - Chrome
 - Brave
 - Firefox
-- LibreWolf
 - Steam
 - Epic Games
 - HWMonitor
@@ -125,8 +131,6 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 - VMware Workstation
 - VirtualBox
 - Signal
-- VSCode Community
-- VSCode Build
 - VSCode (with extensions)
 - Notepad
 - Windows SDK
@@ -135,7 +139,7 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 - Git
 - AnyDesk
 - Terminal
-- Speedtest for terminal
+- Speedtest cli
 - GitHub
 - VLC
 - TreeSize
@@ -145,7 +149,6 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 - DBeaver
 - Cryptomator
 - Microsoft Teams
-- DupeGuru
 - SteelSeries
 - Java
 - 7zip
@@ -160,23 +163,27 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 - WinFsp for Cryptomator
 - NVCleanstall
 - Nvidia Inspector
+- Rufus
+- Regshot
 
 </details>
 
-<details><summary>Remove Unused Apps/Softwares</summary>&nbsp;
+<details><summary>Remove Unused apps/Softwares</summary>&nbsp;
 
 ![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/4.png)
   
-- Uninstalling Default Third Party Applications
-- Uninstalling Windows Media Player
-- Uninstalling Work Folders Client
-- Uninstalling Microsoft XPS Document Writer
-- Removing Default Fax Printer
-- Uninstalling OneDrive
-- Removing Microsoft Edge
-- Uninstalling Windows Fax and Scan Services
-- It asks if you want uninstall Windows OneDrive.
-- It asks if you want uninstall Windows Edge.
+- Uninstalling default third party applications
+- It asks if you want disable Microsoft Copilot.
+- Uninstalling windows media player
+- Uninstalling work folders client
+- Uninstalling microsoft XPS document writer
+- Removing default fax printer
+- Uninstalling windows fax and scan services
+- Removing 3D folders
+- Microsoft edge privacy settings are being adjusted
+- It asks if you want remove unnecessary tasks
+- It asks if you want uninstall windows onedrive
+- It asks if you want uninstall windows edge
 
 </details>
 
@@ -184,32 +191,43 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 
 ![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/startup.png)
 
-This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
+> [!TIP]
+> This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
 
-- Remove En-US Keyboard
-- Adding Turkey Keyboard
-- Importing Previously Set Task to Task Scheduler
-- Removing Stick Keys
-- Removing Toggle Keys
-- Remove Unnecessary Tasks(update and such) in Task Scheduler.(It also adds task to delete Unnecessary Tasks on every boot)
-- Sync Windows Localtime
-- Update apps (browsers, apps, softwares and such..) with WinGet&nbsp;
+> [!IMPORTANT]  
+> This task runs 5 minutes after Windows starts and is not visible on the screen.
+
+- Update apps (Updates all applications including windows updates with winget..) with winget
+- Time zone is set to Turkey
+- Language bar is set to appear in the taskbar
+- It does expand for file explorer ribbon
+- It does removing stick keys
+- f12 is disabled for snipping tool
+- It does remove toggle keys
+- It does remove unnecessary tasks(update and such) in task scheduler
+- It does remove windows defender icon in taskbar
+- Disables unnecessary applications that open on connection
+- It does remove microsoft edge updates in task scheduler
+- It does remove google chrome updates in task scheduler
+- It does enable shot desktop button (w11)
+- Sync windows localtime
 
 </details>
 
-My Custom Drivers
+My custom configs and drivers
 
-🟠 When this question is asked, you must answer by saying <kbd>n</kbd>. Because the settings here 
+> [!WARNING]  
+> When this question is asked, you must answer by saying <kbd>n</kbd>. Because the settings here 
 are my specific settings.
 
-
-> [!NOTE]  
-> This script takes about 40-60 minutes with 100mbps internet.
-
+![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/6.png)
 
 ## Start the script
 
 ####
+> [!NOTE]  
+> This script takes about 60 minutes with 100mbps internet.
+
 > [!IMPORTANT]  
 > Powershell must be run as admin
 <br />

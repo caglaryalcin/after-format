@@ -581,6 +581,7 @@ Function SystemSettings {
                 catch {
                     Write-Host "[WARNING]: Old photo viewer could not be set. $_" -ForegroundColor Red
                 }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
         }
         

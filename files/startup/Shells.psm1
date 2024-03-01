@@ -167,7 +167,7 @@ Function RemoveTasks {
         "ProactiveScan", "SilentCleanup", "UsageDataReportin", "ReconcileFeatures", 
         "PenSyncDataAvailable", "LocalUserSyncDataAvailable", "MouseSyncDataAvailable", 
         "TouchpadSyncDataAvailable", "Synchronize Language Settings", "PrinterCleanupTask",
-        "SpeechModelDownloadTask", "QueueReporting", "Scheduled Start")
+        "SpeechModelDownloadTask", "QueueReporting", "Scheduled Start", "Firefox Back*")
 
     $allTasks = Get-ScheduledTask
     
