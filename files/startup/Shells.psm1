@@ -33,6 +33,7 @@ TRFormats
 Function ShowLanguageBar {
     # Show language bar
     Set-WinLanguageBarOption -UseLegacySwitchMode
+    Set-WinLanguageBarOption
 }
 
 ShowLanguageBar
@@ -100,13 +101,6 @@ Function RemoveStickyKeys {
 }
 
 RemoveStickyKeys
-
-# Set WinLanguageBarOption
-Function SetWinLanguageBarOption {
-    Set-WinLanguageBarOption
-}
-
-SetWinLanguageBarOption
 
 Function disablef12 {
     # Disable Print Screen key for Snipping Tool

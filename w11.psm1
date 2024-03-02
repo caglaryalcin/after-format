@@ -3363,7 +3363,6 @@ Function UnusedApps {
         Function UninstallEdge {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "uninstall Microsoft Edge?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(Not recommended for Windows 11)" -ForegroundColor Red -BackgroundColor Black -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
