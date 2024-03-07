@@ -1134,31 +1134,34 @@ Function SystemSettings {
         
             try {
                 $registryPaths = @{
-                    "HKCU:\Software\Microsoft\GameBar"                  = @{
-                        "AutoGameModeEnabled"      = 0
-                        "AllowAutoGameMode"        = 0
-                        "UseNexusForGameDetection" = 0
+                    "HKCU:\Software\Microsoft\GameBar" = @{
+                        "AutoGameModeEnabled"       = 0
+                        "AllowAutoGameMode"         = 0
+                        "UseNexusForGameDetection"  = 0
+                        "UseNexusForGameBarEnabled" = 0
                     }
-                    "HKCU:\System\GameConfigStore"                      = @{
+                    "HKCU:\System\GameConfigStore"     = @{
                         "GameDVR_Enabled" = 0
-                    }
-                    "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" = @{
-                        "AllowGameDVR" = 0
                     }
                 }
         
                 foreach ($path in $registryPaths.Keys) {
                     foreach ($name in $registryPaths[$path].Keys) {
                         $value = $registryPaths[$path][$name]
-                        # Kayıt defteri anahtarını ve değerini ayarlama
-                        Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord
+                        Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord -Force
                     }
                 }
+        
+                $gameDVRKeyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR"
+                if (-not (Test-Path $gameDVRKeyPath)) {
+                    New-Item -Path $gameDVRKeyPath -Force | Out-Null
+                }
+                Set-ItemProperty -Path $gameDVRKeyPath -Name "AllowGameDVR" -Value 0 -Type DWord -Force
         
                 # for gamebar
                 $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
                 $registryPath = "Registry::HKEY_USERS\$currentSID\Software\Microsoft\GameBar"
-                Set-ItemProperty -Path $registryPath -Name "UseNexusForGameBarEnabled" -Value 0
+                Set-ItemProperty -Path $registryPath -Name "UseNexusForGameBarEnabled" -Value 0 -Force
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -1166,9 +1169,8 @@ Function SystemSettings {
                 Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow
             }
         }
-        
+                
         DisableXboxFeatures
-        
 
         # Disable blocking of downloaded files (i.e. storing zone information - no need to do File\Properties\Unblock) 
         Function DisableDownloadBlocking {
@@ -2591,12 +2593,12 @@ Function GithubSoftwares {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
-                    Write-Host "[WARNING]: Installation of microsoft-vclibs-140-00 failed." -ForegroundColor Red
+                    Write-Host "[WARNING] Installation of microsoft-vclibs-140-00 failed." -ForegroundColor Red
                 }
         
                 $chocoPath = Get-Command "choco" -ErrorAction SilentlyContinue
                 if ($null -eq $chocoPath) {
-                    Write-Host "[WARNING]: Chocolatey is not installed properly. $_" -ForegroundColor Red
+                    Write-Host "[WARNING] Chocolatey is not installed properly. $_" -ForegroundColor Red
                     return
                 }
         
@@ -2796,7 +2798,7 @@ Detecting programs that cannot be installed with chocolatey...
                     $result = & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
         
                     if ($LASTEXITCODE -ne 0) {
-                        Write-Host "[WARNING]:" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                         $logFile = "C:\$($matchingPackage.PackageIdentifier)_winget_install.log"
                         $result | Out-File -FilePath $logFile -Force
                         Write-Host "[Check the log file at $logFile for details.]"
