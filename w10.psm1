@@ -507,6 +507,7 @@ Function SystemSettings {
                     Write-Host "[WARNING]: Old photo viewer could not be set. $_" -ForegroundColor Red
                 }
             }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
         DefaultPhotoViewer
@@ -605,6 +606,7 @@ Function SystemSettings {
             catch {
                 Write-Host "[WARNING]: Numlock could not be set. $_" -ForegroundColor Red
             }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
         EnableNumlock        
@@ -1055,53 +1057,38 @@ Function SystemSettings {
         Function DisableXboxFeatures {
             Write-Host "Disabling Xbox Features..." -NoNewline
         
-            # Helper Function to create key if it doesn't exist and set the value
-            Function Set-RegistryValue($path, $name, $value) {
-                $keyPath = Split-Path -Path $path
-                $itemName = Split-Path -Path $path -Leaf
-        
-                # Check if the key exists, if not, create it
-                if (-not (Test-Path $keyPath)) {
-                    New-Item -Path $keyPath -Force | Out-Null
+            try {
+                $registryPaths = @{
+                    "HKCU:\Software\Microsoft\GameBar" = @{
+                        "AutoGameModeEnabled" = 0
+                        "AllowAutoGameMode" = 0
+                        "UseNexusForGameDetection" = 0
+                    }
+                    "HKCU:\System\GameConfigStore" = @{
+                        "GameDVR_Enabled" = 0
+                    }
+                    "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" = @{
+                        "AllowGameDVR" = 0
+                    }
                 }
         
-                # Check if the item exists, if not, create it
-                if (-not (Test-Path $path)) {
-                    New-Item -Path $path -Force | Out-Null
+                foreach ($path in $registryPaths.Keys) {
+                    foreach ($name in $registryPaths[$path].Keys) {
+                        $value = $registryPaths[$path][$name]
+                        # Kayıt defteri anahtarını ve değerini ayarlama
+                        Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord
+                    }
                 }
         
-                # Set the value
-                Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord
-            }
+                # for gamebar
+                $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+                $registryPath = "Registry::HKEY_USERS\$currentSID\Software\Microsoft\GameBar"
+                Set-ItemProperty -Path $registryPath -Name "UseNexusForGameBarEnabled" -Value 0
         
-            $allSuccessful = $true
-        
-            try {
-                Set-RegistryValue -path "HKCU:\Software\Microsoft\GameBar" -name "AutoGameModeEnabled" -value 0
-            }
-            catch {
-                $allSuccessful = $false
-            }
-        
-            try {
-                Set-RegistryValue -path "HKCU:\System\GameConfigStore" -name "GameDVR_Enabled" -value 0
-            }
-            catch {
-                $allSuccessful = $false
-            }
-        
-            try {
-                Set-RegistryValue -path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -name "AllowGameDVR" -value 0
-            }
-            catch {
-                $allSuccessful = $false
-            }
-        
-            if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Red
+            catch {
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow
             }
         }
         
@@ -2579,7 +2566,7 @@ Function GithubSoftwares {
                 Write-Host "Installing $packageName..." -NoNewline
 
                 # Capture the result of the installation
-                $result = choco install $packageName --force -y -Verbose -Timeout 0 2>&1 | Out-String
+                $result = choco install $packageName --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
 
                 # Check the installation result for errors
                 if ($result -like "*The install of $packageName was successful*") {
@@ -2590,7 +2577,7 @@ Function GithubSoftwares {
                     # If there was an error, write the output to a log file
                     $logFile = "C:\${packageName}_choco_install.log"
                     $result | Out-File -FilePath $logFile -Force
-                    Write-Host "Check the log file at $logFile for details."
+                    Write-Host "[Check the log file at $logFile for details.]"
                 }
             }
 
@@ -2609,7 +2596,7 @@ Function GithubSoftwares {
                 $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
                 $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python"
                 $github = "github.vscode-pull-request-github", "github.copilot"
-				$linux = "rogalmic.bash-debug, shakram02.bash-beautify, mads-hartmann.bash-ide-vscode"
+                $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode"
                 $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux
             
                 $installed = & $vsCodePath --list-extensions
@@ -2637,7 +2624,7 @@ Function GithubSoftwares {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
-                    Write-Host "[WARNING]:" -ForegroundColor Yellow
+                    Write-Host "[WARNING]" -ForegroundColor Yellow -NoNewline
                     Write-Host " VSCode's $vse plugin failed to install"
                 }
             }
@@ -2719,9 +2706,9 @@ Detecting programs that cannot be installed with chocolatey...
                 #Write-Host "Program yüklü: $installedProgramName"
             }
             else {
-                Write-Host "Not Installed " -NoNewline
-                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black -NoNewline
-                Write-Host " with chocolatey."
+                Write-Host "Failed to install with " -NoNewline
+                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black  -NoNewline
+                Write-Host " chocolatey."
         
                 # Searching for the full name of this package in winget.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
@@ -2736,7 +2723,7 @@ Detecting programs that cannot be installed with chocolatey...
                         Write-Host "[WARNING]:" -ForegroundColor Red -BackgroundColor Black
                         $logFile = "C:\$($matchingPackage.PackageIdentifier)_winget_install.log"
                         $result | Out-File -FilePath $logFile -Force
-                        Write-Host "Check the log file at $logFile for details."
+                        Write-Host "[Check the log file at $logFile for details.]"
                     }
                     else {
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
