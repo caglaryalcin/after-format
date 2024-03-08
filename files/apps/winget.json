@@ -32,7 +32,6 @@
         {"PackageIdentifier": "Cryptomator.Cryptomator"},
         {"PackageIdentifier": "Microsoft.Teams"},
         {"PackageIdentifier": "SteelSeries.GG"},
-        {"PackageIdentifier": "Oracle.JavaRuntimeEnvironment"},
         {"PackageIdentifier": "7zip.7zip"},
         {"PackageIdentifier": "Skillbrains.Lightshot"},
         {"PackageIdentifier": "xanderfrangos.twinkletray"},
