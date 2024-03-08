@@ -746,7 +746,7 @@ Function SystemSettings {
         SetCFDNS
 
         # Windows Explorer configure settings
-        Function Hidequickaccess {
+        Function ExplorerSettings {
             Write-Host "Configuring Windows Explorer settings..." -NoNewline
         
             $settings = @{
@@ -762,9 +762,16 @@ Function SystemSettings {
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"          = @{
                     "ShowFrequent"   = 0; # Hide frequently used folders in quick access
                     "EnableAutoTray" = 0 # Show All Icons
+                    "ShowCloudFilesInQuickAccess" = 0 # Hide cloud files in quick access
                 };
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" = @{
                     "HideSCAMeetNow" = 1 # HideSCAMeetNow
+                };
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState"          = @{
+                    "FullPath"   = 1; # Show full path in title bar
+                };
+                "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Search\Preferences" = @{
+                    "ArchivedFiles" = 1 # Show archived files in search results
                 }
             }
         
@@ -790,7 +797,7 @@ Function SystemSettings {
             }
         }
         
-        Hidequickaccess
+        ExplorerSettings
 
         # File Explorer Expand Ribbon
         Function FileExplorerExpandRibbon {
@@ -3036,34 +3043,6 @@ Function UnusedApps {
 
         UninstallThirdPartyBloat
 
-        # Disable Copilot
-        Function DisableCopilot {
-            Write-Host `n"Do you want " -NoNewline
-            Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $response = Read-Host
-        
-            if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Disabling Microsoft Copilot..." -NoNewline
-                if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
-                    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
-                }
-                
-                New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
-                
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Copilot will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                DisableCopilot
-            }
-        }
-
-        DisableCopilot
-
         # Uninstall Windows Media Player
         Function UninstallMediaPlayer {
             Write-Host `n"Uninstalling Windows Media Player..." -NoNewline
@@ -3257,6 +3236,34 @@ Function UnusedApps {
         }
         
         RemoveTasks
+
+        # Disable Copilot
+        Function DisableCopilot {
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+        
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Disabling Microsoft Copilot..." -NoNewline
+                if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
+                    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                }
+                
+                New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
+                
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Copilot will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                DisableCopilot
+            }
+        }
+
+        DisableCopilot
 
         # Uninstall OneDrive
         Function UninstallOneDrive {

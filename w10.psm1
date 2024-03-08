@@ -671,7 +671,7 @@ Function SystemSettings {
         SetCFDNS
 
         # Windows Explorer configure settings
-        Function Hidequickaccess {
+        Function ExplorerSettings {
             Write-Host "Configuring Windows Explorer settings..." -NoNewline
         
             $settings = @{
@@ -715,7 +715,7 @@ Function SystemSettings {
             }
         }
         
-        Hidequickaccess
+        ExplorerSettings
 
         # File Explorer Expand Ribbon
         Function FileExplorerExpandRibbon {
