@@ -79,7 +79,7 @@ Function SystemSettings {
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
-                $hostq = Write-Host "Please enter your hostname: " -NoNewline
+                $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
                 $hostname = Read-Host -Prompt $hostq
                 Rename-Computer -NewName "$hostname" *>$null
                 Write-Host "Hostname was set to " -NoNewline
@@ -186,7 +186,7 @@ Function SystemSettings {
                 Write-Host " - United Kingdom keyboard layout"
                 Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                 Write-Host " - Both Turkish and United Kingdom keyboard layout"
-                $choice = Read-Host -Prompt `n"Choice"
+                $choice = Read-Host -Prompt `n"[Choice]"
         
                 switch ($choice) {
                     "1" {
@@ -751,7 +751,7 @@ Function SystemSettings {
         
             $settings = @{
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"          = @{
-                    "HudMode" = 1 #hide quick access
+                    "HudMode" = 1 # hide quick access
                 };
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" = @{
                     "LaunchTo"                     = 1; # 1 'This PC' #2 'Quick Access'
@@ -760,15 +760,15 @@ Function SystemSettings {
                     "NavPaneShowAllFolders"        = 0 # show all folders
                 };
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"          = @{
-                    "ShowFrequent"   = 0; # Hide frequently used folders in quick access
-                    "EnableAutoTray" = 0 # Show All Icons
-                    "ShowCloudFilesInQuickAccess" = 0 # Hide cloud files in quick access
+                    "ShowFrequent"                 = 0; # Hide frequently used folders in quick access
+                    "EnableAutoTray"               = 0; # Show All Icons
+                    "ShowCloudFilesInQuickAccess"  = 0; # Hide cloud files in quick access
                 };
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" = @{
                     "HideSCAMeetNow" = 1 # HideSCAMeetNow
                 };
-                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState"          = @{
-                    "FullPath"   = 1; # Show full path in title bar
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" = @{
+                    "FullPath" = 1; # Show full path in title bar
                 };
                 "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Search\Preferences" = @{
                     "ArchivedFiles" = 1 # Show archived files in search results
@@ -779,11 +779,15 @@ Function SystemSettings {
         
             foreach ($path in $settings.Keys) {
                 foreach ($name in $settings[$path].Keys) {
+                    if (-not (Test-Path $path)) {
+                        New-Item -Path $path -Force *>$null
+                    }
+                    
                     try {
                         Set-ItemProperty -Path $path -Name $name -Value $settings[$path][$name] -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING]: Errors occurred while adjusting hidequick access settings. $_" -ForegroundColor Red
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
                         $allSuccessful = $false
                     }
                 }
@@ -793,7 +797,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
             }
         }
         
@@ -835,7 +839,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
             }
         }
         
@@ -875,7 +879,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
             }
         }
         
@@ -924,7 +928,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
             }
         }
         
@@ -1173,7 +1177,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
             }
         }
                 
@@ -1814,7 +1818,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
-                Write-Host "[WARNING]: An error occurred: $($_.Exception.Message)" -ForegroundColor red
+                Write-Host "[WARNING]: $($_.Exception.Message)" -ForegroundColor red
             }
         }
         
