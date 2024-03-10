@@ -191,6 +191,7 @@ Function RemoveTasks {
     
 RemoveTasks
 
+# Hide Defender Tray Icon
 Function HideDefenderTrayIcon {
     $defenderPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray"
     $runPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
@@ -277,6 +278,8 @@ Function DisableStartupApps {
     
 DisableStartupApps
 
+# Remove Edge Updates
+
 Function RemoveEdgeUpdates {
     # Registry keys and files to remove
     $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdate",
@@ -300,6 +303,7 @@ Function RemoveEdgeUpdates {
 
 RemoveEdgeUpdates
 
+# Remove Chrome Updates
 Function RemoveChromeUpdates {
     # Registry keys and files to remove
     $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate",
@@ -363,6 +367,7 @@ Function EnableShowDesktop {
 
 EnableShowDesktop
 
+# Sync Time
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
 
@@ -374,5 +379,23 @@ Function SyncTime {
 
 SyncTime
 
-# Remove search box from taskbar
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+Function Loops {
+    # Disable search box in taskbar
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+
+    # Set windows 11 taskbar corner overflow icons
+    $registryPath = "HKCU:\Control Panel\NotifyIconSettings"
+
+    # Get all subkeys
+    $subKeys = Get-ChildItem -Path $registryPath
+
+    # Loop through each subkey
+    foreach ($key in $subKeys) {
+        # Get the full path of the subkey
+        $fullPath = $registryPath + "\" + $key.PSChildName
+        # Set the IsPromoted value to 1
+        Set-ItemProperty -Path $fullPath -Name "IsPromoted" -Value 1 -Type DWord
+    }
+}
+
+Loops
