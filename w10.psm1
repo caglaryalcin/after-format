@@ -1643,6 +1643,20 @@ Function SystemSettings {
 
         Telnet
 
+        # Remove Quota on the disk menu
+        Function RemoveQuota {
+            Write-Host "Removing Quota on the disk menu..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowInfoTip" -Type DWord -Value 0
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        RemoveQuota
+
         # Hide Taskbar Remove Widgets from the Taskbar
         Function UnpinEverything {
             Param(
@@ -3042,20 +3056,40 @@ Function UnusedApps {
 
         UninstallFaxAndScan
 
-        # Remove 3D Folders
-        Function Remove3D {
-            Write-Host "Removing 3D Folders..." -NoNewline
-            try {
-                Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
-                Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
+        # Delete some folders from This PC
+        Function ThisPC {
+            Write-Host "Removing 3D Folders, Pictures, Videos, Music from This PC..." -NoNewline
+            $basePath = "HKLM:\SOFTWARE"
+            $wow6432Node = "Wow6432Node\"
+            $explorerPath = "Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\"
+            $namespaces = @{
+                "3DFolders" = "{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
+                "Videos"    = "{A0953C92-50DC-43bf-BE83-3742FED03C9C}", "{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"
+                "Pictures"  = "{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", "{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"
             }
-            catch {
-                Write-Host "[WARNING]: 3d folders could not to be removed. $_" -ForegroundColor Red
+        
+            foreach ($category in $namespaces.Keys) {
+                foreach ($id in $namespaces[$category]) {
+                    $paths = @(
+                        "$basePath\$explorerPath$id",
+                        "$basePath\$wow6432Node$explorerPath$id"
+                    )
+                    
+                    foreach ($path in $paths) {
+                        try {
+                            Remove-Item -Path $path -Recurse -ErrorAction SilentlyContinue
+                        } catch {
+                            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                        }
+                    }
+                }
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-    
-        Remove3D
+        
+        ThisPC
+        
         # Block Microsoft Edge telemetry
         Function EdgePrivacy {
             Write-Host "Microsoft Edge privacy settings are being adjusted..." -NoNewline

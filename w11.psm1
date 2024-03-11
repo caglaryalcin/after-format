@@ -383,18 +383,42 @@ Function SystemSettings {
 
         DisableSnap
 
-        # Enable Right-Click Menu for Windows 11
         Function RightClickMenu {
-            Write-Host `n"Getting the Old Classic Right-Click Context Menu for Windows 11..." -NoNewline
+            Write-Host `n"Editing the right click menu for Windows 11..." -NoNewline
             try {
-                reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve *>$null
+                # Old right click menu
+                $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+                reg.exe add $regPath /f /ve *>$null
+        
+                $contextMenuPaths = @(
+                    "HKEY_CLASSES_ROOT\Folder\ShellEx\ContextMenuHandlers\Library Location",#Remove Include in library Context Menu in Windows 10
+                    "HKLM:\SOFTWARE\Classes\Folder\ShellEx\ContextMenuHandlers\Library Location",#Remove Include in library Context Menu in Windows 10
+                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo",#Remove Send to Context Menu in Windows 11
+                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo"#Remove Send to Context Menu in Windows 11
+                )
+        
+                foreach ($path in $contextMenuPaths) {
+                    Remove-Item -Path $path -ErrorAction SilentlyContinue
+                }
+
+                # Add Hash to the right click menu
+                $progressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/hash.psm1" -Outfile "C:\hash.reg" -ErrorAction Stop
+
+                reg import "c:\hash.reg" *>$null
+
+                # Restart explorer
+                taskkill /f /im explorer.exe *>$null
+                Start-Sleep 1
+                Start-Process "explorer.exe" -ErrorAction Stop
+                Remove-Item "C:\hash.reg" -Recurse -ErrorAction Stop
+        
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
+            } catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
-
+        
         RightClickMenu
 
         # Hide Taskbar Start button alignment left for Windows 11
@@ -1739,6 +1763,43 @@ Function SystemSettings {
         }
 
         Telnet
+
+        # Remove Quota on the disk menu
+        Function RemoveQuota {
+            Write-Host "Removing Quota on the disk menu..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowInfoTip" -Type DWord -Value 0
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        RemoveQuota
+
+        # Turn off suggested content in Settings
+        Function TurnOffSuggestedContent {
+            Write-Host "Turning off suggested content in Settings..." -NoNewline
+            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+            $contentSettings = @(
+                "SubscribedContent-338393Enabled",
+                "SubscribedContent-353694Enabled",
+                "SubscribedContent-353696Enabled"
+            )
+        
+            try {
+                foreach ($setting in $contentSettings) {
+                    Set-ItemProperty -Path $registryPath -Name $setting -Type DWord -Value 0
+                }
+                
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+        
+        TurnOffSuggestedContent
 
         # Hide Taskbar Remove Widgets from the Taskbar
         Function UnpinEverything {
@@ -3130,20 +3191,39 @@ Function UnusedApps {
 
         UninstallFaxAndScan
 
-        # Remove 3D Folders
-        Function Remove3D {
-            Write-Host "Removing 3D Folders..." -NoNewline
-            try {
-                Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
-                Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
+        # Delete some folders from This PC
+        Function ThisPC {
+            Write-Host "Deleting 3D Folders, Pictures, Videos, Music from This PC..." -NoNewline
+            $basePath = "HKLM:\SOFTWARE"
+            $wow6432Node = "Wow6432Node\"
+            $explorerPath = "Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\"
+            $namespaces = @{
+                "3DFolders" = "{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
+                "Videos"    = "{A0953C92-50DC-43bf-BE83-3742FED03C9C}", "{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"
+                "Pictures"  = "{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", "{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"
             }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        
+            foreach ($category in $namespaces.Keys) {
+                foreach ($id in $namespaces[$category]) {
+                    $paths = @(
+                        "$basePath\$explorerPath$id",
+                        "$basePath\$wow6432Node$explorerPath$id"
+                    )
+                    
+                    foreach ($path in $paths) {
+                        try {
+                            Remove-Item -Path $path -Recurse -ErrorAction SilentlyContinue
+                        } catch {
+                            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                        }
+                    }
+                }
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-    
-        Remove3D
+        
+        ThisPC
 
         # Block Microsoft Edge telemetry
         Function EdgePrivacy {
