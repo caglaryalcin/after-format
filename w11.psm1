@@ -403,7 +403,7 @@ Function SystemSettings {
 
                 # Add Hash to the right click menu
                 $progressPreference = 'SilentlyContinue'
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/hash.psm1" -Outfile "C:\hash.reg" -ErrorAction Stop
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/hash.reg" -Outfile "C:\hash.reg" -ErrorAction Stop
 
                 reg import "c:\hash.reg" *>$null
 
