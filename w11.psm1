@@ -401,17 +401,26 @@ Function SystemSettings {
                     Remove-Item -Path $path -ErrorAction SilentlyContinue
                 }
 
-                # Add Hash to the right click menu
+                # Edit right click menu
                 $progressPreference = 'SilentlyContinue'
                 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/hash.reg" -Outfile "C:\hash.reg" -ErrorAction Stop
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/remove_favorites.reg" -Outfile "C:\remove_favorites.reg" -ErrorAction Stop
+                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/remove_giveaccess.reg" -Outfile "C:\remove_giveaccess.reg" -ErrorAction Stop
 
                 reg import "c:\hash.reg" *>$null
+                Start-Sleep 1
+                reg import "c:\remove_favorites.reg" *>$null
+                Start-Sleep 1
+                reg import "c:\remove_giveaccess.reg" *>$null
+                Start-Sleep 1
 
                 # Restart explorer
                 taskkill /f /im explorer.exe *>$null
                 Start-Sleep 1
                 Start-Process "explorer.exe" -ErrorAction Stop
                 Remove-Item "C:\hash.reg" -Recurse -ErrorAction Stop
+                Remove-Item "C:\remove_favorites.reg" -Recurse -ErrorAction Stop
+                Remove-Item "C:\remove_giveaccess.reg" -Recurse -ErrorAction Stop
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             } catch {
