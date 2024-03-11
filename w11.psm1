@@ -84,7 +84,7 @@ Function SystemSettings {
                 Rename-Computer -NewName "$hostname" *>$null
                 Write-Host "[Hostname was set to " -NoNewline -BackgroundColor Black
                 Write-Host "$hostname" -ForegroundColor Green -BackgroundColor Black -NoNewline
-                Write-Host "]" -NoNewline -BackgroundColor Black
+                Write-Host "]" -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
@@ -99,7 +99,8 @@ Function SystemSettings {
 
         # DisableDefender
         Function DisableDefender {
-            Write-Host "`nDo you want to disable Windows Defender?" -ForegroundColor Yellow -NoNewline
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
         
@@ -751,24 +752,24 @@ Function SystemSettings {
             Write-Host "Configuring Windows Explorer settings..." -NoNewline
         
             $settings = @{
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"          = @{
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"                    = @{
                     "HudMode" = 1 # hide quick access
                 };
-                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" = @{
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"           = @{
                     "LaunchTo"                     = 1; # 1 'This PC' #2 'Quick Access'
                     "HideFileExt"                  = 0; # Show known file extensions
                     "NavPaneExpandToCurrentFolder" = 0; # expand all folders
                     "NavPaneShowAllFolders"        = 0 # show all folders
                 };
-                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"          = @{
-                    "ShowFrequent"                 = 0; # Hide frequently used folders in quick access
-                    "EnableAutoTray"               = 0; # Show All Icons
-                    "ShowCloudFilesInQuickAccess"  = 0; # Hide cloud files in quick access
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"                    = @{
+                    "ShowFrequent"                = 0; # Hide frequently used folders in quick access
+                    "EnableAutoTray"              = 0; # Show All Icons
+                    "ShowCloudFilesInQuickAccess" = 0; # Hide cloud files in quick access
                 };
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" = @{
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"           = @{
                     "HideSCAMeetNow" = 1 # HideSCAMeetNow
                 };
-                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" = @{
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState"       = @{
                     "FullPath" = 1; # Show full path in title bar
                 };
                 "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Search\Preferences" = @{
@@ -2994,58 +2995,61 @@ Function UnusedApps {
         # Remove Apps 
         Function UninstallThirdPartyBloat {
             Write-Host "Uninstalling Default Third Party Applications..." -NoNewline
-        
-            $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
-            "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
-            "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
-            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
-            "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
-            "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
-            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
-            "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*", "Spotify*"
             
-            $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
-            "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
-            "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
-            "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
-            "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
-            "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING",
-            "Microsoft.XboxApp", "Microsoft.XboxGamingOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI" , "Microsoft.GamingApp"
-
-            $allPackages = $Uninstall3Party + $UninstallAppxPackages
+            # Uygulama listeleri
+             $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
+             "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
+             "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
+             "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
+             "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
+             "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
+             "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
+             "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
+             "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*", "Spotify*"
+             
+             $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
+             "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
+             "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
+             "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
+             "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
+             "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING",
+             "Microsoft.XboxApp", "Microsoft.XboxGamingOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI" , "Microsoft.GamingApp"
         
+            $allPackages = $Uninstall3Party + $UninstallAppxPackages
+            $installedApps = Get-AppxPackage -AllUsers
+            
+            $OriginalProgressPreference = $Global:ProgressPreference
+            $Global:ProgressPreference = 'SilentlyContinue'
+            
             foreach ($package in $allPackages) {
-                try {
-                    $app = Get-AppxPackage -AllUsers | Where-Object { $_.Name -like $package }
-                    if ($null -ne $app) {
-                        $appName = $app.Name
-                        $OriginalProgressPreference = $Global:ProgressPreference
-                        $Global:ProgressPreference = 'SilentlyContinue'
+                $app = $installedApps | Where-Object { $_.Name -like $package }
+                if ($null -ne $app) {
+                    try {
                         $app | Remove-AppxPackage -ErrorAction Stop
-                        Start-Sleep 2
-                        Start-Process msiexec.exe -ArgumentList '/x', '{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}', '/qn', '/norestart' -NoNewWindow -Wait *>$null #Microsoft Teams Outlook Add-in
                     }
-                    else {
+                    catch {
+                        Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
                     }
+                }
+            }
+        
+            # Uninstall Microsoft Teams Outlook Add-in
+            $TeamsAddinGUID = '{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}'
+            $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$TeamsAddinGUID"
+            if (Test-Path $registryPath) {
+                try {
+                    Start-Process msiexec.exe -ArgumentList "/x $TeamsAddinGUID /qn /norestart" -NoNewWindow -Wait
                 }
                 catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
                 }
             }
-
-            # Uninstall Health Check
-            try {
-                $progressPreference = 'silentlyContinue'
-                taskkill /f /im PCHealthCheck.exe *>$null
-                Get-CimInstance -ClassName Win32_Product -Filter "Name = 'Microsoft.WindowsPCHealthCheck'" | ForEach-Object { $_.Uninstall() } *>$null
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+        
+            $Global:ProgressPreference = $OriginalProgressPreference
+            
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
+        
         UninstallThirdPartyBloat
 
         # Uninstall Windows Media Player

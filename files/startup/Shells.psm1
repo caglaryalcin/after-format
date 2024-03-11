@@ -1,57 +1,35 @@
-##########
 #region Set MAP
-##########
+
 $ErrorActionPreference = 'SilentlyContinue'
 New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER
 New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE
 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
-New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
 $ErrorActionPreference = 'Continue'
-##########
-#endregion MAP
-##########
+
 
 Function TRFormats {
-    Set-TimeZone -Name "Turkey Standard Time" -ErrorAction Stop
-    Set-Culture tr-TR -ErrorAction Stop
-    Set-ItemProperty -Path "HKCU:\Control Panel\International" -name ShortDate -value "dd/MM/yyyy" -ErrorAction Stop
-
-    #sync time
-    Set-Service -Name "W32Time" -StartupType Automatic -ErrorAction Stop
-    Restart-Service W32Time *>$null
-    if (-not $?) { throw "Failed to stop W32Time" }
-    w32tm /resync /force *>$null
-    if (-not $?) { throw "Failed to resync time" }
-    w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:yes /update *>$null
-    if (-not $?) { throw "Failed to configure time sync settings" }
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    Set-TimeZone -Name "Turkey Standard Time"
+    Set-Culture tr-TR
+    Set-ItemProperty -Path "HKCU:\Control Panel\International" -name ShortDate -value "dd/MM/yyyy"
 }
 
 TRFormats
 
 # Show language bar
 Function ShowLanguageBar {
-    # Show language bar
     Set-WinLanguageBarOption -UseLegacySwitchMode
     Set-WinLanguageBarOption
 }
 
 ShowLanguageBar
 
-Function FileExplorerExpandRibbon {
-    Write-Host "Expanding for File Explorer..." -NoNewline
-    
-    $allSuccessful = $true
+# Remove Toggle and Sticky Keys and File Explorer Ribbon Settings
+Function RibbonandKeys {
+    # File Explorer Ribbon Settings
     $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Ribbon"
     
     if (-Not (Test-Path $path)) {
-        try {
-            New-Item -Path $path -ErrorAction Stop | Out-Null
-        }
-        catch {
-            Write-Host "[WARNING] Error: $_" -ForegroundColor Red
-            $allSuccessful = $false
-        }
+        New-Item -Path $path | Out-Null
     }
     
     $settings = @{
@@ -60,100 +38,36 @@ Function FileExplorerExpandRibbon {
     }
     
     foreach ($name in $settings.Keys) {
-        try {
-            Set-ItemProperty -Path $path -Name $name -Value $settings[$name] -Type DWord -ErrorAction Stop
-        }
-        catch {
-            Write-Host "[WARNING] Error: $_" -ForegroundColor Red
-            $allSuccessful = $false
-        }
+        Set-ItemProperty -Path $path -Name $name -Value $settings[$name] -Type DWord
     }
     
-    if ($allSuccessful) {
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    }
-    else {
-        Write-Host "[COMPLETED WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
-    }
-}
-    
-FileExplorerExpandRibbon
-
-# Remove Sticky Keys
-Function RemoveStickyKeys {
-    $settings = @{
-        "HKCU:\Control Panel\Accessibility\StickyKeys"        = @{ "Flags" = "506" }  # 506 Off, 510 On
-        "HKCU:\Control Panel\Accessibility\Keyboard Response" = @{ "Flags" = "122" }  # 122 Off, 126 On
-        "HKCU:\Control Panel\Accessibility\ToggleKeys"        = @{ "Flags" = "58" }   # 58 Off, 62 On
+    # Remove Toggle and Sticky Keys
+    $combinedSettings = @{
+        "HKCU:\Control Panel\Accessibility\StickyKeys"        = @{ "Flags" = "506" }; # 506 Off, 510 On
+        "HKCU:\Control Panel\Accessibility\Keyboard Response" = @{ "Flags" = "122" }; # 122 Off, 126 On
+        "HKCU:\Control Panel\Accessibility\ToggleKeys"        = @{ "Flags" = "58" }; # 58 Off, 62 On
+        "HKCU:\Keyboard Layout\Toggle"                        = @{ "Language HotKey" = "3"; "Layout HotKey" = "3" };
     }
 
-    foreach ($path in $settings.Keys) {
-        # Ensure the registry key exists
+    foreach ($path in $combinedSettings.Keys) {
         if (-not (Test-Path $path)) {
-            New-Item -Path $path -Force *>$null
+            New-Item -Path $path -Force | Out-Null
         }
 
-        # Set the properties
-        foreach ($prop in $settings[$path].GetEnumerator()) {
-            Set-ItemProperty -Path $path -Name $prop.Key -Type String -Value $prop.Value -ErrorAction SilentlyContinue
-        }
-    }
-}
-
-RemoveStickyKeys
-
-Function disablef12 {
-    # Disable Print Screen key for Snipping Tool
-    Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
-}
-
-disablef12
-
-# Remove Toggle Keys
-Function RemoveToggleKeys {
-    $registryPaths = @(
-        "HKCU:\Keyboard Layout\Toggle",
-        "HKU:\.DEFAULT\Keyboard Layout\Toggle"
-    )
-
-    $properties = @{
-        "Language HotKey" = "3"
-        "Layout HotKey"   = "3"
-    }
-
-    foreach ($path in $registryPaths) {
-        # Ensure the registry key exists
-        if (-not (Test-Path $path)) {
-            New-Item -Path $path -Force *>$null
-        }
-
-        # Set the properties
-        foreach ($prop in $properties.GetEnumerator()) {
-            New-ItemProperty -Path $path -Name $prop.Key -Type String -Value $prop.Value -ErrorAction SilentlyContinue | Out-Null
+        foreach ($prop in $combinedSettings[$path].GetEnumerator()) {
+            Set-ItemProperty -Path $path -Name $prop.Key -Value $prop.Value -Type String
         }
     }
 }
 
-RemoveToggleKeys
+RibbonandKeys
 
 # Remove Tasks in Task Scheduler
 Function RemoveTasks {
     Write-Host "Removing Unnecessary Tasks..." -NoNewline
-    
-    #BackgroundDownload - VSCode Updates
-    #ScheduledDefrag - Defrag
-    #ProactiveScan - Checkdisk
-    #SilentCleanup - Disk Cleanup
-    #UsageDataReportin/ReconcileFeatures - Task periodically logging feature usage reports
-    #PenSyncDataAvailable/LocalUserSyncDataAvailable/MouseSyncDataAvailable/TouchpadSyncDataAvailable
-    #Synchronize Language Settings - Synchronize User Language Settings from other devices
-    #PrinterCleanupTask - Clean Printer Processes
-    #SpeechModelDownloadTask - The Windows operating system offers several speech recognition features
-    #QueueReporting - Windows Error Reporting task to process queued reports
-    #Scheduled Start - This task is used to start the Windows Update service when needed to perform scheduled operations such as scans
 
     $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Brave*", "Intel*", 
-        "update-s*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", 
+        "update*", "klcp*", "MSI*", "*Adobe*", "CCleaner*", "G2M*", "Opera*", 
         "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
         "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", 
         "*DmClient*", "*Office Auto*", "*Office Feature*", "*OfficeTelemetry*", 
@@ -164,31 +78,16 @@ Function RemoveTasks {
         "SpeechModelDownloadTask", "QueueReporting", "Scheduled Start", "Firefox Back*")
 
     $allTasks = Get-ScheduledTask
-    
-    foreach ($task in $allTasks) {
-        $taskName = $task.TaskName
-        $remove = $false
-    
-        foreach ($pattern in $taskPatterns) {
-            if ($taskName -like $pattern) {
-                $remove = $true
-                break
-            }
-        }
-    
-        if ($remove) {
-            try {
-                Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
-            }
-            catch {
-                Write-Host "`n[WARNING]: Error: $_" -ForegroundColor Red
-            }
+
+    foreach ($pattern in $taskPatterns) {
+        $filteredTasks = $allTasks | Where-Object { $_.TaskName -like $pattern }
+        foreach ($task in $filteredTasks) {
+            Unregister-ScheduledTask -TaskName $task.TaskName -Confirm:$false
         }
     }
-    
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
 }
-    
+
 RemoveTasks
 
 # Hide Defender Tray Icon
@@ -208,10 +107,14 @@ Function HideDefenderTrayIcon {
     $osBuild = [System.Environment]::OSVersion.Version.Build
     Switch ($osBuild) {
         14393 {
-            Remove-ItemProperty -Path $runPath -Name "WindowsDefender" -ErrorAction SilentlyContinue
+            if (Test-Path $runPath) {
+                Remove-ItemProperty -Path $runPath -Name "WindowsDefender" -ErrorAction SilentlyContinue
+            }
         }
         { $_ -ge 15063 } {
-            Remove-ItemProperty -Path $runPath -Name "SecurityHealth" -ErrorAction SilentlyContinue
+            if (Test-Path $runPath) {
+                Remove-ItemProperty -Path $runPath -Name "SecurityHealth" -ErrorAction SilentlyContinue
+            }
         }
     }
 }
@@ -249,12 +152,7 @@ Function DisableStartupApps {
     # Remove from registry
     foreach ($path in $StartPaths) {
         foreach ($item in $removeList) {
-            try {
-                Remove-ItemProperty -Path $path -Name $item -ErrorAction SilentlyContinue
-            }
-            catch {
-                # Do nothing, continue to the next item
-            }
+            Remove-ItemProperty -Path $path -Name $item
         }
     }
     
@@ -270,10 +168,9 @@ Function DisableStartupApps {
             }
             return $false
         } | 
-        Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item -Force -Recurse
     }
-    
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
 }
     
 DisableStartupApps
@@ -282,22 +179,30 @@ DisableStartupApps
 
 Function RemoveEdgeUpdates {
     # Registry keys and files to remove
-    $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdate",
-    "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdatem",
-    "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{9459C573-B17A-45AE-9F64-1857B5D58CEE}"
+    $registryPaths = @(
+        "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdate",
+        "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdatem",
+        "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{9459C573-B17A-45AE-9F64-1857B5D58CEE}"
+    )
 
+    # Check if registry keys exist and remove them if they do
     foreach ($path in $registryPaths) {
         if (Test-Path $path) {
-            Remove-Item -Path $path -Recurse -ErrorAction Stop
+            Remove-Item -Path $path -Recurse -Force
         }
-            
     }
 
-    $edgeservices = "edgeupdate", "edgeupdatem"
+    # Services to stop and disable
+    $edgeservices = @("edgeupdate", "edgeupdatem")
+
+    # Check if services exist, stop them, disable them, and delete them
     foreach ($service in $edgeservices) {
-        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
-        Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-        sc.exe delete $service *>$null 2>&1
+        $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
+        if ($serviceObject -ne $null) {
+            Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+            Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
+            sc.exe delete $service *>$null 2>&1
+        }
     }
 }
 
@@ -306,71 +211,40 @@ RemoveEdgeUpdates
 # Remove Chrome Updates
 Function RemoveChromeUpdates {
     # Registry keys and files to remove
-    $registryPaths = "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate",
-    "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem",
-    "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
+    $registryPaths = @(
+        "HKLM:\SYSTEM\CurrentControlSet\Services\gupdate",
+        "HKLM:\SYSTEM\CurrentControlSet\Services\gupdatem",
+        "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{8A69D345-D564-463c-AFF1-A69D9E530F96}"
+    )
 
+    # Check if registry keys exist and remove them if they do
     foreach ($path in $registryPaths) {
         if (Test-Path $path) {
-            Remove-Item -Path $path -Recurse -ErrorAction Stop
+            Remove-Item -Path $path -Recurse -Force
         }
-            
     }
 
-    $chromeservices = "gupdate", "gupdatem"
+    # Services to stop and disable
+    $chromeservices = @("gupdate", "gupdatem")
+
+    # Check if services exist, stop them, disable them, and delete them
     foreach ($service in $chromeservices) {
         $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
-        
-        if ($serviceObject) {
-            if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
-                # The service is already stopped and disabled, so there is no need to do anything.
-                continue
+        if ($serviceObject -ne $null) {
+            if ($serviceObject.Status -ne 'Stopped' -or $serviceObject.StartType -ne 'Disabled') {
+                Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+                Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+                sc.exe delete $service *>$null 2>&1
             }
-        
-            try {
-                Stop-Service -Name $service -Force -ErrorAction Stop
-                Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-            }
-            catch {
-                $errorMessage = $_.Exception.Message
-                Write-Host "[WARNING]: Error stopping or disabling ${service}: $errorMessage" -ForegroundColor Red
-            }
-        
-            try {
-                sc.exe delete $service *>$null
-                if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
-            }
-            catch {
-                $errorMessage = $_.Exception.Message
-                Write-Host "[WARNING]: Error deleting ${service}: $errorMessage" -ForegroundColor Red
-            }
-        }
-        else {
-            # The service is not available, so there is no need to do anything.
         }
     }
 }
 
 RemoveChromeUpdates
 
-# Show Desktop Button
-Function EnableShowDesktop {
-    Write-Host "Enabling Show Desktop Button..." -NoNewline
-    try {
-        New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    }
-    catch {
-        Write-Host "[WARNING]: Show Desktop could not be enabled. $_" -ForegroundColor Red
-    }
-}
-
-EnableShowDesktop
-
 # Sync Time
 Function SyncTime {
     Set-Service -Name "W32Time" -StartupType Automatic
-
     Restart-Service -Name "W32Time" -Force
 
     w32tm /resync /force *>$null
@@ -379,23 +253,35 @@ Function SyncTime {
 
 SyncTime
 
-Function Loops {
+Function UpdateRegistrySettings {
+    param (
+        [string]$Path,
+        [string]$Name,
+        [object]$Value,
+        [string]$Type = "DWord"
+    )
+    Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type
+}
+
+Function ApplySettings {
+    # Disable Print Screen key for Snipping Tool
+    UpdateRegistrySettings -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0
+
     # Disable search box in taskbar
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+    UpdateRegistrySettings -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Value 0
 
     # Set windows 11 taskbar corner overflow icons
     $registryPath = "HKCU:\Control Panel\NotifyIconSettings"
-
-    # Get all subkeys
-    $subKeys = Get-ChildItem -Path $registryPath
-
-    # Loop through each subkey
-    foreach ($key in $subKeys) {
-        # Get the full path of the subkey
-        $fullPath = $registryPath + "\" + $key.PSChildName
-        # Set the IsPromoted value to 1
-        Set-ItemProperty -Path $fullPath -Name "IsPromoted" -Value 1 -Type DWord
+    Get-ChildItem -Path $registryPath | ForEach-Object {
+        UpdateRegistrySettings -Path "$registryPath\$($_.PSChildName)" -Name "IsPromoted" -Value 1
     }
+
+    # Show Desktop Button
+    $advancedPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    if (-not (Test-Path $advancedPath)) {
+        New-Item -Path $advancedPath -Force | Out-Null
+    }
+    UpdateRegistrySettings -Path $advancedPath -Name "TaskbarSd" -Value 1
 }
 
-Loops
+ApplySettings
