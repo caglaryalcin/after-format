@@ -386,44 +386,69 @@ Function SystemSettings {
         Function RightClickMenu {
             Write-Host `n"Editing the right click menu for Windows 11..." -NoNewline
             try {
+                # New PS Drives
+                New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+
                 # Old right click menu
                 $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
                 reg.exe add $regPath /f /ve *>$null
         
                 $contextMenuPaths = @(
-                    "HKEY_CLASSES_ROOT\Folder\ShellEx\ContextMenuHandlers\Library Location",#Remove Include in library Context Menu in Windows 10
-                    "HKLM:\SOFTWARE\Classes\Folder\ShellEx\ContextMenuHandlers\Library Location",#Remove Include in library Context Menu in Windows 10
-                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo",#Remove Send to Context Menu in Windows 11
-                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo"#Remove Send to Context Menu in Windows 11
+                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo", #remove send to
+                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo", #remove send to
+                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\ModernSharing", #remove share
+                    "HKEY_CLASSES_ROOT\*\shell\pintohomefile", #remove favorites
+                    #remove give access
+                    "HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\Directory\Background\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\Sharing",
+                    #remove previous
+                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                    "HKEY_CLASSES_ROOT\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                    "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                    "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"
                 )
         
                 foreach ($path in $contextMenuPaths) {
-                    Remove-Item -Path $path -ErrorAction SilentlyContinue
+                    $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
+                    $cmd = "reg delete `"$regPath`" /f"
+
+                    Invoke-Expression $cmd *>$null
                 }
 
-                # Edit right click menu
-                $progressPreference = 'SilentlyContinue'
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/hash.reg" -Outfile "C:\hash.reg" -ErrorAction Stop
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/remove_favorites.reg" -Outfile "C:\remove_favorites.reg" -ErrorAction Stop
-                Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/remove_giveaccess.reg" -Outfile "C:\remove_giveaccess.reg" -ErrorAction Stop
+                # New hash menu for right click
+                $regpath = "HKEY_CLASSES_ROOT\*\shell\hash"
+                $sha256menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu"
+                $md5menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu"
 
-                reg import "c:\hash.reg" *>$null
-                Start-Sleep 1
-                reg import "c:\remove_favorites.reg" *>$null
-                Start-Sleep 1
-                reg import "c:\remove_giveaccess.reg" *>$null
-                Start-Sleep 1
+                reg add $regpath /f *>$null
+                reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f *>$null
+                reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f *>$null
+                reg add "$regpath\shell" /f *>$null
 
-                # Restart explorer
+                reg add "$sha256menu" /f *>$null
+                reg add "$sha256menu\command" /f *>$null
+                reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
+
+                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -Wait *>$null
+
+                reg add "md5menu" /f *>$null
+                reg add "md5menu\command" /f *>$null
+                reg add "md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
+
+                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -Wait *>$null
+
+                # Restart Windows Explorer
                 taskkill /f /im explorer.exe *>$null
                 Start-Sleep 1
                 Start-Process "explorer.exe" -ErrorAction Stop
-                Remove-Item "C:\hash.reg" -Recurse -ErrorAction Stop
-                Remove-Item "C:\remove_favorites.reg" -Recurse -ErrorAction Stop
-                Remove-Item "C:\remove_giveaccess.reg" -Recurse -ErrorAction Stop
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
@@ -1803,7 +1828,8 @@ Function SystemSettings {
                 }
                 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
@@ -3067,23 +3093,23 @@ Function UnusedApps {
             Write-Host "Uninstalling Default Third Party Applications..." -NoNewline
             
             # Uygulama listeleri
-             $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
-             "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
-             "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
-             "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-             "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
-             "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
-             "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
-             "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
-             "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*", "Spotify*"
+            $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
+            "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
+            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
+            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
+            "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
+            "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
+            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
+            "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*", "Spotify*"
              
-             $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
-             "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
-             "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
-             "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
-             "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
-             "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING",
-             "Microsoft.XboxApp", "Microsoft.XboxGamingOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI" , "Microsoft.GamingApp"
+            $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
+            "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
+            "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
+            "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
+            "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
+            "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING",
+            "Microsoft.XboxApp", "Microsoft.XboxGamingOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI" , "Microsoft.GamingApp"
         
             $allPackages = $Uninstall3Party + $UninstallAppxPackages
             $installedApps = Get-AppxPackage -AllUsers
@@ -3222,7 +3248,8 @@ Function UnusedApps {
                     foreach ($path in $paths) {
                         try {
                             Remove-Item -Path $path -Recurse -ErrorAction SilentlyContinue
-                        } catch {
+                        }
+                        catch {
                             Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                         }
                     }
