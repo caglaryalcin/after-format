@@ -433,13 +433,21 @@ Function SystemSettings {
                 reg add "$sha256menu\command" /f *>$null
                 reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
 
-                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -Wait *>$null
+                $tempOut = [System.IO.Path]::GetTempFileName()
+                $tempErr = [System.IO.Path]::GetTempFileName()
+                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+                Remove-Item $tempOut -ErrorAction Ignore
+				Remove-Item $tempErr -ErrorAction Ignore
 
                 reg add "md5menu" /f *>$null
                 reg add "md5menu\command" /f *>$null
                 reg add "md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
 
-                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -Wait *>$null
+                $tempOut = [System.IO.Path]::GetTempFileName()
+                $tempErr = [System.IO.Path]::GetTempFileName()
+                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+                Remove-Item $tempOut -ErrorAction Ignore
+				Remove-Item $tempErr -ErrorAction Ignore
 
                 # Restart Windows Explorer
                 taskkill /f /im explorer.exe *>$null
@@ -1845,39 +1853,21 @@ Function SystemSettings {
             try {
                 Write-Host "Unpin all taskbar pins..." -NoNewline
         
-                Function UnpinStartMenuTiles {
-                    $progressPreference = 'silentlyContinue'
-                    If ([System.Environment]::OSVersion.Version.Build -ge 15063 -And [System.Environment]::OSVersion.Version.Build -le 16299) {
-                        Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Include "*.group" -Recurse | ForEach-Object {
-                            $data = (Get-ItemProperty -Path "$($_.PsPath)\Current" -Name "Data").Data -Join ","
-                            $data = $data.Substring(0, $data.IndexOf(",0,202,30") + 9) + ",0,202,80,0,0"
-                            Set-ItemProperty -Path "$($_.PsPath)\Current" -Name "Data" -Type Binary -Value $data.Split(",")-ErrorAction SilentlyContinue
-                        }
-                    }
-                    ElseIf ([System.Environment]::OSVersion.Version.Build -ge 17134) {
-                        $key = Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*start.tilegrid`$windows.data.curatedtilecollection.tilecollection\Current"
-                        $data = $key.Data[0..25] + ([byte[]](202, 50, 0, 226, 44, 1, 1, 0, 0))
-                        Set-ItemProperty -Path $key.PSPath -Name "Data" -Type Binary -Value $data -ErrorAction SilentlyContinue
-                        Stop-Process -Name "ShellExperienceHost" -Force -ErrorAction SilentlyContinue
-                        #Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    }
-                }
-        
                 Function getExplorerVerb {
                     Param([string]$verb)
                     $getstring = @'
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr GetModuleHandle(string lpModuleName);
-        
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        internal static extern int LoadString(IntPtr hInstance, uint uID, StringBuilder lpBuffer, int nBufferMax);
-        
-        public static string GetString(uint strId) {
-            IntPtr intPtr = GetModuleHandle("shell32.dll");
-            StringBuilder sb = new StringBuilder(255);
-            LoadString(intPtr, strId, sb, sb.Capacity);
-            return sb.ToString();
-        }
+                    [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+                    public static extern IntPtr GetModuleHandle(string lpModuleName);
+                    
+                    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+                    internal static extern int LoadString(IntPtr hInstance, uint uID, StringBuilder lpBuffer, int nBufferMax);
+                    
+                    public static string GetString(uint strId) {
+                        IntPtr intPtr = GetModuleHandle("shell32.dll");
+                        StringBuilder sb = new StringBuilder(255);
+                        LoadString(intPtr, strId, sb, sb.Capacity);
+                        return sb.ToString();
+                    }
 '@
                     $getstring = Add-Type $getstring -PassThru -Name GetStr -Using System.Text
         
@@ -1887,32 +1877,18 @@ Function SystemSettings {
                     if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
                 }
         
-                Function Get-ExplorerApps {
-                    Param([string]$RemoveUnpin)
-                    $apps = (New-Object -Com Shell.Application).NameSpace("shell:::{4234d49b-0245-4df3-b780-3893943456e1}").Items()
-                    $apps | Where { $_.Name -like $AppName -or $app.Path -like $AppName }
-                }
-        
                 Function Configure-TaskbarPinningApp {
                     Param([string]$RemoveUnpin, [string]$Verb)
                     $myProcessName = Get-Process | where { $_.ID -eq $pid } | % { $_.ProcessName }
-                    if (-not ($myProcessName -like "explorer")) { 
-                        #Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+                    if (-not ($myProcessName -like "explorer")) {
+                        return
                     }
         
-                    $apps = Get-ExplorerApps($AppName)
-                    if ($apps.Count -eq 0) { Write-Host "Error: No App with exact Path or Name '$AppName' found" }
-                    $ExplorerVerb = getExplorerVerb($Verb);
-                    foreach ($app in $apps) {
-                        $done = "False (Verb $Verb not found)"
-                        $app.Verbs() | Where { $_.Name -eq $ExplorerVerb } | ForEach { $_.DoIt(); $done = $true }
-                        #Write-Host $verb $app.Name "-> Result:" $done
-                    }
+                    
                 }
         
-                UnpinStartMenuTiles
                 Configure-TaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
-                
+        
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
             catch {
@@ -1920,7 +1896,7 @@ Function SystemSettings {
             }
         }
         
-        UnpinEverything -RemoveUnpin $RemoveUnpin
+        UnpinEverything -RemoveUnpin ""
         
         ##########
         #endregion Taskbar Settings
