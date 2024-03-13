@@ -437,7 +437,7 @@ Function SystemSettings {
                 $tempErr = [System.IO.Path]::GetTempFileName()
                 Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
                 Remove-Item $tempOut -ErrorAction Ignore
-				Remove-Item $tempErr -ErrorAction Ignore
+                Remove-Item $tempErr -ErrorAction Ignore
 
                 reg add "$md5menu" /f *>$null
                 reg add "$md5menu\command" /f *>$null
@@ -447,7 +447,7 @@ Function SystemSettings {
                 $tempErr = [System.IO.Path]::GetTempFileName()
                 Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
                 Remove-Item $tempOut -ErrorAction Ignore
-				Remove-Item $tempErr -ErrorAction Ignore
+                Remove-Item $tempErr -ErrorAction Ignore
 
                 # Restart Windows Explorer
                 taskkill /f /im explorer.exe *>$null
@@ -462,20 +462,6 @@ Function SystemSettings {
         }
         
         RightClickMenu
-
-        # Hide Taskbar Start button alignment left for Windows 11
-        Function TaskbarAlignLeft {
-            Write-Host "Taskbar Aligns Left..." -NoNewline
-            try {
-                New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        TaskbarAlignLeft
 
         # Disable Gallery for Windows 11
         Function DisableGallery {
@@ -492,21 +478,6 @@ Function SystemSettings {
 
         DisableGallery
         
-        # Enable Show Desktop Button for Windows 11
-        Function EnableShowDesktop {
-            Write-Host "Enabling Show Desktop Button..." -NoNewline
-            
-            try {
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-        
-        EnableShowDesktop
-
         # Disable Sync your settings
         Function DisableSync {
             Write-Host "Disabling Sync your settings..." -NoNewline
@@ -1635,6 +1606,33 @@ Function SystemSettings {
         
         Disable-Services -disableservices $disableservices
 
+        Function Telnet {
+            Write-Host "Enabling Telnet Client..." -NoNewline
+            try {
+                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart  | Out-Null
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        Telnet
+
+        # Remove Quota on the disk menu
+        Function RemoveQuota {
+            Write-Host "Removing Quota on the disk menu..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowInfoTip" -Type DWord -Value 0
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        RemoveQuota
+
         ##########
         #region Taskbar Settings
         ##########
@@ -1793,33 +1791,6 @@ Function SystemSettings {
 
         RemoveTaskbarWidgets
 
-        Function Telnet {
-            Write-Host "Enabling Telnet Client..." -NoNewline
-            try {
-                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart  | Out-Null
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        Telnet
-
-        # Remove Quota on the disk menu
-        Function RemoveQuota {
-            Write-Host "Removing Quota on the disk menu..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowInfoTip" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        RemoveQuota
-
         # Turn off suggested content in Settings
         Function TurnOffSuggestedContent {
             Write-Host "Turning off suggested content in Settings..." -NoNewline
@@ -1843,6 +1814,43 @@ Function SystemSettings {
         }
         
         TurnOffSuggestedContent
+		
+        # Set always show combine on taskbar
+        Function TaskbarAlwaysCombine {
+            Write-Host "Taskbar Always Combine..." -NoNewline
+            New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
+        } 
+
+        TaskbarAlwaysCombine
+		
+        # Hide Taskbar Start button alignment left for Windows 11
+        Function TaskbarAlignLeft {
+            Write-Host "Taskbar Aligns Left..." -NoNewline
+            try {
+                New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        TaskbarAlignLeft
+		
+        # Enable Show Desktop Button for Windows 11
+        Function EnableShowDesktop {
+            Write-Host "Enabling Show Desktop Button..." -NoNewline
+            
+            try {
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+        
+        EnableShowDesktop
 
         # Hide Taskbar Remove Widgets from the Taskbar
         Function UnpinEverything {
@@ -2977,10 +2985,11 @@ Detecting programs that cannot be installed with chocolatey...
                 if (Test-Path $installerDirectory) {
                     Set-Location -Path $installerDirectory
                     Remove-Item -Path chrmstp.exe -Recurse -ErrorAction SilentlyContinue
+                    Set-Location c:\
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
-                    Write-Host "[INFO]: Chrome Installer directory not found." -ForegroundColor Yellow
+                    Write-Host "[INFO]: $_" -ForegroundColor Yellow
                 }
             }
         }
@@ -3072,11 +3081,11 @@ Function UnusedApps {
             $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
             "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
             "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
-            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-            "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
-            "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
+            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Reader", "Microsoft.Office.Sway", 
+            "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore", "Microsoft.FreshPaint", 
+            "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
             "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
-            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
+            "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
             "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*", "Spotify*"
              
             $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
@@ -3350,10 +3359,17 @@ Function UnusedApps {
                 if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
                     New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
                 }
-                
+				
                 New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
                 
+                if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
+                }
+
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
+                
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                Write-Host ""
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Copilot will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
