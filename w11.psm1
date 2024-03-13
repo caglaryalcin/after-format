@@ -439,9 +439,9 @@ Function SystemSettings {
                 Remove-Item $tempOut -ErrorAction Ignore
 				Remove-Item $tempErr -ErrorAction Ignore
 
-                reg add "md5menu" /f *>$null
-                reg add "md5menu\command" /f *>$null
-                reg add "md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
+                reg add "$md5menu" /f *>$null
+                reg add "$md5menu\command" /f *>$null
+                reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
 
                 $tempOut = [System.IO.Path]::GetTempFileName()
                 $tempErr = [System.IO.Path]::GetTempFileName()
