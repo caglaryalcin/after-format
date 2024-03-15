@@ -146,7 +146,7 @@ Function DisableStartupApps {
         "FACEIT*", "*Riot*", "*Epic*", "*Vanguard*", "*Blitz*", #Gaming
         "*Brave*", "Google*", "*Chrome*", "*Opera*", "*vivaldi", "*Edge*", "*Yandex*", "*Firefox*", "*Librewolf*", #Browsers
         "*EADM*", "*Java*", "*cisco*", "*npcap*", "*IDMan*", "*Disc*", "*CORS*", "*Next*", "*One*", "*iTunes*", "*iTunes*", "*Ai*", "*Skype*",
-        "*vmware*", "*Any*", "Tailscale*", "Docker*" #Other
+        "*vmware*", "*Any*", "Tailscale*", "Docker*", "GarminExpress" #Other
     )
     
     # Remove from registry

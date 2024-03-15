@@ -1317,41 +1317,6 @@ Function SystemSettings {
         
         DisableMediaOnlineAccess
 
-        # Disable Action Center (Notification Center) 
-        Function DisableActionCenter {
-            Write-Host "Disabling Action Center (Notification Center)..." -NoNewline
-        
-            $allSuccessful = $true
-        
-            try {
-                If (!(Test-Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer")) {
-                    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" | Out-Null
-                }
-                Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Type DWord -Value 1
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                $allSuccessful = $false
-            }
-        
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                $allSuccessful = $false
-            }
-        
-            if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-        
-        DisableActionCenter
-
         # Disable System restore 
         Function DisableRestorePoints {
             Write-Host "Disabling System Restore for System Drive..." -NoNewline
