@@ -2905,57 +2905,57 @@ Function UnusedApps {
         Function UninstallThirdPartyBloat {
             Write-Host "Uninstalling Default Third Party Applications..." -NoNewline
             
-            # Uygulama listeleri
-             $Uninstall3Party = "Microsoft.WindowsAlarms", "Microsoft.AppConnector", "Microsoft.Cortana", "Microsoft.549981C3F5F10", "Microsoft.YourPhone", "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink",
-             "Microsoft.BingHealthAndFitness", "Microsoft.BingMaps", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel", "Microsoft.BingWeather", "Microsoft.WindowsFeedbackHub",
-             "Microsoft.GetHelp", "Microsoft.3DBuilder", "Microsoft.MicrosoftOfficeHub", "*Skype*", "Microsoft.Getstarted", "Microsoft.WindowsZuneMusic", "Microsoft.ZuneMusic", "Microsoft.WindowsMaps", "*messaging*", "Microsoft.Skydrive",
-             "Microsoft.MicrosoftSolitaireCollection", "Microsoft.WindowsZuneVideo", "Microsoft.ZuneVideo", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.People*", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos",
-             "Microsoft.Reader", "Microsoft.Office.Sway", "Microsoft.SoundRecorder", "*ACG*", "*CandyCrush*", "*Facebook*", "*Plex*", "*Spotify*", "*Twitter*", "*Viber*", "*3d*", "*comm*", "*mess*", "Microsoft.CommsPhone", "Microsoft.ConnectivityStore",
-             "Microsoft.FreshPaint", "Microsoft.HelpAndTips", "Microsoft.Media.PlayReadyClient*", "Microsoft.Messaging", "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MinecraftUWP", "Microsoft.MixedReality.Portal", "Microsoft.MoCamera", "Microsoft.MSPaint",
-             "Microsoft.NetworkSpeedTest", "Microsoft.OfficeLens", "Microsoft.Print3D", "Microsoft.Todos", "Microsoft.Wallet", "Microsoft.WebMediaExtensions", "Microsoft.Whiteboard", "microsoft.windowscommunicationsapps", "Microsoft.WindowsFeedbackHub",
-             "Microsoft.WindowsMaps", "Microsoft.WindowsPhone", "Microsoft.Windows.Photos", "Microsoft.WindowsReadingList", "Microsoft.WindowsScan", "Microsoft.WindowsSoundRecorder", "Microsoft.WinJS.1.0", "Microsoft.WinJS.2.0", "*Microsoft.ScreenSketch*",
-             "*WebExperience*", "*PowerAutomate*", "*QuickAssist*", "*Clipchamp*", "*DevHome*", "Spotify*"
-             
-             $UninstallAppxPackages = "2414FC7A.Viber", "41038Axilesoft.ACGMediaPlayer", "46928bounde.EclipseManager", "4DF9E0F8.Netflix", "64885BlueEdge.OneCalendar", "7EE7776C.LinkedInforWindows", "828B5831.HiddenCityMysteryofShadows",
-             "89006A2E.AutodeskSketchBook", "9E2F88E3.Twitter", "A278AB0D.DisneyMagicKingdoms", "A278AB0D.DragonManiaLegends", "A278AB0D.MarchofEmpires", "ActiproSoftwareLLC.562882FEEB491", "AD2F1837.GettingStartedwithWindows8", "AD2F1837.HPJumpStart",
-             "AD2F1837.HPRegistration", "AdobeSystemsIncorporated.AdobePhotoshopExpress", "Amazon.com.Amazon", "C27EB4BA.DropboxOEM", "CAF9E577.Plex", "CyberLinkCorp.hs.PowerMediaPlayer14forHPConsumerPC",
-             "D52A8D61.FarmVille2CountryEscape", "D5EA27B7.Duolingo-LearnLanguagesforFree", "DB6EA5DB.CyberLinkMediaSuiteEssentials", "DolbyLaboratories.DolbyAccess", "Drawboard.DrawboardPDF", "Facebook.Facebook",
-             "Fitbit.FitbitCoach", "flaregamesGmbH.RoyalRevolt2", "GAMELOFTSA.Asphalt8Airborne", "KeeperSecurityInc.Keeper", "king.com.BubbleWitch3Saga", "king.com.CandyCrushFriends", "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga",
-             "king.com.FarmHeroesSaga", "Nordcurrent.CookingFever", "PandoraMediaInc.29680B314EFC2", "PricelinePartnerNetwork.Booking.comBigsavingsonhot", "SpotifyAB.SpotifyMusic", "ThumbmunkeysLtd.PhototasticCollage", "WinZipComputing.WinZipUniversal", "XINGAG.XING",
-             "Microsoft.XboxApp", "Microsoft.XboxGamingOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI" , "Microsoft.GamingApp"
+            $UninstallAppxPackages = 
+            "Microsoft.WindowsAlarms", #Alarm and clock app for Windows.
+            "Microsoft.549981C3F5F10", #Code likely represents a specific app or service, specifics unknown without context.
+            "Microsoft.YourPhone", #App linking your phone and PC.
+            "Microsoft.WindowsFeedbackHub", #Platform for user feedback on Windows.
+            "Microsoft.Bing*", #Bing search engine related services and apps.
+            "Microsoft.Zune*", #Media software for music and videos, now discontinued.
+            "Microsoft.PowerAutomateDesktop", #Automation tool for desktop workflows.
+            "Microsoft.WindowsSoundRecorder", #Audio recording app for Windows.
+            "Microsoft.MicrosoftSolitaireCollection", #Solitaire game collection.
+            "Microsoft.GamingApp", #Likely related to Xbox or Windows gaming services.
+            "*microsoft.windowscomm**", #Likely refers to communication services in Windows, specifics unclear.
+            "MicrosoftCorporationII.QuickAssist", #Remote assistance app by Microsoft.
+            "Microsoft.Todos", #Task management app.
+            "Microsoft.SkypeApp", #Skype communication app for Windows.
+            "Microsoft.Microsoft3DViewer", #App for viewing 3D models.
+            "Microsoft.Wallet", #Digital wallet app, now discontinued.
+            "Microsoft.WebMediaExtensions", #Extensions for media formats in web browsers.
+            "MicrosoftWindows.Client.WebExperience", #Likely related to the web browsing experience in Windows, specifics unclear.
+            "Clipchamp.Clipchamp", #Video editing app.
+            "Microsoft.WindowsMaps", #Mapping and navigation app.
+            "Microsoft.Advertising.Xaml", #Advertising SDK for apps.
+            "Microsoft.MixedReality.Portal", #Mixed Reality portal app for immersive experiences.
+            "Microsoft.BingNews", #News aggregation app.
+            "Microsoft.GetHelp", #Support and troubleshooting app.
+            "Microsoft.Getstarted", #Introduction and tips app for Windows features.
+            "Microsoft.MicrosoftOfficeHub", #Central hub for Office apps and services.
+            "Microsoft.OneConnect", #Connectivity and cloud services app.
+            "Microsoft.People", #Contact management and social integration app.
+            "Microsoft.Xbox.TCUI", #Xbox text, chat, and user interface services.
+            "Microsoft.XboxApp", #Main app for Xbox social and gaming features.
+            "Microsoft.XboxGameOverlay", #In-game overlay for Xbox features and social interactions.
+            "Microsoft.XboxIdentityProvider", #Service for Xbox account authentication.
+            "Microsoft.XboxSpeechToTextOverlay" #Speech-to-text services for Xbox gaming.
         
-            $allPackages = $Uninstall3Party + $UninstallAppxPackages
             $installedApps = Get-AppxPackage -AllUsers
             
             $OriginalProgressPreference = $Global:ProgressPreference
             $Global:ProgressPreference = 'SilentlyContinue'
             
-            foreach ($package in $allPackages) {
+            foreach ($package in $UninstallAppxPackages) {
                 $app = $installedApps | Where-Object { $_.Name -like $package }
                 if ($null -ne $app) {
                     try {
                         $app | Remove-AppxPackage -ErrorAction Stop
                     }
                     catch {
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
                     }
                 }
             }
-        
-            # Uninstall Microsoft Teams Outlook Add-in
-            $TeamsAddinGUID = '{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}'
-            $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$TeamsAddinGUID"
-            if (Test-Path $registryPath) {
-                try {
-                    Start-Process msiexec.exe -ArgumentList "/x $TeamsAddinGUID /qn /norestart" -NoNewWindow -Wait
-                }
-                catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                }
-            }
-        
-            $Global:ProgressPreference = $OriginalProgressPreference
-            
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
@@ -3061,7 +3061,8 @@ Function UnusedApps {
                     foreach ($path in $paths) {
                         try {
                             Remove-Item -Path $path -Recurse -ErrorAction SilentlyContinue
-                        } catch {
+                        }
+                        catch {
                             Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                         }
                     }
