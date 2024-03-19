@@ -2680,7 +2680,7 @@ Function GithubSoftwares {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                     # If there was an error, write the output to a log file
                     $logFile = "C:\${packageName}_choco_install.log"
                     $result | Out-File -FilePath $logFile -Force
