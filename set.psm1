@@ -368,6 +368,11 @@ Function SystemSettings {
 
         # Disable snap for windows 11
         Function DisableSnap {
+            $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
+            if ($OSVersion -Match "Windows 10") {
+                return
+            }
+        
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "disable the Snap windows feature?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
@@ -375,35 +380,29 @@ Function SystemSettings {
         
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Disabling Snap windows feature..." -NoNewline
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
-                if ($OSVersion.Caption -Match "Windows 10") {
-                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                try {
+                    #Disable Snap for windows 11
+                    # Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
+        
+                    #Disable "When I snap a window, suggest what I can snap next to it"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
+        
+                    #Disable "Show snap layouts when I hover over a window's maximize button"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
+        
+                    #Disable "Show snap layouts when I drag a window to the top of my screen"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
+        
+                    #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
+        
+                    #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
+        
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-                else {
-                    try {
-                        #Disable Snap for windows 11
-                        #Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
-        
-                        #Disable "When I snap a window, suggest what I can snap next to it"
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
-        
-                        #Disable "Show snap layouts when I hover over a window's maximize button"
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
-        
-                        #Disable "Show snap layouts when I drag a window to the top of my screen"
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
-        
-                        #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
-        
-                        #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
-        
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    }
-                    catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
+                catch {
+                    Write-Host "[WARNING]: $_" -ForegroundColor Red
                 }
             }
         }
@@ -1729,39 +1728,36 @@ Function SystemSettings {
 		
         # Set always show combine on taskbar for Windows 11
         Function TaskbarAlwaysCombine {
-            Write-Host "Taskbar Always Combine..." -NoNewline
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
-                if ($OSVersion.Caption -Match "Windows 10") {
-                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
-                }
-                else {
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
+                if ($OSVersion -Match "Windows 10") {
+                    return
+                } elseif ($OSVersion -Match "Windows 11") {
                     try {
+                        Write-Host "Taskbar Always Combine..." -NoNewline
                         New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    }
-                    catch {
+                    } catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                 }
-            } 
-            catch {
+            } catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
-        } 
-
+        }
+        
         TaskbarAlwaysCombine
 		
         # Hide Taskbar Start button alignment left for Windows 11
         Function TaskbarAlignLeft {
-            Write-Host "Taskbar Aligns Left for Windows 11..." -NoNewline
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
-                if ($OSVersion.Caption -Match "Windows 10") {
-                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
+                if ($OSVersion -Match "Windows 10") {
+                    return
                 }
-                else {
-                    New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
+                elseif ($OSVersion -Match "Windows 11") {
+                    Write-Host "Taskbar Aligns Left for Windows 11..." -NoNewline
+                    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
             }
@@ -1774,14 +1770,13 @@ Function SystemSettings {
 		
         # Enable Show Desktop Button for Windows 11
         Function EnableShowDesktop {
-            Write-Host "Enabling Show Desktop Button for Windows 11..." -NoNewline
-            
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
-                if ($OSVersion.Caption -Match "Windows 10") {
-                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
+                if ($OSVersion -Match "Windows 10") {
+                    return
                 }
-                else {
+                elseif ($OSVersion -Match "Windows 11") {
+                    Write-Host "Enabling Show Desktop Button for Windows 11..." -NoNewline
                     New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
@@ -3253,14 +3248,14 @@ Function UnusedApps {
 
         # The function is here because programs add themselves to the right click menu after loading
         Function RightClickMenu {
-            Write-Host "Editing the right click menu for Windows 11..." -NoNewline
             try {
                 $OSVersion = (Get-WmiObject Win32_OperatingSystem)
                 if ($OSVersion.Caption -Match "Windows 10") {
-                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                    return
                 }
                 else {
                     try {
+                        Write-Host "Editing the right click menu for Windows 11..." -NoNewline
                         # New PS Drives
                         New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
 
@@ -3427,39 +3422,40 @@ Function UnusedApps {
 
         # Disable Copilot
         Function DisableCopilot {
-            Write-Host `n"Do you want " -NoNewline
-            Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $response = Read-Host
-        
-            if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Disabling Microsoft Copilot for Windows 11..." -NoNewline
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
-                if ($OSVersion.Caption -Match "Windows 10") {
-                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
-                }
-                else {
+            $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
+            if ($OSVersion -Match "Windows 10") {
+                return
+            }
+            elseif ($OSVersion -Match "Windows 11") {
+                Write-Host `n"Do you want " -NoNewline
+                Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
+                Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+                $response = Read-Host
+            
+                if ($response -eq 'y' -or $response -eq 'Y') {
+                    Write-Host "Disabling Microsoft Copilot for Windows 11..." -NoNewline
+                    
                     if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
                         New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
                     }
-                    
+                        
                     New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
-                    
+                        
                     if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge")) {
                         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
                     }
-        
+            
                     New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
-                    
+                        
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-            }
-            elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Copilot will not be disabled]" -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                DisableCopilot
+                elseif ($response -eq 'n' -or $response -eq 'N') {
+                    Write-Host "[Copilot will not be disabled]" -ForegroundColor Red -BackgroundColor Black
+                }
+                else {
+                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                    DisableCopilot
+                }
             }
         }
         
