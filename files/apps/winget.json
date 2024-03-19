@@ -43,7 +43,8 @@
         {"PackageIdentifier": "tailscale.tailscale"},
         {"PackageIdentifier": "WinFsp.WinFsp"},
         {"PackageIdentifier": "TechPowerUp.NVCleanstall"},
-        {"PackageIdentifier": "Rufus.Rufus"}
+        {"PackageIdentifier": "Rufus.Rufus"},
+        {"PackageIdentifier": "HandBrake.HandBrake"}
       ]
     }
   ]

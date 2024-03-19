@@ -79,12 +79,33 @@ Function SystemSettings {
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
-                $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
-                $hostname = Read-Host -Prompt $hostq
-                Rename-Computer -NewName "$hostname" *>$null
-                Write-Host "[Hostname was set to " -NoNewline -BackgroundColor Black
-                Write-Host "$hostname" -ForegroundColor Green -BackgroundColor Black -NoNewline
-                Write-Host "]" -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
+                if ($OSVersion.Caption -Match "Windows 10") {
+                    try {
+                        $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
+                        $hostname = Read-Host -Prompt $hostq
+                        Rename-Computer -NewName "$hostname" *>$null
+                        Write-Host "[Hostname was set to " -NoNewline
+                        Write-Host "$hostname" -ForegroundColor Green -NoNewline
+                        Write-Host "]"
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
+                }
+                else {
+                    try {
+                        $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
+                        $hostname = Read-Host -Prompt $hostq
+                        Rename-Computer -NewName "$hostname" *>$null
+                        Write-Host "[Hostname was set to " -NoNewline -BackgroundColor Black
+                        Write-Host "$hostname" -ForegroundColor Green -BackgroundColor Black -NoNewline
+                        Write-Host "]" -BackgroundColor Black
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
+                }
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
@@ -351,41 +372,47 @@ Function SystemSettings {
             Write-Host "disable the Snap windows feature?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
-
+        
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Disabling Snap windows feature..." -NoNewline
-                try {
-                    #Disable Snap for Windows 11
-                    #Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
-
-                    #Disable "When I snap a window, suggest what I can snap next to it"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
-
-                    #Disable "Show snap layouts when I hover over a window's maximize button"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
-
-                    #Disable "Show snap layouts when I drag a window to the top of my screen"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
-
-                    #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
-
-                    #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
-
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
+                if ($OSVersion.Caption -Match "Windows 10") {
+                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
                 }
-                catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                else {
+                    try {
+                        #Disable Snap for windows 11
+                        #Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
+        
+                        #Disable "When I snap a window, suggest what I can snap next to it"
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
+        
+                        #Disable "Show snap layouts when I hover over a window's maximize button"
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
+        
+                        #Disable "Show snap layouts when I drag a window to the top of my screen"
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
+        
+                        #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
+        
+                        #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
+        
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
                 }
             }
         }
-
+        
         DisableSnap
 
         # Disable Gallery for Windows 11
         Function DisableGallery {
-            Write-Host "Disabling gallery folder..." -NoNewline
+            Write-Host `n"Disabling gallery folder..." -NoNewline
             try {
                 New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
                 New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
@@ -1620,9 +1647,9 @@ Function SystemSettings {
 
         HideTaskbarMultiTaskviewIcon
 
-        # Show small icons in taskbar
+        # Show small icons on taskbar
         Function ShowSmallTaskbarIcons {
-            Write-Host "Showing Small Icons in Taskbar..." -NoNewline
+            Write-Host "Showing Small Icons on Taskbar..." -NoNewline
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSmallIcons" -Type DWord -Value 1
             }
@@ -1704,8 +1731,19 @@ Function SystemSettings {
         Function TaskbarAlwaysCombine {
             Write-Host "Taskbar Always Combine..." -NoNewline
             try {
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
+                if ($OSVersion.Caption -Match "Windows 10") {
+                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                }
+                else {
+                    try {
+                        New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
+                }
             } 
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1716,25 +1754,37 @@ Function SystemSettings {
 		
         # Hide Taskbar Start button alignment left for Windows 11
         Function TaskbarAlignLeft {
-            Write-Host "Taskbar Aligns Left..." -NoNewline
+            Write-Host "Taskbar Aligns Left for Windows 11..." -NoNewline
             try {
-                New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
+                if ($OSVersion.Caption -Match "Windows 10") {
+                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                }
+                else {
+                    New-itemproperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
-
+        
         TaskbarAlignLeft
 		
         # Enable Show Desktop Button for Windows 11
         Function EnableShowDesktop {
-            Write-Host "Enabling Show Desktop Button..." -NoNewline
+            Write-Host "Enabling Show Desktop Button for Windows 11..." -NoNewline
             
             try {
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
+                if ($OSVersion.Caption -Match "Windows 10") {
+                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                }
+                else {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -2757,11 +2807,27 @@ Function GithubSoftwares {
         $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
         $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
 
-        Write-Host `n"--------" -ForegroundColor Yellow -BackgroundColor Black
-        Write-Host @"
+        Function DetectingWriteHost {
+
+            $OSVersion = Get-CimInstance Win32_OperatingSystem
+            if ($OSVersion.Version -notlike "10*") {
+                Write-Host `n"--------" -ForegroundColor Yellow
+                Write-Host @"
 Detecting programs that cannot be installed with chocolatey...
 
 "@
+            }
+            else {
+                Write-Host `n"--------" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host @"
+Detecting programs that cannot be installed with chocolatey...
+
+"@
+            }
+        }
+        
+        DetectingWriteHost
+        
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
             if ($installedProgramName) {
@@ -2782,7 +2848,7 @@ Detecting programs that cannot be installed with chocolatey...
                     $result = & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
         
                     if ($LASTEXITCODE -ne 0) {
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "[WARNING]$_" -ForegroundColor Red -BackgroundColor Black
                         $logFile = "C:\$($matchingPackage.PackageIdentifier)_winget_install.log"
                         $result | Out-File -FilePath $logFile -Force
                         Write-Host "[Check the log file at $logFile for details.]"
@@ -2798,7 +2864,18 @@ Detecting programs that cannot be installed with chocolatey...
             }
         }
 
-        Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
+        Function DetectingWriteHostBottom {
+
+            $OSVersion = Get-CimInstance Win32_OperatingSystem
+            if ($OSVersion.Version -notlike "10*") {
+                    Write-Host "--------" -ForegroundColor Yellow
+            }
+            else {
+                Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+        
+        DetectingWriteHostBottom
 
         Function Safe-TaskKill {
             param($processName)
@@ -3174,6 +3251,104 @@ Function UnusedApps {
         
         EdgePrivacy
 
+        # The function is here because programs add themselves to the right click menu after loading
+        Function RightClickMenu {
+            Write-Host "Editing the right click menu for Windows 11..." -NoNewline
+            try {
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
+                if ($OSVersion.Caption -Match "Windows 10") {
+                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
+                }
+                else {
+                    try {
+                        # New PS Drives
+                        New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+
+                        # Old right click menu
+                        $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+                        reg.exe add $regPath /f /ve *>$null
+        
+                        $contextMenuPaths = @(
+                            "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo", #remove send to
+                            "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo", #remove send to
+                            "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\ModernSharing", #remove share
+                            "HKEY_CLASSES_ROOT\*\shell\pintohomefile", #remove favorites
+                            #remove give access
+                            "HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\Sharing",
+                            "HKEY_CLASSES_ROOT\Directory\Background\shellex\ContextMenuHandlers\Sharing",
+                            "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\Sharing",
+                            "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\Sharing",
+                            "HKEY_CLASSES_ROOT\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing",
+                            "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\Sharing",
+                            #remove previous
+                            "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                            "HKEY_CLASSES_ROOT\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                            "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                            "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                            #remove git
+                            "HKEY_CLASSES_ROOT\Directory\Background\shell\git_gui",
+                            "HKEY_CLASSES_ROOT\Directory\Background\shell\git_shell",
+                            #remove treesize
+                            "HKEY_CLASSES_ROOT\Directory\Background\shell\TreeSize Free",
+                            "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode"
+                        )
+        
+                        foreach ($path in $contextMenuPaths) {
+                            $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
+                            $cmd = "reg delete `"$regPath`" /f"
+
+                            Invoke-Expression $cmd *>$null
+                        }
+
+                        # New hash menu for right click
+                        $regpath = "HKEY_CLASSES_ROOT\*\shell\hash"
+                        $sha256menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu"
+                        $md5menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu"
+
+                        reg add $regpath /f *>$null
+                        reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f *>$null
+                        reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f *>$null
+                        reg add "$regpath\shell" /f *>$null
+
+                        reg add "$sha256menu" /f *>$null
+                        reg add "$sha256menu\command" /f *>$null
+                        reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
+
+                        $tempOut = [System.IO.Path]::GetTempFileName()
+                        $tempErr = [System.IO.Path]::GetTempFileName()
+                        Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+                        Remove-Item $tempOut -ErrorAction Ignore
+                        Remove-Item $tempErr -ErrorAction Ignore
+
+                        reg add "$md5menu" /f *>$null
+                        reg add "$md5menu\command" /f *>$null
+                        reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
+
+                        $tempOut = [System.IO.Path]::GetTempFileName()
+                        $tempErr = [System.IO.Path]::GetTempFileName()
+                        Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+                        Remove-Item $tempOut -ErrorAction Ignore
+                        Remove-Item $tempErr -ErrorAction Ignore
+
+                        # Restart Windows Explorer
+                        taskkill /f /im explorer.exe *>$null
+                        Start-Sleep 1
+                        Start-Process "explorer.exe" -ErrorAction Stop
+        
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    catch {
+                        Write-Host "[WARNING]: $_" -ForegroundColor Red
+                    }
+                }
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+        
+        RightClickMenu
+
         # Remove Tasks in Task Scheduler
         Function RemoveTasks {
             $description = @"
@@ -3258,31 +3433,36 @@ Function UnusedApps {
             $response = Read-Host
         
             if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Disabling Microsoft Copilot..." -NoNewline
-                if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
-                    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                Write-Host "Disabling Microsoft Copilot for Windows 11..." -NoNewline
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
+                if ($OSVersion.Caption -Match "Windows 10") {
+                    Write-Host "[INFO] Only works on Windows 11." -ForegroundColor Yellow -BackgroundColor Black
                 }
-				
-                New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
-                
-                if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
+                else {
+                    if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
+                        New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                    }
+                    
+                    New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
+                    
+                    if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge")) {
+                        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
+                    }
+        
+                    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
+                    
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-
-                New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
-                
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                Write-Host ""
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Copilot will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[Copilot will not be disabled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 DisableCopilot
             }
         }
-
+        
         DisableCopilot
 
         # Uninstall OneDrive
@@ -3339,7 +3519,7 @@ Function UnusedApps {
                     reg load "HKU\Default" "C:\Users\Default\NTUSER.DAT" *>$null
                     reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f *>$null
                     reg unload "HKU\Default" *>$null
-
+                    
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -3493,94 +3673,6 @@ Function UnusedApps {
         
         UninstallEdge
 
-        # The function is here because programs add themselves to the right click menu after loading
-        Function RightClickMenu {
-            Write-Host `n"Editing the right click menu for Windows 11..." -NoNewline
-            try {
-                # New PS Drives
-                New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-
-                # Old right click menu
-                $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
-                reg.exe add $regPath /f /ve *>$null
-        
-                $contextMenuPaths = @(
-                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo", #remove send to
-                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo", #remove send to
-                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\ModernSharing", #remove share
-                    "HKEY_CLASSES_ROOT\*\shell\pintohomefile", #remove favorites
-                    #remove give access
-                    "HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\Sharing",
-                    "HKEY_CLASSES_ROOT\Directory\Background\shellex\ContextMenuHandlers\Sharing",
-                    "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\Sharing",
-                    "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\Sharing",
-                    "HKEY_CLASSES_ROOT\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing",
-                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\Sharing",
-                    #remove previous
-                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                    "HKEY_CLASSES_ROOT\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                    "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                    "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                    #remove git
-                    "HKEY_CLASSES_ROOT\Directory\Background\shell\git_gui",
-                    "HKEY_CLASSES_ROOT\Directory\Background\shell\git_shell",
-                    #remove treesize
-                    "HKEY_CLASSES_ROOT\Directory\Background\shell\TreeSize Free",
-                    "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode"
-
-                    # 
-                )
-        
-                foreach ($path in $contextMenuPaths) {
-                    $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
-                    $cmd = "reg delete `"$regPath`" /f"
-
-                    Invoke-Expression $cmd *>$null
-                }
-
-                # New hash menu for right click
-                $regpath = "HKEY_CLASSES_ROOT\*\shell\hash"
-                $sha256menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu"
-                $md5menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu"
-
-                reg add $regpath /f *>$null
-                reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f *>$null
-                reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f *>$null
-                reg add "$regpath\shell" /f *>$null
-
-                reg add "$sha256menu" /f *>$null
-                reg add "$sha256menu\command" /f *>$null
-                reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
-
-                $tempOut = [System.IO.Path]::GetTempFileName()
-                $tempErr = [System.IO.Path]::GetTempFileName()
-                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
-                Remove-Item $tempOut -ErrorAction Ignore
-                Remove-Item $tempErr -ErrorAction Ignore
-
-                reg add "$md5menu" /f *>$null
-                reg add "$md5menu\command" /f *>$null
-                reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
-
-                $tempOut = [System.IO.Path]::GetTempFileName()
-                $tempErr = [System.IO.Path]::GetTempFileName()
-                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
-                Remove-Item $tempOut -ErrorAction Ignore
-                Remove-Item $tempErr -ErrorAction Ignore
-
-                # Restart Windows Explorer
-                taskkill /f /im explorer.exe *>$null
-                Start-Sleep 1
-                Start-Process "explorer.exe" -ErrorAction Stop
-        
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-        
-        RightClickMenu
                 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {

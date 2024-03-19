@@ -45,7 +45,8 @@
         {"PackageIdentifier": "NVCleanstall"},
         {"PackageIdentifier": "nvidia"},
         {"PackageIdentifier": "rufus"},
-        {"PackageIdentifier": "regshot"}
+        {"PackageIdentifier": "regshot"},
+        {"PackageIdentifier": "handbrake"}
       ]
     }
   ]

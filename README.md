@@ -232,12 +232,6 @@ are my specific settings.
 > Powershell must be run as admin
 <br />
 
-for **Windows 10**
 ```powershell
-iwr "w10.caglaryalcin.com" -UseB | iex
-```
-
-for **Windows 11**
-```powershell
-iwr "w11.caglaryalcin.com" -UseB | iex
+iwr "set.caglaryalcin.com" -UseB | iex
 ```
