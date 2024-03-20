@@ -411,17 +411,23 @@ Function SystemSettings {
 
         # Disable Gallery for Windows 11
         Function DisableGallery {
-            Write-Host `n"Disabling gallery folder..." -NoNewline
             try {
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
-                New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
+                if ($OSVersion -Match "Windows 11") {
+                    Write-Host `n"Disabling gallery folder..." -NoNewline
+                    New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
+                    New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                else {
+                    ##
+                }
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
-
+        
         DisableGallery
         
         # Disable Sync your settings
@@ -1648,17 +1654,23 @@ Function SystemSettings {
 
         # Show small icons on taskbar
         Function ShowSmallTaskbarIcons {
-            Write-Host "Showing Small Icons on Taskbar..." -NoNewline
             try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSmallIcons" -Type DWord -Value 1
+                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
+                if ($OSVersion -Match "Windows 10") {
+                    Write-Host "Showing Small Icons on Taskbar..." -NoNewline
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSmallIcons" -Type DWord -Value 1
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                else {
+                    ##
+                }
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
-        #ShowSmallTaskbarIcons
+        
+        ShowSmallTaskbarIcons
 
         # Hide Taskbar Search icon / box
         Function HideTaskbarSearch {
@@ -1733,7 +1745,7 @@ Function SystemSettings {
                 if ($OSVersion -Match "Windows 10") {
                     return
                 }
-                elseif ($OSVersion -Match "Windows 11") {
+                else {
                     try {
                         Write-Host "Taskbar Always Combine..." -NoNewline
                         New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
@@ -1758,7 +1770,7 @@ Function SystemSettings {
                 if ($OSVersion -Match "Windows 10") {
                     return
                 }
-                elseif ($OSVersion -Match "Windows 11") {
+                else {
                     Write-Host "Taskbar Aligns Left for Windows 11..." -NoNewline
                     New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -1778,7 +1790,7 @@ Function SystemSettings {
                 if ($OSVersion -Match "Windows 10") {
                     return
                 }
-                elseif ($OSVersion -Match "Windows 11") {
+                else {
                     Write-Host "Enabling Show Desktop Button for Windows 11..." -NoNewline
                     New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -3450,7 +3462,7 @@ Function UnusedApps {
             if ($OSVersion -Match "Windows 10") {
                 return
             }
-            elseif ($OSVersion -Match "Windows 11") {
+            else {
                 Write-Host `n"Do you want " -NoNewline
                 Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
                 Write-Host "(y/n): " -ForegroundColor Green -NoNewline
