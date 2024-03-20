@@ -1732,16 +1732,19 @@ Function SystemSettings {
                 $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
                 if ($OSVersion -Match "Windows 10") {
                     return
-                } elseif ($OSVersion -Match "Windows 11") {
+                }
+                elseif ($OSVersion -Match "Windows 11") {
                     try {
                         Write-Host "Taskbar Always Combine..." -NoNewline
                         New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    } catch {
+                    }
+                    catch {
                         Write-Host "[WARNING]: $_" -ForegroundColor Red
                     }
                 }
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
@@ -2805,7 +2808,7 @@ Function GithubSoftwares {
         Function DetectingWriteHost {
 
             $OSVersion = Get-CimInstance Win32_OperatingSystem
-            if ($OSVersion.Version -notlike "10*") {
+            if ($OSVersion.Version -like "10*") {
                 Write-Host `n"--------" -ForegroundColor Yellow
                 Write-Host @"
 Detecting programs that cannot be installed with chocolatey...
@@ -2826,13 +2829,34 @@ Detecting programs that cannot be installed with chocolatey...
         foreach ($package in $wingetPackages.Sources.Packages) {
             $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
             if ($installedProgramName) {
-                #Write-Host "Program yüklü: $installedProgramName"
+                ##
             }
             else {
+                # Check if winget is installed
+                try {
+                    $wingetVersion = winget --version 2>&1
+                }
+                catch {
+                    Start-Process ms-windows-store://pdp/?ProductId=9nblggh4nns1
+                    Write-Host "Failed to install with " -NoNewline
+                    Write-Host "winget" -ForegroundColor Red -BackgroundColor Black  -NoNewline
+                    Write-Host " chocolatey."
+                    Write-Host "Installing winget with" -NoNewline
+                    Write-Host " winstore..." -Foregroundcolor Yellow -NoNewline
+                
+                    do {
+                        Start-Sleep -Seconds 2
+                        $wingetInstalled = Get-Command winget -ErrorAction SilentlyContinue
+                    } while ($wingetInstalled -eq $null)
+                    Start-Sleep 2
+                    taskkill /f /im "WinStore.App.exe" *>$null
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+
                 Write-Host "Failed to install with " -NoNewline
                 Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black  -NoNewline
                 Write-Host " chocolatey."
-        
+
                 # Searching for the full name of this package in winget.json
                 $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
         
@@ -2862,8 +2886,8 @@ Detecting programs that cannot be installed with chocolatey...
         Function DetectingWriteHostBottom {
 
             $OSVersion = Get-CimInstance Win32_OperatingSystem
-            if ($OSVersion.Version -notlike "10*") {
-                    Write-Host "--------" -ForegroundColor Yellow
+            if ($OSVersion.Version -like "10*") {
+                Write-Host "--------" -ForegroundColor Yellow
             }
             else {
                 Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
