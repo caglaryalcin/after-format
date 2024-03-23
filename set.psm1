@@ -432,7 +432,7 @@ Function SystemSettings {
         
         # Disable Sync your settings
         Function DisableSync {
-            Write-Host "Disabling Sync your settings..." -NoNewline
+            Write-Host `n"Disabling Sync your settings..." -NoNewline
             $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
 
             if (-not (Test-Path $registryPath)) {
