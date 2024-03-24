@@ -400,6 +400,7 @@ Function SystemSettings {
                     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
         
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    Write-Host ""
                 }
                 catch {
                     Write-Host "[WARNING]: $_" -ForegroundColor Red
@@ -414,7 +415,7 @@ Function SystemSettings {
             try {
                 $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
                 if ($OSVersion -Match "Windows 11") {
-                    Write-Host `n"Disabling gallery folder..." -NoNewline
+                    Write-Host "Disabling gallery folder..." -NoNewline
                     New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
                     New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -432,7 +433,7 @@ Function SystemSettings {
         
         # Disable Sync your settings
         Function DisableSync {
-            Write-Host `n"Disabling Sync your settings..." -NoNewline
+            Write-Host "Disabling Sync your settings..." -NoNewline
             $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
 
             if (-not (Test-Path $registryPath)) {
