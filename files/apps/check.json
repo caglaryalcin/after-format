@@ -31,6 +31,7 @@
         {"PackageIdentifier": "Cryptomator"},
         {"PackageIdentifier": "Teams"},
         {"PackageIdentifier": "SteelSeries"},
+        {"PackageIdentifier": "7-zip"},
         {"PackageIdentifier": "7zip"},
         {"PackageIdentifier": "Flameshot"},
         {"PackageIdentifier": "twinkle"},
