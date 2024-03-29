@@ -20,7 +20,6 @@
         {"PackageIdentifier": "Python"},
         {"PackageIdentifier": "Git"},
         {"PackageIdentifier": "AnyDesk"},
-        {"PackageIdentifier": "Terminal"},
         {"PackageIdentifier": "Speedtest"},
         {"PackageIdentifier": "GitHub"},
         {"PackageIdentifier": "VLC"},

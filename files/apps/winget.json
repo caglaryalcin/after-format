@@ -20,7 +20,6 @@
         {"PackageIdentifier": "Python.Python.3.8"},
         {"PackageIdentifier": "Git.Git"},
         {"PackageIdentifier": "AnyDeskSoftwareGmbH.AnyDesk"},
-        {"PackageIdentifier": "Microsoft.WindowsTerminal"},
         {"PackageIdentifier": "Ookla.Speedtest.CLI"},
         {"PackageIdentifier": "GitHub.GitHubDesktop"},
         {"PackageIdentifier": "VideoLAN.VLC"},
