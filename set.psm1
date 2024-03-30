@@ -2577,7 +2577,7 @@ Function GithubSoftwares {
                 # Check if Chocolatey is installed
                 $chocoExecutablePath = Join-Path -Path 'C:\ProgramData\chocolatey\bin' -ChildPath 'choco.exe'
                 if (Test-Path -Path $chocoExecutablePath) {
-                    Write-Host "[DONE] Chocolatey is installed." -ForegroundColor Green -BackgroundColor Black
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
                     $errorMessage = "Chocolatey installation failed or Chocolatey is not available in PATH."
