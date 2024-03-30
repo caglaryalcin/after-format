@@ -1488,7 +1488,7 @@ Function SystemSettings {
                     }
                 }
                 catch {
-                    Write-Warning "Could not stop/disable $service" -NoNewline
+                    Write-Host "Could not stop/disable $service" -NoNewline
                 }
             }
         
@@ -1500,7 +1500,7 @@ Function SystemSettings {
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "lmhosts", "WerSvc", "wisvc", "PhoneSvc", "EFS", "BDESVC",
             "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")
         
-        Disable-Services -disableservices $disableservices
+        Disable-Services -disableservices $disableservices        
 
         Function Telnet {
             Write-Host "Enabling Telnet Client..." -NoNewline
@@ -2598,6 +2598,18 @@ Function GithubSoftwares {
 
         $wingetWarnings = @()
         Function InstallSoftwares {
+            function InstallOrUpdateWinget {
+                try {
+                    Write-Host "Installing/upgrading winget..." -NoNewline
+                    choco install winget --ignore-checksums --force -y *>$null
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                catch {
+                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black -NoNewline
+                    Write-Host " Error installing/upgrading winget." -ForegroundColor Red
+                }
+            }
+            
             try {
                 # check if winget is installed and if not, install it
                 $wingetVersionOutput = winget --version
@@ -2605,7 +2617,7 @@ Function GithubSoftwares {
                 $version = [version]$wingetVersion
                 $minimumVersionForUpgrade = [version]"1.6"
                 $targetVersion = [version]"1.7"
-            
+                
                 # If the version is 1.7 or higher, do nothing
                 if ($version -ge $targetVersion) {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2619,18 +2631,6 @@ Function GithubSoftwares {
                 # If winget is not installed, install it
                 InstallOrUpdateWinget
             }
-            
-            function InstallOrUpdateWinget {
-                try {
-                    Write-Host "Installing/upgrading winget..." -NoNewline
-                    choco install winget --ignore-checksums --force -y *>$null
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                catch {
-                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black -NoNewline
-                    Write-Host " Error installing/upgrading winget." -ForegroundColor Red
-                }
-            }       
 
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
 
