@@ -2748,7 +2748,7 @@ Detecting programs that cannot be installed with winget...
                         Write-Host "Installing $identifier with" -NoNewLine
                         Write-Host " chocolatey..." -Foregroundcolor Yellow -NoNewline
                         $result = choco install $chocoPackageId --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
-                        if ($result -match "Installed" -or $result -match "was successful") {
+                        if ($result -like "was successful*") {
                             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                             break
                         }
