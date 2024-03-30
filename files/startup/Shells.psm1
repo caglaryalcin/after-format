@@ -85,7 +85,6 @@ Function RemoveTasks {
             Unregister-ScheduledTask -TaskName $task.TaskName -Confirm:$false
         }
     }
-
 }
 
 RemoveTasks

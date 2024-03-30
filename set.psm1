@@ -79,33 +79,13 @@ Function SystemSettings {
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
-                if ($OSVersion.Caption -Match "Windows 10") {
-                    try {
-                        $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
-                        $hostname = Read-Host -Prompt $hostq
-                        Rename-Computer -NewName "$hostname" *>$null
-                        Write-Host "[Hostname was set to " -NoNewline
-                        Write-Host "$hostname" -ForegroundColor Green -NoNewline
-                        Write-Host "]"
-                    }
-                    catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                }
-                else {
-                    try {
-                        $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
-                        $hostname = Read-Host -Prompt $hostq
-                        Rename-Computer -NewName "$hostname" *>$null
-                        Write-Host "[Hostname was set to " -NoNewline -BackgroundColor Black
-                        Write-Host "$hostname" -ForegroundColor Green -BackgroundColor Black -NoNewline
-                        Write-Host "]" -BackgroundColor Black
-                    }
-                    catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                }
+
+                $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
+                $hostname = Read-Host -Prompt $hostq
+                Rename-Computer -NewName "$hostname" *>$null
+                Write-Host "[Hostname was set to " -NoNewline -BackgroundColor Black
+                Write-Host "$hostname" -ForegroundColor Green -BackgroundColor Black -NoNewline
+                Write-Host "]" -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Hostname will not be changed]" -ForegroundColor Red -BackgroundColor Black
@@ -196,126 +176,131 @@ Function SystemSettings {
         
         # Keyboard Layout
         Function SetKeyboardLayout {
-            Write-Host `n"Do you want to " -NoNewline
+            Write-Host "`nDo you want to " -NoNewline
             Write-Host "set the keyboard layout to UK or TR?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
         
             if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Which keyboard layout do you want to set? Write 1, 2 or 3."
-                Write-Host "[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-                Write-Host " - Turkish keyboard layout"
-                Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-                Write-Host " - United Kingdom keyboard layout"
-                Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-                Write-Host " - Both Turkish and United Kingdom keyboard layout"
-                $choice = Read-Host -Prompt `n"[Choice]"
+                do {
+                    Write-Host "Which keyboard layout do you want to set? Write 1, 2 or 3."
+                    Write-Host "[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                    Write-Host " - Turkish keyboard layout"
+                    Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                    Write-Host " - United Kingdom keyboard layout"
+                    Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                    Write-Host " - Both Turkish and United Kingdom keyboard layout"
+                    $choice = Read-Host -Prompt "`n[Choice]"
         
-                switch ($choice) {
-                    "1" {
-                        # TR keyboard layout
-                        New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
-                        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
-
-                        # Remove all keyboard layouts under HKCU
-                        Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
-                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-                                Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                    $validChoice = $true
+        
+                    switch ($choice) {
+                        "1" {
+                            # TR keyboard layout
+                            New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+                            New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+        
+                            # Remove all keyboard layouts under HKCU
+                            Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
+                                $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                    Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                                }
                             }
-                        }
-                        
-                        # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
-                        Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
-                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-                                Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                                
+                            # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
+                            Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
+                                $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                    Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                                }
                             }
+        
+                            # Set keyboard layout to TR
+                            Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
+                            Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
+                            Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
+                            Set-WinLanguageBarOption -UseLegacyLanguageBar
+        
+                            #disable different input for each app 
+                            Set-WinLanguageBarOption
+        
+                            # Disable Print Screen key for Snipping Tool
+                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                         }
-
-                        # Set keyboard layout to TR
-                        Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
-                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
-                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "0000041f"
-                        Set-WinLanguageBarOption -UseLegacyLanguageBar
-
-                        #disable different input for each app 
-                        Set-WinLanguageBarOption
-
-                        # Disable Print Screen key for Snipping Tool
-                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
+                        "2" {
+                            # UK keyboard layout
+                            New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+                            New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+        
+                            # Remove all keyboard layouts under HKCU
+                            Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
+                                $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                    Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                                }
+                            }
+                                
+                            # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
+                            Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
+                                $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                    Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                                }
+                            }
+        
+                            # Set keyboard layout to UK
+                            Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
+                            Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                            Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                            Set-WinLanguageBarOption -UseLegacyLanguageBar
+        
+                            #disable different input for each app 
+                            Set-WinLanguageBarOption
+        
+                            # Disable Print Screen key for Snipping Tool
+                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
+                        }
+                        "3" {
+                            # Both TR and UK keyboard layout
+                            New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+                            New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+        
+                            # Remove all keyboard layouts under HKCU
+                            Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
+                                $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                    Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                                }
+                            }
+        
+                            # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
+                            Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
+                                $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
+                                    Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
+                                }
+                            }
+                            # Set keyboard layout to TR and UK
+                            Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
+                            Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                            Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
+                            Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
+                            Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
+                            Set-WinLanguageBarOption -UseLegacyLanguageBar
+        
+                            #disable different input for each app 
+                            Set-WinLanguageBarOption
+        
+                            # Disable Print Screen key for Snipping Tool
+                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
+                        }
+                        default {
+                            Write-Host "Invalid input. Please enter 1, 2 or 3."
+                            $validChoice = $false
+                        }
                     }
-                    "2" {
-                        # UK keyboard layout
-                        New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
-                        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
-
-                        # Remove all keyboard layouts under HKCU
-                        Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
-                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-                                Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
-                            }
-                        }
-                        
-                        # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
-                        Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
-                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-                                Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
-                            }
-                        }
-
-                        # Set keyboard layout to UK
-                        Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
-                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
-                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
-                        Set-WinLanguageBarOption -UseLegacyLanguageBar
-
-                        #disable different input for each app 
-                        Set-WinLanguageBarOption
-
-                        # Disable Print Screen key for Snipping Tool
-                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
-                    }
-                    "3" {
-                        # Both TR and UK keyboard layout
-                        New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
-                        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
-
-                        # Remove all keyboard layouts under HKCU
-                        Get-ItemProperty "HKCU:\Keyboard Layout\Preload" | ForEach-Object {
-                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-                                Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
-                            }
-                        }
-
-                        # Remove all keyboard layouts under HKEY_USERS\.DEFAULT
-                        Get-ItemProperty "HKU:\.DEFAULT\Keyboard Layout\Preload" | ForEach-Object {
-                            $_.PSObject.Properties.Name | Where-Object { $_ -ne "PSPath" -and $_ -ne "PSParentPath" -and $_ -ne "PSChildName" -and $_ -ne "PSDrive" -and $_ -ne "PSProvider" } | ForEach-Object {
-                                Remove-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name $_ -ErrorAction SilentlyContinue
-                            }
-                        }
-                        # Set keyboard layout to TR and UK
-                        Get-ChildItem "HKCU:\Keyboard Layout\Preload", "HKU:\.DEFAULT\Keyboard Layout\Preload" | Remove-ItemProperty -Name * -ErrorAction SilentlyContinue
-                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "1" -Value "00000809"
-                        Set-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
-                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "1" -Value "00000809"
-                        Set-ItemProperty -Path "HKU:\.DEFAULT\Keyboard Layout\Preload" -Name "2" -Value "0000041f"
-                        Set-WinLanguageBarOption -UseLegacyLanguageBar
-
-                        #disable different input for each app 
-                        Set-WinLanguageBarOption
-
-                        # Disable Print Screen key for Snipping Tool
-                        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
-                    }
-                    default {
-                        Write-Host "Invalid input. Please enter 1, 2 or 3."
-                    }
-                }
+                } while (-not $validChoice)
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Keyboard layout will not be changed.]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
                 SetKeyboardLayout
             }
         }
@@ -334,26 +319,35 @@ Function SystemSettings {
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
         
-                # Import ScheduledTasks module
-                Import-Module ScheduledTasks
-
-                # Set the task action, trigger, settings, principal, and taskname
-                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"`$ScriptFromGitHub = iwr https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1 ; iex (`$ScriptFromGitHub.Content) ; winget upgrade --all`""
+                #upgrade
+                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"`winget upgrade --all`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $settings = New-ScheduledTaskSettingsSet -Hidden:$true
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
-                $taskname = "startup"
+                $taskname = "upgrade-packages"
                 $delay = "PT5M"  # 5 dakika gecikme
                 $trigger.Delay = $delay
 
-                try {
-                    Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description *>$null
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                }
+                Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description *>$null
+
+                #startup
+                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"`$ScriptFromGitHub = iwr https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1 ; iex (`$ScriptFromGitHub.Content)`""
+                $trigger = New-ScheduledTaskTrigger -AtStartup
+                $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $taskname = "startup"
+                $delay = "PT3M"
+                $trigger.Delay = $delay
+
+                $settings = New-ScheduledTaskSettingsSet -Hidden:$true
+
+                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description
+                $task.Triggers.Repetition.Duration = ""
+                $task.Triggers.Repetition.Interval = "PT3H"
+                $task | Set-ScheduledTask *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
@@ -366,13 +360,8 @@ Function SystemSettings {
         
         ImportStartup
 
-        # Disable snap for windows 11
+        # Disable snap
         Function DisableSnap {
-            $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
-            if ($OSVersion -Match "Windows 10") {
-                return
-            }
-        
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "disable the Snap windows feature?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
@@ -380,49 +369,38 @@ Function SystemSettings {
         
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Disabling Snap windows feature..." -NoNewline
-                try {
-                    #Disable Snap for windows 11
-                    # Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
+                #Disable Snap
+                # Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
         
-                    #Disable "When I snap a window, suggest what I can snap next to it"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
+                #Disable "When I snap a window, suggest what I can snap next to it"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
         
-                    #Disable "Show snap layouts when I hover over a window's maximize button"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
+                #Disable "Show snap layouts when I hover over a window's maximize button"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
         
-                    #Disable "Show snap layouts when I drag a window to the top of my screen"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
+                #Disable "Show snap layouts when I drag a window to the top of my screen"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
         
-                    #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
+                #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
         
-                    #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
+                #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
         
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    Write-Host ""
-                }
-                catch {
-                    Write-Host "[WARNING]: $_" -ForegroundColor Red
-                }
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                Write-Host ""
             }
         }
         
         DisableSnap
 
-        # Disable Gallery for Windows 11
+        # Disable Gallery
         Function DisableGallery {
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
-                if ($OSVersion -Match "Windows 11") {
-                    Write-Host "Disabling gallery folder..." -NoNewline
-                    New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
-                    New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    ##
-                }
+                Write-Host "Disabling gallery folder..." -NoNewline
+                New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
+                New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1527,14 +1505,19 @@ Function SystemSettings {
         Function Telnet {
             Write-Host "Enabling Telnet Client..." -NoNewline
             try {
-                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart  | Out-Null
+                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart | Out-Null
             }
             catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                if ($_ -match "NoRestart") {
+                    Write-Host "[INFO] Restart is suppressed because NoRestart is specified." -ForegroundColor Yellow -BackgroundColor Black
+                }
+                else {
+                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                }
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
+        
         Telnet
 
         # Remove Quota on the disk menu
@@ -1653,26 +1636,6 @@ Function SystemSettings {
 
         HideTaskbarMultiTaskviewIcon
 
-        # Show small icons on taskbar
-        Function ShowSmallTaskbarIcons {
-            try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
-                if ($OSVersion -Match "Windows 10") {
-                    Write-Host "Showing Small Icons on Taskbar..." -NoNewline
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSmallIcons" -Type DWord -Value 1
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    ##
-                }
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-        
-        ShowSmallTaskbarIcons
-
         # Hide Taskbar Search icon / box
         Function HideTaskbarSearch {
             Write-Host "Hiding Taskbar Search Icon / Box..." -NoNewline
@@ -1739,23 +1702,12 @@ Function SystemSettings {
         
         TurnOffSuggestedContent
 		
-        # Set always show combine on taskbar for Windows 11
+        # Set always show combine on taskbar
         Function TaskbarAlwaysCombine {
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
-                if ($OSVersion -Match "Windows 10") {
-                    return
-                }
-                else {
-                    try {
-                        Write-Host "Taskbar Always Combine..." -NoNewline
-                        New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    }
-                    catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                }
+                Write-Host "Taskbar Always Combine..." -NoNewline
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1764,18 +1716,12 @@ Function SystemSettings {
         
         TaskbarAlwaysCombine
 		
-        # Hide Taskbar Start button alignment left for Windows 11
+        # Hide Taskbar Start button alignment left
         Function TaskbarAlignLeft {
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
-                if ($OSVersion -Match "Windows 10") {
-                    return
-                }
-                else {
-                    Write-Host "Taskbar Aligns Left for Windows 11..." -NoNewline
-                    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
+                Write-Host "Taskbar Aligns Left..." -NoNewline
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1784,18 +1730,12 @@ Function SystemSettings {
         
         TaskbarAlignLeft
 		
-        # Enable Show Desktop Button for Windows 11
+        # Enable Show Desktop Button
         Function EnableShowDesktop {
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
-                if ($OSVersion -Match "Windows 10") {
-                    return
-                }
-                else {
-                    Write-Host "Enabling Show Desktop Button for Windows 11..." -NoNewline
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
+                Write-Host "Enabling Show Desktop Button..." -NoNewline
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -2621,43 +2561,77 @@ Function GithubSoftwares {
         Function choco-install {
             try {
                 Write-Host `n"Installing chocolatey..." -NoNewline
-        
-                #disable first run customize for chocolatey
+
+                # Disable Chocolatey's first run customization
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Force | Out-Null
                 }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Type DWord -Value 1
-        
-                #install choco
-                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 1 -Type DWord
+
+                # Install Chocolatey
+                Set-ExecutionPolicy Bypass -Scope Process -Force
+                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
                 Start-Sleep 10
-        
-                #install vcredist 2015
-                $output = choco install microsoft-vclibs --ignore-checksums --force -y -Timeout 0
-                If ($output -match "successful") {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+                # Check if Chocolatey is installed
+                $chocoExecutablePath = Join-Path -Path 'C:\ProgramData\chocolatey\bin' -ChildPath 'choco.exe'
+                if (Test-Path -Path $chocoExecutablePath) {
+                    Write-Host "[DONE] Chocolatey is installed." -ForegroundColor Green -BackgroundColor Black
                 }
                 else {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    $errorMessage = "Chocolatey installation failed or Chocolatey is not available in PATH."
+                    Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
+                    throw $errorMessage
                 }
-        
-                $chocoPath = Get-Command "choco" -ErrorAction SilentlyContinue
-                if ($null -eq $chocoPath) {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                    return
-                }
-        
-                #eliminates the -y requirement
+
+                # Disable -y requirement for all packages
                 choco feature enable -n allowGlobalConfirmation *>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
+
         }
         
         choco-install
-        
+
+        $wingetWarnings = @()
         Function InstallSoftwares {
+            try {
+                Write-Host "Installing/upgrading winget..." -NoNewline
+                choco install winget --ignore-checksums --force -y *>$null
+            
+                # check winget version
+                $wingetVersionOutput = winget --version
+                $wingetVersion = $wingetVersionOutput.Split(' ')[0]
+            
+                # compare winget version with minimum required version
+                $version = [version]$wingetVersion
+                $minimumVersion = [version]"1.2"
+                $targetVersion = [version]"1.7"
+            
+                if ($version -le $minimumVersion) {
+                    Write-Host "[WARNING] The Winget version is old!" -ForegroundColor Red -BackgroundColor Black -NoNewline
+                }
+                elseif ($version -ge $targetVersion) {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+            }
+            catch {
+                Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black -NoNewline
+                Write-Host " Error installing/upgrading winget." -ForegroundColor Red
+            
+                # check if winget is installed
+                try {
+                    $wingetVersionCheck = winget --version
+                }
+                catch {
+                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black -NoNewline
+                    Write-Host " winget is not installed." -ForegroundColor Red
+                }
+            }            
+
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
 
             $response = Invoke-WebRequest -Uri $configUrl
@@ -2676,97 +2650,41 @@ Function GithubSoftwares {
                     foreach ($process in $processNames) {
                         Get-Process | Where-Object { $_.Name -eq $process } | Stop-Process -Force -ErrorAction SilentlyContinue
                     }
-                    Start-Sleep -Seconds 2  # check every 2 seconds
+                    Start-Sleep -Seconds 2
                 }
             }
 
             # Start the background job for monitoring and stopping processes
             $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
 
-            # Start the installation process for each package and print the status
-            foreach ($package in $configContent.packages.package) {
-                $packageName = $package.id
-                Write-Host "Installing $packageName..." -NoNewline
+            $jsonContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
+            $packages = $jsonContent.Sources.Packages
 
-                # Capture the result of the installation
-                $result = choco install $packageName --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
+            foreach ($pkg in $packages) {
+                $packageName = $pkg.PackageIdentifier
+                Write-Host "Installing $packageName..." -NoNewLine
 
-                # Check the installation result for errors
-                if ($result -like "*The install of $packageName was successful*") {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
+                # Install the packages
+                $result = & winget install $packageName -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
+
+                # Check if the installation was successful
+                if ($LASTEXITCODE -ne 0 -or $result -match "Installer hash does not match" -or $result -match "fail") {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                    # If there was an error, write the output to a log file
-                    $logFile = "C:\${packageName}_choco_install.log"
+                    $wingetWarnings += $packageName
+                    $logFile = "C:\${packageName}_winget_install.log"
                     $result | Out-File -FilePath $logFile -Force
                     Write-Host "[Check the log file at $logFile for details.]"
                 }
+                else {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+
             }
 
             # Once all installations are done, stop the background job
             Stop-Job -Job $job
             Remove-Job -Job $job
 
-            Function Install-VSCodeExtensions {
-                Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
-                Start-Sleep 5
-                $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
-            
-                $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker"
-                $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
-                $design = "pkief.material-icon-theme"
-                $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
-                $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python"
-                $github = "github.vscode-pull-request-github", "github.copilot"
-                $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode"
-                $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux
-            
-                $installed = & $vsCodePath --list-extensions
-            
-                foreach ($vse in $vsextensions) {
-                    if ($installed -contains $vse) {
-                        Write-Host $vse "already installed." -ForegroundColor Gray
-                    }
-                    else {
-                        & $vsCodePath --install-extension $vse *>$null
-                        Start-Sleep -Seconds 3  # Give some time for the extension to install
-                        $updatedInstalled = & $vsCodePath --list-extensions
-                    }
-                }
-            
-                $allExtensionsInstalled = $True
-                foreach ($vse in $vsextensions) {
-                    if (-not ($updatedInstalled -contains $vse)) {
-                        $allExtensionsInstalled = $False
-                        break
-                    }
-                }
-            
-                if ($allExtensionsInstalled) {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                    Write-Host " VSCode's $vse plugin failed to install"
-                }
-            }
-
-            Install-VSCodeExtensions
-
-            # Visual Studio Code json path
-            $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
-
-            # Get json content
-            $jsonContent = @"
-{
-    "workbench.colorTheme": "Visual Studio Dark",
-    "workbench.iconTheme": "material-icon-theme"
-}
-"@
-
-            # Create or rewrite json file
-            Set-Content -Path $settingsPath -Value $jsonContent -Force
         }
         
         InstallSoftwares
@@ -2777,137 +2695,80 @@ Function GithubSoftwares {
                 [string]$programName
             )
         
-            # Search Uninstall logs first
-            $installedProgram = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall, HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like "*$programName*" } | Select-Object -First 1
-        
-            # If Uninstall does not find it in the registry, search in Win32_Product
+            if ($wingetWarnings -contains $programName) {
+                return $true
+            }
+            
+            $installedProgram = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, 
+            HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall, 
+            HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall |
+            Get-ItemProperty | 
+            Where-Object { $_.DisplayName -like "*$programName*" } | 
+            Select-Object -First 1
+            
             if (-not $installedProgram) {
-                $installedProgram = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "*$programName*" } | Select-Object -First 1
+                $installedProgram = Get-AppxPackage | Where-Object { $_.Name -like "*$programName*" } | Select-Object -First 1
             }
-        
-            # If still not found, search with Get-Package
-            if (-not $installedProgram) {
-                $installedProgram = Get-Package | Where-Object { $_.Name -like "*$programName*" } | Select-Object -First 1
-            }
-        
-            # If you still can't find it, check in the Chocolatey lib folder
-            if (-not $installedProgram) {
-                $chocoPaths = Get-ChildItem -Path "C:\ProgramData\chocolatey\lib\" -Directory | Where-Object { $_.Name -like "*$programName*" }
-                if ($chocoPaths) {
-                    return $chocoPaths.Name
-                }
-            }
-        
-            if ($installedProgram) {
-                if ($installedProgram -is [System.Management.Automation.PSCustomObject]) {
-                    return $installedProgram.DisplayName
-                }
-                else {
-                    return $installedProgram.Name
-                }
-            }
-            else {
-                return $null
-            }
+            
+            return $installedProgram -ne $null
         }
-        
-        # Reading packages from .json file
-        $wingetPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
-        $wingetPackages = $wingetPackagesContent.Content | ConvertFrom-Json
 
-        $appsPackagesContent = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
-        $appsPackages = $appsPackagesContent.Content | ConvertFrom-Json
-
-        Function DetectingWriteHost {
-
-            $OSVersion = Get-CimInstance Win32_OperatingSystem
-            if ($OSVersion.Version -like "10*") {
-                Write-Host `n"--------" -ForegroundColor Yellow
-                Write-Host @"
-Detecting programs that cannot be installed with chocolatey...
+        Write-Host `n"--------" -ForegroundColor Yellow
+        Write-Host @"
+Detecting programs that cannot be installed with winget...
 
 "@
-            }
-            else {
-                Write-Host `n"--------" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host @"
-Detecting programs that cannot be installed with chocolatey...
 
-"@
-            }
-        }
+        $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
+        $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
+        $packagesToCheck = $jsonContent.Sources.Packages
+
+        $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
+        [xml]$chocoConfig = Invoke-RestMethod -Uri $chocoAppsConfigUrl
+
+        foreach ($pkg in $packagesToCheck) {
+            $isInstalled = $false
         
-        DetectingWriteHost
-        
-        foreach ($package in $wingetPackages.Sources.Packages) {
-            $installedProgramName = Get-InstalledProgram -programName "$($package.PackageIdentifier)"
-            if ($installedProgramName) {
-                ##
-            }
-            else {
-                # Check if winget is installed
-                try {
-                    $wingetVersion = winget --version 2>&1
+            foreach ($identifier in $pkg.PackageIdentifier) {
+                if (Get-InstalledProgram -programName $identifier) {
+                    $isInstalled = $true
+                    break
                 }
-                catch {
-                    Start-Process ms-windows-store://pdp/?ProductId=9nblggh4nns1
-                    Write-Host "Failed to install with " -NoNewline
-                    Write-Host "winget" -ForegroundColor Red -BackgroundColor Black  -NoNewline
-                    Write-Host " chocolatey."
-                    Write-Host "Installing winget with" -NoNewline
-                    Write-Host " winstore..." -Foregroundcolor Yellow -NoNewline
-                
-                    do {
-                        Start-Sleep -Seconds 2
-                        $wingetInstalled = Get-Command winget -ErrorAction SilentlyContinue
-                    } while ($wingetInstalled -eq $null)
-                    Start-Sleep 2
-                    taskkill /f /im "WinStore.App.exe" *>$null
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-
-                Write-Host "Failed to install with " -NoNewline
-                Write-Host "$($package.PackageIdentifier)" -ForegroundColor Red -BackgroundColor Black  -NoNewline
-                Write-Host " chocolatey."
-
-                # Searching for the full name of this package in winget.json
-                $matchingPackage = $appsPackages.Sources.Packages | Where-Object { $_.PackageIdentifier -like "*$($package.PackageIdentifier)*" }
+            }
         
-                if ($matchingPackage) {
-                    Write-Host "Installing $($matchingPackage.PackageIdentifier) with" -NoNewline
-                    Write-Host " winget..." -Foregroundcolor Yellow -NoNewline
+            if (-not $isInstalled) {
+                foreach ($identifier in $pkg.PackageIdentifier) {
+                    $chocoPackageId = $chocoConfig.packages.package | Where-Object { $_.id -match $identifier } | Select-Object -ExpandProperty id
         
-                    $result = & winget install $($matchingPackage.PackageIdentifier) -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
-        
-                    if ($LASTEXITCODE -ne 0) {
-                        Write-Host "[WARNING]$_" -ForegroundColor Red -BackgroundColor Black
-                        $logFile = "C:\$($matchingPackage.PackageIdentifier)_winget_install.log"
-                        $result | Out-File -FilePath $logFile -Force
-                        Write-Host "[Check the log file at $logFile for details.]"
+                    if ($chocoPackageId) {
+                        Write-Host "Not installed " -NoNewline
+                        Write-Host "$identifier" -ForegroundColor Red -BackgroundColor Black -NoNewline
+                        Write-Host " with winget."
+                        Write-Host "Installing $identifier with" -NoNewLine
+                        Write-Host " chocolatey..." -Foregroundcolor Yellow -NoNewline
+                        $result = choco install $chocoPackageId --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
+                        if ($result -match "Installed" -or $result -match "was successful") {
+                            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                            break
+                        }
+                        else {
+                            Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                            $logFile = "C:\${identifier}_choco_install.log"
+                            $result | Out-File -FilePath $logFile -Force
+                            Write-Host "[Check the log file at $logFile for details.]"
+                        }
                     }
                     else {
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                        ##
                     }
-        
-                }
-                else {
-                    Write-Host "$($package.PackageIdentifier) was not found in winget.json." -ForegroundColor Yellow
                 }
             }
         }
 
-        Function DetectingWriteHostBottom {
+        Write-Host @"
+--------
 
-            $OSVersion = Get-CimInstance Win32_OperatingSystem
-            if ($OSVersion.Version -like "10*") {
-                Write-Host "--------" -ForegroundColor Yellow
-            }
-            else {
-                Write-Host "--------" -ForegroundColor Yellow -BackgroundColor Black
-            }
-        }
-        
-        DetectingWriteHostBottom
+"@
 
         Function Safe-TaskKill {
             param($processName)
@@ -2921,6 +2782,68 @@ Detecting programs that cannot be installed with chocolatey...
         
         Safe-TaskKill "GithubDesktop.exe"
         Safe-TaskKill "Cloudflare WARP.exe"
+        Function Install-VSCodeExtensions {
+            Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
+            Start-Sleep 5
+            $vsCodePath = "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" # for winget installations
+
+            if (-not (Test-Path "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code")) {
+                $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd" # for chocolatey installations
+            }
+        
+            $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker"
+            $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
+            $design = "pkief.material-icon-theme"
+            $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
+            $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python"
+            $github = "github.vscode-pull-request-github", "github.copilot"
+            $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode"
+            $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux
+        
+            $installed = & $vsCodePath --list-extensions
+        
+            foreach ($vse in $vsextensions) {
+                if ($installed -contains $vse) {
+                    Write-Host "$vse already installed." -ForegroundColor Gray
+                }
+                else {
+                    & $vsCodePath --install-extension $vse *>$null
+                    Start-Sleep -Seconds 3  # Give some time for the extension to install
+                    $updatedInstalled = & $vsCodePath --list-extensions
+                }
+            }
+        
+            $allExtensionsInstalled = $True
+            foreach ($vse in $vsextensions) {
+                if (-not ($updatedInstalled -contains $vse)) {
+                    $allExtensionsInstalled = $False
+                    break
+                }
+            }
+        
+            if ($allExtensionsInstalled) {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            else {
+                Write-Host "[INFO] VSCode's $vse plugin failed to install" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+
+        Install-VSCodeExtensions
+
+        # Visual Studio Code json path
+        $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
+
+        # Get json content
+        $jsonContent = @"
+{
+"workbench.colorTheme": "Visual Studio Dark",
+"workbench.iconTheme": "material-icon-theme"
+}
+"@
+
+        # Create or rewrite json file
+        Set-Content -Path $settingsPath -Value $jsonContent -Force
 
         # 7-Zip on PS
         try {
@@ -2936,7 +2859,7 @@ Detecting programs that cannot be installed with chocolatey...
         }
 
         Function Remove-ChromeComponents {
-            Write-Host `n"Disabling and removing Chrome Update services..." -NoNewline
+            Write-Host "Disabling and removing Chrome Update services..." -NoNewline
             $chromeservices = "gupdate", "gupdatem"
             foreach ($service in $chromeservices) {
                 $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
@@ -3286,94 +3209,85 @@ Function UnusedApps {
         # The function is here because programs add themselves to the right click menu after loading
         Function RightClickMenu {
             try {
-                $OSVersion = (Get-WmiObject Win32_OperatingSystem)
-                if ($OSVersion.Caption -Match "Windows 10") {
-                    return
+                Write-Host "Editing the right click menu..." -NoNewline
+                # New PS Drives
+                New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+
+                # Old right click menu
+                $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+                reg.exe add $regPath /f /ve *>$null
+        
+                $contextMenuPaths = @(
+                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo", #remove send to
+                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo", #remove send to
+                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\ModernSharing", #remove share
+                    "HKEY_CLASSES_ROOT\*\shell\pintohomefile", #remove favorites
+                    #remove give access
+                    "HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\Directory\Background\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing",
+                    "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\Sharing",
+                    #remove previous
+                    "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                    "HKEY_CLASSES_ROOT\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                    "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                    "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+                    #remove git
+                    "HKEY_CLASSES_ROOT\Directory\Background\shell\git_gui",
+                    "HKEY_CLASSES_ROOT\Directory\Background\shell\git_shell",
+                    #remove treesize
+                    "HKEY_CLASSES_ROOT\Directory\Background\shell\TreeSize Free",
+                    "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode"
+                )
+        
+                foreach ($path in $contextMenuPaths) {
+                    $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
+                    $cmd = "reg delete `"$regPath`" /f"
+
+                    Invoke-Expression $cmd *>$null
                 }
-                else {
-                    try {
-                        Write-Host "Editing the right click menu for Windows 11..." -NoNewline
-                        # New PS Drives
-                        New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
 
-                        # Old right click menu
-                        $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
-                        reg.exe add $regPath /f /ve *>$null
+                # New hash menu for right click
+                $regpath = "HKEY_CLASSES_ROOT\*\shell\hash"
+                $sha256menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu"
+                $md5menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu"
+
+                reg add $regpath /f *>$null
+                reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f *>$null
+                reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f *>$null
+                reg add "$regpath\shell" /f *>$null
+
+                reg add "$sha256menu" /f *>$null
+                reg add "$sha256menu\command" /f *>$null
+                reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
+
+                $tempOut = [System.IO.Path]::GetTempFileName()
+                $tempErr = [System.IO.Path]::GetTempFileName()
+                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+                Remove-Item $tempOut -ErrorAction Ignore
+                Remove-Item $tempErr -ErrorAction Ignore
+
+                reg add "$md5menu" /f *>$null
+                reg add "$md5menu\command" /f *>$null
+                reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
+
+                $tempOut = [System.IO.Path]::GetTempFileName()
+                $tempErr = [System.IO.Path]::GetTempFileName()
+                Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
+                Remove-Item $tempOut -ErrorAction Ignore
+                Remove-Item $tempErr -ErrorAction Ignore
+
+                # Restart Windows Explorer
+                taskkill /f /im explorer.exe *>$null
+                Start-Sleep 1
+                Start-Process "explorer.exe" -ErrorAction Stop
         
-                        $contextMenuPaths = @(
-                            "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo", #remove send to
-                            "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo", #remove send to
-                            "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\ModernSharing", #remove share
-                            "HKEY_CLASSES_ROOT\*\shell\pintohomefile", #remove favorites
-                            #remove give access
-                            "HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\Sharing",
-                            "HKEY_CLASSES_ROOT\Directory\Background\shellex\ContextMenuHandlers\Sharing",
-                            "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\Sharing",
-                            "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\Sharing",
-                            "HKEY_CLASSES_ROOT\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing",
-                            "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\Sharing",
-                            #remove previous
-                            "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                            "HKEY_CLASSES_ROOT\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                            "HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                            "HKEY_CLASSES_ROOT\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
-                            #remove git
-                            "HKEY_CLASSES_ROOT\Directory\Background\shell\git_gui",
-                            "HKEY_CLASSES_ROOT\Directory\Background\shell\git_shell",
-                            #remove treesize
-                            "HKEY_CLASSES_ROOT\Directory\Background\shell\TreeSize Free",
-                            "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode"
-                        )
-        
-                        foreach ($path in $contextMenuPaths) {
-                            $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
-                            $cmd = "reg delete `"$regPath`" /f"
-
-                            Invoke-Expression $cmd *>$null
-                        }
-
-                        # New hash menu for right click
-                        $regpath = "HKEY_CLASSES_ROOT\*\shell\hash"
-                        $sha256menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu"
-                        $md5menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu"
-
-                        reg add $regpath /f *>$null
-                        reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f *>$null
-                        reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f *>$null
-                        reg add "$regpath\shell" /f *>$null
-
-                        reg add "$sha256menu" /f *>$null
-                        reg add "$sha256menu\command" /f *>$null
-                        reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
-
-                        $tempOut = [System.IO.Path]::GetTempFileName()
-                        $tempErr = [System.IO.Path]::GetTempFileName()
-                        Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
-                        Remove-Item $tempOut -ErrorAction Ignore
-                        Remove-Item $tempErr -ErrorAction Ignore
-
-                        reg add "$md5menu" /f *>$null
-                        reg add "$md5menu\command" /f *>$null
-                        reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
-
-                        $tempOut = [System.IO.Path]::GetTempFileName()
-                        $tempErr = [System.IO.Path]::GetTempFileName()
-                        Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
-                        Remove-Item $tempOut -ErrorAction Ignore
-                        Remove-Item $tempErr -ErrorAction Ignore
-
-                        # Restart Windows Explorer
-                        taskkill /f /im explorer.exe *>$null
-                        Start-Sleep 1
-                        Start-Process "explorer.exe" -ErrorAction Stop
-        
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    }
-                    catch {
-                        Write-Host "[WARNING]: $_" -ForegroundColor Red
-                    }
-                }
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
+
+
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
@@ -3459,40 +3373,34 @@ Function UnusedApps {
 
         # Disable Copilot
         Function DisableCopilot {
-            $OSVersion = (Get-WmiObject Win32_OperatingSystem).Caption
-            if ($OSVersion -Match "Windows 10") {
-                return
+            Write-Host `n"Do you want " -NoNewline
+            Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+            
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Disabling Microsoft Copilot..." -NoNewline
+                    
+                if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
+                    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                }
+                        
+                New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
+                        
+                if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
+                }
+            
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
+                        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Copilot will not be disabled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
-                Write-Host `n"Do you want " -NoNewline
-                Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
-                Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-                $response = Read-Host
-            
-                if ($response -eq 'y' -or $response -eq 'Y') {
-                    Write-Host "Disabling Microsoft Copilot for Windows 11..." -NoNewline
-                    
-                    if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
-                        New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
-                    }
-                        
-                    New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
-                        
-                    if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge")) {
-                        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
-                    }
-            
-                    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
-                        
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                elseif ($response -eq 'n' -or $response -eq 'N') {
-                    Write-Host "[Copilot will not be disabled]" -ForegroundColor Red -BackgroundColor Black
-                }
-                else {
-                    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                    DisableCopilot
-                }
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                DisableCopilot
             }
         }
         
@@ -3758,25 +3666,3 @@ MySettings
 ##########
 #endregion My Settings
 ##########
-
-Function Restart {
-    Write-Host `n"Do you " -NoNewline
-    Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor Black
-    Write-Host "(y/n): " -NoNewline
-    $response = Read-Host
-
-    if ($response -eq 'y' -or $response -eq 'Y') {
-        Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
-
-        cmd.exe /c "shutdown /r /t 0"
-    }
-    elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host("Restart process cancelled") -ForegroundColor Red -BackgroundColor Black
-    }
-    else {
-        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-    }
- 
-}
-
-Restart

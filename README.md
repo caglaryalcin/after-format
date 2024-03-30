@@ -2,7 +2,7 @@
 
 ## Description
 
-If you new formatted your computer on Windows 10 or Windows 11(all versions) you can run this script.
+If you new formatted your computer on Windows 11(all versions) you can run this script.
 
 This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 
@@ -15,10 +15,10 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 - It asks if you want disable windows defender.
 - It asks if you want date format and keyboard layout
 - Ask if you want to add a "startup" task to run at startup (recommended)
-- Get the old classic right-click context menu (for windows 11)
-- Taskbar aligns left (win11)
-- Disabling gallery folder (win11)
-- Desktop button in taskbar is enabled (win11)
+- Get the old classic right-click context menu
+- Taskbar aligns left
+- Disabling gallery folder
+- Desktop button in taskbar is enabled
 - Disabling sync your settings
 - Disabling spotligt
 - Disabling toast and apps notifications on lock screen
@@ -195,9 +195,8 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 > This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
 
 > [!IMPORTANT]  
-> This task runs 5 minutes after Windows starts and is not visible on the screen.
+> startup task > This task starts 3 minutes after the computer is turned on, runs again every 3 hours and performs the following operations.
 
-- Update apps (Updates all applications including windows updates with winget..) with winget
 - Time zone is set to Turkey
 - Language bar is set to appear in the taskbar
 - It does expand for file explorer ribbon
@@ -209,8 +208,12 @@ This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 - Disables unnecessary applications that open on connection
 - It does remove microsoft edge updates in task scheduler
 - It does remove google chrome updates in task scheduler
-- It does enable shot desktop button (w11)
+- It does enable shot desktop button
 - Sync windows localtime
+
+> upgrade-packages > This task runs 3 minutes after the computer is turned on and performs the following operations.
+
+- Updates all applications and packages with winget.
 
 </details>
 
