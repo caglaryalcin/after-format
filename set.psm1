@@ -2876,7 +2876,7 @@ Detecting programs that cannot be installed with winget...
                     }
                     catch {
                         $errorMessage = $_.Exception.Message
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
                     }
         
                     try {
@@ -2885,7 +2885,7 @@ Detecting programs that cannot be installed with winget...
                     }
                     catch {
                         $errorMessage = $_.Exception.Message
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                        Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
                     }
                 }
                 else {
@@ -2900,7 +2900,7 @@ Detecting programs that cannot be installed with winget...
             Select-Object -Last 1
         
             if ($chromeVersion -eq $null) {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING] A valid version of Chrome was not found in the expected directory." -ForegroundColor Red -BackgroundColor Black
             }
             else {
                 $chromeInstallerPath = Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name
