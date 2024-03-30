@@ -1051,12 +1051,12 @@ Function SystemSettings {
             $allSuccessful = $true
 
             try {
-                # LocationAndSensors kayıt defteri anahtarını oluştur
+                # Create LocationAndSensors key
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Force | Out-Null
                 }
             
-                # DisableSensors özelliğini ayarla
+                # Set DisableSensors
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableSensors" -Type DWord -Value 1
             }
             catch {
@@ -2559,6 +2559,9 @@ Function GithubSoftwares {
     if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function choco-install {
+            # Create a directory for logs
+            New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
+
             try {
                 Write-Host `n"Installing chocolatey..." -NoNewline
 
@@ -2672,7 +2675,7 @@ Function GithubSoftwares {
                 if ($LASTEXITCODE -ne 0 -or $result -match "Installer hash does not match" -or $result -match "fail") {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                     $wingetWarnings += $packageName
-                    $logFile = "C:\${packageName}_winget_install.log"
+                    $logFile = "C:\packages-logs\${packageName}_winget_install.log"
                     $result | Out-File -FilePath $logFile -Force
                     Write-Host "[Check the log file at $logFile for details.]"
                 }
@@ -2748,13 +2751,13 @@ Detecting programs that cannot be installed with winget...
                         Write-Host "Installing $identifier with" -NoNewLine
                         Write-Host " chocolatey..." -Foregroundcolor Yellow -NoNewline
                         $result = choco install $chocoPackageId --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
-                        if ($result -like "was successful*") {
+                        if ($result -match "was successful*") {
                             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                             break
                         }
                         else {
                             Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                            $logFile = "C:\${identifier}_choco_install.log"
+                            $logFile = "C:\packages-logs\${identifier}_choco_install.log"
                             $result | Out-File -FilePath $logFile -Force
                             Write-Host "[Check the log file at $logFile for details.]"
                         }
