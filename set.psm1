@@ -2599,38 +2599,38 @@ Function GithubSoftwares {
         $wingetWarnings = @()
         Function InstallSoftwares {
             try {
-                Write-Host "Installing/upgrading winget..." -NoNewline
-                choco install winget --ignore-checksums --force -y *>$null
-            
-                # check winget version
+                # check if winget is installed and if not, install it
                 $wingetVersionOutput = winget --version
                 $wingetVersion = $wingetVersionOutput.Split(' ')[0]
-            
-                # compare winget version with minimum required version
                 $version = [version]$wingetVersion
-                $minimumVersion = [version]"1.2"
+                $minimumVersionForUpgrade = [version]"1.6"
                 $targetVersion = [version]"1.7"
             
-                if ($version -le $minimumVersion) {
-                    Write-Host "[WARNING] The Winget version is old!" -ForegroundColor Red -BackgroundColor Black -NoNewline
-                }
-                elseif ($version -ge $targetVersion) {
+                # If the version is 1.7 or higher, do nothing
+                if ($version -ge $targetVersion) {
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                # If the version is lower than 1.7, upgrade it
+                elseif ($version -le $minimumVersionForUpgrade) {
+                    InstallOrUpdateWinget
                 }
             }
             catch {
-                Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black -NoNewline
-                Write-Host " Error installing/upgrading winget." -ForegroundColor Red
+                # If winget is not installed, install it
+                InstallOrUpdateWinget
+            }
             
-                # check if winget is installed
+            function InstallOrUpdateWinget {
                 try {
-                    $wingetVersionCheck = winget --version
+                    Write-Host "Installing/upgrading winget..." -NoNewline
+                    choco install winget --ignore-checksums --force -y *>$null
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black -NoNewline
-                    Write-Host " winget is not installed." -ForegroundColor Red
+                    Write-Host " Error installing/upgrading winget." -ForegroundColor Red
                 }
-            }            
+            }       
 
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
 
