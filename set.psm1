@@ -2602,12 +2602,80 @@ Function GithubSoftwares {
         $wingetWarnings = @()
         Function InstallSoftwares {
             function InstallOrUpdateWinget {
-                # Install or upgrade winget
+                # Helper function to get winget download URL
+                $GetWingetDownloadUrl = {
+                    param (
+                        [string]$Match
+                    )
+            
+                    $uri = "https://api.github.com/repos/microsoft/winget-cli/releases"
+                    $releases = Invoke-RestMethod -uri $uri -Method Get -ErrorAction stop
+            
+                    foreach ($release in $releases) {
+                        if ($release.name -match "preview") {
+                            continue
+                        }
+                        $data = $release.assets | Where-Object name -Match $Match
+                        if ($data) {
+                            return $data.browser_download_url
+                        }
+                    }
+            
+                    Write-Debug "Falling back to the latest release..."
+                    $latestRelease = $releases | Select-Object -First 1
+                    $data = $latestRelease.assets | Where-Object name -Match $Match
+                    return $data.browser_download_url
+                }
+            
+                # Helper function to generate a temporary file path
+                $GenerateTemp = {
+                    $tempPath = [System.IO.Path]::GetTempPath()
+                    $tempFile = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
+                    $null = New-Item -Path $tempFile -ItemType File -Force
+                    return $tempFile
+                }
+            
+                # Helper function to download a file
+                $DownloadFile = {
+                    param (
+                        [string]$Url,
+                        [string]$Path
+                    )
+                    Invoke-WebRequest -Uri $Url -OutFile $Path
+                }
+            
                 try {
                     Write-Host "Installing/upgrading winget..." -NoNewline
-                    choco install winget --ignore-checksums --force -y *>$null
-                    Start-Sleep 2
-                    choco install microsoft-vclibs --ignore-checksums --force -y *>$null
+            
+                    # Set progress preference for all downloads
+                    $OriginalProgressPreference = $Global:ProgressPreference
+                    $Global:ProgressPreference = 'SilentlyContinue'
+            
+                    # Download VCLibs
+                    $VCLibs_Path = & $GenerateTemp
+                    $VCLibs_Url = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+                    & $DownloadFile $VCLibs_Url $VCLibs_Path
+            
+                    # Download UI.Xaml
+                    $UIXaml_Path = & $GenerateTemp
+                    $UIXaml_Url = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.arm.appx"
+                    & $DownloadFile $UIXaml_Url $UIXaml_Path
+            
+                    # Download winget license
+                    $winget_license_path = & $GenerateTemp
+                    $winget_license_url = & $GetWingetDownloadUrl "License1.xml"
+                    & $DownloadFile $winget_license_url $winget_license_path
+            
+                    # Download winget
+                    $winget_path = & $GenerateTemp
+                    $winget_url = "https://aka.ms/getwinget"
+                    & $DownloadFile $winget_url $winget_path
+            
+                    # Restore original progress preference
+                    $Global:ProgressPreference = $OriginalProgressPreference
+            
+                    # Install everything
+                    Add-AppxProvisionedPackage -Online -PackagePath $winget_path -DependencyPackagePath $UIXaml_Path, $VCLibs_Path -LicensePath $winget_license_path | Out-Null
                     Start-Sleep 10 # waiting for winget command to be available
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
