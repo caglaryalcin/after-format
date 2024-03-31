@@ -2897,19 +2897,17 @@ Detecting programs that cannot be installed with winget...
                 "C:\Program Files\Google\Chrome\Application\",
                 "$env:userprofile\AppData\Local\Google\Chrome\Application"
             )
-        
+
             $isSuccess = $false
-        
+
             foreach ($chromeDirectory in $chromeDirectories) {
                 $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory -ErrorAction SilentlyContinue | 
                 Where-Object { $_.Name -match '^\d+\.\d+\.\d+\.\d+$' } | 
-                Sort-Object { [Version]($_.Name) } | 
-                Select-Object -Last 1
-        
+                Sort-Object { [Version]($_.Name) } -Descending | 
+                Select-Object -First 1
+
                 if ($chromeVersion -eq $null) {
-                    if (-not $isSuccess) {
-                        Write-Host "[WARNING] A valid version of Chrome was not found in the expected directory: $chromeDirectory" -ForegroundColor Red -BackgroundColor Black
-                    }
+                    continue
                 }
                 else {
                     $chromeInstallerPath = Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name
@@ -2920,6 +2918,7 @@ Detecting programs that cannot be installed with winget...
                         Set-Location c:\
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                         $isSuccess = $true
+                        break
                     }
                     else {
                         if (-not $isSuccess) {
@@ -2928,7 +2927,7 @@ Detecting programs that cannot be installed with winget...
                     }
                 }
             }
-        
+
             if (-not $isSuccess) {
                 Write-Host "[WARNING] A valid version of Chrome was not found." -ForegroundColor Red -BackgroundColor Black
             }
