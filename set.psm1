@@ -2561,6 +2561,9 @@ Function GithubSoftwares {
         $wingetWarnings = @()
         Function InstallSoftwares {
             function InstallOrUpdateWinget {
+                # Create a directory for logs
+                New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
+            
                 # Helper function to get winget download URL
                 $GetWingetDownloadUrl = {
                     param (
@@ -2754,9 +2757,6 @@ Detecting programs that cannot be installed with winget...
 
 "@
         Function choco-install {
-            # Create a directory for logs
-            New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
-
             try {
                 Write-Host "Installing chocolatey..." -NoNewline
 
