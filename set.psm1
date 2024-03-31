@@ -3434,7 +3434,7 @@ Function UnusedApps {
                 $Global:ProgressPreference = 'SilentlyContinue'
                 try {
                     # Stop OneDrive and Explorer processes
-                    taskkill /F /IM OneDrive.exe /IM explorer.exe /T
+                    taskkill /F /IM OneDrive.exe /IM explorer.exe /T *>$null
 
                     # Uninstall OneDrive
                     $OneDriveSetupPaths = @(
@@ -3480,6 +3480,7 @@ Function UnusedApps {
                     
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 
+                    Start-Process "explorer.exe" -NoNewWindow
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
                 }
@@ -3600,7 +3601,7 @@ Function UnusedApps {
                 
                     # Final check if Edge is still installed
                     if (!(Get-Process "msedge" -ErrorAction SilentlyContinue)) {
-                        Start-Process explorer.exe
+                        Start-Process explorer.exe -NoNewWindow
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     else {
