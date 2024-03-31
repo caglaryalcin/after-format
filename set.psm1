@@ -2604,7 +2604,7 @@ Function GithubSoftwares {
                 }
             
                 try {
-                    Write-Host "Installing/upgrading winget..." -NoNewline
+                    Write-Host `n"Installing/upgrading winget..." -NoNewline
             
                     # Set progress preference for all downloads
                     $OriginalProgressPreference = $Global:ProgressPreference
@@ -2758,7 +2758,7 @@ Detecting programs that cannot be installed with winget...
             New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
 
             try {
-                Write-Host `n"Installing chocolatey..." -NoNewline
+                Write-Host "Installing chocolatey..." -NoNewline
 
                 # Disable Chocolatey's first run customization
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
