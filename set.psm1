@@ -2618,9 +2618,10 @@ Function GithubSoftwares {
             }
             
             try {
-                # check if winget is installed and if not, install it
-                $wingetVersionOutput = winget --version
-                $wingetVersion = $wingetVersionOutput.Split(' ')[0]
+                # Check if winget is installed and if not, install it
+                $wingetVersionOutput = & winget --version
+                # Since the version string starts with "v", we'll remove it before splitting
+                $wingetVersion = $wingetVersionOutput.TrimStart('v').Split(' ')[0]
                 $version = [version]$wingetVersion
                 $minimumVersionForUpgrade = [version]"1.6"
                 $targetVersion = [version]"1.7"
