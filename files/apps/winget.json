@@ -44,8 +44,7 @@
         {"PackageIdentifier": "TechPowerUp.NVCleanstall"},
         {"PackageIdentifier": "Rufus.Rufus"},
         {"PackageIdentifier": "HandBrake.HandBrake"},
-        {"PackageIdentifier": "Microsoft.EdgeWebView2Runtime"},
-        {"PackageIdentifier": "Microsoft.VCLibs.Desktop.14"}
+        {"PackageIdentifier": "Microsoft.EdgeWebView2Runtime"}
       ]
     }
   ]

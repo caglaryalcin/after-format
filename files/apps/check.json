@@ -46,8 +46,7 @@
         {"PackageIdentifier": ["rufus"]},
         {"PackageIdentifier": ["regshot"]},
         {"PackageIdentifier": ["handbrake"]},
-        {"PackageIdentifier": ["webview2"]},
-        {"PackageIdentifier": ["vclibs"]}
+        {"PackageIdentifier": ["webview2"]}
       ]
     }
   ]

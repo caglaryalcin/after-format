@@ -2602,9 +2602,12 @@ Function GithubSoftwares {
         $wingetWarnings = @()
         Function InstallSoftwares {
             function InstallOrUpdateWinget {
+                # Install or upgrade winget
                 try {
                     Write-Host "Installing/upgrading winget..." -NoNewline
                     choco install winget --ignore-checksums --force -y *>$null
+                    Start-Sleep 2
+                    choco install microsoft-vclibs --ignore-checksums --force -y *>$null
                     Start-Sleep 10 # waiting for winget command to be available
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
