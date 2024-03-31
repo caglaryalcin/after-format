@@ -2558,47 +2558,6 @@ Function GithubSoftwares {
     $response = Read-Host
     if ($response -eq 'y' -or $response -eq 'Y') {
 
-        Function choco-install {
-            # Create a directory for logs
-            New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
-
-            try {
-                Write-Host `n"Installing chocolatey..." -NoNewline
-
-                # Disable Chocolatey's first run customization
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 1 -Type DWord
-
-                # Install Chocolatey
-                Set-ExecutionPolicy Bypass -Scope Process -Force
-                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-                iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
-                Start-Sleep 10
-
-                # Check if Chocolatey is installed
-                $chocoExecutablePath = Join-Path -Path 'C:\ProgramData\chocolatey\bin' -ChildPath 'choco.exe'
-                if (Test-Path -Path $chocoExecutablePath) {
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    $errorMessage = "Chocolatey installation failed or Chocolatey is not available in PATH."
-                    Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
-                    throw $errorMessage
-                }
-
-                # Disable -y requirement for all packages
-                choco feature enable -n allowGlobalConfirmation *>$null
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-
-        }
-        
-        choco-install
-
         $wingetWarnings = @()
         Function InstallSoftwares {
             function InstallOrUpdateWinget {
@@ -2794,6 +2753,46 @@ Function GithubSoftwares {
 Detecting programs that cannot be installed with winget...
 
 "@
+        Function choco-install {
+            # Create a directory for logs
+            New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
+
+            try {
+                Write-Host `n"Installing chocolatey..." -NoNewline
+
+                # Disable Chocolatey's first run customization
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 1 -Type DWord
+
+                # Install Chocolatey
+                Set-ExecutionPolicy Bypass -Scope Process -Force
+                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
+                Start-Sleep 10
+
+                # Check if Chocolatey is installed
+                $chocoExecutablePath = Join-Path -Path 'C:\ProgramData\chocolatey\bin' -ChildPath 'choco.exe'
+                if (Test-Path -Path $chocoExecutablePath) {
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                else {
+                    $errorMessage = "Chocolatey installation failed or Chocolatey is not available in PATH."
+                    Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
+                    throw $errorMessage
+                }
+
+                # Disable -y requirement for all packages
+                choco feature enable -n allowGlobalConfirmation *>$null
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+
+        }
+
+        choco-install
 
         $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
         $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
