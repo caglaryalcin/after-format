@@ -2745,10 +2745,10 @@ Detecting programs that cannot be installed with winget...
                     $chocoPackageId = $chocoConfig.packages.package | Where-Object { $_.id -match $identifier } | Select-Object -ExpandProperty id
         
                     if ($chocoPackageId) {
-                        Write-Host "Not installed " -NoNewline
                         Write-Host "$identifier" -ForegroundColor Red -BackgroundColor Black -NoNewline
-                        Write-Host " with winget."
-                        Write-Host "Installing $identifier with" -NoNewLine
+                        Write-Host " not installed" -NoNewline
+                        Write-Host " with winget." -NoNewline
+                        Write-Host "Trying with" -NoNewLine
                         Write-Host " chocolatey..." -Foregroundcolor Yellow -NoNewline
                         $result = choco install $chocoPackageId --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
                         if ($result -match "was successful*") {
@@ -2870,7 +2870,6 @@ Detecting programs that cannot be installed with winget...
         
                 if ($serviceObject) {
                     if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
-                        # The service is already stopped and disabled, so there is no need to do anything.
                         continue
                     }
         
@@ -2892,32 +2891,46 @@ Detecting programs that cannot be installed with winget...
                         Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
                     }
                 }
+            }
+        
+            $chromeDirectories = @(
+                "C:\Program Files\Google\Chrome\Application\",
+                "$env:userprofile\AppData\Local\Google\Chrome\Application"
+            )
+        
+            $isSuccess = $false
+        
+            foreach ($chromeDirectory in $chromeDirectories) {
+                $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory -ErrorAction SilentlyContinue | 
+                Where-Object { $_.Name -match '^\d+\.\d+\.\d+\.\d+$' } | 
+                Sort-Object { [Version]($_.Name) } | 
+                Select-Object -Last 1
+        
+                if ($chromeVersion -eq $null) {
+                    if (-not $isSuccess) {
+                        Write-Host "[WARNING] A valid version of Chrome was not found in the expected directory: $chromeDirectory" -ForegroundColor Red -BackgroundColor Black
+                    }
+                }
                 else {
-                    # The service is not available, so there is no need to do anything.
+                    $chromeInstallerPath = Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name
+                    $installerDirectory = Join-Path -Path $chromeInstallerPath -ChildPath "Installer"
+                    if (Test-Path $installerDirectory) {
+                        Set-Location -Path $installerDirectory
+                        Remove-Item -Path chrmstp.exe -Recurse -ErrorAction SilentlyContinue
+                        Set-Location c:\
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                        $isSuccess = $true
+                    }
+                    else {
+                        if (-not $isSuccess) {
+                            Write-Host "[INFO]: No Installer directory found in $chromeInstallerPath" -ForegroundColor Yellow
+                        }
+                    }
                 }
             }
         
-            $chromeDirectory = "C:\Program Files\Google\Chrome\Application\"
-            $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory -ErrorAction SilentlyContinue | 
-            Where-Object { $_.Name -match '^1\d+' } | 
-            Sort-Object { [Version]($_.Name) } | 
-            Select-Object -Last 1
-        
-            if ($chromeVersion -eq $null) {
-                Write-Host "[WARNING] A valid version of Chrome was not found in the expected directory." -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                $chromeInstallerPath = Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name
-                $installerDirectory = Join-Path -Path $chromeInstallerPath -ChildPath "Installer"
-                if (Test-Path $installerDirectory) {
-                    Set-Location -Path $installerDirectory
-                    Remove-Item -Path chrmstp.exe -Recurse -ErrorAction SilentlyContinue
-                    Set-Location c:\
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-                else {
-                    Write-Host "[INFO]: $_" -ForegroundColor Yellow
-                }
+            if (-not $isSuccess) {
+                Write-Host "[WARNING] A valid version of Chrome was not found." -ForegroundColor Red -BackgroundColor Black
             }
         }
         
@@ -3422,7 +3435,8 @@ Function UnusedApps {
                 $Global:ProgressPreference = 'SilentlyContinue'
                 try {
                     # Stop OneDrive and Explorer processes
-                    Stop-Process -Name "OneDrive", "explorer" -Force -ErrorAction SilentlyContinue
+                    taskkill /F /IM OneDrive.exe /IM explorer.exe /T
+
                     # Uninstall OneDrive
                     $OneDriveSetupPaths = @(
                         "$env:systemroot\System32\OneDriveSetup.exe",
