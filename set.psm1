@@ -2751,7 +2751,7 @@ Function GithubSoftwares {
             return $installedProgram -ne $null
         }
 
-        Write-Host `n"--------" -ForegroundColor Yellow
+        Write-Host `n"----------------" -ForegroundColor Yellow
         Write-Host @"
 Detecting programs that cannot be installed with winget...
 
@@ -2841,7 +2841,7 @@ Detecting programs that cannot be installed with winget...
         }
 
         Write-Host @"
---------
+----------------
 
 "@
 
