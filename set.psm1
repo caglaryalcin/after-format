@@ -2718,6 +2718,9 @@ Detecting programs that cannot be installed with winget...
 
         choco-install
 
+        # Create a directory for logs
+        New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
+
         $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
         $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
         $packagesToCheck = $jsonContent.Sources.Packages
