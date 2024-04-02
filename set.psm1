@@ -2654,7 +2654,7 @@ Function GithubSoftwares {
 
             # check other paths
             $paths = @(
-                'C:\ProgramData\chocolatey\bin\',
+                'C:\programdata\chocolatey\lib',
                 'C:\Program Files (x86)\',
                 'C:\Program Files\'
             )
