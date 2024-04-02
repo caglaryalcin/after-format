@@ -2708,7 +2708,7 @@ Detecting programs that cannot be installed with winget...
                 choco feature enable -n allowGlobalConfirmation *>$null
 
                 # Install WebView2 Runtime
-                choco install webview2-runtime --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
+                choco install webview2-runtime --ignore-checksums --force -y -Verbose -Timeout 0 *>$null | Out-String
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
