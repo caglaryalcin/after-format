@@ -43,8 +43,7 @@
         {"PackageIdentifier": "WinFsp.WinFsp"},
         {"PackageIdentifier": "TechPowerUp.NVCleanstall"},
         {"PackageIdentifier": "Rufus.Rufus"},
-        {"PackageIdentifier": "HandBrake.HandBrake"},
-        {"PackageIdentifier": "Microsoft.EdgeWebView2Runtime"}
+        {"PackageIdentifier": "HandBrake.HandBrake"}
       ]
     }
   ]

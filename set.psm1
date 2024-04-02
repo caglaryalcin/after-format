@@ -2560,120 +2560,19 @@ Function GithubSoftwares {
 
         $wingetWarnings = @()
         Function InstallSoftwares {
-            function InstallOrUpdateWinget {
-                # Create a directory for logs
-                New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
-            
-                # Helper function to get winget download URL
-                $GetWingetDownloadUrl = {
-                    param (
-                        [string]$Match
-                    )
-            
-                    $uri = "https://api.github.com/repos/microsoft/winget-cli/releases"
-                    $releases = Invoke-RestMethod -uri $uri -Method Get -ErrorAction stop
-            
-                    foreach ($release in $releases) {
-                        if ($release.name -match "preview") {
-                            continue
-                        }
-                        $data = $release.assets | Where-Object name -Match $Match
-                        if ($data) {
-                            return $data.browser_download_url
-                        }
-                    }
-            
-                    Write-Debug "Falling back to the latest release..."
-                    $latestRelease = $releases | Select-Object -First 1
-                    $data = $latestRelease.assets | Where-Object name -Match $Match
-                    return $data.browser_download_url
-                }
-            
-                # Helper function to generate a temporary file path
-                $GenerateTemp = {
-                    $tempPath = [System.IO.Path]::GetTempPath()
-                    $tempFile = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
-                    $null = New-Item -Path $tempFile -ItemType File -Force
-                    return $tempFile
-                }
-            
-                # Helper function to download a file
-                $DownloadFile = {
-                    param (
-                        [string]$Url,
-                        [string]$Path
-                    )
-                    Invoke-WebRequest -Uri $Url -OutFile $Path
-                }
-            
-                try {
-                    Write-Host `n"Installing/upgrading winget..." -NoNewline
-            
-                    # Set progress preference for all downloads
-                    $OriginalProgressPreference = $Global:ProgressPreference
-                    $Global:ProgressPreference = 'SilentlyContinue'
-            
-                    # Download VCLibs
-                    $VCLibs_Path = & $GenerateTemp
-                    $VCLibs_Url = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
-                    & $DownloadFile $VCLibs_Url $VCLibs_Path
-            
-                    # Download UI.Xaml
-                    $UIXaml_Path = & $GenerateTemp
-                    $UIXaml_Url = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.arm64.appx"
-                    & $DownloadFile $UIXaml_Url $UIXaml_Path
-            
-                    # Download winget license
-                    $winget_license_path = & $GenerateTemp
-                    $winget_license_url = & $GetWingetDownloadUrl "License1.xml"
-                    & $DownloadFile $winget_license_url $winget_license_path
-            
-                    # Download winget
-                    $winget_path = & $GenerateTemp
-                    $winget_url = "https://aka.ms/getwinget"
-                    & $DownloadFile $winget_url $winget_path
-            
-                    # Restore original progress preference
-                    $Global:ProgressPreference = $OriginalProgressPreference
-            
-                    # Install everything
-                    Add-AppxProvisionedPackage -Online -PackagePath $winget_path -DependencyPackagePath $UIXaml_Path, $VCLibs_Path -LicensePath $winget_license_path | Out-Null
-                    Start-Sleep 10 # waiting for winget command to be available
-                }
-                catch {
-                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black -NoNewline
-                    Write-Host " Error installing/upgrading winget." -ForegroundColor Red
-                }
-            }
 
+            # I now use asheroto's https://github.com/asheroto/winget-install repo to install winget
+            Function InstallOrUpdateWinget {
+                Write-Host `n"Installing/upgrading winget..." -NoNewline
+                Set-ExecutionPolicy RemoteSigned -Force -Scope CurrentUser
+                Install-PackageProvider -Name "NuGet" -Force *>$null
+                Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+                Install-Script winget-install -Force
+                winget-install -Force -wait *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            
             InstallOrUpdateWinget
-            Start-Sleep -Seconds 20
-
-            while ($true) {
-                try {
-                    # Check if winget is installed and if not, install it
-                    $wingetVersionOutput = & winget --version
-                    # Since the version string starts with "v", we'll remove it before splitting
-                    $wingetVersion = $wingetVersionOutput.TrimStart('v').Split(' ')[0]
-                    $version = [version]$wingetVersion
-                    $minimumVersionForUpgrade = [version]"1.6"
-                    $targetVersion = [version]"1.7"
-        
-                    # If the version is 1.7 or higher, break the loop
-                    if ($version -ge $targetVersion) {
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                        break
-                    }
-                    # If the version is lower than 1.7, check if error occurred during command execution
-                    elseif ($version -le $minimumVersionForUpgrade) {
-                        Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                    }
-                }
-                catch {
-                    # If winget is not installed or error occurred, install it
-                    Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                }
-            }
 
             $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
 
@@ -2752,6 +2651,23 @@ Function GithubSoftwares {
             if (-not $installedProgram) {
                 $installedProgram = Get-AppxPackage | Where-Object { $_.Name -like "*$programName*" } | Select-Object -First 1
             }
+
+            # check other paths
+            $paths = @(
+                'C:\ProgramData\chocolatey\bin\',
+                'C:\Program Files (x86)\',
+                'C:\Program Files\'
+            )
+    
+            foreach ($path in $paths) {
+                if (-not $installedProgram) {
+                    $chocoPrograms = Get-ChildItem -Path $path -Filter "$programName*" -ErrorAction SilentlyContinue
+                    if ($chocoPrograms -ne $null -and $chocoPrograms.Count -gt 0) {
+                        $installedProgram = $true
+                        break
+                    }
+                }
+            }
             
             return $installedProgram -ne $null
         }
@@ -2790,6 +2706,9 @@ Detecting programs that cannot be installed with winget...
 
                 # Disable -y requirement for all packages
                 choco feature enable -n allowGlobalConfirmation *>$null
+
+                # Install WebView2 Runtime
+                choco install webview2-runtime --ignore-checksums --force -y -Verbose -Timeout 0 2>&1 | Out-String
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
