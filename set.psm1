@@ -2709,9 +2709,6 @@ Detecting programs that cannot be installed with winget...
 
                 # Disable -y requirement for all packages
                 choco feature enable -n allowGlobalConfirmation *>$null
-
-                # Install WebView2 Runtime
-                choco install webview2-runtime --ignore-checksums --force -y -Verbose -Timeout 0 *>$null | Out-String
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -2979,6 +2976,25 @@ Detecting programs that cannot be installed with winget...
         catch {
             Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
         }
+
+        Function Webview2 {
+        $uri = "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/2cc5ac14-6d07-40e7-8a0e-e089fbdc60e9/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+        $outfile = "c:\webview2.exe"
+
+        # Download webview2
+        $OriginalProgressPreference = $Global:ProgressPreference
+        $Global:ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri $uri -Outfile $outfile
+
+        # Install webview2
+        Start-Process $outfile -ArgumentList "/silent","/install" -Wait
+
+        # Remove downloaded file
+        Remove-Item $outfile -Recurse -ErrorAction SilentlyContinue
+
+        }
+        
+        Webview2
         
     }
 
