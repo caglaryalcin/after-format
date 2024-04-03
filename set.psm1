@@ -156,6 +156,7 @@ Function SystemSettings {
                     # Restart Windows Explorer
                     taskkill /f /im explorer.exe *>$null
                     Start-Process "explorer.exe" -NoNewWindow
+                    Start-Sleep 4
         
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
                 }
@@ -3478,6 +3479,7 @@ Function UnusedApps {
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 
                     Start-Process "explorer.exe" -NoNewWindow
+                    Start-Sleep 4
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
                 }
@@ -3599,6 +3601,7 @@ Function UnusedApps {
                     # Final check if Edge is still installed
                     if (!(Get-Process "msedge" -ErrorAction SilentlyContinue)) {
                         Start-Process explorer.exe -NoNewWindow
+                        Start-Sleep 4
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
                     else {
@@ -3628,7 +3631,6 @@ Function UnusedApps {
         }
         
         UninstallEdge
-
                 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
