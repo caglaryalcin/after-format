@@ -332,7 +332,7 @@ Function SystemSettings {
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "upgrade-packages"
-                $delay = "PT5M"  # 5 minutes delay
+                $delay = "PT1M"  # 1 minutes delay
                 $trigger.Delay = $delay
 
                 Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description *>$null
@@ -343,7 +343,7 @@ Function SystemSettings {
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "startup"
-                $delay = "PT3M" # 3 minutes delay
+                $delay = "PT5M" # 5 minutes delay
                 $trigger.Delay = $delay
 
                 $settings = New-ScheduledTaskSettingsSet -Hidden:$true
