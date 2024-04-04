@@ -45,7 +45,8 @@
         {"PackageIdentifier": ["nvidia"]},
         {"PackageIdentifier": ["rufus"]},
         {"PackageIdentifier": ["regshot"]},
-        {"PackageIdentifier": ["handbrake"]}
+        {"PackageIdentifier": ["handbrake"]},
+        {"PackageIdentifier": ["runtime"]}
       ]
     }
   ]

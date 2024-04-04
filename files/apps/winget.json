@@ -43,7 +43,10 @@
         {"PackageIdentifier": "WinFsp.WinFsp"},
         {"PackageIdentifier": "TechPowerUp.NVCleanstall"},
         {"PackageIdentifier": "Rufus.Rufus"},
-        {"PackageIdentifier": "HandBrake.HandBrake"}
+        {"PackageIdentifier": "HandBrake.HandBrake"},
+        {"PackageIdentifier": "Rem0o.FanControl"},
+        {"PackageIdentifier": "Microsoft.DotNet.DesktopRuntime.8"},
+        {"PackageIdentifier": "Google.PlayGames.Beta"}
       ]
     }
   ]
