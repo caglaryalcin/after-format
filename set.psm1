@@ -17,6 +17,11 @@ Function Priority {
 
 Priority
 
+Function Silent {
+    $OriginalProgressPreference = $Global:ProgressPreference
+    $Global:ProgressPreference = 'SilentlyContinue'
+}
+
 ##########
 #endregion Priority
 ##########
@@ -2982,8 +2987,7 @@ Detecting programs that cannot be installed with winget...
         $outfile = "c:\webview2.exe"
 
         # Download webview2
-        $OriginalProgressPreference = $Global:ProgressPreference
-        $Global:ProgressPreference = 'SilentlyContinue'
+        Silent #silently
         Invoke-WebRequest -Uri $uri -Outfile $outfile
 
         # Install webview2
@@ -3067,8 +3071,7 @@ Function UnusedApps {
         
             $installedApps = Get-AppxPackage -AllUsers
             
-            $OriginalProgressPreference = $Global:ProgressPreference
-            $Global:ProgressPreference = 'SilentlyContinue'
+            Silent #silently
             
             foreach ($package in $UninstallAppxPackages) {
                 $app = $installedApps | Where-Object { $_.Name -like $package }
@@ -3102,8 +3105,7 @@ Function UnusedApps {
         Function UninstallMediaPlayer {
             Write-Host `n"Uninstalling Windows Media Player..." -NoNewline
             try {
-                $OriginalProgressPreference = $Global:ProgressPreference
-                $Global:ProgressPreference = 'SilentlyContinue'
+                Silent #silently
                 Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WindowsMediaPlayer" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
                 Get-WindowsCapability -Online | Where-Object { $_.Name -like "Media.WindowsMediaPlayer*" } | Remove-WindowsCapability -Online | Out-Null
             }
@@ -3119,8 +3121,7 @@ Function UnusedApps {
         Function UninstallWorkFolders {
             Write-Host "Uninstalling Work Folders Client..." -NoNewline
             try {
-                $OriginalProgressPreference = $Global:ProgressPreference
-                $Global:ProgressPreference = 'SilentlyContinue'
+                Silent #silently
                 Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "WorkFolders-Client" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
             }
             catch {
@@ -3163,8 +3164,7 @@ Function UnusedApps {
         Function UninstallFaxAndScan {
             Write-Host "Uninstalling Windows Fax and Scan Services..." -NoNewline
             try {
-                $OriginalProgressPreference = $Global:ProgressPreference
-                $Global:ProgressPreference = 'SilentlyContinue'
+                Silent #silently
                 Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "FaxServicesClientPackage" } | Disable-WindowsOptionalFeature -Online -NoRestart -WarningAction SilentlyContinue | Out-Null
                 Get-WindowsCapability -Online | Where-Object { $_.Name -like "Print.Fax.Scan*" } | Remove-WindowsCapability -Online | Out-Null
             }
@@ -3444,8 +3444,7 @@ Function UnusedApps {
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Microsoft OneDrive..." -NoNewline
-                $OriginalProgressPreference = $Global:ProgressPreference
-                $Global:ProgressPreference = 'SilentlyContinue'
+                Silent #silently
                 try {
                     # Stop OneDrive and Explorer processes
                     taskkill /F /IM OneDrive.exe /IM explorer.exe /T *>$null
@@ -3550,8 +3549,7 @@ Function UnusedApps {
                 
                     $uninstallRegKey = $microsoft.OpenSubKey('Windows\CurrentVersion\Uninstall\Microsoft Edge')
                     $uninstallString = $uninstallRegKey.GetValue('UninstallString') + ' --force-uninstall'
-                    $OriginalProgressPreference = $Global:ProgressPreference
-                    $Global:ProgressPreference = 'SilentlyContinue'
+                    Silent #silently
                     Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
                 
                     $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
