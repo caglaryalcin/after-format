@@ -2983,18 +2983,18 @@ Detecting programs that cannot be installed with winget...
         }
 
         Function Webview2 {
-        $uri = "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/2cc5ac14-6d07-40e7-8a0e-e089fbdc60e9/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
-        $outfile = "c:\webview2.exe"
+            $uri = "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/2cc5ac14-6d07-40e7-8a0e-e089fbdc60e9/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+            $outfile = "c:\webview2.exe"
 
-        # Download webview2
-        Silent #silently
-        Invoke-WebRequest -Uri $uri -Outfile $outfile
+            # Download webview2
+            Silent #silently
+            Invoke-WebRequest -Uri $uri -Outfile $outfile
 
-        # Install webview2
-        Start-Process $outfile -ArgumentList "/silent","/install" -Wait
+            # Install webview2
+            Start-Process $outfile -ArgumentList "/silent", "/install" -Wait
 
-        # Remove downloaded file
-        Remove-Item $outfile -Recurse -ErrorAction SilentlyContinue
+            # Remove downloaded file
+            Remove-Item $outfile -Recurse -ErrorAction SilentlyContinue
 
         }
         
@@ -3501,9 +3501,7 @@ Function UnusedApps {
                 catch {
                     Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                 }
-                finally {
-                    $Global:ProgressPreference = $OriginalProgressPreference
-                }
+                
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
                 Write-Host "[Windows OneDrive will not be deleted]" -ForegroundColor Red -BackgroundColor Black
