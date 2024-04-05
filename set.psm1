@@ -3307,6 +3307,20 @@ Function UnusedApps {
         
         RightClickMenu
 
+        Function DisableWidgets {
+            Write-Host "Disabling Windows Widgets..." -NoNewline
+            try {
+                winget uninstall "Windows web experience Pack" *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } 
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            
+        }
+
+        DisableWidgets
+
         # Remove Tasks in Task Scheduler
         Function RemoveTasks {
             $description = @"
