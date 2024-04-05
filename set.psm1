@@ -545,24 +545,6 @@ Function SystemSettings {
         
         DisableBingSearchExtension
 
-        #Default Photo Viewer Old
-        Function DefaultPhotoViewer {
-            Write-Host "Default Old Photo Viewer..." -NoNewline
-            $OldPhotoViewer = ".bmp", ".dng", ".ico", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".raw"
-        
-            foreach ($extension in $OldPhotoViewer) {
-                try {
-                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations" -Name $extension -Type String -Value "PhotoViewer.FileAssoc.Tiff" -ErrorAction Stop
-                }
-                catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                }
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-        
-        DefaultPhotoViewer
-
         # Set Dark Mode for Applications
         Function SetAppsDarkMode {
             Write-Host "Setting Dark Mode for Applications..." -NoNewline
