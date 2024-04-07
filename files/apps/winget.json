@@ -25,7 +25,6 @@
         {"PackageIdentifier": "VideoLAN.VLC"},
         {"PackageIdentifier": "JAMSoftware.TreeSize.Free"},
         {"PackageIdentifier": "Ghisler.TotalCommander"},
-        {"PackageIdentifier": "WiresharkFoundation.Wireshark"},
         {"PackageIdentifier": "DelugeTeam.Deluge"},
         {"PackageIdentifier": "dbeaver.dbeaver"},
         {"PackageIdentifier": "Cryptomator.Cryptomator"},

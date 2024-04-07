@@ -25,7 +25,6 @@
         {"PackageIdentifier": ["VLC"]},
         {"PackageIdentifier": ["TreeSize"]},
         {"PackageIdentifier": ["Commander"]},
-        {"PackageIdentifier": ["Wireshark"]},
         {"PackageIdentifier": ["Deluge"]},
         {"PackageIdentifier": ["dbeaver"]},
         {"PackageIdentifier": ["Cryptomator"]},
