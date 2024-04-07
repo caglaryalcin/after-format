@@ -177,6 +177,9 @@ DisableStartupApps
 # Remove Edge Updates
 
 Function RemoveEdgeUpdates {
+    # Remove Edge lnk file
+    Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
     # Registry keys and files to remove
     $registryPaths = @(
         "HKLM:\SYSTEM\CurrentControlSet\Services\edgeupdate",
