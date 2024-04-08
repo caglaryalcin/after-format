@@ -486,6 +486,7 @@ Function SystemSettings {
             try {
                 Set-ItemProperty -Path $locksreen1 -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
                 Set-ItemProperty -Path $locksreen2 -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
+                Set-ItemProperty -Path $locksreen2 -Name "ToastEnabled" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
