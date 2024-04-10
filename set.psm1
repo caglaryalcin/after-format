@@ -1733,6 +1733,22 @@ Function SystemSettings {
         
         EnableShowDesktop
 
+        Function UnpinQuickAccess {
+            Write-Host "Unpinning Quick Access from Taskbar..." -NoNewline
+            try {
+                $quickAccessPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HomeFolderMSGraph\NameSpace\DelegateFolders\{3936E9E4-D92C-4EEE-A85A-BC16D5EA0819}"
+                $Homepath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace_36354489\DelegateFolders\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
+
+                Remove-Item -Path $quickAccessPath, $Homepath -ErrorAction SilentlyContinue
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        UnpinQuickAccess
+
         # Hide Taskbar Remove Widgets from the Taskbar
         Function UnpinEverything {
             Param(
