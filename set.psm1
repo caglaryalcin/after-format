@@ -2982,7 +2982,7 @@ Detecting programs that cannot be installed with winget...
         }
 
         Function Webview2 {
-            $uri = "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/2cc5ac14-6d07-40e7-8a0e-e089fbdc60e9/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
+            $uri = "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/5afa70b3-c1d2-499e-b1a9-fe27ccf094b4/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
             $outfile = "c:\webview2.exe"
 
             # Download webview2
