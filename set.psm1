@@ -1733,22 +1733,6 @@ Function SystemSettings {
         
         EnableShowDesktop
 
-        Function UnpinQuickAccess {
-            Write-Host "Unpinning Quick Access from Taskbar..." -NoNewline
-            try {
-                $quickAccessPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HomeFolderMSGraph\NameSpace\DelegateFolders\{3936E9E4-D92C-4EEE-A85A-BC16D5EA0819}"
-                $Homepath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace_36354489\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
-
-                Remove-Item -Path $quickAccessPath, $Homepath -ErrorAction SilentlyContinue
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        UnpinQuickAccess
-
         # Hide Taskbar Remove Widgets from the Taskbar
         Function UnpinEverything {
             Param(
@@ -3176,17 +3160,19 @@ Function UnusedApps {
         UninstallFaxAndScan
 
         # Delete some folders from This PC
-        Function ThisPC {
+        Function UnpinExplorer {
             Write-Host "Deleting 3D Folders, Pictures, Videos, Music from This PC..." -NoNewline
             $basePath = "HKLM:\SOFTWARE"
             $wow6432Node = "Wow6432Node\"
             $explorerPath = "Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\"
+            $quickAccessPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HomeFolderMSGraph\NameSpace\DelegateFolders\{3936E9E4-D92C-4EEE-A85A-BC16D5EA0819}"
+            $homePath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace_36354489\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
             $namespaces = @{
                 "3DFolders" = "{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
                 "Videos"    = "{A0953C92-50DC-43bf-BE83-3742FED03C9C}", "{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"
                 "Pictures"  = "{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", "{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"
             }
-        
+            
             foreach ($category in $namespaces.Keys) {
                 foreach ($id in $namespaces[$category]) {
                     $paths = @(
@@ -3205,10 +3191,19 @@ Function UnusedApps {
                 }
             }
         
+            # Additional paths
+            try {
+                Remove-Item -Path $quickAccessPath -Recurse -ErrorAction SilentlyContinue
+                Remove-Item -Path $homePath -Recurse -ErrorAction SilentlyContinue
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
-        ThisPC
+        UnpinExplorer        
 
         # Block Microsoft Edge telemetry
         Function EdgePrivacy {
