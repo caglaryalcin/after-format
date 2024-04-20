@@ -18,7 +18,6 @@ Function Priority {
 Priority
 
 Function Silent {
-    $OriginalProgressPreference = $Global:ProgressPreference
     $Global:ProgressPreference = 'SilentlyContinue'
 }
 
@@ -401,7 +400,7 @@ Function SystemSettings {
         DisableSnap
 
         Function NVCleanUpdateTask {
-            Write-Host "Importing Nvidia Clean task in Task Scheduler..." -NoNewline
+            Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
             $nvcleanstall = "https://de1-dl.techpowerup.com/files/l9SiMvumFxZTMUEX2nQ39A/1713636608/NVCleanstall_1.16.0.exe"
             $nvcleanpath = "C:\Program Files\NVCleanstall"
 
@@ -1140,8 +1139,8 @@ Function SystemSettings {
             try {
                 $registryPaths = @{
                     "HKCU:\Software\Microsoft\GameBar" = @{
-                        "AutoGameModeEnabled"       = 0
-                        "AllowAutoGameMode"         = 0
+                        "AutoGameModeEnabled"       = 1
+                        "AllowAutoGameMode"         = 1
                         "UseNexusForGameDetection"  = 0
                         "UseNexusForGameBarEnabled" = 0
                     }
@@ -1801,9 +1800,9 @@ Function SystemSettings {
                     if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
                 }
         
-                Function Configure-TaskbarPinningApp {
+                Function ConfigureTaskbarPinningApp {
                     Param([string]$RemoveUnpin, [string]$Verb)
-                    $myProcessName = Get-Process | where { $_.ID -eq $pid } | % { $_.ProcessName }
+                    $myProcessName = Get-Process | Where-Object { $_.ID -eq $pid } | ForEach-Object { $_.ProcessName }
                     if (-not ($myProcessName -like "explorer")) {
                         return
                     }
@@ -1811,7 +1810,7 @@ Function SystemSettings {
                     
                 }
         
-                Configure-TaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
+                ConfigureTaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
@@ -1924,7 +1923,7 @@ Function PrivacySettings {
             if ((Test-Path -Path $file) -and (Get-Item $file).IsReadOnly -eq $false) {
                 try {
                     # hosts file url
-                    iwr -Uri "https://raw.githubusercontent.com/caglaryalcin/block-windows-telemetry/main/host" -OutFile "$env:USERPROFILE\Desktop\host"
+                    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/caglaryalcin/block-windows-telemetry/main/host" -OutFile "$env:USERPROFILE\Desktop\host"
                     Move-Item -Path "$env:userprofile\Desktop\host" -Destination C:\windows\system32\drivers\etc\hosts -Force
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
@@ -2600,12 +2599,6 @@ Function GithubSoftwares {
             
             InstallOrUpdateWinget
 
-            $configUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
-
-            $response = Invoke-WebRequest -Uri $configUrl
-
-            [xml]$configContent = $response.Content
-
             $appsToClose = @{
                 "github-desktop"  = "GithubDesktop";
                 "cloudflare-warp" = "Cloudflare WARP"
@@ -2688,14 +2681,14 @@ Function GithubSoftwares {
             foreach ($path in $paths) {
                 if (-not $installedProgram) {
                     $chocoPrograms = Get-ChildItem -Path $path -Filter "$programName*" -ErrorAction SilentlyContinue
-                    if ($chocoPrograms -ne $null -and $chocoPrograms.Count -gt 0) {
+                    if ($null -ne $chocoPrograms -and $chocoPrograms.Count -gt 0) {
                         $installedProgram = $true
                         break
                     }
                 }
             }
             
-            return $installedProgram -ne $null
+            return $null -ne $installedProgram
         }
 
         Write-Host `n"----------------" -ForegroundColor Yellow
@@ -2703,7 +2696,7 @@ Function GithubSoftwares {
 Detecting programs that cannot be installed with winget...
 
 "@
-        Function choco-install {
+        Function chocoinstall {
             try {
                 Write-Host "Installing chocolatey..." -NoNewline
 
@@ -2716,7 +2709,7 @@ Detecting programs that cannot be installed with winget...
                 # Install Chocolatey
                 Set-ExecutionPolicy Bypass -Scope Process -Force
                 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-                iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
+                Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
                 Start-Sleep 10
 
                 # Check if Chocolatey is installed
@@ -2739,7 +2732,7 @@ Detecting programs that cannot be installed with winget...
 
         }
 
-        choco-install
+        chocoinstall
 
         $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
         $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
@@ -2792,7 +2785,7 @@ Detecting programs that cannot be installed with winget...
 
 "@
 
-        Function Safe-TaskKill {
+        Function SafeTaskKill {
             param($processName)
         
             taskkill /f /im $processName *>$null
@@ -2802,8 +2795,8 @@ Detecting programs that cannot be installed with winget...
             }
         }
         
-        Safe-TaskKill "GithubDesktop.exe"
-        Safe-TaskKill "Cloudflare WARP.exe"
+        SafeTaskKill "GithubDesktop.exe"
+        SafeTaskKill "Cloudflare WARP.exe"
         Function Install-VSCodeExtensions {
             Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
             Start-Sleep 5
@@ -2814,7 +2807,7 @@ Detecting programs that cannot be installed with winget...
             }
         
             $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker"
-            $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker"
+            $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker", "redhat.vscode-xml", "dotjoshjohnson.xml"
             $design = "pkief.material-icon-theme"
             $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
             $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python"
@@ -2924,7 +2917,7 @@ Detecting programs that cannot be installed with winget...
                 Sort-Object { [Version]($_.Name) } -Descending | 
                 Select-Object -First 1
 
-                if ($chromeVersion -eq $null) {
+                if ($null -eq $chromeVersion) {
                     continue
                 }
                 else {
@@ -3712,7 +3705,7 @@ Restart
 ##########
 
 Function MySettings {
-    iwr "https://caglaryalcin.com/mysettings" -UseB | iex
+    Invoke-WebRequest "https://caglaryalcin.com/mysettings" -UseB | Invoke-Expression
 }
 
 MySettings
