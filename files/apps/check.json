@@ -16,7 +16,7 @@
         {"PackageIdentifier": ["Code"]},
         {"PackageIdentifier": ["notepad"]},
         {"PackageIdentifier": ["*SDK"]},
-        {"PackageIdentifier": ["Node.js"]},
+        {"PackageIdentifier": ["Nodejs"]},
         {"PackageIdentifier": ["Python"]},
         {"PackageIdentifier": ["Git"]},
         {"PackageIdentifier": ["AnyDesk"]},
@@ -40,12 +40,12 @@
         {"PackageIdentifier": ["OpenRGB"]},
         {"PackageIdentifier": ["tailscale"]},
         {"PackageIdentifier": ["WinFsp"]},
-        {"PackageIdentifier": ["NVCleanstall"]},
-        {"PackageIdentifier": ["nvidia"]},
         {"PackageIdentifier": ["rufus"]},
         {"PackageIdentifier": ["regshot"]},
         {"PackageIdentifier": ["handbrake"]},
-        {"PackageIdentifier": ["runtime"]}
+        {"PackageIdentifier": ["runtime"]},
+        {"PackageIdentifier": ["webview"]},
+        {"PackageIdentifier": ["powertoys"]}
       ]
     }
   ]

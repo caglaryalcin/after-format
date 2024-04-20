@@ -400,6 +400,41 @@ Function SystemSettings {
         
         DisableSnap
 
+        Function NVCleanUpdateTask {
+            Write-Host "Importing Nvidia Clean task in Task Scheduler..." -NoNewline
+            $nvcleanstall = "https://de1-dl.techpowerup.com/files/l9SiMvumFxZTMUEX2nQ39A/1713636608/NVCleanstall_1.16.0.exe"
+            $nvcleanpath = "C:\Program Files\NVCleanstall"
+
+            New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
+
+            Silent
+            Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.16.0.exe" -ErrorAction Stop
+
+            #update task
+            $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.16.0.exe" -Argument "/check"
+            $description = "Check for new graphics card drivers"
+            $trigger1 = New-ScheduledTaskTrigger -AtLogon
+            $trigger2 = New-ScheduledTaskTrigger -AtLogon
+            $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+            $taskname = "NVCleanstall"
+
+            $settings = New-ScheduledTaskSettingsSet
+
+            $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger1, $trigger2 -Action $action -Principal $principal -Settings $settings -Description $description
+
+            # Remove repetition for trigger1
+            $task.Triggers[0].Repetition = $null
+
+            # Set repetition interval for trigger2
+            $task.Triggers[1].Repetition.Interval = "PT4H"
+
+            $task | Set-ScheduledTask *>$null
+
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        NVCleanUpdateTask
+
         # Disable Gallery
         Function DisableGallery {
             try {
@@ -2964,24 +2999,6 @@ Detecting programs that cannot be installed with winget...
         catch {
             Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
         }
-
-        Function Webview2 {
-            $uri = "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/5afa70b3-c1d2-499e-b1a9-fe27ccf094b4/MicrosoftEdgeWebView2RuntimeInstallerX64.exe"
-            $outfile = "c:\webview2.exe"
-
-            # Download webview2
-            Silent #silently
-            Invoke-WebRequest -Uri $uri -Outfile $outfile
-
-            # Install webview2
-            Start-Process $outfile -ArgumentList "/silent", "/install" -Wait
-
-            # Remove downloaded file
-            Remove-Item $outfile -Recurse -ErrorAction SilentlyContinue
-
-        }
-        
-        Webview2
         
     }
 
