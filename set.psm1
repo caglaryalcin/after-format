@@ -3606,11 +3606,6 @@ Function UnusedApps {
                         $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
                     }
                 
-                    Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
-                    Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
-                
-                    Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-                
                     $progressPreference = 'SilentlyContinue'
                     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction SilentlyContinue | Out-Null
                 
@@ -3637,6 +3632,30 @@ Function UnusedApps {
                     else {
                         throw "Microsoft Edge process is still running."
                     }
+
+                    # Delete the lnk files in the taskbar
+                    $taskBarPath = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
+                    $taskBarPath1 = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\"
+                    $taskBarPath2 = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
+                    $shortcuts = "Microsoft Edge.lnk", "Microsoft Teams classic.lnk"
+
+                    $shortcuts | ForEach-Object {
+                        $fullPath1 = Join-Path $taskBarPath $_
+                        $fullPath2 = Join-Path $taskBarPath1 $_
+                        $fullPath3 = Join-Path $taskBarPath2 $_
+    
+                        if (Test-Path $fullPath1) {
+                            Remove-Item $fullPath1 -ErrorAction Stop
+                        }
+    
+                        if (Test-Path $fullPath2) {
+                            Remove-Item $fullPath2 -ErrorAction Stop
+                        }
+
+                        if (Test-Path $fullPath3) {
+                            Remove-Item $fullPath3 -ErrorAction Stop
+                        }
+                    }
                 }
                 catch {
                     Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -3661,6 +3680,21 @@ Function UnusedApps {
         }
         
         UninstallEdge
+
+        Function Removelnks {
+            Write-Host "Removing Desktop shortcuts..." -NoNewline
+            try {
+                Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
+                Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
+                Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        Removelnks
                 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
