@@ -414,7 +414,7 @@ Function SystemSettings {
             $description = "Check for new graphics card drivers"
             $trigger1 = New-ScheduledTaskTrigger -AtLogon
             $trigger2 = New-ScheduledTaskTrigger -AtLogon
-            $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+            $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
             $taskname = "NVCleanstall"
 
             $settings = New-ScheduledTaskSettingsSet
