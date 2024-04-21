@@ -401,7 +401,7 @@ Function SystemSettings {
 
         Function NVCleanUpdateTask {
             Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
-            $nvcleanstall = "https://de1-dl.techpowerup.com/files/l9SiMvumFxZTMUEX2nQ39A/1713636608/NVCleanstall_1.16.0.exe"
+            $nvcleanstall = "https://drive.usercontent.google.com/download?id=1mLE9M8XckmwMD_7A6hkmuQ_j5Noz6pPr&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
             $nvcleanpath = "C:\Program Files\NVCleanstall"
 
             New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
@@ -2645,6 +2645,9 @@ Function GithubSoftwares {
             # Once all installations are done, stop the background job
             Stop-Job -Job $job
             Remove-Job -Job $job
+
+            # Kill the processes of power toys
+            taskkill.exe /f /im "PowerToys*" *>$null
 
         }
         
