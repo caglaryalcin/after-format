@@ -332,7 +332,7 @@ Function SystemSettings {
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $settings = New-ScheduledTaskSettingsSet -Hidden:$true
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
-                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
+                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
                 $taskname = "upgrade-packages"
                 $delay = "PT1M"  # 1 minutes delay
                 $trigger.Delay = $delay
@@ -343,7 +343,7 @@ Function SystemSettings {
                 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1' -UseB | iex`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
-                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
+                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
                 $taskname = "startup"
                 $delay = "PT5M" # 5 minutes delay
                 $trigger.Delay = $delay
@@ -2972,7 +2972,7 @@ Detecting programs that cannot be installed with winget...
             $taskTrigger = New-ScheduledTaskTrigger -Daily -DaysInterval 13 -At $currentTime
             $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
             $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden
-            $taskPrincipal = New-ScheduledTaskPrincipal -UserId $currentUser -RunLevel Highest
+            $taskprincipal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 
             $task = New-ScheduledTask -Action $taskAction -Principal $taskPrincipal -Trigger $taskTrigger -Settings $taskSettings -Description $taskDescription
 
