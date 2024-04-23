@@ -54,6 +54,9 @@ Function SystemSettings {
         
                     #sync time
                     Set-Service -Name "W32Time" -StartupType Automatic -ErrorAction Stop
+                    #set time sync to Cloudflare
+                    w32tm /config /manualpeerlist:"time.cloudflare.com" /syncfromflags:manual /reliable:yes /update
+                    
                     Restart-Service W32Time *>$null
                     if (-not $?) { throw "Failed to stop W32Time" }
                     w32tm /resync /force *>$null
