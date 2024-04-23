@@ -332,7 +332,7 @@ Function SystemSettings {
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $settings = New-ScheduledTaskSettingsSet -Hidden:$true
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
-                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
                 $taskname = "upgrade-packages"
                 $delay = "PT1M"  # 1 minutes delay
                 $trigger.Delay = $delay
@@ -343,7 +343,7 @@ Function SystemSettings {
                 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1' -UseB | iex`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
-                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
                 $taskname = "startup"
                 $delay = "PT5M" # 5 minutes delay
                 $trigger.Delay = $delay
