@@ -2970,7 +2970,6 @@ Detecting programs that cannot be installed with winget...
             $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-Command $powerShellScript"
 
             $taskTrigger = New-ScheduledTaskTrigger -Daily -DaysInterval 13 -At $currentTime
-            $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
             $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden
             $taskprincipal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 
