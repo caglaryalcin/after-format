@@ -54,8 +54,6 @@ Function SystemSettings {
         
                     #sync time
                     Set-Service -Name "W32Time" -StartupType Automatic -ErrorAction Stop
-                    #set time sync to Cloudflare
-                    w32tm /config /manualpeerlist:"time.cloudflare.com" /syncfromflags:manual /reliable:yes /update
                     
                     Restart-Service W32Time *>$null
                     if (-not $?) { throw "Failed to stop W32Time" }
@@ -63,6 +61,9 @@ Function SystemSettings {
                     if (-not $?) { throw "Failed to resync time" }
                     w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:yes /update *>$null
                     if (-not $?) { throw "Failed to configure time sync settings" }
+
+                    #set time sync to Cloudflare
+                    w32tm /config /manualpeerlist:"time.cloudflare.com" /syncfromflags:manual /reliable:yes /update *>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
@@ -2990,12 +2991,13 @@ Detecting programs that cannot be installed with winget...
         #workstation key
         try {
             Write-Host "Vmware serial number is being set...." -NoNewline
-            $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208"
-            Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND
+            Silent
+            $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208" -ErrorAction Stop
+            Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND *>$null
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         catch {
-            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            Write-Host "[Vmware v7 not installed]" -ForegroundColor Red -BackgroundColor Black
         }
         
     }
