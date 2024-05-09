@@ -333,7 +333,7 @@ Function SystemSettings {
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $settings = New-ScheduledTaskSettingsSet -Hidden:$true
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
-                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "upgrade-packages"
                 $delay = "PT1M"  # 1 minutes delay
                 $trigger.Delay = $delay
@@ -344,7 +344,7 @@ Function SystemSettings {
                 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1' -UseB | iex`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
-                $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "startup"
                 $delay = "PT5M" # 5 minutes delay
                 $trigger.Delay = $delay
@@ -2961,7 +2961,7 @@ Detecting programs that cannot be installed with winget...
             $taskPath = "\"
             $taskDescription = "A task that resets the Malwarebytes Premium trial by changing the MachineGuid registry value"
             $currentTime = (Get-Date).ToString("HH:mm")
-
+            $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
             $powerShellScript = {
                 New-Guid | ForEach-Object {
                     Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Cryptography' -Name 'MachineGuid' -Value $_.Guid
@@ -2972,7 +2972,7 @@ Detecting programs that cannot be installed with winget...
 
             $taskTrigger = New-ScheduledTaskTrigger -Daily -DaysInterval 13 -At $currentTime
             $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden
-            $taskprincipal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+            $taskprincipal = New-ScheduledTaskPrincipal -UserId $currentUser -RunLevel Highest
 
             $task = New-ScheduledTask -Action $taskAction -Principal $taskPrincipal -Trigger $taskTrigger -Settings $taskSettings -Description $taskDescription
 
