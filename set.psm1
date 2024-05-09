@@ -2633,7 +2633,7 @@ Function GithubSoftwares {
                 $result = & winget install $packageName -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
 
                 # Check if the installation was successful
-                if ($LASTEXITCODE -ne 0 -or $result -match "Installer hash does not match" -or $result -match "fail") {
+                if ($LASTEXITCODE -ne 0 -or $result -match "does not match" -or $result -match "fail") {
                     Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
                     $wingetWarnings += $packageName
                     $logFile = "C:\packages-logs\${packageName}_winget_install.log"
