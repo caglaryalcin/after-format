@@ -2999,6 +2999,9 @@ Detecting programs that cannot be installed with winget...
         catch {
             Write-Host "[Vmware v7 not installed]" -ForegroundColor Red -BackgroundColor Black
         }
+
+        # webview2 is being forcibly reloaded because it is necessary
+        winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
         
     }
 
@@ -3369,7 +3372,7 @@ Function UnusedApps {
         
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Unnecessary Tasks..." -NoNewline
-                $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Nv*", "Brave*", "Intel*", "klcp*", "MSI*", 
+                $taskPatterns = @("OneDrive*", "MicrosoftEdge*", "Google*", "Brave*", "Intel*", "klcp*", "MSI*", 
                     "*Adobe*", "CCleaner*", "G2M*", "Opera*", "Overwolf*", "User*", "CreateExplorer*", "{*", "*Samsung*", "*npcap*", 
                     "*Consolidator*", "*Dropbox*", "*Heimdal*", "*klcp*", "*UsbCeip*", "*DmClient*", "*Office Auto*", "*Office Feature*", 
                     "*OfficeTelemetry*", "*GPU*", "Xbl*", "Firefox Back*")
