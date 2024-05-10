@@ -2557,6 +2557,14 @@ Function PrivacySettings {
 
         DisableUpdateAutoDownload
 
+        Function EnableTaskSchedulerHistory {
+            Write-Host "Enabling Task Scheduler History..." -NoNewline
+            wevtutil sl Microsoft-Windows-TaskScheduler/Operational /e:true
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        EnableTaskSchedulerHistory
+        
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
         Write-Host "[Privacy Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
