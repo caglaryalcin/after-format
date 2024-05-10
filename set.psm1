@@ -2638,6 +2638,7 @@ Function GithubSoftwares {
                 Write-Host "Installing $packageName..." -NoNewLine
 
                 # Install the packages
+                Start-Sleep -Milliseconds 5
                 $result = & winget install $packageName -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
 
                 # Check if the installation was successful
