@@ -2,9 +2,9 @@
 
 ## Description
 
-If you new formatted your computer on Windows 11(all versions) you can run this script.
+If you new formatted your computer on Windows 11(all versions) you can run this script. 
 
-This script does exactly the following; (Some are optional: <kbd>y/n</kbd>)
+This script allows Windows 1x users to control data collection, privacy and security functions and does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 
 <details><summary>System Settings</summary>&nbsp;
   

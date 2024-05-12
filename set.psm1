@@ -478,53 +478,55 @@ Function SystemSettings {
         DisableSync
 
         # Disable Spotlight
-        Function DisableSpotlight {
+        function DisableSpotlight {
             Write-Host "Disabling Spotlight..." -NoNewline
+            
+            $RegistryKeys = @(
+                "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent",
+                "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+            )
         
-            $DisableSpotlight1 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
-        
-            if (-not (Test-Path $DisableSpotlight1)) {
-                New-Item -Path $DisableSpotlight1 -Force *>$null
-            }
-        
-            $DisableSpotlight2 = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
-        
-            if (-not (Test-Path $DisableSpotlight2)) {
-                New-Item -Path $DisableSpotlight2 -Force *>$null
+            foreach ($Key in $RegistryKeys) {
+                if (-not (Test-Path $Key)) {
+                    New-Item -Path $Key -Force *>$null
+                }
             }
         
             try {
-                Set-ItemProperty -Path $DisableSpotlight1 -Name "NoWindowsSpotlight" -Value 1
-                Set-ItemProperty -Path $DisableSpotlight2 -Name "RotatingLockScreenOverlayEnabled" -Value 0
+                Set-ItemProperty -Path $RegistryKeys[0] -Name "NoWindowsSpotlight" -Value 1
+                Set-ItemProperty -Path $RegistryKeys[1] -Name "RotatingLockScreenOverlayEnabled" -Value 0
+                Set-ItemProperty -Path $RegistryKeys[1] -Name "SoftLandingEnabled" -Value 0
+                Set-ItemProperty -Path $RegistryKeys[1] -Name "RotatingLockScreenEnabled" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
-
-        DisableSpotlight
+        
+        DisableSpotlight        
 
         # Disable Lock Screen Notifications
-        Function DisableLockScreenNotifications {
-            Write-Host "Disabling toast and apps notifications on lock screen..." -NoNewline
-        
-            $locksreen1 = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings"
-        
-            if (-not (Test-Path $locksreen1)) {
-                New-Item -Path $locksreen1 -Force *>$null
+        function DisableLockScreenNotifications {
+            Write-Host "Disabling lock screen notifications..." -NoNewline
+            
+            $registryPaths = @(
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings",
+                "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications",
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications"
+            )
+            
+            foreach ($path in $registryPaths) {
+                if (-not (Test-Path $path)) {
+                    New-Item -Path $path -Force *>$null
+                }
             }
-        
-            $locksreen2 = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
-        
-            if (-not (Test-Path $locksreen2)) {
-                New-Item -Path $locksreen2 -Force *>$null
-            }
-        
+            
             try {
-                Set-ItemProperty -Path $locksreen1 -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
-                Set-ItemProperty -Path $locksreen2 -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
-                Set-ItemProperty -Path $locksreen2 -Name "ToastEnabled" -Value 0
+                Set-ItemProperty -Path $registryPaths[0] -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
+                Set-ItemProperty -Path $registryPaths[1] -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
+                Set-ItemProperty -Path $registryPaths[1] -Name "ToastEnabled" -Value 0
+                Set-ItemProperty -Path $registryPaths[2] -Name "ToastEnabled" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -575,6 +577,13 @@ Function SystemSettings {
         
             try {
                 Set-ItemProperty -Path $bingsearch -Name "DisableSearchBoxSuggestions" -Value 1
+                If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings" -Force *>$null
+                }
+                New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+                $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+                Set-ItemProperty -Path "HKU:\$currentSID\Software\Microsoft\Windows\CurrentVersion\SearchSettings" -Name "IsDynamicSearchBoxEnabled" -Value 0
+
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -729,7 +738,7 @@ Function SystemSettings {
 
         # Cloudflare 
         Function SetCFDNS {
-            Write-Host "Setting Cloud Flare DNS..." -NoNewline
+            Write-Host "Setting Cloudflare DNS..." -NoNewline
             try {
                 $interfaces = "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"
                 Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses ("1.1.1.1", "1.0.0.1") -ErrorAction SilentlyContinue
@@ -764,6 +773,9 @@ Function SystemSettings {
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"           = @{
                     "HideSCAMeetNow" = 1 # HideSCAMeetNow
                 };
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"           = @{
+                    "HideSCAMeetNow" = 1 #Disable "meet now" in the taskbar
+                }
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState"       = @{
                     "FullPath" = 1; # Show full path in title bar
                 };
@@ -948,44 +960,60 @@ Function SystemSettings {
         DisableUpdateMSProducts
 
         # Disable Cortana 
-        Function DisableCortana {
+        function DisableCortana {
             Write-Host "Disabling Cortana..." -NoNewline
-        
+            
             $allSuccessful = $true
-
+        
             try {
-                # Personalization Settings
-                If (!(Test-Path "HKCU:\Software\Microsoft\Personalization\Settings")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Force | Out-Null
+                # Define registry keys and their values
+                $RegistryKeys = @{
+                    "HKCU:\Software\Microsoft\Personalization\Settings"                      = @{
+                        "AcceptedPrivacyPolicy" = 0
+                    }
+                    "HKCU:\Software\Microsoft\InputPersonalization"                          = @{
+                        "RestrictImplicitTextCollection" = 1
+                        "RestrictImplicitInkCollection"  = 1
+                    }
+                    "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore"         = @{
+                        "HarvestContacts" = 0
+                    }
+                    "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"      = @{
+                        "ShowCortanaButton" = 0
+                    }
+                    "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowCortana" = @{
+                        "Value" = 0
+                    }
+                    "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"               = @{
+                        "AllowCortana"              = 0
+                        "AllowSearchToUseLocation"  = 0
+                        "DisableWebSearch"          = 1
+                        "ConnectedSearchUseWeb"     = 0
+                        "AllowCloudSearch"          = 0
+                        "AllowCortanaAboveLock"     = 0
+                        "EnableDynamicContentInWSB" = 0
+                    }
+                    "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization"                 = @{
+                        "AllowInputPersonalization" = 0
+                    }
+                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Windows Search"         = @{
+                        "CortanaConsent" = 0
+                    }
+                    "HKLM:\SOFTWARE\Microsoft\Speech_OneCore\Preferences"                    = @{
+                        "ModelDownloadAllowed" = 0
+                    }
                 }
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Type DWord -Value 0
-            
-                # Input Personalization
-                If (!(Test-Path "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
+        
+                # Apply registry changes
+                foreach ($Key in $RegistryKeys.Keys) {
+                    if (-not (Test-Path $Key)) {
+                        New-Item -Path $Key -Force | Out-Null
+                    }
+                    foreach ($Property in $RegistryKeys[$Key].Keys) {
+                        Set-ItemProperty -Path $Key -Name $Property -Type DWord -Value $RegistryKeys[$Key][$Property]
+                    }
                 }
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\InputPersonalization" -Name "RestrictImplicitTextCollection" -Type DWord -Value 1
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\InputPersonalization" -Name "RestrictImplicitInkCollection" -Type DWord -Value 1
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore" -Name "HarvestContacts" -Type DWord -Value 0
-            
-                # Show Cortana Button
-                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowCortanaButton" -Type DWord -Value 0
-            
-                # Allow Cortana Policy
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowCortana" -Name "Value" -Type DWord -Value 0
-            
-                # Windows Search Policies
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
-            
-                # Input Personalization Policies
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization" -Name "AllowInputPersonalization" -Type DWord -Value 0
-            
+        
                 # Remove Cortana Package
                 $progressPreference = 'SilentlyContinue'
                 Get-AppxPackage "Microsoft.549981C3F5F10" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
@@ -994,17 +1022,16 @@ Function SystemSettings {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                 $allSuccessful = $false
             }
-
+        
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING] An error occurred." -ForegroundColor Red -BackgroundColor Black
             }
-
         }
         
-        DisableCortana
+        DisableCortana        
 
         # Disable Web Search in Start Menu
         Function DisableWebSearch {
@@ -1072,35 +1099,55 @@ Function SystemSettings {
         DisableSmartScreen
 
         # Disable sensor features, such as screen auto rotation 
-        Function DisableSensors {
+        function DisableSensors {
             Write-Host "Disabling Sensors..." -NoNewline
-        
+            
             $allSuccessful = $true
-
+        
             try {
-                # Create LocationAndSensors key
+                # Create LocationAndSensors key if it doesn't exist
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors")) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Force | Out-Null
                 }
-            
-                # Set DisableSensors
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableSensors" -Type DWord -Value 1
+                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\LocationAndSensors")) {
+                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\LocationAndSensors" -Force | Out-Null
+                }
+
+                $HKLMRegistryValues = @{
+                    "DisableLocation"                = 1
+                    "DisableWindowsLocationProvider" = 1
+                    "DisableLocationScripting"       = 1
+                }
+        
+                # Set registry values
+                $RegistryValues = @{
+                    "DisableSensors"                 = 1
+                    "DisableLocation"                = 1
+                    "DisableWindowsLocationProvider" = 1
+                    "DisableLocationScripting"       = 1
+                }
+        
+                foreach ($Property in $RegistryValues.Keys) {
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name $Property -Type DWord -Value $RegistryValues[$Property]
+                }
+
+                foreach ($Property in $HKLMRegistryValues.Keys) {
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\LocationAndSensors" -Name $Property -Type DWord -Value $RegistryValues[$Property]
+                }
+        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                 $allSuccessful = $false
             }
-
-            if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        
+            if (-not $allSuccessful) {
+                Write-Host "[WARNING] An error occurred." -ForegroundColor Red -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-
         }
         
-        DisableSensors
+        DisableSensors        
 
         # Disable Tailored Experiences 
         Function DisableTailoredExperiences {
@@ -1165,11 +1212,6 @@ Function SystemSettings {
                     New-Item -Path $gameDVRKeyPath -Force | Out-Null
                 }
                 Set-ItemProperty -Path $gameDVRKeyPath -Name "AllowGameDVR" -Value 0 -Type DWord -Force
-        
-                # for gamebar
-                $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-                $registryPath = "Registry::HKEY_USERS\$currentSID\Software\Microsoft\GameBar"
-                Set-ItemProperty -Path $registryPath -Name "UseNexusForGameBarEnabled" -Value 0 -Force
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -1863,13 +1905,17 @@ Function PrivacySettings {
             Write-Host `n"Disabling Telemetry..." -NoNewline
         
             $registrySettings = @(
+                #HKLM
                 @{Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"; Name = "AllowTelemetry"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection"; Name = "AllowTelemetry"; Type = "DWord"; Value = 0 },
+                @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"; Name = "LimitDiagnosticLogCollection"; Type = "DWord"; Value = 1 },
+                @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"; Name = "DisableOneSettingsDownloads"; Type = "DWord"; Value = 1 },
                 @{Path = "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection"; Name = "MaxTelemetryAllowed"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"; Name = "AllowTelemetry"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds"; Name = "AllowBuildPreview"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform"; Name = "NoGenTicket"; Type = "DWord"; Value = 1 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows"; Name = "CEIPEnable"; Type = "DWord"; Value = 0 },
+                @{Path = "HKLM:\SOFTWARE\Microsoft\SQMClient\Windows"; Name = "CEIPEnable"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"; Name = "AITEnable"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"; Name = "DisableInventory"; Type = "DWord"; Value = 1 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\AppV\CEIP"; Name = "CEIPEnable"; Type = "DWord"; Value = 0 },
@@ -1877,6 +1923,8 @@ Function PrivacySettings {
                 @{Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\TextInput"; Name = "AllowLinguisticDataCollection"; Type = "DWord"; Value = 0 },
                 @{Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE"; Name = "DisablePrivacyExperience"; Type = "Dword"; Value = "1" },
                 @{Path = "HKLM:\SOFTWARE\Microsoft\MdmCommon\SettingValues"; Name = "LocationSyncEnabled"; Type = "Dword"; Value = "0" },
+                @{Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"; Name = "Enabled"; Type = "Dword"; Value = "0" },
+                #HKCU
                 @{Path = "HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy"; Name = "HasAccepted"; Type = "Dword"; Value = "0" },
                 @{Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack"; Name = "ShowedToastAtLevel"; Type = "Dword"; Value = "1" },
                 @{Path = "HKCU:\Software\Microsoft\Input\TIPC"; Name = "Enabled"; Type = "Dword"; Value = "0" },
@@ -1943,16 +1991,32 @@ Function PrivacySettings {
         BlockUrlsToHost
 
         # Disable Feedback 
-        Function DisableFeedback {
+        function DisableFeedback {
             Write-Host "Disabling Feedback..." -NoNewline
-        
+            
             try {
-                If (!(Test-Path "HKCU:\Software\Microsoft\Siuf\Rules")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Siuf\Rules" -Force | Out-Null
+                # Define registry keys and their values
+                $RegistryKeys = @{
+                    "HKCU:\Software\Microsoft\Siuf\Rules"                      = @{
+                        "PeriodInNanoSeconds"  = 0
+                        "NumberOfSIUFInPeriod" = 0
+                    }
+                    "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" = @{
+                        "DoNotShowFeedbackNotifications" = 1
+                    }
                 }
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Siuf\Rules" -Name "NumberOfSIUFInPeriod" -Type DWord -Value 0 -ErrorAction Stop
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 1 -ErrorAction Stop
         
+                # Apply registry changes
+                foreach ($Key in $RegistryKeys.Keys) {
+                    if (-not (Test-Path $Key)) {
+                        New-Item -Path $Key -Force | Out-Null
+                    }
+                    foreach ($Property in $RegistryKeys[$Key].Keys) {
+                        Set-ItemProperty -Path $Key -Name $Property -Type DWord -Value $RegistryKeys[$Key][$Property] -ErrorAction Stop
+                    }
+                }
+        
+                # Disable scheduled tasks
                 $tasks = @("Microsoft\Windows\Feedback\Siuf\DmClient", "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload")
                 foreach ($task in $tasks) {
                     $result = Disable-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue
@@ -1967,22 +2031,189 @@ Function PrivacySettings {
             }
         }
         
-        DisableFeedback
+        DisableFeedback       
+        
+        # Disable Text Suggestions
+        Function DisableTextSuggestions {
+            Write-Host "Disabling Text Suggestions..." -NoNewline
+            if (-not (Test-Path "HKCU:\Software\Microsoft\TabletTip\1.7" )) {
+                New-Item -Path "HKCU:\Software\Microsoft\TabletTip\1.7"  -Force *>$null
+            }
+
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\TabletTip\1.7" -Name "EnableTextPrediction" -Value 0
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        DisableTextSuggestions
+
+        # Disable Windows Error Reporting
+        Function DisableErrorReporting {
+            Write-Host "Disabling Windows Error Reporting..." -NoNewline
+            If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting")) {
+                New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Force | Out-Null
+            }
+
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Value 1
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        DisableErrorReporting
+
+        # Disable camera in logon screen
+        Function DisableCameraonLogon {
+            Write-Host "Disabling Camera on Logon Screen..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreenCamera" -Value 1
+                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Personalization")) {
+                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreenCamera" -Value 1
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        DisableCameraonLogon
+
+        # Disable backup of text messages into the cloud
+        Function DisableTextMessageBackup {
+            Write-Host "Disabling Backup of Text Messages into the Cloud..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Messaging")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Messaging" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Messaging" -Name "AllowMessageSync" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+               
+                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Messaging")) {
+                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Messaging" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Messaging" -Name "AllowMessageSync" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        DisableTextMessageBackup
+
+        # Disable sharing of handwriting error reports
+        Function DisableHandwritingErrorReports {
+            Write-Host "Disabling Sharing of Handwriting Error Reports..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\HandwritingErrorReports")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\HandwritingErrorReports" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\HandwritingErrorReports" -Name "PreventHandwritingErrorReports" -Type DWord -Value 1 -ErrorAction Stop | Out-Null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        DisableHandwritingErrorReports
+
+        # Disable password reveal button
+        Function DisablePasswordRevealButton {
+            Write-Host "Disabling Password Reveal Button..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CredUI")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CredUI" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CredUI" -Name "DisablePasswordReveal" -Type DWord -Value 1 -ErrorAction Stop | Out-Null
+
+                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\CredUI")) {
+                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\CredUI" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\CredUI" -Name "DisablePasswordReveal" -Type DWord -Value 1 -ErrorAction Stop | Out-Null
+
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        DisablePasswordRevealButton
+
+        # Disable the transfer of the clipboard to other devices via the cloud
+        Function DisableClipboardSharing {
+            Write-Host "Disabling Clipboard Sharing..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\System")) {
+                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\System" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\System" -Name "AllowCrossDeviceClipboard" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        DisableClipboardSharing
+
+        # Disable functionality to locate the system
+        Function Disablelocatesystem {
+            Write-Host "Disabling Functionality to Locate the System..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Bluetooth")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Bluetooth" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Bluetooth" -Name "DisableWindowsLocationProvider" -Type DWord -Value 1 -ErrorAction Stop | Out-Null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        Disablelocatesystem
+
+        # Disable ads via Bluetooth
+        Function AdsviaBluetooth {
+            Write-Host "Disabling Ads via Bluetooth..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Bluetooth")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Bluetooth" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Bluetooth" -Name "AllowAdvertising" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        AdsviaBluetooth
 
         # Disable Activity History feed in Task View 
         Function DisableActivityHistory {
             Write-Host "Disabling Activity History..." -NoNewline
+            $settings = @{
+                "EnableActivityFeed"        = 0
+                "PublishUserActivities"     = 0
+                "UploadUserActivities"      = 0
+                "AllowCrossDeviceClipboard" = 0
+            }
         
+            $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+
             try {
-                $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
                 if (!(Test-Path $regPath)) {
                     New-Item -Path $regPath -Force | Out-Null
                 }
         
-                Set-ItemProperty -Path $regPath -Name "EnableActivityFeed" -Type DWord -Value 0 -ErrorAction Stop
-                Set-ItemProperty -Path $regPath -Name "PublishUserActivities" -Type DWord -Value 0 -ErrorAction Stop
-                Set-ItemProperty -Path $regPath -Name "UploadUserActivities" -Type DWord -Value 0 -ErrorAction Stop
-                
+                $settings.GetEnumerator() | ForEach-Object {
+                    Set-ItemProperty -Path $regPath -Name $_.Key -Type DWord -Value $_.Value -ErrorAction Stop
+                }
+        
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -2019,6 +2250,28 @@ Function PrivacySettings {
         }
         
         DisableClipboardHistory
+
+        # Disable diagnostic log collection
+        Function DisableDiagnosticLogCollection {
+            Write-Host "Disabling Diagnostic Log Collection..." -NoNewline
+        
+            $diagpath = "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\DataCollection"
+        
+            if (-not (Test-Path $diagpath)) {
+                New-Item -Path $diagpath -Force *>$null
+            }
+        
+            try {
+                Set-ItemProperty -Path $diagpath -Name "LimitDiagnosticLogCollection" -Value 1 #Disable diagnostic log collection
+                Set-ItemProperty -Path $diagpath -Name "DisableOneSettingsDownloads" -Value 1 #Disable downloading of OneSettings configuration settings
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        DisableDiagnosticLogCollection
 
         # Disable User Steps Recorder
         Function DisableUserStepsRecorder {
@@ -2472,7 +2725,9 @@ Function PrivacySettings {
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\contacts",
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\email",
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userDataTasks",
-                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\chat"
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\chat",
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userAccountInformation",
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appDiagnostics"
             )
         
             try {
@@ -2548,6 +2803,43 @@ Function PrivacySettings {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1 -ErrorAction Stop
+
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization" -Name "DODownloadMode" -Type DWord -Value 0 -ErrorAction Stop
+
+                If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+                }
+
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0 -ErrorAction Stop
+                
+                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\DeliveryOptimization")) {
+                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\DeliveryOptimization" -Force | Out-Null
+                }
+
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\DeliveryOptimization" -Name "DODownloadMode" -Type DWord -Value 0 -ErrorAction Stop
+                
+                New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+                $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+                $userKey = "HKU:\$currentSID"
+                If (!(Test-Path "$userKey\Software\Microsoft\Windows\CurrentVersion\DeliveryOptimization")) {
+                    New-Item -Path "$userKey\Software\Microsoft\Windows\CurrentVersion\DeliveryOptimization" -Force | Out-Null
+                }
+                
+                Set-ItemProperty -Path "$userKey\Software\Microsoft\Windows\CurrentVersion\DeliveryOptimization" -Name "SystemSettingsDownloadMode" -Type DWord -Value 0 -ErrorAction Stop
+                
+                # Disable updates to the speech recognition and speech synthesis modules
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Speech")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Speech" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Speech" -Name "AllowSpeechModelUpdate" -Type DWord -Value 0 -ErrorAction Stop
+
+                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Speech")) {
+                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Speech" -Force | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Speech" -Name "AllowSpeechModelUpdate" -Type DWord -Value 0 -ErrorAction Stop
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -2557,6 +2849,7 @@ Function PrivacySettings {
 
         DisableUpdateAutoDownload
 
+        # Enable Task Scheduler History
         Function EnableTaskSchedulerHistory {
             Write-Host "Enabling Task Scheduler History..." -NoNewline
             wevtutil sl Microsoft-Windows-TaskScheduler/Operational /e:true
@@ -3235,29 +3528,181 @@ Function UnusedApps {
         UnpinExplorer        
 
         # Block Microsoft Edge telemetry
-        Function EdgePrivacy {
-            Write-Host "Microsoft Edge privacy settings are being adjusted..." -NoNewline
-            # Registry path for Edge privacy settings
-            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+        Function EdgePrivacySettings {
+            Write-Host "Adjusting Microsoft Edge privacy settings..." -NoNewline
+            
+            $EdgePrivacyCUPath = "HKCU:\Software\Policies\Microsoft\Edge"
+            $EdgePrivacyAUPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
         
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+            $EdgePrivacyKeys = @(
+                "PaymentMethodQueryEnabled",
+                "PersonalizationReportingEnabled",
+                "AddressBarMicrosoftSearchInBingProviderEnabled",
+                "UserFeedbackAllowed",
+                "AutofillCreditCardEnabled",
+                "AutofillAddressEnabled",
+                "LocalProvidersEnabled",
+                "SearchSuggestEnabled",
+                "EdgeShoppingAssistantEnabled",
+                "WebWidgetAllowed",
+                "HubsSidebarEnabled"
+            )
+        
+            $EdgePrivacyKeys | ForEach-Object {
+                if (-not (Test-Path $EdgePrivacyCUPath)) {
+                    New-Item -Path $EdgePrivacyCUPath -Force >$null
+                }
+                try {
+                    Set-ItemProperty -Path $EdgePrivacyCUPath -Name $_ -Value 0
+                    Set-ItemProperty -Path $EdgePrivacyCUPath -Name "ConfigureDoNotTrack" -Value 1
+                }
+                catch {
+                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                }
             }
         
-            try {
-                Set-ItemProperty -Path $registryPath -Name "DoNotTrack" -Value 1
-                Set-ItemProperty -Path $registryPath -Name "QuicAllowed" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "SearchSuggestEnabled" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "AllowSearchAssistant" -Value 0
-                Set-ItemProperty -Path $registryPath -Name "FormFillEnabled" -Value 0
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            $EdgePrivacyAUKeys = @(
+                "DoNotTrack",
+                "QuicAllowed",
+                "SearchSuggestEnabled",
+                "AllowSearchAssistant",
+                "FormFillEnabled",
+                "PaymentMethodQueryEnabled",
+                "PersonalizationReportingEnabled",
+                "AddressBarMicrosoftSearchInBingProviderEnabled",
+                "UserFeedbackAllowed",
+                "AutofillCreditCardEnabled",
+                "AutofillAddressEnabled",
+                "LocalProvidersEnabled",
+                "SearchSuggestEnabled",
+                "EdgeShoppingAssistantEnabled",
+                "WebWidgetAllowed",
+                "HubsSidebarEnabled"
+            )
+        
+            $EdgePrivacyAUKeys | ForEach-Object {
+                if (-not (Test-Path $EdgePrivacyAUPath)) {
+                    New-Item -Path $EdgePrivacyAUPath -Force >$null
+                }
+                try {
+                    Set-ItemProperty -Path $EdgePrivacyAUPath -Name $_ -Value 0
+                    Set-ItemProperty -Path $EdgePrivacyAUPath -Name "ConfigureDoNotTrack" -Value 1
+                }
+                catch {
+                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                }
             }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
-        EdgePrivacy
+        EdgePrivacySettings
+
+        Function OfficePrivacySettings {
+            Write-Host "Adjusting Microsoft Office privacy settings..." -NoNewline
+            $OfficePrivacyRegistryKeys = @{
+                "HKCU:\Software\Microsoft\Office\Common\ClientTelemetry"          = @{
+                    "DisableTelemetry" = 1
+                }
+                "HKCU:\Software\Policies\Microsoft\Office\Common\ClientTelemetry" = @{
+                    "SendTelemetry" = 3
+                }
+                "HKCU:\Software\Policies\Microsoft\Office\16.0\Common"            = @{
+                    "QMEnable" = 0;
+                    "LinkedIn" = 0
+                }
+                "HKCU:\Software\Microsoft\Office\16.0\Common\MailSettings"        = @{
+                    "InlineTextPrediction" = 0
+                }
+                "HKCU:\Software\Policies\Microsoft\Office\16.0\osm"               = @{
+                    "Enablelogging"         = 0;
+                    "EnableUpload"          = 0;
+                    "EnableFileObfuscation" = 1
+                }
+                "HKCU:\Software\Policies\Microsoft\Office\16.0\Common\Feedback"   = @{
+                    "SurveyEnabled" = 0;
+                    "Enabled"       = 0;
+                    "IncludeEmail"  = 0
+                }
+            }
+        
+            foreach ($key in $OfficePrivacyRegistryKeys.GetEnumerator()) {
+                $registryPath = $key.Key
+                $registryValues = $key.Value
+        
+                if (-not (Test-Path $registryPath)) {
+                    New-Item -Path $registryPath -Force >$null
+                }
+        
+                foreach ($valueName in $registryValues.GetEnumerator()) {
+                    $value = $valueName.Key
+                    $data = $valueName.Value
+        
+                    try {
+                        Set-ItemProperty -Path $registryPath -Name $value -Value $data
+                    }
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+                }
+            }
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        
+        OfficePrivacySettings  
+        
+        Function DisableWindowsSync {
+            Write-Host "Disabling Windows Sync..." -NoNewline
+            $WindowsSyncRegistryKeys = @{
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\SettingSync"                        = @{
+                    "SyncPolicy" = 5
+                }
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Personalization" = @{
+                    "Enabled" = 0
+                }
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\SettingSync\Groups\BrowserSettings" = @{
+                    "Enabled" = 0
+                }
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Credentials"     = @{
+                    "Enabled" = 0
+                }
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Language"        = @{
+                    "Enabled" = 0
+                }
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Accessibility"   = @{
+                    "Enabled" = 0
+                }
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Windows"         = @{
+                    "Enabled" = 0
+                }
+            }
+        
+            foreach ($key in $WindowsSyncRegistryKeys.GetEnumerator()) {
+                $registryPath = $key.Key
+                $registryValues = $key.Value
+        
+                if (-not (Test-Path $registryPath)) {
+                    New-Item -Path $registryPath -Force >$null
+                }
+        
+                foreach ($valueName in $registryValues.GetEnumerator()) {
+                    $value = $valueName.Key
+                    $data = $valueName.Value
+        
+                    try {
+                        Set-ItemProperty -Path $registryPath -Name $value -Value $data
+                    }
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+                }
+            }
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        
+        DisableWindowsSync        
 
         # The function is here because programs add themselves to the right click menu after loading
         Function RightClickMenu {
@@ -3441,25 +3886,56 @@ Function UnusedApps {
         # Disable Copilot
         Function DisableCopilot {
             Write-Host `n"Do you want " -NoNewline
-            Write-Host "disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
+            Write-Host "to disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
-            
+        
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Disabling Microsoft Copilot..." -NoNewline
-                    
-                if (-not (Test-Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
-                    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                
+                $registryPath = "HKCU:\Software\Policies\Microsoft\Windows"
+                $registryName = "WindowsCopilot"
+                $registryProperty = "TurnOffWindowsCopilot"
+                $edgeRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+                $explorerRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+                
+                if (-not (Test-Path $registryPath)) {
+                    New-Item -Path $registryPath -Name $registryName -Force *>$null
                 }
-                        
-                New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1 -PropertyType DWORD -Force *>$null
-                        
-                if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge")) {
+                
+                New-ItemProperty -Path $registryPath\$registryName -Name $registryProperty -Value 1 -PropertyType DWORD -Force *>$null
+                
+                if (-not (Test-Path $edgeRegistryPath)) {
                     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
                 }
-            
-                New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
-                        
+                
+                New-ItemProperty -Path $edgeRegistryPath -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
+        
+                # Remove Copilot button from File Explorer
+                Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCopilotButton" -Value 0 -Force *>$null
+                
+                $lmRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows"
+                $wowRegistryPath = "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows"
+                
+                if (-not (Test-Path $lmRegistryPath\$registryName)) {
+                    New-Item -Path $lmRegistryPath -Name $registryName -Force *>$null
+                }
+                
+                Set-ItemProperty -Path $lmRegistryPath\$registryName -Name $registryProperty -Value 1 -Force *>$null
+        
+                if (-not (Test-Path $wowRegistryPath\$registryName)) {
+                    New-Item -Path $wowRegistryPath -Name $registryName -Force *>$null
+                }
+                
+                Set-ItemProperty -Path $wowRegistryPath\$registryName -Name $registryProperty -Value 1 -Force *>$null
+
+                $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+                New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+                If (-not (Test-Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
+                    New-Item -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                }
+                Set-ItemProperty -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1
+        
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
@@ -3471,7 +3947,7 @@ Function UnusedApps {
             }
         }
         
-        DisableCopilot
+        DisableCopilot        
 
         # Uninstall OneDrive
         Function UninstallOneDrive {
@@ -3523,6 +3999,12 @@ Function UnusedApps {
                         }
                     }
 
+                    If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive") {
+                        New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
+                    }
+
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Value 1 -Force -ErrorAction SilentlyContinue
+
                     # Remove OneDrive from the registry
                     reg load "HKU\Default" "C:\Users\Default\NTUSER.DAT" *>$null
                     reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f *>$null
@@ -3531,7 +4013,7 @@ Function UnusedApps {
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 
                     Start-Process "explorer.exe" -NoNewWindow
-                    Start-Sleep 4
+                    Start-Sleep 3
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
                 }
@@ -3753,16 +4235,8 @@ Function Restart {
 
 Restart
 
-##########
-#region My Settings
-##########
-
 Function MySettings {
     Invoke-WebRequest "https://caglaryalcin.com/mysettings" -UseB | Invoke-Expression
 }
 
 MySettings
-
-##########
-#endregion My Settings
-##########
