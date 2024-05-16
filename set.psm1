@@ -736,20 +736,49 @@ Function SystemSettings {
 
         #DisableVMEthernets
 
-        # Cloudflare 
-        Function SetCFDNS {
-            Write-Host "Setting Cloudflare DNS..." -NoNewline
+        # DNS Settings 
+        Function SetDNS {
+            Write-Host `n"Which DNS provider " -NoNewline
+            Write-Host " do you want to use" -ForegroundColor Yellow -NoNewline
+            Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Cloudflare"
+            Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Google"
+            Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Adguard"
+            $choice = Read-Host -Prompt `n"[Choice]"
+        
+            $dnsServers = @()
+            switch ($choice) {
+                1 {
+                    Write-Host "Setting Cloudflare DNS..." -NoNewline
+                    $dnsServers = @("1.1.1.1", "1.0.0.1")
+                }
+                2 {
+                    Write-Host "Setting Google DNS..." -NoNewline
+                    $dnsServers = @("8.8.8.8", "8.8.4.4")
+                }
+                3 {
+                    Write-Host "Setting Adguard DNS..." -NoNewline
+                    $dnsServers = @("94.140.14.14", "94.140.15.15")
+                }
+                default {
+                    Write-Host "Invalid input. Please enter 1, 2 or 3."
+                    return
+                }
+            }
+        
             try {
                 $interfaces = "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"
-                Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses ("1.1.1.1", "1.0.0.1") -ErrorAction SilentlyContinue
+                Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction SilentlyContinue
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
-        SetCFDNS
+        
+        SetDNS        
 
         # Windows Explorer configure settings
         Function ExplorerSettings {
