@@ -10,7 +10,7 @@ Function Priority {
     New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
     $ErrorActionPreference = 'SilentlyContinue'
     $checkQuickAssist = Get-WindowsCapability -online | where-object { $_.name -like "*QuickAssist*" }
-    Remove-WindowsCapability -online -name $checkQuickAssist.name -ErrorAction Stop *>$null
+    Remove-WindowsCapability -online -name $checkQuickAssist.name -ErrorAction Stop **>$null
     Set-ExecutionPolicy RemoteSigned -Force -Scope CurrentUser
     $ErrorActionPreference = 'Continue'
 }
@@ -55,15 +55,15 @@ Function SystemSettings {
                     #sync time
                     Set-Service -Name "W32Time" -StartupType Automatic -ErrorAction Stop
                     
-                    Restart-Service W32Time *>$null
+                    Restart-Service W32Time **>$null
                     if (-not $?) { throw "Failed to stop W32Time" }
-                    w32tm /resync /force *>$null
+                    w32tm /resync /force **>$null
                     if (-not $?) { throw "Failed to resync time" }
-                    w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:yes /update *>$null
+                    w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:yes /update **>$null
                     if (-not $?) { throw "Failed to configure time sync settings" }
 
                     #set time sync to Cloudflare
-                    w32tm /config /manualpeerlist:"time.cloudflare.com" /syncfromflags:manual /reliable:yes /update *>$null
+                    w32tm /config /manualpeerlist:"time.cloudflare.com" /syncfromflags:manual /reliable:yes /update **>$null
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
                 catch {
@@ -88,9 +88,9 @@ Function SystemSettings {
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
 
-                $hostq = Write-Host "[Please enter your hostname]: " -NoNewline
+                $hostq = Write-Host "Please enter your hostname: " -NoNewline
                 $hostname = Read-Host -Prompt $hostq
-                Rename-Computer -NewName "$hostname" *>$null
+                Rename-Computer -NewName "$hostname" **>$null
                 Write-Host "[Hostname was set to " -NoNewline -BackgroundColor Black
                 Write-Host "$hostname" -ForegroundColor Green -BackgroundColor Black -NoNewline
                 Write-Host "]" -BackgroundColor Black
@@ -119,41 +119,41 @@ Function SystemSettings {
                 try {
                     # Disable Defender Cloud
                     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")) {
-                        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
+                        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Force **>$null
                     }
         
                     # Remove existing policies
                     Remove-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Recurse -ErrorAction SilentlyContinue
         
                     # Create new policies
-                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Force *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -PropertyType Dword -Value "1" *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiVirus" -PropertyType Dword -Value "1" *>$null
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Force **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -PropertyType Dword -Value "1" **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiVirus" -PropertyType Dword -Value "1" **>$null
         
                     # Disable Real-Time Protection
-                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Force *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableBehaviorMonitoring" -PropertyType Dword -Value "1" *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableIOAVProtection" -PropertyType Dword -Value "1" *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -PropertyType Dword -Value "1" *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -PropertyType Dword -Value "1" *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableScanOnRealtimeEnable" -PropertyType Dword -Value "1" *>$null
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Force **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableBehaviorMonitoring" -PropertyType Dword -Value "1" **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableIOAVProtection" -PropertyType Dword -Value "1" **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -PropertyType Dword -Value "1" **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -PropertyType Dword -Value "1" **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableScanOnRealtimeEnable" -PropertyType Dword -Value "1" **>$null
         
                     # Disable Cloud-Based Protection
-                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "DisableBlockAtFirstSeen" -PropertyType Dword -Value "1" *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SpynetReporting" -PropertyType Dword -Value "0" *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SubmitSamplesConsent" -PropertyType Dword -Value "0" *>$null
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Force **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "DisableBlockAtFirstSeen" -PropertyType Dword -Value "1" **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SpynetReporting" -PropertyType Dword -Value "0" **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SubmitSamplesConsent" -PropertyType Dword -Value "0" **>$null
         
                     # Disable Enhanced Notifications
-                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Force *>$null
-                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Name "DisableEnhancedNotifications" -PropertyType Dword -Value "1" *>$null
+                    New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Force **>$null
+                    New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Reporting" -Name "DisableEnhancedNotifications" -PropertyType Dword -Value "1" **>$null
         
                     # Disable Windows Defender tasks
-                    schtasks /Change /TN "Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh" /Disable *>$null
-                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /Disable *>$null
-                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /Disable *>$null
-                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /Disable *>$null
-                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Verification" /Disable *>$null
+                    schtasks /Change /TN "Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh" /Disable **>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /Disable **>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /Disable **>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /Disable **>$null
+                    schtasks /Change /TN "Microsoft\Windows\Windows Defender\Windows Defender Verification" /Disable **>$null
         
                     # Remove Windows Defender context menu entries
                     New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
@@ -162,7 +162,7 @@ Function SystemSettings {
                     Remove-Item -Path "HKCR:\Drive\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
         
                     # Restart Windows Explorer
-                    taskkill /f /im explorer.exe *>$null
+                    taskkill /f /im explorer.exe **>$null
                     Start-Process "explorer.exe" -NoNewWindow
                     Start-Sleep 4
         
@@ -233,7 +233,7 @@ Function SystemSettings {
                             Set-WinLanguageBarOption
         
                             # Disable Print Screen key for Snipping Tool
-                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
+                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 **>$null
                         }
                         "2" {
                             # UK keyboard layout
@@ -264,7 +264,7 @@ Function SystemSettings {
                             Set-WinLanguageBarOption
         
                             # Disable Print Screen key for Snipping Tool
-                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
+                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 **>$null
                         }
                         "3" {
                             # Both TR and UK keyboard layout
@@ -296,7 +296,7 @@ Function SystemSettings {
                             Set-WinLanguageBarOption
         
                             # Disable Print Screen key for Snipping Tool
-                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
+                            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 **>$null
                         }
                         default {
                             Write-Host "Invalid input. Please enter 1, 2 or 3."
@@ -338,7 +338,7 @@ Function SystemSettings {
                 $delay = "PT1M"  # 1 minutes delay
                 $trigger.Delay = $delay
 
-                Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description *>$null
+                Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description **>$null
 
                 #startup
                 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1' -UseB | iex`""
@@ -354,7 +354,7 @@ Function SystemSettings {
                 $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description
                 $task.Triggers.Repetition.Duration = ""
                 $task.Triggers.Repetition.Interval = "PT3H"
-                $task | Set-ScheduledTask *>$null
+                $task | Set-ScheduledTask **>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
             }
@@ -379,22 +379,22 @@ Function SystemSettings {
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Disabling Snap windows feature..." -NoNewline
                 #Disable Snap
-                # Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 *>$null
+                # Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0 **>$null
         
                 #Disable "When I snap a window, suggest what I can snap next to it"
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name SnapAssist -Value 0 **>$null
         
                 #Disable "Show snap layouts when I hover over a window's maximize button"
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapAssistFlyout -Value 0 **>$null
         
                 #Disable "Show snap layouts when I drag a window to the top of my screen"
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableSnapBar -Value 0 **>$null
         
                 #Disable "Show my snapped windows when I hover taskbar apps, in Task View, and when I press Alt+Tab"
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name EnableTaskGroups -Value 0 **>$null
         
                 #Disable "When I drag a window, let me snap it without dragging all the way to the screen edge"
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 **>$null
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 Write-Host ""
@@ -431,7 +431,7 @@ Function SystemSettings {
             # Set repetition interval for trigger2
             $task.Triggers[1].Repetition.Interval = "PT4H"
 
-            $task | Set-ScheduledTask *>$null
+            $task | Set-ScheduledTask **>$null
 
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
@@ -442,8 +442,8 @@ Function SystemSettings {
         Function DisableGallery {
             try {
                 Write-Host "Disabling gallery folder..." -NoNewline
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
-                New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
+                New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key **>$null
+                New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword **>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -459,7 +459,7 @@ Function SystemSettings {
             $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
 
             if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+                New-Item -Path $registryPath -Force **>$null
             }
 
             try {
@@ -488,7 +488,7 @@ Function SystemSettings {
         
             foreach ($Key in $RegistryKeys) {
                 if (-not (Test-Path $Key)) {
-                    New-Item -Path $Key -Force *>$null
+                    New-Item -Path $Key -Force **>$null
                 }
             }
         
@@ -518,7 +518,7 @@ Function SystemSettings {
             
             foreach ($path in $registryPaths) {
                 if (-not (Test-Path $path)) {
-                    New-Item -Path $path -Force *>$null
+                    New-Item -Path $path -Force **>$null
                 }
             }
             
@@ -543,13 +543,13 @@ Function SystemSettings {
             $WMPDiag1 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences\HME"
         
             if (-not (Test-Path $WMPDiag1)) {
-                New-Item -Path $WMPDiag1 -Force *>$null
+                New-Item -Path $WMPDiag1 -Force **>$null
             }
         
             $WMPDiag2 = "HKCU:\Software\Microsoft\MediaPlayer\Preferences"
         
             if (-not (Test-Path $WMPDiag2)) {
-                New-Item -Path $WMPDiag2 -Force *>$null
+                New-Item -Path $WMPDiag2 -Force **>$null
             }
         
             try {
@@ -572,13 +572,13 @@ Function SystemSettings {
             $bingsearch = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
         
             if (-not (Test-Path $bingsearch)) {
-                New-Item -Path $bingsearch -Force *>$null
+                New-Item -Path $bingsearch -Force **>$null
             }
         
             try {
                 Set-ItemProperty -Path $bingsearch -Name "DisableSearchBoxSuggestions" -Value 1
                 If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings" -Force *>$null
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings" -Force **>$null
                 }
                 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
                 $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
@@ -697,7 +697,7 @@ Function SystemSettings {
             Write-Host "Disabling Windows Beep Sound..." -NoNewline
             try {
                 Set-ItemProperty -Path "HKCU:\Control Panel\Sound" -Name "Beep" -Type String -Value no
-                Set-Service beep -StartupType disabled *>$null
+                Set-Service beep -StartupType disabled **>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -725,8 +725,8 @@ Function SystemSettings {
         Function DisableVMEthernets {
             Write-Host "Disabling Virtual Ethernet Adapters..." -NoNewline
             try {
-                Disable-NetAdapter -Name "*VMware*" -Confirm:$false *>$null
-                Disable-NetAdapter -Name "*Virtual*" -Confirm:$false *>$null
+                Disable-NetAdapter -Name "*VMware*" -Confirm:$false **>$null
+                Disable-NetAdapter -Name "*Virtual*" -Confirm:$false **>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -739,7 +739,7 @@ Function SystemSettings {
         # DNS Settings 
         Function SetDNS {
             Write-Host `n"Which DNS provider " -NoNewline
-            Write-Host " do you want to use" -ForegroundColor Yellow -NoNewline
+            Write-Host "do you want to use?" -ForegroundColor Yellow
             Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
             Write-Host " - Cloudflare"
             Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
@@ -751,15 +751,15 @@ Function SystemSettings {
             $dnsServers = @()
             switch ($choice) {
                 1 {
-                    Write-Host "Setting Cloudflare DNS..." -NoNewline
+                    Write-Host `n"Setting Cloudflare DNS..." -NoNewline
                     $dnsServers = @("1.1.1.1", "1.0.0.1")
                 }
                 2 {
-                    Write-Host "Setting Google DNS..." -NoNewline
+                    Write-Host `n"Setting Google DNS..." -NoNewline
                     $dnsServers = @("8.8.8.8", "8.8.4.4")
                 }
                 3 {
-                    Write-Host "Setting Adguard DNS..." -NoNewline
+                    Write-Host `n"Setting Adguard DNS..." -NoNewline
                     $dnsServers = @("94.140.14.14", "94.140.15.15")
                 }
                 default {
@@ -818,7 +818,7 @@ Function SystemSettings {
             foreach ($path in $settings.Keys) {
                 foreach ($name in $settings[$path].Keys) {
                     if (-not (Test-Path $path)) {
-                        New-Item -Path $path -Force *>$null
+                        New-Item -Path $path -Force **>$null
                     }
                     
                     try {
@@ -1433,7 +1433,7 @@ Function SystemSettings {
             $allSuccessful = $true
         
             try {
-                Disable-ComputerRestore -Drive "$env:SYSTEMDRIVE" *>$null
+                Disable-ComputerRestore -Drive "$env:SYSTEMDRIVE" **>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1450,7 +1450,7 @@ Function SystemSettings {
         
             try {
                 If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore" -Force *>$null
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore" -Force **>$null
                 }
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore" -Name "DisableConfig" -Type DWord -Value 0
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore" -Name "DisableSR" -Type DWord -Value 1
@@ -1470,7 +1470,7 @@ Function SystemSettings {
             }
         
             try {
-                schtasks /Change /TN "\Microsoft\Windows\SystemRestore\SR" /disable  | Out-Null *>$null
+                schtasks /Change /TN "\Microsoft\Windows\SystemRestore\SR" /disable  | Out-Null **>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1581,8 +1581,8 @@ Function SystemSettings {
                 try {
                     $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
                     if ($null -ne $currentService) {
-                        Stop-Service -Name $service -Force -ErrorAction Stop *>$null
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *>$null
+                        Stop-Service -Name $service -Force -ErrorAction Stop **>$null
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop **>$null
                     }
                 }
                 catch {
@@ -1723,8 +1723,8 @@ Function SystemSettings {
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" | Out-Null
             }
             try {
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "AllUpView" -Type DWord -Value 0  *>$null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "Remove TaskView" -Type DWord -Value 0  *>$null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "AllUpView" -Type DWord -Value 0  **>$null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "Remove TaskView" -Type DWord -Value 0  **>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1804,7 +1804,7 @@ Function SystemSettings {
         Function TaskbarAlwaysCombine {
             try {
                 Write-Host "Taskbar Always Combine..." -NoNewline
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue **>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -1818,7 +1818,7 @@ Function SystemSettings {
         Function TaskbarAlignLeft {
             try {
                 Write-Host "Taskbar Aligns Left..." -NoNewline
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword **>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -1832,7 +1832,7 @@ Function SystemSettings {
         Function EnableShowDesktop {
             try {
                 Write-Host "Enabling Show Desktop Button..." -NoNewline
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue **>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -1984,7 +1984,7 @@ Function PrivacySettings {
                 )
         
                 foreach ($task in $tasks) {
-                    Disable-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue *>$null
+                    Disable-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue **>$null
                 }
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2066,7 +2066,7 @@ Function PrivacySettings {
         Function DisableTextSuggestions {
             Write-Host "Disabling Text Suggestions..." -NoNewline
             if (-not (Test-Path "HKCU:\Software\Microsoft\TabletTip\1.7" )) {
-                New-Item -Path "HKCU:\Software\Microsoft\TabletTip\1.7"  -Force *>$null
+                New-Item -Path "HKCU:\Software\Microsoft\TabletTip\1.7"  -Force **>$null
             }
 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\TabletTip\1.7" -Name "EnableTextPrediction" -Value 0
@@ -2259,13 +2259,13 @@ Function PrivacySettings {
             $Clipboardreg1 = "HKCU:\Software\Microsoft\Clipboard"
         
             if (-not (Test-Path $Clipboardreg1)) {
-                New-Item -Path $Clipboardreg1 -Force *>$null
+                New-Item -Path $Clipboardreg1 -Force **>$null
             }
 
             $Clipboardreg2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
         
             if (-not (Test-Path $Clipboardreg2)) {
-                New-Item -Path $Clipboardreg2 -Force *>$null
+                New-Item -Path $Clipboardreg2 -Force **>$null
             }
         
             try {
@@ -2287,7 +2287,7 @@ Function PrivacySettings {
             $diagpath = "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\DataCollection"
         
             if (-not (Test-Path $diagpath)) {
-                New-Item -Path $diagpath -Force *>$null
+                New-Item -Path $diagpath -Force **>$null
             }
         
             try {
@@ -2309,7 +2309,7 @@ Function PrivacySettings {
             $stepspath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"
         
             if (-not (Test-Path $stepspath)) {
-                New-Item -Path $stepspath -Force *>$null
+                New-Item -Path $stepspath -Force **>$null
             }
         
             try {
@@ -2330,7 +2330,7 @@ Function PrivacySettings {
             $keyboardtext = "HKCU:\Software\Microsoft\Input\Settings"
         
             if (-not (Test-Path $keyboardtext)) {
-                New-Item -Path $keyboardtext -Force *>$null
+                New-Item -Path $keyboardtext -Force **>$null
             }
         
             try {
@@ -2351,7 +2351,7 @@ Function PrivacySettings {
             $applaunchtr = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         
             if (-not (Test-Path $applaunchtr)) {
-                New-Item -Path $applaunchtr -Force *>$null
+                New-Item -Path $applaunchtr -Force **>$null
             }
         
             try {
@@ -2924,10 +2924,10 @@ Function GithubSoftwares {
             Function InstallOrUpdateWinget {
                 Write-Host `n"Installing/upgrading winget..." -NoNewline
                 Set-ExecutionPolicy RemoteSigned -Force -Scope CurrentUser
-                Install-PackageProvider -Name "NuGet" -Force *>$null
+                Install-PackageProvider -Name "NuGet" -Force **>$null
                 Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
                 Install-Script winget-install -Force
-                winget-install -Force -wait *>$null
+                winget-install -Force -wait **>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             
@@ -2982,7 +2982,7 @@ Function GithubSoftwares {
             Remove-Job -Job $job
 
             # Kill the processes of power toys
-            taskkill.exe /f /im "PowerToys*" *>$null
+            taskkill.exe /f /im "PowerToys*" **>$null
 
         }
         
@@ -3047,7 +3047,7 @@ Detecting programs that cannot be installed with winget...
                 # Install Chocolatey
                 Set-ExecutionPolicy Bypass -Scope Process -Force
                 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-                Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
+                Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) **>$null
                 Start-Sleep 10
 
                 # Check if Chocolatey is installed
@@ -3062,7 +3062,7 @@ Detecting programs that cannot be installed with winget...
                 }
 
                 # Disable -y requirement for all packages
-                choco feature enable -n allowGlobalConfirmation *>$null
+                choco feature enable -n allowGlobalConfirmation **>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -3126,7 +3126,7 @@ Detecting programs that cannot be installed with winget...
         Function SafeTaskKill {
             param($processName)
         
-            taskkill /f /im $processName *>$null
+            taskkill /f /im $processName **>$null
 
             if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 128) {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -3160,7 +3160,7 @@ Detecting programs that cannot be installed with winget...
                     Write-Host "$vse already installed." -ForegroundColor Gray
                 }
                 else {
-                    & $vsCodePath --install-extension $vse *>$null
+                    & $vsCodePath --install-extension $vse **>$null
                     Start-Sleep -Seconds 3  # Give some time for the extension to install
                     $updatedInstalled = & $vsCodePath --list-extensions
                 }
@@ -3201,9 +3201,9 @@ Detecting programs that cannot be installed with winget...
         # 7-Zip on PS
         try {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
-            Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
-            Install-Module -Name 7Zip4PowerShell -Force *>$null
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force **>$null
+            Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted **>$null
+            Install-Module -Name 7Zip4PowerShell -Force **>$null
 
             if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
         }
@@ -3232,7 +3232,7 @@ Detecting programs that cannot be installed with winget...
                     }
         
                     try {
-                        sc.exe delete $service *>$null
+                        sc.exe delete $service **>$null
                         if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
                     }
                     catch {
@@ -3324,7 +3324,7 @@ Detecting programs that cannot be installed with winget...
             Write-Host "Vmware serial number is being set...." -NoNewline
             Silent
             $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208" -ErrorAction Stop
-            Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND *>$null
+            Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND **>$null
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         catch {
@@ -3332,7 +3332,7 @@ Detecting programs that cannot be installed with winget...
         }
 
         # webview2 is being forcibly reloaded because it is necessary
-        winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+        winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force **>$null
         
     }
 
@@ -3579,7 +3579,7 @@ Function UnusedApps {
         
             $EdgePrivacyKeys | ForEach-Object {
                 if (-not (Test-Path $EdgePrivacyCUPath)) {
-                    New-Item -Path $EdgePrivacyCUPath -Force >$null
+                    New-Item -Path $EdgePrivacyCUPath -Force *>$null
                 }
                 try {
                     Set-ItemProperty -Path $EdgePrivacyCUPath -Name $_ -Value 0
@@ -3611,7 +3611,7 @@ Function UnusedApps {
         
             $EdgePrivacyAUKeys | ForEach-Object {
                 if (-not (Test-Path $EdgePrivacyAUPath)) {
-                    New-Item -Path $EdgePrivacyAUPath -Force >$null
+                    New-Item -Path $EdgePrivacyAUPath -Force *>$null
                 }
                 try {
                     Set-ItemProperty -Path $EdgePrivacyAUPath -Name $_ -Value 0
@@ -3660,7 +3660,7 @@ Function UnusedApps {
                 $registryValues = $key.Value
         
                 if (-not (Test-Path $registryPath)) {
-                    New-Item -Path $registryPath -Force >$null
+                    New-Item -Path $registryPath -Force *>$null
                 }
         
                 foreach ($valueName in $registryValues.GetEnumerator()) {
@@ -3712,7 +3712,7 @@ Function UnusedApps {
                 $registryValues = $key.Value
         
                 if (-not (Test-Path $registryPath)) {
-                    New-Item -Path $registryPath -Force >$null
+                    New-Item -Path $registryPath -Force *>$null
                 }
         
                 foreach ($valueName in $registryValues.GetEnumerator()) {
@@ -3742,7 +3742,7 @@ Function UnusedApps {
 
                 # Old right click menu
                 $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
-                reg.exe add $regPath /f /ve *>$null
+                reg.exe add $regPath /f /ve **>$null
         
                 $contextMenuPaths = @(
                     "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo", #remove send to
@@ -3773,7 +3773,7 @@ Function UnusedApps {
                     $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
                     $cmd = "reg delete `"$regPath`" /f"
 
-                    Invoke-Expression $cmd *>$null
+                    Invoke-Expression $cmd **>$null
                 }
 
                 # New hash menu for right click
@@ -3781,14 +3781,14 @@ Function UnusedApps {
                 $sha256menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu"
                 $md5menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu"
 
-                reg add $regpath /f *>$null
-                reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f *>$null
-                reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f *>$null
-                reg add "$regpath\shell" /f *>$null
+                reg add $regpath /f **>$null
+                reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f **>$null
+                reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f **>$null
+                reg add "$regpath\shell" /f **>$null
 
-                reg add "$sha256menu" /f *>$null
-                reg add "$sha256menu\command" /f *>$null
-                reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
+                reg add "$sha256menu" /f **>$null
+                reg add "$sha256menu\command" /f **>$null
+                reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f **>$null
 
                 $tempOut = [System.IO.Path]::GetTempFileName()
                 $tempErr = [System.IO.Path]::GetTempFileName()
@@ -3796,9 +3796,9 @@ Function UnusedApps {
                 Remove-Item $tempOut -ErrorAction Ignore
                 Remove-Item $tempErr -ErrorAction Ignore
 
-                reg add "$md5menu" /f *>$null
-                reg add "$md5menu\command" /f *>$null
-                reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
+                reg add "$md5menu" /f **>$null
+                reg add "$md5menu\command" /f **>$null
+                reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f **>$null
 
                 $tempOut = [System.IO.Path]::GetTempFileName()
                 $tempErr = [System.IO.Path]::GetTempFileName()
@@ -3807,7 +3807,7 @@ Function UnusedApps {
                 Remove-Item $tempErr -ErrorAction Ignore
 
                 # Restart Windows Explorer
-                taskkill /f /im explorer.exe *>$null
+                taskkill /f /im explorer.exe **>$null
                 Start-Sleep 1
                 Start-Process "explorer.exe" -ErrorAction Stop
         
@@ -3825,7 +3825,7 @@ Function UnusedApps {
         Function DisableWidgets {
             Write-Host "Disabling Windows Widgets..." -NoNewline
             try {
-                winget uninstall "Windows web experience Pack" *>$null
+                winget uninstall "Windows web experience Pack" **>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             } 
             catch {
@@ -3929,39 +3929,39 @@ Function UnusedApps {
                 $explorerRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
                 
                 if (-not (Test-Path $registryPath)) {
-                    New-Item -Path $registryPath -Name $registryName -Force *>$null
+                    New-Item -Path $registryPath -Name $registryName -Force **>$null
                 }
                 
-                New-ItemProperty -Path $registryPath\$registryName -Name $registryProperty -Value 1 -PropertyType DWORD -Force *>$null
+                New-ItemProperty -Path $registryPath\$registryName -Name $registryProperty -Value 1 -PropertyType DWORD -Force **>$null
                 
                 if (-not (Test-Path $edgeRegistryPath)) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force **>$null
                 }
                 
-                New-ItemProperty -Path $edgeRegistryPath -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
+                New-ItemProperty -Path $edgeRegistryPath -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force **>$null
         
                 # Remove Copilot button from File Explorer
-                Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCopilotButton" -Value 0 -Force *>$null
+                Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCopilotButton" -Value 0 -Force **>$null
                 
                 $lmRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows"
                 $wowRegistryPath = "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows"
                 
                 if (-not (Test-Path $lmRegistryPath\$registryName)) {
-                    New-Item -Path $lmRegistryPath -Name $registryName -Force *>$null
+                    New-Item -Path $lmRegistryPath -Name $registryName -Force **>$null
                 }
                 
-                Set-ItemProperty -Path $lmRegistryPath\$registryName -Name $registryProperty -Value 1 -Force *>$null
+                Set-ItemProperty -Path $lmRegistryPath\$registryName -Name $registryProperty -Value 1 -Force **>$null
         
                 if (-not (Test-Path $wowRegistryPath\$registryName)) {
-                    New-Item -Path $wowRegistryPath -Name $registryName -Force *>$null
+                    New-Item -Path $wowRegistryPath -Name $registryName -Force **>$null
                 }
                 
-                Set-ItemProperty -Path $wowRegistryPath\$registryName -Name $registryProperty -Value 1 -Force *>$null
+                Set-ItemProperty -Path $wowRegistryPath\$registryName -Name $registryProperty -Value 1 -Force **>$null
 
                 $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
                 New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
                 If (-not (Test-Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
-                    New-Item -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
+                    New-Item -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force **>$null
                 }
                 Set-ItemProperty -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1
         
@@ -3989,7 +3989,7 @@ Function UnusedApps {
                 Silent #silently
                 try {
                     # Stop OneDrive and Explorer processes
-                    taskkill /F /IM OneDrive.exe /IM explorer.exe /T *>$null
+                    taskkill /F /IM OneDrive.exe /IM explorer.exe /T **>$null
 
                     # Uninstall OneDrive
                     $OneDriveSetupPaths = @(
@@ -4035,9 +4035,9 @@ Function UnusedApps {
                     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Value 1 -Force -ErrorAction SilentlyContinue
 
                     # Remove OneDrive from the registry
-                    reg load "HKU\Default" "C:\Users\Default\NTUSER.DAT" *>$null
-                    reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f *>$null
-                    reg unload "HKU\Default" *>$null
+                    reg load "HKU\Default" "C:\Users\Default\NTUSER.DAT" **>$null
+                    reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f **>$null
+                    reg unload "HKU\Default" **>$null
                     
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 
@@ -4072,15 +4072,15 @@ Function UnusedApps {
                 Write-Host "Removing Microsoft Edge..." -NoNewline
        
                 try {
-                    taskkill /f /im msedge.exe *>$null 2>&1
-                    taskkill /f /im explorer.exe *>$null 2>&1
+                    taskkill /f /im msedge.exe **>$null 2>&1
+                    taskkill /f /im explorer.exe **>$null 2>&1
                 
                     # Remove Edge Services
                     $edgeservices = "edgeupdate", "edgeupdatem"
                     foreach ($service in $edgeservices) {
                         Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
                         Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
-                        sc.exe delete $service *>$null 2>&1
+                        sc.exe delete $service **>$null 2>&1
                     }
                 
                     # Uninstall - Edge
@@ -4101,11 +4101,11 @@ Function UnusedApps {
                     $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
                     $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
                     $key = (Get-Item -Path $pattern).PSChildName
-                    reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
+                    reg delete "HKLM$appxStore\InboxApplications\$key" /f **>$null
                 
                     #if error use this > $SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
                     $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
-                    New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
+                    New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force **>$null
                     Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction SilentlyContinue
                     Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction SilentlyContinue
                 
@@ -4129,7 +4129,7 @@ Function UnusedApps {
                     }
                     Set-ItemProperty -Path $keyPath -Name $propertyName -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
                 
-                    taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
+                    taskkill /f /im "MicrosoftEdgeUpdate.exe" **>$null
                 
                     $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
                     if ($edgeDirectories) {
@@ -4149,7 +4149,7 @@ Function UnusedApps {
                     foreach ($path in $paths) {
                         $items = Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue
                         if ($items) {
-                            Remove-Item -Path $path -Force -Recurse -ErrorAction SilentlyContinue *>$null
+                            Remove-Item -Path $path -Force -Recurse -ErrorAction SilentlyContinue **>$null
                         }
                     }
                 
@@ -4214,8 +4214,8 @@ Function UnusedApps {
         Function Removelnks {
             Write-Host "Removing Desktop shortcuts..." -NoNewline
             try {
-                Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
-                Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
+                Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } **>$null
+                Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } **>$null
                 Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
