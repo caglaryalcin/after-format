@@ -2919,13 +2919,90 @@ Function GithubSoftwares {
         Function installwinget {
             # I now use asheroto's https://github.com/asheroto/winget-install repo to install winget
             Write-Host `n"Installing/upgrading winget..." -NoNewline
-            
+            # The winget install script will stay here as a backup
+            <#
+Function InstallOrUpdateWinget {
+    Function Silent {
+        $Global:ProgressPreference = 'SilentlyContinue'
+    }
+    
+    Function New-TemporaryFile {
+        # Create a temporary file
+        $tempPath = [System.IO.Path]::GetTempPath()
+        $tempFile = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
+        $null = New-Item -Path $tempFile -ItemType File -Force
+    
+        # Return the path of the temporary file
+        return $tempFile
+    }
+    
+    function Get-WingetDownloadUrl {
+        [CmdletBinding()]
+        param (
+            [Parameter(Mandatory = $true)]
+            [string]$Match
+        )
+    
+        $uri = "https://api.github.com/repos/microsoft/winget-cli/releases"
+        $releases = Invoke-RestMethod -uri $uri -Method Get -ErrorAction Stop
+    
+        foreach ($release in $releases) {
+            if ($release.name -match "preview") {
+                continue
+            }
+            $data = $release.assets | Where-Object name -Match $Match
+            if ($data) {
+                return $data.browser_download_url
+            }
+        }
+    
+        $latestRelease = $releases | Select-Object -First 1
+        $data = $latestRelease.assets | Where-Object name -Match $Match
+        return $data.browser_download_url
+    }
+    
+    # Download VCLibs
+    $VCLibs_Path = New-TemporaryFile
+    $VCLibs_Url = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    Silent
+    Invoke-WebRequest -Uri $VCLibs_Url -OutFile $VCLibs_Path
+    
+    # Download UI.Xaml
+    $UIXaml_Path = New-TemporaryFile
+    $UIXaml_Url = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx"
+    Silent
+    Invoke-WebRequest -Uri $UIXaml_Url -OutFile $UIXaml_Path
+    
+    # Download winget license
+    $winget_license_path = New-TemporaryFile
+    $winget_license_url = Get-WingetDownloadUrl -Match "License1.xml"
+    Silent
+    Invoke-WebRequest -Uri $winget_license_url -OutFile $winget_license_path
+    
+    # Download winget
+    $winget_path = New-TemporaryFile
+    $winget_url = "https://aka.ms/getwinget"
+    Silent
+    Invoke-WebRequest -Uri $winget_url -OutFile $winget_path
+    
+    Write-Host "Installing/upgrading winget..." -NoNewline
+    Add-AppxProvisionedPackage -Online -PackagePath $winget_path -DependencyPackagePath $UIXaml_Path, $VCLibs_Path -LicensePath $winget_license_path | Out-Null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    
+    Remove-Item $VCLibs_Path
+    Remove-Item $UIXaml_Path
+    Remove-Item $winget_path
+    Remove-Item $winget_license_path
+}
+
+InstallOrUpdateWinget
+#>
             $job = Start-Job -ScriptBlock {
                 &([ScriptBlock]::Create((irm winget.pro))) -Force *>$null
             }
             
             Wait-Job -Job $job | Out-Null
-            
+
             #create softwares task
             $wtPath = Get-Command wt.exe | Select-Object -ExpandProperty Definition
 
