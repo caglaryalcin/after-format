@@ -740,6 +740,7 @@ Function SystemSettings {
         Function SetDNS {
             Write-Host `n"Which DNS provider " -NoNewline
             Write-Host "do you want to use?" -ForegroundColor Yellow
+            Write-Host "Which DNS provider do you want to set? Write 1, 2 or 3."
             Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
             Write-Host " - Cloudflare"
             Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow

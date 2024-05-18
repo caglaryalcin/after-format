@@ -1,6 +1,28 @@
+##########
+#region Priority
+##########
+
+Function Priority {
+    $ErrorActionPreference = 'SilentlyContinue'
+    New-PSDrive -PSProvider Registry -Name HKCU -Root HKEY_CURRENT_USER | Out-Null
+    New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
+    New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
+    New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+}
+
+Priority
+
+Function Silent {
+    $Global:ProgressPreference = 'SilentlyContinue'
+}
+
+##########
+#endregion Priority
+##########
+
 $wingetWarnings = @()
 Function InstallSoftwares {
-    Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
+    Write-Host "---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
     Write-Host "Chapter completed."
     Write-Host `n"---------Adjusting Privacy Settings" -ForegroundColor Blue -BackgroundColor Gray
     Write-Host "Chapter completed."
@@ -1060,7 +1082,7 @@ Function UnusedApps {
                 Silent #silently
                 try {
                     # Stop OneDrive and Explorer processes
-                    taskkill /F /IM OneDrive.exe /IM explorer.exe /T *>$null
+                    taskkill /f /im OneDrive.exe *>$null
 
                     # Uninstall OneDrive
                     $OneDriveSetupPaths = @(
@@ -1257,6 +1279,9 @@ Function UnusedApps {
                             Remove-Item $fullPath3 -ErrorAction Stop
                         }
                     }
+
+                    # Start Windows Explorer
+                    Start-Process "explorer.exe" -NoNewWindow
                 }
                 catch {
                     Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
