@@ -241,6 +241,8 @@ Function SafeTaskKill {
         
 SafeTaskKill "GithubDesktop.exe"
 SafeTaskKill "Cloudflare WARP.exe"
+SafeTaskKill "steam.exe"
+SafeTaskKill "AnyDesk.exe"
 Function Install-VSCodeExtensions {
     Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
     Start-Sleep 5
@@ -1134,7 +1136,6 @@ Function UnusedApps {
                     
                     Remove-Item -Path "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction SilentlyContinue
 
-                    Start-Process "explorer.exe" -NoNewWindow
                     Start-Sleep 3
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
@@ -1197,7 +1198,8 @@ Function UnusedApps {
                     reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
                 
                     #if error use this > $SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-                    $SID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([Security.Principal.SecurityIdentifier]).Value
+                    $user = "$env:USERDOMAIN\$env:USERNAME"
+                    (New-Object System.Security.Principal.NTAccount($user)).Translate([System.Security.Principal.SecurityIdentifier]).Value
                     New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
                     Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction SilentlyContinue
                     Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction SilentlyContinue
