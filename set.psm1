@@ -739,14 +739,14 @@ Function SystemSettings {
         # DNS Settings 
         Function SetDNS {
             Write-Host `n"Which DNS provider " -NoNewline
-            Write-Host "do you want to use?" -ForegroundColor Yellow
-            Write-Host "Write 1, 2 or 3."
+            Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
+            Write-Host " Write 1, 2 or 3."
             Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Cloudflare"
+            Write-Host " - Cloudflare - 14.8ms"
             Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Google"
+            Write-Host " - Google - 34.73ms"
             Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Adguard"
+            Write-Host " - Adguard - 32.11ms"
             $choice = Read-Host -Prompt `n"[Choice]"
         
             $dnsServers = @()
