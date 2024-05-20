@@ -1308,7 +1308,7 @@ Function UnusedApps {
         UninstallEdge
 
         Function Removelnks {
-            Write-Host "Removing Desktop shortcuts..." -NoNewline
+            Write-Host `n"Removing Desktop shortcuts..." -NoNewline
             try {
                 Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
                 Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
