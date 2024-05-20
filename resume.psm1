@@ -1199,7 +1199,7 @@ Function UnusedApps {
                 
                     #if error use this > $SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
                     $user = "$env:USERDOMAIN\$env:USERNAME"
-                    (New-Object System.Security.Principal.NTAccount($user)).Translate([System.Security.Principal.SecurityIdentifier]).Value
+                    (New-Object System.Security.Principal.NTAccount($user)).Translate([System.Security.Principal.SecurityIdentifier]).Value *>$null
                     New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
                     Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction SilentlyContinue
                     Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction SilentlyContinue
@@ -1282,8 +1282,6 @@ Function UnusedApps {
                         }
                     }
 
-                    # Start Windows Explorer
-                    Start-Process "explorer.exe" -NoNewWindow
                 }
                 catch {
                     Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
