@@ -193,7 +193,7 @@ Function SystemSettings {
             if ($response -eq 'y' -or $response -eq 'Y') {
                 do {
                     Write-Host "Which keyboard layout do you want to set? Write 1, 2 or 3."
-                    Write-Host "[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                    Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                     Write-Host " - Turkish keyboard layout"
                     Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                     Write-Host " - United Kingdom keyboard layout"
@@ -773,7 +773,7 @@ Function SystemSettings {
             Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
             Write-Host " - Google " -NoNewline
             Write-Host "[$googlePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-            Write-Host "ms" -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
             Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
             Write-Host " - Adguard " -NoNewline
             Write-Host "[$adguardPing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
