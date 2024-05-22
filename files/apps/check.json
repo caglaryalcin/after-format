@@ -41,7 +41,6 @@
         {"PackageIdentifier": ["tailscale"]},
         {"PackageIdentifier": ["WinFsp"]},
         {"PackageIdentifier": ["rufus"]},
-        {"PackageIdentifier": ["regshot"]},
         {"PackageIdentifier": ["handbrake"]},
         {"PackageIdentifier": ["runtime"]},
         {"PackageIdentifier": ["webview"]},
