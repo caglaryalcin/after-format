@@ -737,19 +737,60 @@ Function SystemSettings {
         #DisableVMEthernets
 
         # DNS Settings 
+        Function GetPingTime {
+            param (
+                [string]$address
+            )
+            
+            $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
+            if ($pingOutput) {
+                $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
+                return $pingTime
+            }
+            else {
+                return "N/A"
+            }
+        }
+        
+        Function GetPingTime {
+            param (
+                [string]$address
+            )
+            
+            $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
+            if ($pingOutput) {
+                $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
+                return $pingTime
+            }
+            else {
+                return "N/A"
+            }
+        }
+        
         Function SetDNS {
+        
             Write-Host `n"Which DNS provider " -NoNewline
             Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
             Write-Host " Write 1, 2 or 3."
+            Write-Host "MS values are being calculated..." -NoNewline
+            $cloudflareDNS = "1.1.1.1"
+            $googleDNS = "8.8.8.8"
+            $adguardDNS = "94.140.14.14"
+            
+            $cloudflarePing = GetPingTime -address $cloudflareDNS
+            $googlePing = GetPingTime -address $googleDNS
+            $adguardPing = GetPingTime -address $adguardDNS
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+           
             Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
             Write-Host " - Cloudflare -- " -NoNewline
-            Write-Host "14.8ms" -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "$cloudflarePing ms" -ForegroundColor Yellow -BackgroundColor Black
             Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
             Write-Host " - Google -- " -NoNewline
-            Write-Host "34.73ms" -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "$googlePing ms" -ForegroundColor Yellow -BackgroundColor Black
             Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
             Write-Host " - Adguard -- " -NoNewline
-            Write-Host "32.11ms" -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "$adguardPing ms" -ForegroundColor Yellow -BackgroundColor Black
             $choice = Read-Host -Prompt `n"[Choice]"
         
             $dnsServers = @()
@@ -773,7 +814,7 @@ Function SystemSettings {
             }
         
             try {
-                $interfaces = "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"
+                $interfaces = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -ExpandProperty ifIndex
                 Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction SilentlyContinue
             }
             catch {
