@@ -3067,10 +3067,6 @@ InstallOrUpdateWinget
         #region Remove Unused Apps/Softwares
         ##########
         Function UnusedApps {
-            # Remove temp softwares task
-            $taskName = "softwares"
-            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
-
             Write-Host `n"---------Remove Unused Apps/Softwares" -ForegroundColor Blue -BackgroundColor Gray
 
             Write-Host `n"Do you want " -NoNewline
@@ -3537,20 +3533,6 @@ InstallOrUpdateWinget
                 }
         
                 RightClickMenu
-
-                Function DisableWidgets {
-                    Write-Host "Disabling Windows Widgets..." -NoNewline
-                    try {
-                        winget uninstall "Windows Web Experience Pack" *>$null
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                    } 
-                    catch {
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                    }
-            
-                }
-
-                DisableWidgets
 
                 # Remove Tasks in Task Scheduler
                 Function RemoveTasks {
