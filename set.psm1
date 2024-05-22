@@ -3535,6 +3535,20 @@ InstallOrUpdateWinget
         
                 RightClickMenu
 
+                Function DisableWidgets {
+                    Write-Host "Disabling Windows Widgets..." -NoNewline
+                    try {
+                        Get-AppxPackage -AllUsers -Name *WebExperience* | Remove-AppxPackage -AllUsers *>$null
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    } 
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+            
+                }
+
+                DisableWidgets
+
                 # Remove Tasks in Task Scheduler
                 Function RemoveTasks {
                     $description = @"
