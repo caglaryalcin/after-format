@@ -227,7 +227,7 @@ foreach ($pkg in $packagesToCheck) {
 Write-Host @"
 ----------------
 
-"@
+"@ -ForegroundColor Yellow
 
 Function SafeTaskKill {
     param($processName)
@@ -920,7 +920,7 @@ Function UnusedApps {
         Function DisableWidgets {
             Write-Host "Disabling Windows Widgets..." -NoNewline
             try {
-                winget uninstall "Windows web experience Pack" *>$null
+                winget uninstall "Windows Web Experience Pack" *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             } 
             catch {
@@ -943,7 +943,7 @@ Function UnusedApps {
             Write-Host `n$description -ForegroundColor Yellow
         
             Write-Host `n"Do you want " -NoNewline
-            Write-Host "apps and windows update tasks to be deleted?" -ForegroundColor Yellow -NoNewline
+            Write-Host "apps and Windows update tasks to be deleted?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             
             $response = Read-Host

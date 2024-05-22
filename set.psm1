@@ -742,11 +742,14 @@ Function SystemSettings {
             Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
             Write-Host " Write 1, 2 or 3."
             Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Cloudflare - 14.8ms"
+            Write-Host " - Cloudflare -- " -NoNewline
+            Write-Host "14.8ms" -ForegroundColor Yellow -BackgroundColor Black
             Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Google - 34.73ms"
+            Write-Host " - Google -- " -NoNewline
+            Write-Host "34.73ms" -ForegroundColor Yellow -BackgroundColor Black
             Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Adguard - 32.11ms"
+            Write-Host " - Adguard -- " -NoNewline
+            Write-Host "32.11ms" -ForegroundColor Yellow -BackgroundColor Black
             $choice = Read-Host -Prompt `n"[Choice]"
         
             $dnsServers = @()
