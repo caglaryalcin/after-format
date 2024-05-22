@@ -737,62 +737,49 @@ Function SystemSettings {
         #DisableVMEthernets
 
         # DNS Settings 
-        Function GetPingTime {
-            param (
-                [string]$address
-            )
-            
-            $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
-            if ($pingOutput) {
-                $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
-                return $pingTime
-            }
-            else {
-                return "N/A"
-            }
-        }
-        
-        Function GetPingTime {
-            param (
-                [string]$address
-            )
-            
-            $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
-            if ($pingOutput) {
-                $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
-                return $pingTime
-            }
-            else {
-                return "N/A"
-            }
-        }
-        
         Function SetDNS {
+            Function GetPingTime {
+                param (
+                    [string]$address
+                )
         
+                $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
+                if ($pingOutput) {
+                    $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
+                    return $pingTime
+                }
+                else {
+                    return "N/A"
+                }
+            }
             Write-Host `n"Which DNS provider " -NoNewline
             Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
             Write-Host " Write 1, 2 or 3."
             Write-Host "MS values are being calculated..." -NoNewline
+    
             $cloudflareDNS = "1.1.1.1"
             $googleDNS = "8.8.8.8"
             $adguardDNS = "94.140.14.14"
-            
+        
             $cloudflarePing = GetPingTime -address $cloudflareDNS
             $googlePing = GetPingTime -address $googleDNS
             $adguardPing = GetPingTime -address $adguardDNS
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-           
-            Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Cloudflare -- " -NoNewline
-            Write-Host "$cloudflarePing ms" -ForegroundColor Yellow -BackgroundColor Black
-            Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Google -- " -NoNewline
-            Write-Host "$googlePing ms" -ForegroundColor Yellow -BackgroundColor Black
-            Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Adguard -- " -NoNewline
-            Write-Host "$adguardPing ms" -ForegroundColor Yellow -BackgroundColor Black
-            $choice = Read-Host -Prompt `n"[Choice]"
         
+            Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Cloudflare " -NoNewline
+            Write-Host "[$cloudflarePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+            Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Google " -NoNewline
+            Write-Host "[$googlePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+            Write-Host "ms" -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Adguard " -NoNewline
+            Write-Host "[$adguardPing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+            Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+            $choice = Read-Host -Prompt `n"[Choice]"
+    
             $dnsServers = @()
             switch ($choice) {
                 1 {
@@ -812,7 +799,7 @@ Function SystemSettings {
                     return
                 }
             }
-        
+    
             try {
                 $interfaces = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -ExpandProperty ifIndex
                 Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction SilentlyContinue
@@ -822,8 +809,8 @@ Function SystemSettings {
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-        
-        SetDNS        
+    
+        SetDNS    
 
         # Windows Explorer configure settings
         Function ExplorerSettings {
