@@ -440,7 +440,16 @@ catch {
 }
 
 # webview2 is being forcibly reloaded because it is necessary
-winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+try {
+    Write-Host "Reinstalling Microsoft Edge WebView2 Runtime..." -NoNewline
+    Silent
+    winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+catch {
+    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+
+}
 
 ##########
 #region Remove Unused Apps/Softwares

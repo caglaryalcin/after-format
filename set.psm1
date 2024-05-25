@@ -1608,7 +1608,9 @@ Function SystemSettings {
                 [string[]]$disableservices
             )
             Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-        
+            
+            $infoOccurred = $false
+            
             foreach ($service in $disableservices) {
                 try {
                     $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
@@ -1618,18 +1620,21 @@ Function SystemSettings {
                     }
                 }
                 catch {
-                    Write-Host "Could not stop/disable $service" -NoNewline
+                    Write-Host "[INFO] Could not stop/disable $service" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                    $infoOccurred = $true
                 }
             }
         
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            if (-not $infoOccurred) {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
         }
         
         # Function usage
         $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "lmhosts", "WerSvc", "wisvc", "PhoneSvc", "EFS", "BDESVC",
             "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")
-        
+            
         Disable-Services -disableservices $disableservices        
 
         Function Telnet {
