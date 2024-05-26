@@ -29,9 +29,9 @@ Function Silent {
 #region System Settings 
 ##########
 Function SystemSettings {
-    Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
+    Write-Host "`n---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
 
-    Write-Host `n"Do you want " -NoNewline
+    Write-Host "`nDo you want " -NoNewline
     Write-Host "System Settings?" -ForegroundColor Yellow -NoNewline
     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
     $response = Read-Host
