@@ -455,19 +455,24 @@ Function SystemSettings {
         
         # Disable Sync your settings
         Function DisableSync {
-            Write-Host "Disabling Sync your settings..." -NoNewline
-            $registryPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
+            Write-Host "Synchronization with microsoft is completely disabling..." -NoNewline
+            $syncPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
+            $msaccountpath = "HKLM:\SOFTWARE\Microsoft\Windows\Currentversion\Policies\System"
+            $msaccountpath2 = "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Settings\AllowYourAccount"
 
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force *>$null
+            if (-not (Test-Path $syncPath)) {
+                New-Item -Path $syncPath -Force *>$null
             }
 
             try {
-                Set-ItemProperty -Path $registryPath -Name "DisableSettingSyncUserOverride" -Value 1
-                Set-ItemProperty -Path $registryPath -Name "DisableSyncYourSettings" -Value 1
-                Set-ItemProperty -Path $registryPath -Name "DisableWebBrowser" -Value 1
-                Set-ItemProperty -Path $registryPath -Name "DisablePersonalization" -Value 1
-                Set-ItemProperty -Path $registryPath -Name "DisableSettingSync" -Value 2
+                Set-ItemProperty -Path $syncPath -Name "DisableSettingSyncUserOverride" -Value 1
+                Set-ItemProperty -Path $syncPath -Name "DisableSyncYourSettings" -Value 1
+                Set-ItemProperty -Path $syncPath -Name "DisableWebBrowser" -Value 1
+                Set-ItemProperty -Path $syncPath -Name "DisablePersonalization" -Value 1
+                Set-ItemProperty -Path $syncPath -Name "DisableSettingSync" -Value 2
+                Set-ItemProperty -Path $msaccountpath -Name "NoConnectedUser" -Value 3
+                Set-ItemProperty -Path $msaccountpath2 -Name "value" -Value 0
+
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
