@@ -258,7 +258,7 @@ Function Install-VSCodeExtensions {
     $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
     $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python"
     $github = "github.vscode-pull-request-github", "github.copilot"
-    $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode"
+    $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode", "redhat.vscode-yaml"
     $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux
         
     $installed = & $vsCodePath --list-extensions

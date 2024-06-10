@@ -757,11 +757,18 @@ Function SystemSettings {
                     return "N/A"
                 }
             }
+        
+            $confirmation = Read-Host "Would you like to change your DNS setting? (y/n)"
+            if ($confirmation -notin @("yes", "y", "Y")) {
+                Write-Host "DNS settings will not be changed."
+                return
+            }
+        
             Write-Host `n"Which DNS provider " -NoNewline
             Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
             Write-Host " Write 1, 2 or 3."
             Write-Host "MS values are being calculated..." -NoNewline
-    
+        
             $cloudflareDNS = "1.1.1.1"
             $googleDNS = "8.8.8.8"
             $adguardDNS = "94.140.14.14"
@@ -784,7 +791,7 @@ Function SystemSettings {
             Write-Host "[$adguardPing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
             Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
             $choice = Read-Host -Prompt `n"[Choice]"
-    
+        
             $dnsServers = @()
             switch ($choice) {
                 1 {
@@ -804,7 +811,7 @@ Function SystemSettings {
                     return
                 }
             }
-    
+        
             try {
                 $interfaces = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -ExpandProperty ifIndex
                 Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction SilentlyContinue
@@ -814,8 +821,9 @@ Function SystemSettings {
             }
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-    
-        SetDNS    
+        
+        SetDNS
+        
 
         # Windows Explorer configure settings
         Function ExplorerSettings {
