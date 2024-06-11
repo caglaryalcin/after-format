@@ -117,7 +117,7 @@ Function Get-InstalledProgram {
 
     # check other paths
     $paths = @(
-        'C:\programdata\chocolatey\lib',
+        'C:\programdata\',
         'C:\Program Files (x86)\',
         'C:\Program Files\'
     )
