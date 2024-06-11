@@ -141,39 +141,49 @@ Detecting programs that cannot be installed with winget...
 
 "@
 Function chocoinstall {
-    try {
-        Write-Host "Installing chocolatey..." -NoNewline
+    $chocoExecutablePath = Join-Path -Path 'C:\ProgramData\chocolatey\bin' -ChildPath 'choco.exe'
 
-        # Disable Chocolatey's first run customization
-        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Force | Out-Null
+    if (-not (Test-Path -Path $chocoExecutablePath)) {
+        try {
+            Write-Host "Installing Chocolatey..." -NoNewline
+
+            # Disable Chocolatey's first run customization
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 1 -Type DWord
+
+            # Install Chocolatey
+            Set-ExecutionPolicy Bypass -Scope Process -Force
+            [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+            Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
+            Start-Sleep 10
+
+            # Check if Chocolatey is installed
+            if (Test-Path -Path $chocoExecutablePath) {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            else {
+                $errorMessage = "Chocolatey installation failed or Chocolatey is not available in PATH."
+                Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
+                throw $errorMessage
+            }
+
+            # Disable -y requirement for all packages
+            choco feature enable -n allowGlobalConfirmation *>$null
+
+            # Set the Chocolatey path to the environment variable
+            $env:PATH += ";C:\ProgramData\chocolatey\bin"
+            [System.Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\ProgramData\chocolatey\bin', [System.EnvironmentVariableTarget]::Machine)
         }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize" -Value 1 -Type DWord
-
-        # Install Chocolatey
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) *>$null
-        Start-Sleep 10
-
-        # Check if Chocolatey is installed
-        $chocoExecutablePath = Join-Path -Path 'C:\ProgramData\chocolatey\bin' -ChildPath 'choco.exe'
-        if (Test-Path -Path $chocoExecutablePath) {
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
         }
-        else {
-            $errorMessage = "Chocolatey installation failed or Chocolatey is not available in PATH."
-            Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
-            throw $errorMessage
-        }
-
-        # Disable -y requirement for all packages
-        choco feature enable -n allowGlobalConfirmation *>$null
     }
-    catch {
-        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+    else {
+        $env:PATH += ";C:\ProgramData\chocolatey\bin"
+        [System.Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\ProgramData\chocolatey\bin', [System.EnvironmentVariableTarget]::Machine)
     }
-
 }
 
 chocoinstall
