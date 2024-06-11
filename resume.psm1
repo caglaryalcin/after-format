@@ -124,7 +124,7 @@ Function Get-InstalledProgram {
     
     foreach ($path in $paths) {
         if (-not $installedProgram) {
-            $chocoPrograms = Get-ChildItem -Path $path -Filter "$programName*" -ErrorAction SilentlyContinue
+            $chocoPrograms = Get-ChildItem -Path $path -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*$programName*" }
             if ($null -ne $chocoPrograms -and $chocoPrograms.Count -gt 0) {
                 $installedProgram = $true
                 break

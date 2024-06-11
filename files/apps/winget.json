@@ -4,6 +4,7 @@
   "Sources": [
     {
       "Packages": [
+        {"PackageIdentifier": "Chocolatey.Chocolatey"},
         {"PackageIdentifier": "Google.Chrome"},
         {"PackageIdentifier": "Brave.Brave"},
         {"PackageIdentifier": "Mozilla.Firefox"},
