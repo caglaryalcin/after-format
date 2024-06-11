@@ -758,16 +758,20 @@ Function SystemSettings {
                 }
             }
         
-            $confirmation = Read-Host "Would you like to change your DNS setting? (y/n)"
+            Write-Host `n"Would you like to change your " -NoNewline
+            Write-Host "DNS setting?" -ForegroundColor Yellow -NoNewline
+            Write-Host " (y/n): " -ForegroundColor Green -NoNewline
+            $confirmation = Read-Host
+
             if ($confirmation -notin @("yes", "y", "Y")) {
                 Write-Host "DNS settings will not be changed."
                 return
             }
         
-            Write-Host `n"Which DNS provider " -NoNewline
+            Write-Host "Which DNS provider " -NoNewline
             Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
             Write-Host " Write 1, 2 or 3."
-            Write-Host "MS values are being calculated..." -NoNewline
+            Write-Host `n"MS values are being calculated..." -NoNewline
         
             $cloudflareDNS = "1.1.1.1"
             $googleDNS = "8.8.8.8"
@@ -823,7 +827,6 @@ Function SystemSettings {
         }
         
         SetDNS
-        
 
         # Windows Explorer configure settings
         Function ExplorerSettings {
