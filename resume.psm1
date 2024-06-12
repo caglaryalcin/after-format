@@ -63,11 +63,17 @@ Function InstallSoftwares {
 
     foreach ($pkg in $packages) {
         $packageName = $pkg.PackageIdentifier
+        $installerType = $pkg.InstallerType
         Write-Host "Installing $packageName..." -NoNewLine
 
         # Install the packages
         Start-Sleep -Milliseconds 5
-        $result = & winget install $packageName -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
+        if ($installerType) {
+            $result = & winget install $packageName -e --installer-type $installerType --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
+        }
+        else {
+            $result = & winget install $packageName -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
+        }
 
         # Check if the installation was successful
         if ($LASTEXITCODE -ne 0 -or $result -match "does not match" -or $result -match "fail") {

@@ -22,7 +22,10 @@
         {"PackageIdentifier": "Git.Git"},
         {"PackageIdentifier": "AnyDeskSoftwareGmbH.AnyDesk"},
         {"PackageIdentifier": "Ookla.Speedtest.CLI"},
-        {"PackageIdentifier": "GitHub.GitHubDesktop"},
+		{
+          "PackageIdentifier": "GitHub.GitHubDesktop",
+          "InstallerType": "exe"
+        },
         {"PackageIdentifier": "VideoLAN.VLC"},
         {"PackageIdentifier": "JAMSoftware.TreeSize.Free"},
         {"PackageIdentifier": "Ghisler.TotalCommander"},
