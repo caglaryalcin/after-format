@@ -268,11 +268,13 @@ Function Install-VSCodeExtensions {
         $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd" # for chocolatey installations
     }
         
-    $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker"
-    $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker", "redhat.vscode-xml", "dotjoshjohnson.xml"
+    $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker", "formulahendry.docker-explorer", "p1c2u.docker-compose"
+    $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker", 
+    "redhat.vscode-xml", "dotjoshjohnson.xml"
     $design = "pkief.material-icon-theme"
     $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
-    $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python"
+    $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", 
+    "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python", "naumovs.color-highlight"
     $github = "github.vscode-pull-request-github", "github.copilot"
     $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode", "redhat.vscode-yaml"
     $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux
