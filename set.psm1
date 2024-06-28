@@ -3860,7 +3860,7 @@ InstallOrUpdateWinget
                 
                             #if error use this > $SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
                             $user = "$env:USERDOMAIN\$env:USERNAME"
-                    (New-Object System.Security.Principal.NTAccount($user)).Translate([System.Security.Principal.SecurityIdentifier]).Value *>$null
+                            (New-Object System.Security.Principal.NTAccount($user)).Translate([System.Security.Principal.SecurityIdentifier]).Value *>$null
                             New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
                             Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction SilentlyContinue
                             Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction SilentlyContinue
@@ -3941,6 +3941,13 @@ InstallOrUpdateWinget
                                 if (Test-Path $fullPath3) {
                                     Remove-Item $fullPath3 -ErrorAction Stop
                                 }
+                            }
+
+                            # Remove Edge tasks
+                            $tasks = Get-ScheduledTask | Where-Object { $_.TaskName -like "*edge*" }
+
+                            foreach ($task in $tasks) {
+                                Unregister-ScheduledTask -TaskName $task.TaskName -Confirm:$false
                             }
 
                         }

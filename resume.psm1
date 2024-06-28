@@ -1191,11 +1191,11 @@ Function UnusedApps {
             $response = Read-Host
             if ($response -eq 'y' -or $response -eq 'Y') {
                 Write-Host "Removing Microsoft Edge..." -NoNewline
-       
+
                 try {
                     taskkill /f /im msedge.exe *>$null 2>&1
                     taskkill /f /im explorer.exe *>$null 2>&1
-                
+        
                     # Remove Edge Services
                     $edgeservices = "edgeupdate", "edgeupdatem"
                     foreach ($service in $edgeservices) {
@@ -1203,7 +1203,7 @@ Function UnusedApps {
                         Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
                         sc.exe delete $service *>$null 2>&1
                     }
-                
+        
                     # Uninstall - Edge
                     $regView = [Microsoft.Win32.RegistryView]::Registry32
                     $microsoft = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $regView).OpenSubKey('SOFTWARE\Microsoft', $true)
@@ -1211,26 +1211,26 @@ Function UnusedApps {
                     if ($null -ne $edgeClient.GetValue('experiment_control_labels')) {
                         $edgeClient.DeleteValue('experiment_control_labels')
                     }
-                
+        
                     $microsoft.CreateSubKey('EdgeUpdateDev').SetValue('AllowUninstall', '')
-                
+        
                     $uninstallRegKey = $microsoft.OpenSubKey('Windows\CurrentVersion\Uninstall\Microsoft Edge')
                     $uninstallString = $uninstallRegKey.GetValue('UninstallString') + ' --force-uninstall'
                     Silent #silently
                     Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden
-                
+        
                     $appxStore = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
                     $pattern = "HKLM:$appxStore\InboxApplications\Microsoft.MicrosoftEdge_*_neutral__8wekyb3d8bbwe"
                     $key = (Get-Item -Path $pattern).PSChildName
                     reg delete "HKLM$appxStore\InboxApplications\$key" /f *>$null
-                
+        
                     #if error use this > $SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
                     $user = "$env:USERDOMAIN\$env:USERNAME"
                     (New-Object System.Security.Principal.NTAccount($user)).Translate([System.Security.Principal.SecurityIdentifier]).Value *>$null
                     New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force *>$null
                     Get-AppxPackage -Name Microsoft.MicrosoftEdge | Remove-AppxPackage -ErrorAction SilentlyContinue
                     Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -ErrorAction SilentlyContinue
-                
+        
                     # Delete additional files
                     $additionalFilesPath = "C:\Windows\System32\MicrosoftEdgeCP.exe"
                     if (Test-Path -Path $additionalFilesPath) {
@@ -1243,38 +1243,38 @@ Function UnusedApps {
                             Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
                         }
                     }
-                
+        
                     $keyPath = "HKLM:\SOFTWARE\Microsoft\EdgeUpdate"
                     $propertyName = "DoNotUpdateToEdgeWithChromium"
                     if (-not (Test-Path $keyPath)) {
                         New-Item -Path $keyPath -Force | Out-Null
                     }
                     Set-ItemProperty -Path $keyPath -Name $propertyName -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                
+        
                     taskkill /f /im "MicrosoftEdgeUpdate.exe" *>$null
-                
+        
                     $edgeDirectories = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft" -Filter "Edge*" -Directory -ErrorAction SilentlyContinue
                     if ($edgeDirectories) {
                         $edgeDirectories | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
                     }
-                
+        
                     $progressPreference = 'SilentlyContinue'
                     Get-AppxPackage -AllUsers Microsoft.Edge | Remove-AppxPackage -ErrorAction SilentlyContinue | Out-Null
-                
+        
                     $paths = @(
                         "C:\Program Files (x86)\Microsoft\*edge*",
                         "C:\Program Files (x86)\Microsoft\Edge",
                         "C:\Program Files (x86)\Microsoft\Temp",
                         "C:\Program Files (x86)\Microsoft\*"
                     )
-                
+        
                     foreach ($path in $paths) {
                         $items = Get-ChildItem -Path $path -Recurse -ErrorAction SilentlyContinue
                         if ($items) {
                             Remove-Item -Path $path -Force -Recurse -ErrorAction SilentlyContinue *>$null
                         }
                     }
-                
+        
                     # Final check if Edge is still installed
                     if (!(Get-Process "msedge" -ErrorAction SilentlyContinue)) {
                         Start-Process explorer.exe -NoNewWindow
@@ -1295,11 +1295,11 @@ Function UnusedApps {
                         $fullPath1 = Join-Path $taskBarPath $_
                         $fullPath2 = Join-Path $taskBarPath1 $_
                         $fullPath3 = Join-Path $taskBarPath2 $_
-    
+
                         if (Test-Path $fullPath1) {
                             Remove-Item $fullPath1 -ErrorAction Stop
                         }
-    
+
                         if (Test-Path $fullPath2) {
                             Remove-Item $fullPath2 -ErrorAction Stop
                         }
@@ -1309,11 +1309,18 @@ Function UnusedApps {
                         }
                     }
 
+                    # Remove Edge tasks
+                    $tasks = Get-ScheduledTask | Where-Object { $_.TaskName -like "*edge*" }
+
+                    foreach ($task in $tasks) {
+                        Unregister-ScheduledTask -TaskName $task.TaskName -Confirm:$false
+                    }
+
                 }
                 catch {
                     Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                 }
-                
+        
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
 
@@ -1324,14 +1331,14 @@ Function UnusedApps {
                     Set-Service -Name $service -Status stopped -StartupType disabled -ErrorAction SilentlyContinue
                 }
                 Write-Host "[Windows Edge will not be uninstalled]" -ForegroundColor Red -BackgroundColor Black
-                
+        
             }
             else {
                 Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
                 UninstallEdge
             }
         }
-        
+
         UninstallEdge
 
         Function Removelnks {
