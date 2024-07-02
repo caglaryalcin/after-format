@@ -1707,6 +1707,19 @@ Function SystemSettings {
 
         PasswordNeverExpires
 
+        Function DisableAccountNotifications {
+            Write-Host "Disabling Account Notifications..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_AccountNotifications" -Type DWord -Value 0
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        DisableAccountNotifications
+
         ##########
         #region Taskbar Settings
         ##########
