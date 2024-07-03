@@ -29,10 +29,6 @@ Function InstallSoftwares {
 
     Write-Host `n"---------Installing Softwares" -ForegroundColor Blue -BackgroundColor Gray
 
-    Write-Host `n"Do you want to " -NoNewline
-    Write-Host "install applications that are written on github?" -ForegroundColor Yellow -NoNewline
-    Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-    Write-Host "y"
     Write-Host `n"Installing/upgrading winget..." -NoNewline
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 
