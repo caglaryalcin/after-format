@@ -1379,8 +1379,6 @@ Function Restart {
     $response = Read-Host
 
     if ($response -eq 'y' -or $response -eq 'Y') {
-        Remove-Item C:\Asus -recurse -ErrorAction SilentlyContinue
-
         cmd.exe /c "shutdown /r /t 0"
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
@@ -1393,9 +1391,3 @@ Function Restart {
 }
 
 Restart
-
-Function MySettings {
-    Invoke-WebRequest "https://caglaryalcin.com/mysettings" -UseB | Invoke-Expression
-}
-
-MySettings

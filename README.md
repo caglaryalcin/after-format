@@ -217,14 +217,6 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 </details>
 
-My custom configs and drivers
-
-> [!WARNING]  
-> When this question is asked, you must answer by saying <kbd>n</kbd>. Because the settings here 
-are my specific settings.
-
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/6.png)
-
 ## Start the script
 
 ####
