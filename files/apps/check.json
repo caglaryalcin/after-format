@@ -24,7 +24,6 @@
         {"PackageIdentifier": ["Codec"]},
         {"PackageIdentifier": ["Download"]},
         {"PackageIdentifier": ["rufus"]},
-        {"PackageIdentifier": ["FanControl"]},
         {"PackageIdentifier": ["powertoys"]},
         {"PackageIdentifier": ["VLC"]},
         {"PackageIdentifier": ["Signal"]},
