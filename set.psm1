@@ -38,7 +38,6 @@ Function SystemSettings {
 
     if ($response -eq 'y' -or $response -eq 'Y') {
 
-        #Set TR Formats
         Function TRFormats {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "change the region settings to Turkiye?" -ForegroundColor Yellow -NoNewline
@@ -106,7 +105,6 @@ Function SystemSettings {
 
         SetHostname
 
-        # DisableDefender
         Function DisableDefender {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
@@ -182,8 +180,7 @@ Function SystemSettings {
         }
         
         DisableDefender
-        
-        # Keyboard Layout
+
         Function SetKeyboardLayout {
             Write-Host "`nDo you want to " -NoNewline
             Write-Host "set the keyboard layout to UK or TR?" -ForegroundColor Yellow -NoNewline
@@ -192,13 +189,15 @@ Function SystemSettings {
         
             if ($response -eq 'y' -or $response -eq 'Y') {
                 do {
-                    Write-Host "Which keyboard layout do you want to set? Write 1, 2 or 3."
+                    Write-Host "Which keyboard layout do you want to set? Write 1, 2, 3 or 4."
                     Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                     Write-Host " - Turkish keyboard layout"
                     Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                     Write-Host " - United Kingdom keyboard layout"
                     Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
                     Write-Host " - Both Turkish and United Kingdom keyboard layout"
+                    Write-Host "[4]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                    Write-Host " - None"
                     $choice = Read-Host -Prompt "`n[Choice]"
         
                     $validChoice = $true
@@ -298,8 +297,11 @@ Function SystemSettings {
                             # Disable Print Screen key for Snipping Tool
                             Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "PrintScreenKeyForSnippingEnabled" -Value 0 *>$null
                         }
+                        "4" {
+                            Write-Host "[No changes will be made to the keyboard layout.]" -ForegroundColor Red -BackgroundColor Black
+                        }
                         default {
-                            Write-Host "Invalid input. Please enter 1, 2 or 3."
+                            Write-Host "Invalid input. Please enter 1, 2, 3 or 4."
                             $validChoice = $false
                         }
                     }
@@ -314,9 +316,8 @@ Function SystemSettings {
             }
         }
         
-        SetKeyboardLayout
+        SetKeyboardLayout        
 
-        #Import Batch to Startup
         Function ImportStartup {
             Write-Host `n"For detailed information > " -NoNewline
             Write-Host "https://github.com/caglaryalcin/after-format#description" -ForegroundColor DarkCyan
@@ -369,7 +370,6 @@ Function SystemSettings {
         
         ImportStartup
 
-        # Disable snap
         Function DisableSnap {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "disable the Snap windows feature?" -ForegroundColor Yellow -NoNewline
@@ -402,43 +402,54 @@ Function SystemSettings {
         }
         
         DisableSnap
-
         Function NVCleanUpdateTask {
-            Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
-            $nvcleanstall = "https://drive.usercontent.google.com/download?id=1mLE9M8XckmwMD_7A6hkmuQ_j5Noz6pPr&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
-            $nvcleanpath = "C:\Program Files\NVCleanstall"
-
-            New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
-
-            Silent
-            Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.16.0.exe" -ErrorAction Stop
-
-            #update task
-            $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.16.0.exe" -Argument "/check"
-            $description = "Check for new graphics card drivers"
-            $trigger1 = New-ScheduledTaskTrigger -AtLogon
-            $trigger2 = New-ScheduledTaskTrigger -AtLogon
-            $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
-            $taskname = "NVCleanstall"
-
-            $settings = New-ScheduledTaskSettingsSet
-
-            $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger1, $trigger2 -Action $action -Principal $principal -Settings $settings -Description $description
-
-            # Remove repetition for trigger1
-            $task.Triggers[0].Repetition = $null
-
-            # Set repetition interval for trigger2
-            $task.Triggers[1].Repetition.Interval = "PT4H"
-
-            $task | Set-ScheduledTask *>$null
-
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "`nDo you want to " -NoNewline
+            Write-Host "install NVCleanstall and import the update task?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+        
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
+                $nvcleanstall = "https://drive.usercontent.google.com/download?id=1mLE9M8XckmwMD_7A6hkmuQ_j5Noz6pPr&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
+                $nvcleanpath = "C:\Program Files\NVCleanstall"
+        
+                New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
+        
+                Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.16.0.exe" -ErrorAction Stop
+        
+                # Update task
+                $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.16.0.exe" -Argument "/check"
+                $description = "Check for new graphics card drivers"
+                $trigger1 = New-ScheduledTaskTrigger -AtLogon
+                $trigger2 = New-ScheduledTaskTrigger -Daily -At "10:00AM"
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $taskname = "NVCleanstall"
+        
+                $settings = New-ScheduledTaskSettingsSet
+        
+                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger1, $trigger2 -Action $action -Principal $principal -Settings $settings -Description $description
+        
+                # Remove repetition for trigger1
+                $task.Triggers[0].Repetition = $null
+        
+                # Set repetition interval for trigger2
+                $task.Triggers[1].Repetition.Interval = "PT4H"
+        
+                $task | Set-ScheduledTask *>$null
+        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[NVCleanstall installation and update task import will not be performed.]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
+                NVCleanUpdateTask
+            }
         }
+        
+        NVCleanUpdateTask        
 
-        NVCleanUpdateTask
-
-        # Disable Gallery
         Function DisableGallery {
             try {
                 Write-Host "Disabling gallery folder..." -NoNewline
@@ -452,10 +463,9 @@ Function SystemSettings {
         }
         
         DisableGallery
-        
-        # Disable Sync your settings
+
         Function DisableSync {
-            Write-Host "Synchronization with microsoft is completely disabling..." -NoNewline
+            Write-Host "Synchronization with Microsoft is completely disabling..." -NoNewline
             $syncPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
             $msaccountpath = "HKLM:\SOFTWARE\Microsoft\Windows\Currentversion\Policies\System"
             $msaccountpath2 = "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Settings\AllowYourAccount"
@@ -482,7 +492,6 @@ Function SystemSettings {
 
         DisableSync
 
-        # Disable Spotlight
         function DisableSpotlight {
             Write-Host "Disabling Spotlight..." -NoNewline
             
@@ -511,7 +520,6 @@ Function SystemSettings {
         
         DisableSpotlight        
 
-        # Disable Lock Screen Notifications
         function DisableLockScreenNotifications {
             Write-Host "Disabling lock screen notifications..." -NoNewline
             
@@ -541,7 +549,6 @@ Function SystemSettings {
         
         DisableLockScreenNotifications
 
-        # Disable Windows Media Player diagnostics
         Function DisableWMPDiagnostics {
             Write-Host "Disabling Windows Media Player diagnostics..." -NoNewline
         
@@ -569,7 +576,6 @@ Function SystemSettings {
         
         DisableWMPDiagnostics
 
-        # Disable Windows Search with Bing
         Function DisableBingSearchExtension {
             Write-Host "Disabling extension of Windows search with Bing..." -NoNewline
         
@@ -598,38 +604,46 @@ Function SystemSettings {
         
         DisableBingSearchExtension
 
-        # Set Dark Mode for Applications
-        Function SetAppsDarkMode {
-            Write-Host "Setting Dark Mode for Applications..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
+        Function SetAppsMode {
+            Write-Host "`nDo you want to " -NoNewline
+            Write-Host "set the application mode to Light or Dark?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(light/dark): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+        
+            if ($response -eq 'light' -or $response -eq 'Light') {
+                Write-Host "Setting Light Mode for Applications..." -NoNewline
+                try {
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 1
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 1
+                    # Disable transparency
+                    Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
+                }
+                catch {
+                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                }
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            elseif ($response -eq 'dark' -or $response -eq 'Dark') {
+                Write-Host "Setting Dark Mode for Applications..." -NoNewline
+                try {
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
+                    # Disable transparency
+                    Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
+                }
+                catch {
+                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                }
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            else {
+                Write-Host "[Invalid input. Please enter 'light' for Light Mode or 'dark' for Dark Mode.]" -ForegroundColor Red -BackgroundColor Black
+                SetAppsMode
+            }
         }
+        
+        SetAppsMode        
 
-        SetAppsDarkMode
-
-        # Set Dark Mode for System
-        Function SetSystemDarkMode {
-            Write-Host "Setting Dark Mode for System..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
-
-                # Disable transparency
-                Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        SetSystemDarkMode
-
-        # Set Control Panel view to Large icons (Classic)
         Function SetControlPanelLargeIcons {
             Write-Host "Setting Control Panel view to large icons..." -NoNewline
 
@@ -648,7 +662,6 @@ Function SystemSettings {
         
         SetControlPanelLargeIcons
 
-        # Disable user interface and device recognition features
         Function DisableDeviceEnumeration {
             try {
                 # Disable devicemanager updates
@@ -670,7 +683,6 @@ Function SystemSettings {
         
         DisableDeviceEnumeration
 
-        # Enable NumLock after startup
         Function EnableNumlock {
             Write-Host "Enabling NumLock after startup..." -NoNewline
 
@@ -695,9 +707,8 @@ Function SystemSettings {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
-        EnableNumlock        
+        EnableNumlock
 
-        # Disable Windows Beep Sound
         Function DisableBeepSound {
             Write-Host "Disabling Windows Beep Sound..." -NoNewline
             try {
@@ -712,7 +723,6 @@ Function SystemSettings {
 
         DisableBeepSound
 
-        # Disable IPv6 stack for all installed network interfaces 
         Function DisableIPv6 {
             Write-Host "Disabling IPv6 stack..." -NoNewline
             try {
@@ -726,22 +736,6 @@ Function SystemSettings {
 
         DisableIPv6
 
-        # Disable VMware and VirtualBox Ethernet Adapters 
-        Function DisableVMEthernets {
-            Write-Host "Disabling Virtual Ethernet Adapters..." -NoNewline
-            try {
-                Disable-NetAdapter -Name "*VMware*" -Confirm:$false *>$null
-                Disable-NetAdapter -Name "*Virtual*" -Confirm:$false *>$null
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        #DisableVMEthernets
-
-        # DNS Settings 
         Function SetDNS {
             Function GetPingTime {
                 param (
@@ -828,7 +822,6 @@ Function SystemSettings {
         
         SetDNS
 
-        # Windows Explorer configure settings
         Function ExplorerSettings {
             Write-Host "Configuring Windows Explorer settings..." -NoNewline
         
@@ -889,7 +882,6 @@ Function SystemSettings {
         
         ExplorerSettings
 
-        # File Explorer Expand Ribbon
         Function FileExplorerExpandRibbon {
             Write-Host "Expanding for File Explorer..." -NoNewline
         
@@ -931,7 +923,6 @@ Function SystemSettings {
         
         FileExplorerExpandRibbon
 
-        # Hide Recycle Bin shortcut from desktop
         Function HideRecycleBinFromDesktop {
             Write-Host "Hiding Recycle Bin Shortcut from Desktop..." -NoNewline
         
@@ -971,7 +962,6 @@ Function SystemSettings {
         
         HideRecycleBinFromDesktop
 
-        # Disable Hiberfil - fast windows startup (with ssd) 
         Function DisableHiberfil {
             Write-Host "Disabling hiberfil.sys..." -NoNewline
             try { 
@@ -985,7 +975,6 @@ Function SystemSettings {
 
         DisableHiberfil
 
-        # Disable Display and Sleep mode timeouts 
         Function DisableSleepTimeout {
             Write-Host "Disabling display and sleep mode timeouts..." -NoNewline
         
@@ -1020,7 +1009,6 @@ Function SystemSettings {
         
         DisableSleepTimeout
 
-        # Disable receiving updates for other Microsoft products via Windows Update
         Function DisableUpdateMSProducts {
             Write-Host "Disabling Updates for Other Microsoft Products..." -NoNewline
             try {
@@ -1036,7 +1024,6 @@ Function SystemSettings {
 
         DisableUpdateMSProducts
 
-        # Disable Cortana 
         function DisableCortana {
             Write-Host "Disabling Cortana..." -NoNewline
             
@@ -1110,7 +1097,6 @@ Function SystemSettings {
         
         DisableCortana        
 
-        # Disable Web Search in Start Menu
         Function DisableWebSearch {
             Write-Host "Disabling Bing Search in Start Menu..." -NoNewline
         
@@ -1144,7 +1130,6 @@ Function SystemSettings {
         
         DisableWebSearch
 
-        # Disable SmartScreen Filter 
         Function DisableSmartScreen {
             Write-Host "Disabling SmartScreen Filter..." -NoNewline
         
@@ -1175,7 +1160,6 @@ Function SystemSettings {
         
         DisableSmartScreen
 
-        # Disable sensor features, such as screen auto rotation 
         function DisableSensors {
             Write-Host "Disabling Sensors..." -NoNewline
             
@@ -1226,7 +1210,6 @@ Function SystemSettings {
         
         DisableSensors        
 
-        # Disable Tailored Experiences 
         Function DisableTailoredExperiences {
             Write-Host "Disabling Tailored Experiences..." -NoNewline
         
@@ -1260,7 +1243,6 @@ Function SystemSettings {
         
         DisableTailoredExperiences
 
-        # Disable Xbox features - Not applicable to Server
         Function DisableXboxFeatures {
             Write-Host "Disabling Xbox Features..." -NoNewline
         
@@ -1299,7 +1281,6 @@ Function SystemSettings {
                 
         DisableXboxFeatures
 
-        # Disable blocking of downloaded files (i.e. storing zone information - no need to do File\Properties\Unblock) 
         Function DisableDownloadBlocking {
             Write-Host "Disabling Blocking of Downloaded Files..." -NoNewline
             try {
@@ -1316,7 +1297,6 @@ Function SystemSettings {
 
         DisableDownloadBlocking
 
-        # Disable nightly wake-up for Automatic Maintenance and Windows Updates 
         Function DisableMaintenanceWakeUp {
             Write-Host "Disabling nightly wake-up for Automatic Maintenance..." -NoNewline
             try {
@@ -1333,7 +1313,6 @@ Function SystemSettings {
 
         DisableMaintenanceWakeUp
 
-        # Disable Storage Sense - Applicable since 1703 NOT 
         Function DisableStorageSense {
             Write-Host "Disabling Storage Sense..." -NoNewline
             try {
@@ -1347,7 +1326,6 @@ Function SystemSettings {
 
         DisableStorageSense
 
-        # Disable built-in Adobe Flash in IE and Edge 
         Function DisableAdobeFlash {
             Write-Host "Disabling Built-in Adobe Flash in IE and Edge..." -NoNewline
         
@@ -1382,7 +1360,6 @@ Function SystemSettings {
         
         DisableAdobeFlash
 
-        # Disable Edge preload after Windows startup - Applicable since Win10 1809 
         Function DisableEdgePreload {
             Write-Host "Disabling Edge Preload..." -NoNewline
         
@@ -1417,7 +1394,6 @@ Function SystemSettings {
         
         DisableEdgePreload
 
-        # Disable Internet Explorer first run wizard 
         Function DisableIEFirstRun {
             Write-Host "Disabling Internet Explorer First Run Wizard..." -NoNewline
             try {
@@ -1434,7 +1410,6 @@ Function SystemSettings {
 
         DisableIEFirstRun
 
-        # Disable Windows Media Player online access - audio file metadata download, radio presets, DRM. 
         Function DisableMediaOnlineAccess {
             Write-Host "Disabling Windows Media Player Online Access..." -NoNewline
         
@@ -1474,7 +1449,6 @@ Function SystemSettings {
         
         DisableMediaOnlineAccess
 
-        # Disable System restore 
         Function DisableRestorePoints {
             Write-Host "Disabling System Restore for System Drive..." -NoNewline
         
@@ -1535,8 +1509,6 @@ Function SystemSettings {
         
         DisableRestorePoints
        
-
-        # Lower UAC level (disabling it completely would break apps) 
         Function SetUACLow {
             Write-Host "Setting Low UAC Level..." -NoNewline
             try {
@@ -1551,7 +1523,6 @@ Function SystemSettings {
 
         SetUACLow
 
-        # Enable clearing of recent files on exit 
         Function EnableClearRecentFiles {
             Write-Host "Enabling Clearing of Recent Files on Exit..." -NoNewline
             try {
@@ -1568,7 +1539,6 @@ Function SystemSettings {
 
         EnableClearRecentFiles
 
-        # Disable recent files lists 
         Function DisableRecentFiles {
             Write-Host "Disabling Recent Files Lists..." -NoNewline
             try {
@@ -1585,7 +1555,6 @@ Function SystemSettings {
 
         DisableRecentFiles
 
-        # Disable search for app in store for unknown extensions
         Function DisableSearchAppInStore {
             Write-Host "Disabling Search for App in Store for Unknown Extensions..." -NoNewline
             try {
@@ -1602,7 +1571,6 @@ Function SystemSettings {
 
         DisableSearchAppInStore
 
-        # Hide 'Recently added' list from the Start Menu
         Function HideRecentlyAddedApps {
             Write-Host "Hiding 'Recently added' List from the Start Menu..." -NoNewline
             try {
@@ -1645,8 +1613,7 @@ Function SystemSettings {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
         }
-        
-        # Function usage
+
         $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "lmhosts", "WerSvc", "wisvc", "PhoneSvc", "EFS", "BDESVC",
             "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")
@@ -1671,7 +1638,6 @@ Function SystemSettings {
         
         Telnet
 
-        # Remove Quota on the disk menu
         Function RemoveQuota {
             Write-Host "Removing Quota on the disk menu..." -NoNewline
             try {
@@ -1724,7 +1690,6 @@ Function SystemSettings {
         #region Taskbar Settings
         ##########
 
-        #Turn Off News and Interest
         Function DisableNews {
             Write-Host "Disabling News and Interest on Taskbar..." -NoNewline
         
@@ -1770,7 +1735,6 @@ Function SystemSettings {
         
         DisableNews
 
-        # Hide Taskbar People icon
         Function HideTaskbarPeopleIcon {
             Write-Host "Hiding People Icon from Taskbar..." -NoNewline
             try {
@@ -1787,7 +1751,6 @@ Function SystemSettings {
 
         HideTaskbarPeopleIcon
 
-        # Hide Taskbar Taskview icon
         Function HideTaskbarTaskviewIcon {
             Write-Host "Hiding Taskview Icon from Taskbar..." -NoNewline
             try {
@@ -1801,7 +1764,6 @@ Function SystemSettings {
 
         HideTaskbarTaskviewIcon
 
-        # Hide Taskbar MultiTaskview icon
         Function HideTaskbarMultiTaskviewIcon {
             Write-Host "Hiding MultiTaskview Icon from Taskbar..." -NoNewline
             If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\")) {
@@ -1822,7 +1784,6 @@ Function SystemSettings {
 
         HideTaskbarMultiTaskviewIcon
 
-        # Hide Taskbar Search icon / box
         Function HideTaskbarSearch {
             Write-Host "Hiding Taskbar Search Icon / Box..." -NoNewline
             try {
@@ -1836,7 +1797,6 @@ Function SystemSettings {
 
         HideTaskbarSearch
 
-        # Hide Taskbar Remove Chat from the Taskbar
         Function RemoveTaskbarChat {
             Write-Host "Removing Chat from Taskbar..." -NoNewline
             try {
@@ -1850,7 +1810,6 @@ Function SystemSettings {
 
         RemoveTaskbarChat
 
-        # Hide Taskbar Remove Widgets from the Taskbar
         Function RemoveTaskbarWidgets {
             Write-Host "Removing Widgets from Taskbar..." -NoNewline
             try {
@@ -1864,7 +1823,6 @@ Function SystemSettings {
 
         RemoveTaskbarWidgets
 
-        # Turn off suggested content in Settings
         Function TurnOffSuggestedContent {
             Write-Host "Turning off suggested content in Settings..." -NoNewline
             $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
@@ -1887,8 +1845,7 @@ Function SystemSettings {
         }
         
         TurnOffSuggestedContent
-		
-        # Set always show combine on taskbar
+
         Function TaskbarAlwaysCombine {
             try {
                 Write-Host "Taskbar Always Combine..." -NoNewline
@@ -1901,8 +1858,7 @@ Function SystemSettings {
         }
         
         TaskbarAlwaysCombine
-		
-        # Hide Taskbar Start button alignment left
+
         Function TaskbarAlignLeft {
             try {
                 Write-Host "Taskbar Aligns Left..." -NoNewline
@@ -1915,8 +1871,7 @@ Function SystemSettings {
         }
         
         TaskbarAlignLeft
-		
-        # Enable Show Desktop Button
+
         Function EnableShowDesktop {
             try {
                 Write-Host "Enabling Show Desktop Button..." -NoNewline
@@ -1930,7 +1885,6 @@ Function SystemSettings {
         
         EnableShowDesktop
 
-        # Hide Taskbar Remove Widgets from the Taskbar
         Function UnpinEverything {
             Param(
                 [string]$RemoveUnpin
