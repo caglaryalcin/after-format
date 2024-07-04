@@ -270,7 +270,8 @@ Function Install-VSCodeExtensions {
     $design = "pkief.material-icon-theme"
     $vspowershell = "ms-vscode.powershell", "tobysmith568.run-in-powershell", "ms-vscode-remote.remote-wsl"
     $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", 
-    "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python", "naumovs.color-highlight"
+    "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python", 
+    "naumovs.color-highlight", "meezilla.json", "oliversturm.fix-json"
     $github = "github.vscode-pull-request-github", "github.copilot"
     $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode", "redhat.vscode-yaml"
     $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux
@@ -332,79 +333,6 @@ try {
 catch {
     Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
 }
-
-Function Remove-ChromeComponents {
-    Write-Host "Disabling and removing Chrome Update services..." -NoNewline
-    $chromeservices = "gupdate", "gupdatem"
-    foreach ($service in $chromeservices) {
-        $serviceObject = Get-Service -Name $service -ErrorAction SilentlyContinue
-        
-        if ($serviceObject) {
-            if ($serviceObject.Status -ne 'Running' -and $serviceObject.StartType -eq 'Disabled') {
-                continue
-            }
-        
-            try {
-                Stop-Service -Name $service -Force -ErrorAction Stop
-                Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
-            }
-            catch {
-                $errorMessage = $_.Exception.Message
-                Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
-            }
-        
-            try {
-                sc.exe delete $service *>$null
-                if ($LASTEXITCODE -ne 0) { throw "sc.exe returned error code: $LASTEXITCODE" }
-            }
-            catch {
-                $errorMessage = $_.Exception.Message
-                Write-Host "[WARNING] $errorMessage" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-    }
-        
-    $chromeDirectories = @(
-        "C:\Program Files\Google\Chrome\Application\",
-        "$env:userprofile\AppData\Local\Google\Chrome\Application"
-    )
-
-    $isSuccess = $false
-
-    foreach ($chromeDirectory in $chromeDirectories) {
-        $chromeVersion = Get-ChildItem -Path $chromeDirectory -Directory -ErrorAction SilentlyContinue | 
-        Where-Object { $_.Name -match '^\d+\.\d+\.\d+\.\d+$' } | 
-        Sort-Object { [Version]($_.Name) } -Descending | 
-        Select-Object -First 1
-
-        if ($null -eq $chromeVersion) {
-            continue
-        }
-        else {
-            $chromeInstallerPath = Join-Path -Path $chromeDirectory -ChildPath $chromeVersion.Name
-            $installerDirectory = Join-Path -Path $chromeInstallerPath -ChildPath "Installer"
-            if (Test-Path $installerDirectory) {
-                Set-Location -Path $installerDirectory
-                Remove-Item -Path chrmstp.exe -Recurse -ErrorAction SilentlyContinue
-                Set-Location c:\
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                $isSuccess = $true
-                break
-            }
-            else {
-                if (-not $isSuccess) {
-                    Write-Host "[INFO]: No Installer directory found in $chromeInstallerPath" -ForegroundColor Yellow
-                }
-            }
-        }
-    }
-
-    if (-not $isSuccess) {
-        Write-Host "[WARNING] A valid version of Chrome was not found." -ForegroundColor Red -BackgroundColor Black
-    }
-}
-        
-Remove-ChromeComponents
 
 # Malwarebytes trial reset
 Function MalwarebytesReset {
