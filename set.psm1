@@ -1885,6 +1885,27 @@ Function SystemSettings {
         
         EnableShowDesktop
 
+        function EnableEndTaskButton {
+            try {
+            Write-Host "Enabling End Task Button..." -NoNewline
+            $keyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+            $subKey = "TaskbarDeveloperSettings"
+            $propertyName = "TaskbarEndTask"
+            $propertyValue = 1
+        
+            if (-not (Test-Path -Path "$keyPath\$subKey")) {
+                New-Item -Path $keyPath -Name $subKey -Force
+            }
+        
+            Set-ItemProperty -Path "$keyPath\$subKey" -Name $propertyName -Value $propertyValue -Type DWord
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+        
+        EnableEndTaskButton
+        
         Function UnpinEverything {
             Param(
                 [string]$RemoveUnpin
