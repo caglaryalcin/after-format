@@ -1898,6 +1898,7 @@ Function SystemSettings {
             }
         
             Set-ItemProperty -Path "$keyPath\$subKey" -Name $propertyName -Value $propertyValue -Type DWord
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
