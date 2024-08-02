@@ -90,8 +90,15 @@ Function InstallSoftwares {
     Remove-Job -Job $job
 
     # Kill the processes of power toys
-    taskkill.exe /f /im "PowerToys*" *>$null
-
+    $processName = "PowerToys*"
+    while ($true) {
+        Start-Sleep -Seconds 2
+        $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
+        if ($process) {
+            Stop-Process -Id $process.Id -Force
+            break
+        }
+    }
 }
 
 InstallSoftwares
