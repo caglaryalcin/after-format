@@ -1894,7 +1894,7 @@ Function SystemSettings {
             $propertyValue = 1
         
             if (-not (Test-Path -Path "$keyPath\$subKey")) {
-                New-Item -Path $keyPath -Name $subKey -Force
+                New-Item -Path $keyPath -Name $subKey -Force *>$null
             }
         
             Set-ItemProperty -Path "$keyPath\$subKey" -Name $propertyName -Value $propertyValue -Type DWord
