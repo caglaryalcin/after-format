@@ -397,7 +397,6 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name DITest -Value 0 *>$null
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                Write-Host ""
             }
         }
         
@@ -414,7 +413,7 @@ Function SystemSettings {
                 $nvcleanpath = "C:\Program Files\NVCleanstall"
         
                 New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
-        
+                Silent
                 Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.16.0.exe" -ErrorAction Stop
         
                 # Update task
@@ -645,7 +644,7 @@ Function SystemSettings {
         SetAppsMode        
 
         Function SetControlPanelLargeIcons {
-            Write-Host "Setting Control Panel view to large icons..." -NoNewline
+            Write-Host `n"Setting Control Panel view to large icons..." -NoNewline
 
             try {
                 If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel")) {

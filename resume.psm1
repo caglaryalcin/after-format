@@ -271,7 +271,7 @@ Function Install-VSCodeExtensions {
         $vsCodePath = "C:\Program Files\Microsoft VS Code\bin\code.cmd" # for chocolatey installations
     }
         
-    $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker", "formulahendry.docker-explorer", "p1c2u.docker-compose"
+    $docker = "eamodio.gitlens", "davidanson.vscode-markdownlint", "ms-azuretools.vscode-docker", "formulahendry.docker-explorer", "p1c2u.docker-compose", "ms-vscode-remote.remote-containers"
     $autocomplete = "formulahendry.auto-close-tag", "formulahendry.auto-rename-tag", "formulahendry.auto-complete-tag", "streetsidesoftware.code-spell-checker", 
     "redhat.vscode-xml", "dotjoshjohnson.xml"
     $design = "pkief.material-icon-theme"
