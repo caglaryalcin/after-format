@@ -3262,19 +3262,20 @@ InstallOrUpdateWinget
                     $explorerPath = "Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\"
                     $quickAccessPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HomeFolderMSGraph\NameSpace\DelegateFolders\{3936E9E4-D92C-4EEE-A85A-BC16D5EA0819}"
                     $homePath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace_36354489\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
+                    $homePath2 = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
                     $namespaces = @{
                         "3DFolders" = "{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
                         "Videos"    = "{A0953C92-50DC-43bf-BE83-3742FED03C9C}", "{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"
                         "Pictures"  = "{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", "{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"
                     }
-            
+                        
                     foreach ($category in $namespaces.Keys) {
                         foreach ($id in $namespaces[$category]) {
                             $paths = @(
                                 "$basePath\$explorerPath$id",
                                 "$basePath\$wow6432Node$explorerPath$id"
                             )
-                    
+                                
                             foreach ($path in $paths) {
                                 try {
                                     Remove-Item -Path $path -Recurse -ErrorAction SilentlyContinue
@@ -3285,7 +3286,12 @@ InstallOrUpdateWinget
                             }
                         }
                     }
-        
+                    
+                    # homepath additional settings
+                    New-Item -Path $homePath2 -Force
+                    Set-ItemProperty -Path $homePath2 -Name "(Default)" -Value "CLSID_MSGraphHomeFolder"
+                    Set-ItemProperty -Path $homePath2 -Name "HiddenByDefault" -Value 1 -Type DWord
+            
                     # Additional paths
                     try {
                         Remove-Item -Path $quickAccessPath -Recurse -ErrorAction SilentlyContinue
@@ -3294,11 +3300,11 @@ InstallOrUpdateWinget
                     catch {
                         Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                     }
-            
+                        
                     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-        
-                UnpinExplorer        
+                    
+                UnpinExplorer
 
                 # Block Microsoft Edge telemetry
                 Function EdgePrivacySettings {
