@@ -3288,7 +3288,7 @@ InstallOrUpdateWinget
                     }
                     
                     # homepath additional settings
-                    New-Item -Path $homePath2 -Force
+                    New-Item -Path $homePath2 -Force *>$null
                     Set-ItemProperty -Path $homePath2 -Name "(Default)" -Value "CLSID_MSGraphHomeFolder"
                     Set-ItemProperty -Path $homePath2 -Name "HiddenByDefault" -Value 1 -Type DWord
             
