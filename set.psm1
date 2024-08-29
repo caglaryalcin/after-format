@@ -3983,6 +3983,20 @@ InstallOrUpdateWinget
                 }
 
                 Removelnks
+
+                Function RemoveRecall {
+                    Write-Host `n"Removing Windows 11 Recall..." -NoNewline
+                    try {
+                        Silent
+                        DISM /Online /Disable-Feature /FeatureName:"Recall"​ *>$null
+                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    }
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+                }
+
+                RemoveRecall
                 
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
