@@ -1272,8 +1272,22 @@ Function UnusedApps {
 
         UninstallEdge
 
+        Function RemoveRecall {
+            Write-Host "Removing Windows 11 Recall..." -NoNewline
+            try {
+                Silent
+                DISM /Online /Disable-Feature /FeatureName:"Recall"​ *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        RemoveRecall
+
         Function Removelnks {
-            Write-Host `n"Removing Desktop shortcuts..." -NoNewline
+            Write-Host "Removing Desktop shortcuts..." -NoNewline
             try {
                 Get-ChildItem C:\users\Public\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
                 Get-ChildItem $env:USERPROFILE\Desktop\*.lnk | ForEach-Object { Remove-Item $_ -ErrorAction SilentlyContinue } *>$null
@@ -1286,20 +1300,6 @@ Function UnusedApps {
         }
 
         Removelnks
-
-        Function RemoveRecall {
-            Write-Host `n"Removing Windows 11 Recall..." -NoNewline
-            try {
-                Silent
-                DISM /Online /Disable-Feature /FeatureName:"Recall"​ *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        RemoveRecall
                 
     }
     elseif ($response -eq 'n' -or $response -eq 'N') {
