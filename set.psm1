@@ -1586,6 +1586,21 @@ Function SystemSettings {
 
         HideRecentlyAddedApps
 
+        Function HideRecommendedSection {
+            Write-Host "Hiding 'Recommended Section' List from the Start Menu..." -NoNewline
+            try {
+                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer")) {
+                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" | Out-Null
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecommendedSettings" -Type DWord -Value 1
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+    
+        HideRecommendedSection
+
         Function Disable-Services {
             param (
                 [string[]]$disableservices
