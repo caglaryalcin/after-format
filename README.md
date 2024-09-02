@@ -221,7 +221,6 @@ This script allows Windows 1x users to control data collection, privacy and secu
 > [!WARNING]  
 > Great care went into making sure this script does not unintentionally break any OS functionality, but use at your own risk!
 
-####
 > [!NOTE]  
 > This script takes about 60 minutes with 100mbps internet.
 
