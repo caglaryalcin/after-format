@@ -218,6 +218,8 @@ This script allows Windows 1x users to control data collection, privacy and secu
 </details>
 
 ## Start the script
+> [!WARNING]  
+> Great care went into making sure this script does not unintentionally break any OS functionality, but use at your own risk!
 
 ####
 > [!NOTE]  
