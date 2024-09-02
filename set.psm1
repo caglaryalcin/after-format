@@ -3130,7 +3130,6 @@ InstallOrUpdateWinget
                     $UninstallAppxPackages = 
                     "Microsoft.WindowsAlarms", #Alarm and clock app for Windows.
                     "Microsoft.549981C3F5F10", #Code likely represents a specific app or service, specifics unknown without context.
-                    "Microsoft.YourPhone", #App linking your phone and PC.
                     "Microsoft.WindowsFeedbackHub", #Platform for user feedback on Windows.
                     "Microsoft.Bing*", #Bing search engine related services and apps.
                     "Microsoft.Zune*", #Media software for music and videos, now discontinued.
