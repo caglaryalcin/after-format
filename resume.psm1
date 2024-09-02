@@ -1216,6 +1216,7 @@ Function UnusedApps {
                     }
 
                     # Delete the lnk files in the taskbar
+                    $edgedesktop = "$env:USERPROFILE\Desktop\"
                     $taskBarPath = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
                     $taskBarPath1 = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\"
                     $taskBarPath2 = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
@@ -1225,6 +1226,7 @@ Function UnusedApps {
                         $fullPath1 = Join-Path $taskBarPath $_
                         $fullPath2 = Join-Path $taskBarPath1 $_
                         $fullPath3 = Join-Path $taskBarPath2 $_
+                        $desktoppath = Join-Path $edgedesktop $_
 
                         if (Test-Path $fullPath1) {
                             Remove-Item $fullPath1 -ErrorAction Stop
@@ -1236,6 +1238,10 @@ Function UnusedApps {
 
                         if (Test-Path $fullPath3) {
                             Remove-Item $fullPath3 -ErrorAction Stop
+                        }
+
+                        if (Test-Path $desktoppath) {
+                            Remove-Item $desktoppath -ErrorAction Stop
                         }
                     }
 

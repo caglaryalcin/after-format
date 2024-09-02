@@ -1901,18 +1901,18 @@ Function SystemSettings {
 
         function EnableEndTaskButton {
             try {
-            Write-Host "Enabling End Task Button..." -NoNewline
-            $keyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-            $subKey = "TaskbarDeveloperSettings"
-            $propertyName = "TaskbarEndTask"
-            $propertyValue = 1
+                Write-Host "Enabling End Task Button..." -NoNewline
+                $keyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+                $subKey = "TaskbarDeveloperSettings"
+                $propertyName = "TaskbarEndTask"
+                $propertyValue = 1
         
-            if (-not (Test-Path -Path "$keyPath\$subKey")) {
-                New-Item -Path $keyPath -Name $subKey -Force *>$null
-            }
+                if (-not (Test-Path -Path "$keyPath\$subKey")) {
+                    New-Item -Path $keyPath -Name $subKey -Force *>$null
+                }
         
-            Set-ItemProperty -Path "$keyPath\$subKey" -Name $propertyName -Value $propertyValue -Type DWord
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                Set-ItemProperty -Path "$keyPath\$subKey" -Name $propertyName -Value $propertyValue -Type DWord
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -3929,6 +3929,7 @@ InstallOrUpdateWinget
                             }
 
                             # Delete the lnk files in the taskbar
+                            $edgedesktop = "$env:USERPROFILE\Desktop\"
                             $taskBarPath = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
                             $taskBarPath1 = "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\"
                             $taskBarPath2 = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
@@ -3938,17 +3939,22 @@ InstallOrUpdateWinget
                                 $fullPath1 = Join-Path $taskBarPath $_
                                 $fullPath2 = Join-Path $taskBarPath1 $_
                                 $fullPath3 = Join-Path $taskBarPath2 $_
-    
+                                $desktoppath = Join-Path $edgedesktop $_
+
                                 if (Test-Path $fullPath1) {
                                     Remove-Item $fullPath1 -ErrorAction Stop
                                 }
-    
+
                                 if (Test-Path $fullPath2) {
                                     Remove-Item $fullPath2 -ErrorAction Stop
                                 }
 
                                 if (Test-Path $fullPath3) {
                                     Remove-Item $fullPath3 -ErrorAction Stop
+                                }
+
+                                if (Test-Path $desktoppath) {
+                                    Remove-Item $desktoppath -ErrorAction Stop
                                 }
                             }
 
