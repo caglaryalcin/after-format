@@ -3503,11 +3503,11 @@ InstallOrUpdateWinget
                         Write-Host "Editing the right click menu..." -NoNewline
                         # New PS Drives
                         New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-
+                
                         # Old right click menu
                         $regPath = "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
                         reg.exe add $regPath /f /ve *>$null
-        
+                
                         $contextMenuPaths = @(
                             "HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo", #remove send to
                             "HKEY_CLASSES_ROOT\UserLibraryFolder\shellex\ContextMenuHandlers\SendTo", #remove send to
@@ -3532,59 +3532,81 @@ InstallOrUpdateWinget
                             "HKEY_CLASSES_ROOT\Directory\Background\shell\TreeSize Free",
                             "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode"
                         )
-        
+                
                         foreach ($path in $contextMenuPaths) {
                             $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
                             $cmd = "reg delete `"$regPath`" /f"
-
                             Invoke-Expression $cmd *>$null
                         }
-
+                
                         # New hash menu for right click
                         $regpath = "HKEY_CLASSES_ROOT\*\shell\hash"
                         $sha256menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu"
                         $md5menu = "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu"
-
+                
                         reg add $regpath /f *>$null
                         reg add $regpath /v "MUIVerb" /t REG_SZ /d HASH /f *>$null
                         reg add $regpath /v "SubCommands" /t REG_SZ /d """" /f *>$null
                         reg add "$regpath\shell" /f *>$null
-
+                
                         reg add "$sha256menu" /f *>$null
                         reg add "$sha256menu\command" /f *>$null
                         reg add "$sha256menu" /v "MUIVerb" /t REG_SZ /d SHA256 /f *>$null
-
+                
                         $tempOut = [System.IO.Path]::GetTempFileName()
                         $tempErr = [System.IO.Path]::GetTempFileName()
                         Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\02menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm SHA256 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
                         Remove-Item $tempOut -ErrorAction Ignore
                         Remove-Item $tempErr -ErrorAction Ignore
-
+                
                         reg add "$md5menu" /f *>$null
                         reg add "$md5menu\command" /f *>$null
                         reg add "$md5menu" /v "MUIVerb" /t REG_SZ /d MD5 /f *>$null
-
+                
                         $tempOut = [System.IO.Path]::GetTempFileName()
                         $tempErr = [System.IO.Path]::GetTempFileName()
                         Start-Process cmd.exe -ArgumentList '/c', 'reg add "HKEY_CLASSES_ROOT\*\shell\hash\shell\03menu\command" /ve /d "powershell -noexit get-filehash -literalpath \"%1\" -algorithm MD5 | format-list" /f' -NoNewWindow -RedirectStandardOutput $tempOut -RedirectStandardError $tempErr
                         Remove-Item $tempOut -ErrorAction Ignore
                         Remove-Item $tempErr -ErrorAction Ignore
-
+                
+                        # Add Turn Off Display Menu
+                        $turnOffDisplay = "HKEY_CLASSES_ROOT\DesktopBackground\Shell\TurnOffDisplay"
+                        reg add $turnOffDisplay /f *>$null
+                        reg add $turnOffDisplay /v "Icon" /t REG_SZ /d "imageres.dll,-109" /f *>$null
+                        reg add $turnOffDisplay /v "MUIVerb" /t REG_SZ /d "Turn off display" /f *>$null
+                        reg add $turnOffDisplay /v "Position" /t REG_SZ /d "Bottom" /f *>$null
+                        reg add $turnOffDisplay /v "SubCommands" /t REG_SZ /d """" /f *>$null
+                
+                        reg add "$turnOffDisplay\shell" /f *>$null
+                        $turnOffMenu1 = "$turnOffDisplay\shell\01menu"
+                        reg add $turnOffMenu1 /f *>$null
+                        reg add $turnOffMenu1 /v "Icon" /t REG_SZ /d "powercpl.dll,-513" /f *>$null
+                        reg add $turnOffMenu1 /v "MUIVerb" /t REG_SZ /d "Turn off display" /f *>$null
+                        reg add "$turnOffMenu1\command" /f *>$null
+                        reg add "$turnOffMenu1\command" /ve /d 'cmd /c "powershell.exe -Command \"(Add-Type ''[DllImport(\\\"user32.dll\\\")]public static extern int SendMessage(int hWnd,int hMsg,int wParam,int lParam);'' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)\""' /f *>$null
+                
+                        $turnOffMenu2 = "$turnOffDisplay\shell\02menu"
+                        reg add $turnOffMenu2 /f *>$null
+                        reg add $turnOffMenu2 /v "MUIVerb" /t REG_SZ /d "Lock computer and Turn off display" /f *>$null
+                        reg add $turnOffMenu2 /v "CommandFlags" /t REG_DWORD /d 0x20 /f *>$null
+                        reg add $turnOffMenu2 /v "Icon" /t REG_SZ /d "imageres.dll,-59" /f *>$null
+                        reg add "$turnOffMenu2\command" /f *>$null
+                        reg add "$turnOffMenu2\command" /ve /d 'cmd /c "powershell.exe -Command \"(Add-Type ''[DllImport(\\\"user32.dll\\\")]public static extern int SendMessage(int hWnd,int hMsg,int wParam,int lParam);'' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)\" & rundll32.exe user32.dll, LockWorkStation"' /f *>$null
+                
                         # Restart Windows Explorer
                         taskkill /f /im explorer.exe *>$null
                         Start-Sleep 1
                         Start-Process "explorer.exe" -ErrorAction Stop
-        
+                
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
-
-
+                
                     catch {
                         Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                     }
                 }
-        
-                RightClickMenu
+                
+                RightClickMenu                
 
                 Function DisableWidgets {
                     Write-Host "Disabling Windows Widgets..." -NoNewline
