@@ -2168,27 +2168,6 @@ Function PrivacySettings {
 
         DisableErrorReporting
 
-        # Disable camera in logon screen
-        Function DisableCameraonLogon {
-            Write-Host "Disabling Camera on Logon Screen..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreenCamera" -Value 1
-                If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Personalization")) {
-                    New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreenCamera" -Value 1
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableCameraonLogon
-
         # Disable backup of text messages into the cloud
         Function DisableTextMessageBackup {
             Write-Host "Disabling Backup of Text Messages into the Cloud..." -NoNewline
