@@ -16,7 +16,7 @@
         {"PackageIdentifier": ["Speedtest"]},
         {"PackageIdentifier": ["TreeSize"]},
         {"PackageIdentifier": ["Commander"]},
-        {"PackageIdentifier": ["Deluge"]},
+        {"PackageIdentifier": ["qBittorrent"]},
         {"PackageIdentifier": ["7-zip", "7zip"]},
         {"PackageIdentifier": ["Flameshot"]},
         {"PackageIdentifier": ["twinkle"]},
