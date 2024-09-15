@@ -8,7 +8,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 <details><summary>System Settings</summary>&nbsp;
   
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/1.png)
+![image](https://github.com/user-attachments/assets/df445708-a6eb-4cc0-9a64-fd5983d0a502)
   
 - It asks if you want region change to turkey.
 - It asks if you want change your hostname.
@@ -81,8 +81,8 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 <details><summary>Privacy Settings</summary>&nbsp;
 
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/2.png)
-  
+![image](https://github.com/user-attachments/assets/ed4a0085-fe62-4e33-967a-4a3a1ccdd812)
+
 - Disabling telemetry
 - Blocking telemetry in host file
 - Disabling feedback
@@ -119,7 +119,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 </details>
 <details><summary>Install Softwares</summary>&nbsp;
 
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/3.png)
+![image](https://github.com/user-attachments/assets/048bf752-293e-474e-944d-f15fe9dcecb6)
 
 > 💡It asks if you want to install the following softwares or not. If an error is received while loading packets with chocolatey, it will try to load them with winget.
 
@@ -174,8 +174,8 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 <details><summary>Remove Unused apps/Softwares</summary>&nbsp;
 
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/4.png)
-  
+![image](https://github.com/user-attachments/assets/6166868e-7eef-4012-b530-ee6c10eb6674)
+
 - Uninstalling default third party applications
 - It asks if you want disable Microsoft Copilot.
 - Uninstalling windows media player
@@ -193,7 +193,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 <details><summary>Startup Script</summary>&nbsp;
 
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/startup.png)
+![image](https://github.com/user-attachments/assets/b2cc1a6e-7354-4f0b-a572-6a181bcd2a43)
 
 > [!TIP]
 > This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
