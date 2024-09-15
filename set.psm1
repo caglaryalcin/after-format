@@ -472,7 +472,7 @@ Function SystemSettings {
             $response = Read-Host
         
             if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Setting Explorer view settings..." -NoNewline
+                Write-Host "Explorer view settings are setting to 'Details'......" -NoNewline
                 $basePath = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags"
                 $bags = Get-ChildItem -Path $basePath
         
