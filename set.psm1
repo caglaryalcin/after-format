@@ -463,6 +463,58 @@ Function SystemSettings {
         
         DisableGallery
 
+        Function ExplorerView {
+            Write-Host `n"Do you want to " -NoNewline
+            Write-Host "all folder views in explorer to be selected as " -NoNewline
+            Write-Host "details" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            Write-Host " except 'This PC'?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+        
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Setting Explorer view settings..." -NoNewline
+                $basePath = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags"
+                $bags = Get-ChildItem -Path $basePath
+        
+                foreach ($bag in $bags) {
+            
+                    # Exclude the "1" bag (This PC)
+                    if ($bag.PSChildName -eq "1") {
+                        continue
+                    }
+            
+                    $shellPath = Join-Path $bag.PSPath "Shell"
+            
+                    if (Test-Path $shellPath) {
+                        $subKeys = Get-ChildItem -Path $shellPath
+                
+                        foreach ($subKey in $subKeys) {
+                            $subKeyPath = $subKey.PSPath
+                    
+                            # Change the view settings
+                            Set-ItemProperty -Path $subKeyPath -Name "Mode" -Value 4 -Type DWord
+                            Set-ItemProperty -Path $subKeyPath -Name "LogicalViewMode" -Value 1 -Type DWord
+                            Set-ItemProperty -Path $subKeyPath -Name "IconSize" -Value 10 -Type DWord
+                            Set-ItemProperty -Path $subKeyPath -Name "Vid" -Value "{137E7700-3573-11CF-AE69-08002B2E1262}" -Type String
+                        }
+                    }
+                }
+
+                taskkill /f /im explorer.exe *>$null
+                Start-Process "explorer.exe" -NoNewWindow
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Explorer view will not be set to details.]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                ExplorerView
+            }
+        }
+        
+        ExplorerView
+
         Function DisableSync {
             Write-Host "Synchronization with Microsoft is completely disabling..." -NoNewline
             $syncPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
@@ -1700,238 +1752,238 @@ Function SystemSettings {
 
         DisableAccountNotifications
 
-        ##########
-        #region Taskbar Settings
-        ##########
+    ##########
+    #region Taskbar Settings
+    ##########
 
-        Function DisableNews {
-            Write-Host "Disabling News and Interest on Taskbar..." -NoNewline
+    Function DisableNews {
+        Write-Host "Disabling News and Interest on Taskbar..." -NoNewline
         
-            try {
-                # Test and create 'Windows Feeds' path if it doesn't exist
-                $feedsPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
-                if (-not (Test-Path -Path $feedsPath)) {
-                    New-Item -Path $feedsPath -ErrorAction Stop | Out-Null
-                }
-        
-                # Set 'EnableFeeds' registry value to 0
-                Set-ItemProperty -Path $feedsPath -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
-        
-                # Disable news and interests in the taskbar
-                $taskbarFeedsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds"
-                if (-not (Test-Path $taskbarFeedsPath)) {
-                    New-Item -Path $taskbarFeedsPath -Force | Out-Null
-                }
-                Set-ItemProperty -Path $taskbarFeedsPath -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
-
-                # Disable Show recommendations for tips, shortcuts, new apps
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_IrisRecommendations" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
-        
-                # Start Menu Layout
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_Layout" -Type DWord -Value 1 -ErrorAction Stop | Out-Null
-
-                # Turn off "Show recently opened items in Start, Jump Lists, and File Explorer"
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackDocs" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
-
-                # Disable news and interests via Policies\Explorer
-                $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-                if (-not (Test-Path $registryPath)) {
-                    New-Item -Path $registryPath -Force | Out-Null
-                }
-                Set-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -Value 1 -ErrorAction Stop
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        try {
+            # Test and create 'Windows Feeds' path if it doesn't exist
+            $feedsPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
+            if (-not (Test-Path -Path $feedsPath)) {
+                New-Item -Path $feedsPath -ErrorAction Stop | Out-Null
             }
         
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            # Set 'EnableFeeds' registry value to 0
+            Set-ItemProperty -Path $feedsPath -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+        
+            # Disable news and interests in the taskbar
+            $taskbarFeedsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds"
+            if (-not (Test-Path $taskbarFeedsPath)) {
+                New-Item -Path $taskbarFeedsPath -Force | Out-Null
+            }
+            Set-ItemProperty -Path $taskbarFeedsPath -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
+
+            # Disable Show recommendations for tips, shortcuts, new apps
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_IrisRecommendations" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+        
+            # Start Menu Layout
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_Layout" -Type DWord -Value 1 -ErrorAction Stop | Out-Null
+
+            # Turn off "Show recently opened items in Start, Jump Lists, and File Explorer"
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackDocs" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+
+            # Disable news and interests via Policies\Explorer
+            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force | Out-Null
+            }
+            Set-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -Value 1 -ErrorAction Stop
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
         }
         
-        DisableNews
-
-        Function HideTaskbarPeopleIcon {
-            Write-Host "Hiding People Icon from Taskbar..." -NoNewline
-            try {
-                If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
-                }
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        HideTaskbarPeopleIcon
-
-        Function HideTaskbarTaskviewIcon {
-            Write-Host "Hiding Taskview Icon from Taskbar..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        HideTaskbarTaskviewIcon
-
-        Function HideTaskbarMultiTaskviewIcon {
-            Write-Host "Hiding MultiTaskview Icon from Taskbar..." -NoNewline
-            If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\")) {
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\" | Out-Null
-            }
-            If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView")) {
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" | Out-Null
-            }
-            try {
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "AllUpView" -Type DWord -Value 0  *>$null
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "Remove TaskView" -Type DWord -Value 0  *>$null
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        HideTaskbarMultiTaskviewIcon
-
-        Function HideTaskbarSearch {
-            Write-Host "Hiding Taskbar Search Icon / Box..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        HideTaskbarSearch
-
-        Function RemoveTaskbarChat {
-            Write-Host "Removing Chat from Taskbar..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarMn" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        RemoveTaskbarChat
-
-        Function RemoveTaskbarWidgets {
-            Write-Host "Removing Widgets from Taskbar..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarDa" -Type DWord -Value 0
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        RemoveTaskbarWidgets
-
-        Function TurnOffSuggestedContent {
-            Write-Host "Turning off suggested content in Settings..." -NoNewline
-            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
-            $contentSettings = @(
-                "SubscribedContent-338393Enabled",
-                "SubscribedContent-353694Enabled",
-                "SubscribedContent-353696Enabled"
-            )
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
         
-            try {
-                foreach ($setting in $contentSettings) {
-                    Set-ItemProperty -Path $registryPath -Name $setting -Type DWord -Value 0
-                }
+    DisableNews
+
+    Function HideTaskbarPeopleIcon {
+        Write-Host "Hiding People Icon from Taskbar..." -NoNewline
+        try {
+            If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+
+    HideTaskbarPeopleIcon
+
+    Function HideTaskbarTaskviewIcon {
+        Write-Host "Hiding Taskview Icon from Taskbar..." -NoNewline
+        try {
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+
+    HideTaskbarTaskviewIcon
+
+    Function HideTaskbarMultiTaskviewIcon {
+        Write-Host "Hiding MultiTaskview Icon from Taskbar..." -NoNewline
+        If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\")) {
+            New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\" | Out-Null
+        }
+        If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView")) {
+            New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" | Out-Null
+        }
+        try {
+            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "AllUpView" -Type DWord -Value 0  *>$null
+            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MultitaskingView\AllUpView" -Name "Remove TaskView" -Type DWord -Value 0  *>$null
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+
+    HideTaskbarMultiTaskviewIcon
+
+    Function HideTaskbarSearch {
+        Write-Host "Hiding Taskbar Search Icon / Box..." -NoNewline
+        try {
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+
+    HideTaskbarSearch
+
+    Function RemoveTaskbarChat {
+        Write-Host "Removing Chat from Taskbar..." -NoNewline
+        try {
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarMn" -Type DWord -Value 0
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+
+    RemoveTaskbarChat
+
+    Function RemoveTaskbarWidgets {
+        Write-Host "Removing Widgets from Taskbar..." -NoNewline
+        try {
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarDa" -Type DWord -Value 0
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+
+    RemoveTaskbarWidgets
+
+    Function TurnOffSuggestedContent {
+        Write-Host "Turning off suggested content in Settings..." -NoNewline
+        $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+        $contentSettings = @(
+            "SubscribedContent-338393Enabled",
+            "SubscribedContent-353694Enabled",
+            "SubscribedContent-353696Enabled"
+        )
+        
+        try {
+            foreach ($setting in $contentSettings) {
+                Set-ItemProperty -Path $registryPath -Name $setting -Type DWord -Value 0
+            }
                 
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+    }
         
-        TurnOffSuggestedContent
+    TurnOffSuggestedContent
 
-        Function TaskbarAlwaysCombine {
-            try {
-                Write-Host "Taskbar Always Combine..." -NoNewline
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+    Function TaskbarAlwaysCombine {
+        try {
+            Write-Host "Taskbar Always Combine..." -NoNewline
+            New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+    }
         
-        TaskbarAlwaysCombine
+    TaskbarAlwaysCombine
 
-        Function TaskbarAlignLeft {
-            try {
-                Write-Host "Taskbar Aligns Left..." -NoNewline
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+    Function TaskbarAlignLeft {
+        try {
+            Write-Host "Taskbar Aligns Left..." -NoNewline
+            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value "0" -PropertyType Dword *>$null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+    }
         
-        TaskbarAlignLeft
+    TaskbarAlignLeft
 
-        Function EnableShowDesktop {
-            try {
-                Write-Host "Enabling Show Desktop Button..." -NoNewline
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+    Function EnableShowDesktop {
+        try {
+            Write-Host "Enabling Show Desktop Button..." -NoNewline
+            New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+    }
         
-        EnableShowDesktop
+    EnableShowDesktop
 
-        function EnableEndTaskButton {
-            try {
-                Write-Host "Enabling End Task Button..." -NoNewline
-                $keyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-                $subKey = "TaskbarDeveloperSettings"
-                $propertyName = "TaskbarEndTask"
-                $propertyValue = 1
+    function EnableEndTaskButton {
+        try {
+            Write-Host "Enabling End Task Button..." -NoNewline
+            $keyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+            $subKey = "TaskbarDeveloperSettings"
+            $propertyName = "TaskbarEndTask"
+            $propertyValue = 1
         
-                if (-not (Test-Path -Path "$keyPath\$subKey")) {
-                    New-Item -Path $keyPath -Name $subKey -Force *>$null
-                }
+            if (-not (Test-Path -Path "$keyPath\$subKey")) {
+                New-Item -Path $keyPath -Name $subKey -Force *>$null
+            }
         
-                Set-ItemProperty -Path "$keyPath\$subKey" -Name $propertyName -Value $propertyValue -Type DWord
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+            Set-ItemProperty -Path "$keyPath\$subKey" -Name $propertyName -Value $propertyValue -Type DWord
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+    }
         
-        EnableEndTaskButton
+    EnableEndTaskButton
         
-        Function UnpinEverything {
-            Param(
-                [string]$RemoveUnpin
-            )
+    Function UnpinEverything {
+        Param(
+            [string]$RemoveUnpin
+        )
         
-            try {
-                Write-Host "Unpin all taskbar pins..." -NoNewline
+        try {
+            Write-Host "Unpin all taskbar pins..." -NoNewline
         
-                Function getExplorerVerb {
-                    Param([string]$verb)
-                    $getstring = @'
+            Function getExplorerVerb {
+                Param([string]$verb)
+                $getstring = @'
                     [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
                     public static extern IntPtr GetModuleHandle(string lpModuleName);
                     
@@ -1945,47 +1997,47 @@ Function SystemSettings {
                         return sb.ToString();
                     }
 '@
-                    $getstring = Add-Type $getstring -PassThru -Name GetStr -Using System.Text
+                $getstring = Add-Type $getstring -PassThru -Name GetStr -Using System.Text
         
-                    if ($verb -eq "PinToTaskbar") { $getstring[0]::GetString(5386) }  # String: Pin to Taskbar
-                    if ($verb -eq "UnpinFromTaskbar") { $getstring[0]::GetString(5387) }  # String: Unpin from taskbar
-                    if ($verb -eq "PinToStart") { $getstring[0]::GetString(51201) } # String: Pin to start
-                    if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
+                if ($verb -eq "PinToTaskbar") { $getstring[0]::GetString(5386) }  # String: Pin to Taskbar
+                if ($verb -eq "UnpinFromTaskbar") { $getstring[0]::GetString(5387) }  # String: Unpin from taskbar
+                if ($verb -eq "PinToStart") { $getstring[0]::GetString(51201) } # String: Pin to start
+                if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
+            }
+        
+            Function ConfigureTaskbarPinningApp {
+                Param([string]$RemoveUnpin, [string]$Verb)
+                $myProcessName = Get-Process | Where-Object { $_.ID -eq $pid } | ForEach-Object { $_.ProcessName }
+                if (-not ($myProcessName -like "explorer")) {
+                    return
                 }
-        
-                Function ConfigureTaskbarPinningApp {
-                    Param([string]$RemoveUnpin, [string]$Verb)
-                    $myProcessName = Get-Process | Where-Object { $_.ID -eq $pid } | ForEach-Object { $_.ProcessName }
-                    if (-not ($myProcessName -like "explorer")) {
-                        return
-                    }
         
                     
-                }
-        
-                ConfigureTaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
-        
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+        
+            ConfigureTaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+    }
         
-        UnpinEverything -RemoveUnpin ""
+    UnpinEverything -RemoveUnpin ""
         
-        ##########
-        #endregion Taskbar Settings
-        ##########
+    ##########
+    #endregion Taskbar Settings
+    ##########
 
-    }
-    elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
-    }
-    else {
-        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-        SystemSettings
-    }
+}
+elseif ($response -eq 'n' -or $response -eq 'N') {
+    Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
+}
+else {
+    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+    SystemSettings
+}
 }
 
 SystemSettings
