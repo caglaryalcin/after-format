@@ -230,7 +230,6 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 > [!IMPORTANT]  
 > Powershell must be run as admin
-<br />
 
 ```powershell
 iwr "set.caglaryalcin.com" -UseB | iex
