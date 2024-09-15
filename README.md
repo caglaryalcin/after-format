@@ -18,7 +18,6 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 ![image](https://github.com/user-attachments/assets/201db959-f315-4c5b-bd74-bf0376abd906)
 
-
 - Ask if you want to add a "startup" task to run at startup (recommended)
 - Get the old classic right-click context menu
 - Taskbar aligns left
@@ -124,7 +123,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 > 💡It asks if you want to install the following softwares or not. If an error is received while loading packets with chocolatey, it will try to load them with winget.
 
-![](https://github.com/caglaryalcin/caglaryalcin/blob/main/after-format/5.png)
+![image](https://github.com/user-attachments/assets/88b71d2a-3e78-4ecf-aeb8-df98f7952a3d)
 
 - Chrome
 - Brave
