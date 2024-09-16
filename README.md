@@ -14,9 +14,9 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - It asks if you want change your hostname.
 - It asks if you want disable windows defender.
 - It asks if you want date format and keyboard layout
-- It asks if you want all folder views in explorer to be selected as "Details"
+- It asks if you want all folder views in explorer to be selected as "Details" and set to separate
 
-![image](https://github.com/user-attachments/assets/201db959-f315-4c5b-bd74-bf0376abd906)
+![image](https://github.com/user-attachments/assets/db96fd45-1640-47d1-a959-2fc94e246e58)
 
 - Ask if you want to add a "startup" task to run at startup (recommended)
 - Get the old classic right-click context menu
