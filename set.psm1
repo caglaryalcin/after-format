@@ -1783,6 +1783,19 @@ Function SystemSettings {
 
         DisableAccountNotifications
 
+        Function AutoEndTask {
+            Write-Host "Setting AutoEndTasks..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "AutoEndTasks" -Value 1 -Type DWord
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+    
+        AutoEndTask
+
         ##########
         #region Taskbar Settings
         ##########
