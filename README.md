@@ -10,11 +10,11 @@ This script allows Windows 1x users to control data collection, privacy and secu
   
 ![image](https://github.com/user-attachments/assets/df445708-a6eb-4cc0-9a64-fd5983d0a502)
   
-- It asks if you want region change to turkey.
-- It asks if you want change your hostname.
-- It asks if you want disable windows defender.
+- It asks if you want region change to turkey
+- It asks if you want change your hostname
+- It asks if you want disable windows defender
 - It asks if you want date format and keyboard layout
-- It asks if you want all folder views in explorer to be selected as "Details" and set to separate
+- It asks you to select all folder views in the explorer as 'Details' and set the separator settings as shown by the arrows in the picture
 
 ![image](https://github.com/user-attachments/assets/6a5a335f-1ffe-4427-94a0-75d01204668e)
 
@@ -36,7 +36,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Enabling numlock after startup
 - Disabling windows beep sound
 - Disabling ipv6 stack
-- Disabling virtual ethernet adapters...
+- Disabling virtual ethernet adapters
 - Setting cloud flare dns
 - Configuring windows explorer settings
 - Expanding for file explorer
