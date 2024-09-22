@@ -16,7 +16,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - It asks if you want date format and keyboard layout
 - It asks if you want all folder views in explorer to be selected as "Details" and set to separate
 
-![image](https://github.com/user-attachments/assets/db96fd45-1640-47d1-a959-2fc94e246e58)
+![image](https://github.com/user-attachments/assets/6a5a335f-1ffe-4427-94a0-75d01204668e)
 
 - Ask if you want to add a "startup" task to run at startup (recommended)
 - Get the old classic right-click context menu
