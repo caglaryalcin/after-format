@@ -76,6 +76,9 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Removing widgets from taskbar
 - Enabling telnet client
 - Setting automatic kill of unsaved changes when trying to log out, restart or close
+
+![image](https://github.com/user-attachments/assets/869227a1-a299-4e20-8450-b0ba279409ff)
+
 - Unpinning all start menu tiles
 
 </details>
