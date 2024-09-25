@@ -398,6 +398,13 @@ Function SystemSettings {
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Snap windows feature will not be disabled.]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
+                DisableSnap
+            }
         }
         
         DisableSnap
