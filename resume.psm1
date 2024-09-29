@@ -830,7 +830,32 @@ Function UnusedApps {
                     "HKEY_CLASSES_ROOT\Directory\shell\ShareX"
                     #remove vlc
                     "HKEY_CLASSES_ROOT\Directory\shell\AddToPlaylistVLC"
+                    #remove google drive
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gcsedoc"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gcsesheet"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gcseslides"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gdoc"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gdraw"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gdrive"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gform"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gjam"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.glink"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gmaillayout"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gmap"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gnote"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gscript"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gsheet"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gsite"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gslides"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gtable"
+                    "HKEY_CLASSES_ROOT\GoogleDriveFS.gvid"
                 )
+
+                foreach ($path in $contextMenuPaths) {
+                    $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
+                    $cmd = "reg delete `"$regPath`" /f"
+                    Invoke-Expression $cmd *>$null
+                }
         
                 # New hash menu for right click
                 $regpath = "HKEY_CLASSES_ROOT\*\shell\hash"
