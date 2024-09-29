@@ -19,7 +19,12 @@ This script allows Windows 1x users to control data collection, privacy and secu
 ![image](https://github.com/user-attachments/assets/6a5a335f-1ffe-4427-94a0-75d01204668e)
 
 - Ask if you want to add a "startup" task to run at startup (recommended)
-- Get the old classic right-click context menu
+- Bringing back the old classic right-click context menu and additional buttons
+
+![image](https://github.com/user-attachments/assets/1066a699-f11c-4266-a481-cc000da1b451)
+![image](https://github.com/user-attachments/assets/dd630532-4a7f-440e-b5f6-2392cc81f806)
+
+
 - Taskbar aligns left
 - Disabling gallery folder
 - Desktop button in taskbar is enabled
