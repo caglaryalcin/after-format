@@ -64,7 +64,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Enabling clearing of recent files on exit
 - Disabling recent files lists
 - Disabling search for app in store for unknown extensions
-- Hiding 'recently added' list from the start menu
+- Hiding Recently Added, Recommended Settings, Apps, Personalized Sites and Section from list from the start menu
 - Stopping and disabling unnecessary services
 - Disabling news and interest on taskbar
 - Hiding people icon from taskbar
