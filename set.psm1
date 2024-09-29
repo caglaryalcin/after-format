@@ -1667,6 +1667,10 @@ Function SystemSettings {
                 # Hide 'Recommended Section' in the Start Menu
                 Set-ItemProperty -Path $registryPath -Name "HideRecommendedSection" -Type DWord -Value 1
     
+                # Add Phone link to the Start Menu
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Force
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Value 1 -PropertyType DWord
+    
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -3659,6 +3663,31 @@ InstallOrUpdateWinget
                         reg add $turnOffMenu2 /v "Icon" /t REG_SZ /d "imageres.dll,-59" /f *>$null
                         reg add "$turnOffMenu2\command" /f *>$null
                         reg add "$turnOffMenu2\command" /ve /d 'cmd /c "powershell.exe -Command \"(Add-Type ''[DllImport(\\\"user32.dll\\\")]public static extern int SendMessage(int hWnd,int hMsg,int wParam,int lParam);'' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)\" & rundll32.exe user32.dll, LockWorkStation"' /f *>$null
+
+                        # Add "Find Empty Folders"
+                        $command = 'powershell.exe -NoExit -Command "Get-ChildItem -Path ''%V'' -Directory -Recurse | Where-Object { $_.GetFileSystemInfos().Count -eq 0 } | ForEach-Object { $_.FullName }"'
+
+                        $registryPaths = @(
+                            "Registry::HKEY_CLASSES_ROOT\Directory\shell\FindEmptyFolders",
+                            "Registry::HKEY_CLASSES_ROOT\Directory\shell\FindEmptyFolders\command",
+                            "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\FindEmptyFolders",
+                            "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\FindEmptyFolders\command",
+                            "Registry::HKEY_CLASSES_ROOT\Drive\shell\FindEmptyFolders",
+                            "Registry::HKEY_CLASSES_ROOT\Drive\shell\FindEmptyFolders\command"
+                        )
+
+                        $icon = "imageres.dll,-1025"
+                        $defaultValue = "Find Empty Folders"
+
+                        $registryPaths | ForEach-Object {
+                            New-Item -Path $_ -Force | Out-Null
+                            Set-ItemProperty -Path $_ -Name "(Default)" -Value $defaultValue
+                            Set-ItemProperty -Path $_ -Name "Icon" -Value $icon
+                        }
+
+                        # Remove "Edit in Notepad"
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" `
+                            -Name "{CA6CC9F1-867A-481E-951E-A28C5E4F01EA}" -Value "Edit in Notepad"
                 
                         # Restart Windows Explorer
                         taskkill /f /im explorer.exe *>$null
@@ -3673,7 +3702,7 @@ InstallOrUpdateWinget
                     }
                 }
                 
-                RightClickMenu                
+                RightClickMenu
 
                 Function DisableWidgets {
                     Write-Host "Disabling Windows Widgets..." -NoNewline
