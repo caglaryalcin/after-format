@@ -1641,7 +1641,7 @@ Function SystemSettings {
         DisableRecentFiles
 
         Function TaskbarSettings {
-            Write-Host "Adjusting taskbar settings......" -NoNewline
+            Write-Host "Disabling Search for App in Store for Unknown Extensions..." -NoNewline
             $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
         
             try {
@@ -1655,7 +1655,7 @@ Function SystemSettings {
                 # Hide 'Recently added' list from the Start Menu
                 Set-ItemProperty -Path $registryPath -Name "HideRecentlyAddedApps" -Type DWord -Value 1
         
-                # Hide 'Recommended Section' in the Start Menu
+                # Hide 'Recommended Settings' in the Start Menu
                 Set-ItemProperty -Path $registryPath -Name "HideRecommendedSettings" -Type DWord -Value 1
     
                 # Hide 'Recommended Apps' in the Start Menu
