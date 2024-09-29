@@ -667,9 +667,6 @@ Function SystemSettings {
         Function DisableBingSearchExtension {
             Write-Host "Disabling extension of Windows search with Bing..." -NoNewline
         
-            # Registry path
-            $bingsearch = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
-        
             if (-not (Test-Path $bingsearch)) {
                 New-Item -Path $bingsearch -Force *>$null
             }
@@ -1643,53 +1640,41 @@ Function SystemSettings {
 
         DisableRecentFiles
 
-        Function DisableSearchAppInStore {
-            Write-Host "Disabling Search for App in Store for Unknown Extensions..." -NoNewline
+        Function TaskbarSettings {
+            Write-Host "Adjusting taskbar settings......" -NoNewline
+            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+        
             try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" | Out-Null
+                If (!(Test-Path $registryPath)) {
+                    New-Item -Path $registryPath | Out-Null
                 }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "NoUseStoreOpenWith" -Type DWord -Value 1
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-        }
-
-        DisableSearchAppInStore
-
-        Function HideRecentlyAddedApps {
-            Write-Host "Hiding 'Recently added' List from the Start Menu..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-        }
-
-        HideRecentlyAddedApps
-
-        Function HideRecommendedSection {
-            Write-Host "Hiding 'Recommended Section' List from the Start Menu..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecommendedSettings" -Type DWord -Value 1
+        
+                # Disable Search for App in Store for Unknown Extensions
+                Set-ItemProperty -Path $registryPath -Name "NoUseStoreOpenWith" -Type DWord -Value 1
+        
+                # Hide 'Recently added' list from the Start Menu
+                Set-ItemProperty -Path $registryPath -Name "HideRecentlyAddedApps" -Type DWord -Value 1
+        
+                # Hide 'Recommended Section' in the Start Menu
+                Set-ItemProperty -Path $registryPath -Name "HideRecommendedSettings" -Type DWord -Value 1
+    
+                # Hide 'Recommended Apps' in the Start Menu
+                Set-ItemProperty -Path $registryPath -Name "HideRecommendedApps" -Type DWord -Value 1
+    
+                # Hide 'Recommended Personalized Sites' in the Start Menu
+                Set-ItemProperty -Path $registryPath -Name "HideRecommendedPersonalizedSites" -Type DWord -Value 1
+    
+                # Hide 'Recommended Section' in the Start Menu
+                Set-ItemProperty -Path $registryPath -Name "HideRecommendedSection" -Type DWord -Value 1
+    
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
-    
-        HideRecommendedSection
+        
+        TaskbarSettings
 
         Function Disable-Services {
             param (
