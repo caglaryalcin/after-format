@@ -79,6 +79,11 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Hiding taskbar search
 - Removing chat from taskbar
 - Removing widgets from taskbar
+- Removing Quick Actions from taskbar
+
+![image](https://github.com/user-attachments/assets/a48003ad-5948-4a74-8405-5924f139d75c)
+
+
 - Enabling telnet client
 - Setting automatic kill of unsaved changes when trying to log out, restart or close
 
