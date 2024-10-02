@@ -1672,7 +1672,10 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Value 1 -PropertyType DWord
 
                 # Remove Quick Actions from the Control Center
-                Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.AirplaneMode" -Value ([byte[]]@()) -ErrorAction Stop
+        	    #laptop
+	            Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.AirplaneMode" -Value ([byte[]]@()) -ErrorAction Stop
+	            Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.Accessibility" -Value ([byte[]]@()) -ErrorAction Stop
+     	        #pc
                 Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.NearShare" -Value ([byte[]]@()) -ErrorAction Stop
                 Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.ColorProfile" -Value ([byte[]]@()) -ErrorAction Stop
                 Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.ProjectL2" -Value ([byte[]]@()) -ErrorAction Stop
