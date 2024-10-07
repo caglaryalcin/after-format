@@ -1672,15 +1672,21 @@ Function SystemSettings {
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Force *>$null
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Type DWord -Value 1
 
-                # Remove Quick Actions from the Control Center
-        	    #laptop
-	            Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.AirplaneMode" -Value ([byte[]]@()) -ErrorAction Stop
-	            Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.Accessibility" -Value ([byte[]]@()) -ErrorAction Stop
-     	        #pc
-                Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.NearShare" -Value ([byte[]]@()) -ErrorAction Stop
-                Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.ColorProfile" -Value ([byte[]]@()) -ErrorAction Stop
-                Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.ProjectL2" -Value ([byte[]]@()) -ErrorAction Stop
-                Set-ItemProperty -Path "HKCU:\Control Panel\Quick Actions\Control Center\Unpinned" -Name "Microsoft.QuickAction.Cast" -Value ([byte[]]@()) -ErrorAction Stop
+                # Set Quick Actions Layout
+                function Set-QuickActionsLayout {
+                    [CmdletBinding()]
+                    param (
+                        [Parameter(Mandatory)]
+                        [string]$RegistryPath,
+            
+                        [Parameter(Mandatory)]
+                        [string]$ValueData
+                    )
+            
+                    Set-ItemProperty -Path $RegistryPath -Name "UserLayoutPaginated" -Value $ValueData -Type String
+                }
+
+                Set-QuickActionsLayout -RegistryPath "HKCU:\Control Panel\Quick Actions\Control Center" -ValueData '[{\"Name\":\"Toggles\",\"QuickActions\":[{\"FriendlyName\":\"Microsoft.QuickAction.WiFi\"},{\"FriendlyName\":\"Microsoft.QuickAction.Bluetooth\"},{\"FriendlyName\":\"Microsoft.QuickAction.Accessibility\"},{\"FriendlyName\":\"Microsoft.QuickAction.BlueLightReduction\"},{\"FriendlyName\":\"Microsoft.QuickAction.EnergySaverAcOnly\"},{\"FriendlyName\":\"Microsoft.QuickAction.Cellular\"},{\"FriendlyName\":\"Microsoft.QuickAction.WindowsStudio\"},{\"FriendlyName\":\"Microsoft.QuickAction.AirplaneMode\"},{\"FriendlyName\":\"Microsoft.QuickAction.Vpn\"},{\"FriendlyName\":\"Microsoft.QuickAction.RotationLock\"},{\"FriendlyName\":\"Microsoft.QuickAction.BatterySaver\"},{\"FriendlyName\":\"Microsoft.QuickAction.LiveCaptions\"},{\"FriendlyName\":\"Microsoft.QuickAction.MobileHotspot\"},{\"FriendlyName\":\"Microsoft.QuickAction.NearShare\"},{\"FriendlyName\":\"Microsoft.QuickAction.ColorProfile\"},{\"FriendlyName\":\"Microsoft.QuickAction.Cast\"},{\"FriendlyName\":\"Microsoft.QuickAction.ProjectL2\"},{\"FriendlyName\":\"Microsoft.QuickAction.LocalBluetooth\"},{\"FriendlyName\":\"Microsoft.QuickAction.A9\"}]},{\"Name\":\"Sliders\",\"QuickActions\":[{\"FriendlyName\":\"Microsoft.QuickAction.Brightness\"},{\"FriendlyName\":\"Microsoft.QuickAction.VolumeNoTimer\"}]}]'
     
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
