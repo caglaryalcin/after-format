@@ -158,6 +158,11 @@ Function SystemSettings {
                     Remove-Item -LiteralPath "HKCR:\*\shellex\ContextMenuHandlers\EPP" -ErrorAction SilentlyContinue
                     Remove-Item -Path "HKCR:\Directory\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
                     Remove-Item -Path "HKCR:\Drive\shellex\ContextMenuHandlers\EPP" -Recurse -ErrorAction SilentlyContinue
+
+                    # Disable system guard
+                    $systemguardPath = "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\SystemGuard"
+                    if (-not (Test-Path $systemguardPath)) { New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios" -Name "SystemGuard" -Force *>$null }
+                    New-ItemProperty -Path $systemguardPath -Name "Enabled" -Value 0 -PropertyType DWORD -Force *>$null
         
                     # Restart Windows Explorer
                     taskkill /f /im explorer.exe *>$null
