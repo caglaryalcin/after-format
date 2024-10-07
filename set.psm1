@@ -492,51 +492,87 @@ Function SystemSettings {
             $response = Read-Host
         
             if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Explorer view settings are setting to 'Details'......" -NoNewline
+                param (
+                    [byte[]]$newColInfoValue = @(
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0xFD, 0xDF, 0xDF, 0xFD, 0x10, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x04, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00,
+                        0x30, 0xF1, 0x25, 0xB7, 0xEF, 0x47, 0x1A, 0x10,
+                        0xA5, 0xF1, 0x02, 0x60, 0x8C, 0x9E, 0xEB, 0xAC,
+                        0x0A, 0x00, 0x00, 0x00, 0x17, 0x01, 0x00, 0x00,
+                        0x90, 0x4F, 0x1E, 0x84, 0x59, 0xFF, 0x16, 0x4D,
+                        0x89, 0x47, 0xE8, 0x1B, 0xBF, 0xFA, 0xB3, 0x6D,
+                        0x02, 0x00, 0x00, 0x00, 0xC0, 0x00, 0x00, 0x00,
+                        0x90, 0x4F, 0x1E, 0x84, 0x59, 0xFF, 0x16, 0x4D,
+                        0x89, 0x47, 0xE8, 0x1B, 0xBF, 0xFA, 0xB3, 0x6D,
+                        0x0B, 0x00, 0x00, 0x00, 0x50, 0x00, 0x00, 0x00,
+                        0x30, 0xF1, 0x25, 0xB7, 0xEF, 0x47, 0x1A, 0x10,
+                        0xA5, 0xF1, 0x02, 0x60, 0x8C, 0x9E, 0xEB, 0xAC,
+                        0x0C, 0x00, 0x00, 0x00, 0x50, 0x00, 0x00, 0x00
+                    )
+                )
+    
+                Write-Host "Setting Explorer view settings to 'Details'..." -NoNewline
+    
+                # Set the view settings to Details for all folders
                 $basePath = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags"
-                $bags = Get-ChildItem -Path $basePath
-        
+                $bags = Get-ChildItem -Path $basePath -ErrorAction SilentlyContinue
+    
                 foreach ($bag in $bags) {
-            
-                    # Exclude the "1" bag (This PC)
-                    if ($bag.PSChildName -eq "1" -or $bag.PSChildName -eq "4") {
+                    # Exclude specific bags
+                    if ($bag.PSChildName -in "1", "4", "24") {
                         continue
-                    }                    
-            
+                    }
+    
                     $shellPath = Join-Path $bag.PSPath "Shell"
-            
+    
                     if (Test-Path $shellPath) {
-                        $subKeys = Get-ChildItem -Path $shellPath -Recurse
-                
+                        $subKeys = Get-ChildItem -Path $shellPath -Recurse -ErrorAction SilentlyContinue
+    
                         foreach ($subKey in $subKeys) {
                             $subKeyPath = $subKey.PSPath
-                    
+    
                             # Change the view settings
-                            Set-ItemProperty -Path $subKeyPath -Name "Mode" -Value 4 -Type DWord
-                            Set-ItemProperty -Path $subKeyPath -Name "LogicalViewMode" -Value 1 -Type DWord
-                            Set-ItemProperty -Path $subKeyPath -Name "IconSize" -Value 10 -Type DWord
-                            Set-ItemProperty -Path $subKeyPath -Name "Vid" -Value "{137E7700-3573-11CF-AE69-08002B2E1262}" -Type String
+                            Set-ItemProperty -Path $subKeyPath -Name "Mode" -Value 4 -Type DWord -ErrorAction SilentlyContinue
+                            Set-ItemProperty -Path $subKeyPath -Name "LogicalViewMode" -Value 1 -Type DWord -ErrorAction SilentlyContinue
+                            Set-ItemProperty -Path $subKeyPath -Name "IconSize" -Value 10 -Type DWord -ErrorAction SilentlyContinue
+                            Set-ItemProperty -Path $subKeyPath -Name "Vid" -Value "{137E7700-3573-11CF-AE69-08002B2E1262}" -Type String -ErrorAction SilentlyContinue
                         }
                     }
                 }
-
-                $bagsPath = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags"
-
-                Get-ChildItem -Path $bagsPath -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+    
+                # Set the view separator settings to Details for all folders
+                Get-ChildItem -Path $basePath -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
                     $subKeyPath = $_.PSPath
                     Get-ChildItem -Path $subKeyPath -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
                         $colInfoPath = $_.PSPath
                         if (Test-Path -Path $colInfoPath -ErrorAction SilentlyContinue) {
                             $colInfo = Get-ItemProperty -Path $colInfoPath -Name "ColInfo" -ErrorAction SilentlyContinue
                             if ($colInfo) {
-                                Set-ItemProperty -Path $colInfoPath -Name "ColInfo" -Value $newColInfoValue
+                                Set-ItemProperty -Path $colInfoPath -Name "ColInfo" -Value $newColInfoValue -ErrorAction SilentlyContinue
                             }
                         }
                     }
                 }
-
-                # Restart Windows Explorer
-                taskkill /f /im explorer.exe *>$null
+    
+                # Set control panel view
+                $Key1 = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU"
+                $Data1 = "06 00 00 00 05 00 00 00 02 00 00 00 01 00 00 00 04 00 00 00 00 00 00 00 03 00 00 00 FF FF FF FF"
+                $byteArray1 = $Data1 -split ' ' | ForEach-Object { [byte]::Parse($_, [System.Globalization.NumberStyles]::HexNumber) }
+                Set-ItemProperty -Path $Key1 -Name "MRUListEx" -Value $byteArray1 -Type Binary -ErrorAction SilentlyContinue
+    
+                $Key2 = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\24\Shell\{D674391B-52D9-4E07-834E-67C98610F39D}"
+                $Data2 = "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FD DF DF FD 10 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 18 00 00 00 30 F1 25 B7 EF 47 1A 10 A5 F1 02 60 8C 9E EB AC 0A 00 00 00 17 01 00 00 90 4F 1E 84 59 FF 16 4D 89 47 E8 1B BF FA B3 6D 02 00 00 00 C0 00 00 00 90 4F 1E 84 59 FF 16 4D 89 47 E8 1B BF FA B3 6D 0B 00 00 00 50 00 00 00 30 F1 25 B7 EF 47 1A 10 A5 F1 02 60 8C 9E EB AC 0C 00 00 00 50 00 00 00"
+                $byteArray2 = $Data2 -split ' ' | ForEach-Object { [byte]::Parse($_, [System.Globalization.NumberStyles]::HexNumber) }
+                Set-ItemProperty -Path $Key2 -Name "ColInfo" -Value $byteArray2 -Type Binary -ErrorAction SilentlyContinue
+    
+                # Remove ShareX from context menu
+                reg delete "HKEY_CLASSES_ROOT\*\shell\ShareX" /f *> $null
+    
+                # Restart Explorer
+                taskkill /f /im explorer.exe *> $null
                 Start-Process "explorer.exe" -NoNewWindow
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
