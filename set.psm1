@@ -492,7 +492,7 @@ Function SystemSettings {
                     $shellPath = Join-Path $bag.PSPath "Shell"
             
                     if (Test-Path $shellPath) {
-                        $subKeys = Get-ChildItem -Path $shellPath
+                        $subKeys = Get-ChildItem -Path $shellPath -Recurse
                 
                         foreach ($subKey in $subKeys) {
                             $subKeyPath = $subKey.PSPath
@@ -666,7 +666,9 @@ Function SystemSettings {
 
         Function DisableBingSearchExtension {
             Write-Host "Disabling extension of Windows search with Bing..." -NoNewline
-        
+            
+            $bingsearch = "HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings"
+
             if (-not (Test-Path $bingsearch)) {
                 New-Item -Path $bingsearch -Force *>$null
             }
@@ -1668,8 +1670,8 @@ Function SystemSettings {
                 Set-ItemProperty -Path $registryPath -Name "HideRecommendedSection" -Type DWord -Value 1
     
                 # Add Phone link to the Start Menu
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Force
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Value 1 -PropertyType DWord
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Force *>$null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Type DWord -Value 1
 
                 # Remove Quick Actions from the Control Center
         	    #laptop
