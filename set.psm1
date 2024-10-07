@@ -2962,15 +2962,20 @@ Function PrivacySettings {
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userAccountInformation",
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appDiagnostics"
             )
-        
+            
             try {
                 foreach ($path in $paths) {
-                    Set-ItemProperty -Path $path -Name "Value" -Type String -Value "Deny" -ErrorAction Stop
+                    if (Test-Path $path) {
+                        ##
+                    } else {
+                        New-Item -Path $path -Force | Out-Null
+                        Set-ItemProperty -Path $path -Name "Value" -Type String -Value "Deny" -ErrorAction Stop
+                    }
                 }
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                Write-Host "[DONE]" -ForegroundColor Green
             }
             catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING] $_" -ForegroundColor Red
             }
         }
         
