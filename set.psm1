@@ -559,12 +559,12 @@ Function SystemSettings {
     
                 # Set control panel view
                 $Key1 = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU"
-                $Data1 = "06 00 00 00 05 00 00 00 02 00 00 00 01 00 00 00 04 00 00 00 00 00 00 00 03 00 00 00 FF FF FF FF"
+                $Data1 = "06 00 00 00 02 00 00 00 03 00 00 00 01 00 00 00 07 00 00 00 05 00 00 00 04 00 00 00 00 00 00 00 FF FF FF FF"
                 $byteArray1 = $Data1 -split ' ' | ForEach-Object { [byte]::Parse($_, [System.Globalization.NumberStyles]::HexNumber) }
                 Set-ItemProperty -Path $Key1 -Name "MRUListEx" -Value $byteArray1 -Type Binary -ErrorAction SilentlyContinue
     
                 $Key2 = "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\24\Shell\{D674391B-52D9-4E07-834E-67C98610F39D}"
-                $Data2 = "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FD DF DF FD 10 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 18 00 00 00 30 F1 25 B7 EF 47 1A 10 A5 F1 02 60 8C 9E EB AC 0A 00 00 00 17 01 00 00 90 4F 1E 84 59 FF 16 4D 89 47 E8 1B BF FA B3 6D 02 00 00 00 C0 00 00 00 90 4F 1E 84 59 FF 16 4D 89 47 E8 1B BF FA B3 6D 0B 00 00 00 50 00 00 00 30 F1 25 B7 EF 47 1A 10 A5 F1 02 60 8C 9E EB AC 0C 00 00 00 50 00 00 00"
+                $Data2 = "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FD DF DF FD 10 00 00 00 00 00 00 00 00 00 00 00 05 00 00 00 18 00 00 00 30 F1 25 B7 EF 47 1A 10 A5 F1 02 60 8C 9E EB AC 0A 00 00 00 17 01 00 00 90 4F 1E 84 59 FF 16 4D 89 47 E8 1B BF FA B3 6D 02 00 00 00 C0 00 00 00 90 4F 1E 84 59 FF 16 4D 89 47 E8 1B BF FA B3 6D 0B 00 00 00 50 00 00 00 30 F1 25 B7 EF 47 1A 10 A5 F1 02 60 8C 9E EB AC 0C 00 00 00 50 00 00 00 53 7D EF 0C 64 FA D1 11 A2 03 00 00 F8 1F ED EE 08 00 00 00 80 00 00 00"
                 $byteArray2 = $Data2 -split ' ' | ForEach-Object { [byte]::Parse($_, [System.Globalization.NumberStyles]::HexNumber) }
                 Set-ItemProperty -Path $Key2 -Name "ColInfo" -Value $byteArray2 -Type Binary -ErrorAction SilentlyContinue
     
@@ -2967,7 +2967,8 @@ Function PrivacySettings {
                 foreach ($path in $paths) {
                     if (Test-Path $path) {
                         ##
-                    } else {
+                    }
+                    else {
                         New-Item -Path $path -Force | Out-Null
                         Set-ItemProperty -Path $path -Name "Value" -Type String -Value "Deny" -ErrorAction Stop
                     }
