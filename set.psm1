@@ -651,23 +651,23 @@ Function SystemSettings {
         function DisableLockScreenNotifications {
             Write-Host "Disabling lock screen notifications..." -NoNewline
             
-            $registryPaths = @(
+            $lockregistryPaths = @(
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings",
                 "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications",
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications"
             )
             
-            foreach ($path in $registryPaths) {
+            foreach ($path in $lockregistryPaths) {
                 if (-not (Test-Path $path)) {
                     New-Item -Path $path -Force *>$null
                 }
             }
             
             try {
-                Set-ItemProperty -Path $registryPaths[0] -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
-                Set-ItemProperty -Path $registryPaths[1] -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
-                Set-ItemProperty -Path $registryPaths[1] -Name "ToastEnabled" -Value 0
-                Set-ItemProperty -Path $registryPaths[2] -Name "ToastEnabled" -Value 0
+                Set-ItemProperty -Path $lockregistryPaths[0] -Name "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK" -Value 0
+                Set-ItemProperty -Path $lockregistryPaths[1] -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
+                Set-ItemProperty -Path $lockregistryPaths[1] -Name "ToastEnabled" -Value 0
+                Set-ItemProperty -Path $lockregistryPaths[2] -Name "ToastEnabled" -Value 0
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -1374,7 +1374,7 @@ Function SystemSettings {
             Write-Host "Disabling Xbox Features..." -NoNewline
         
             try {
-                $registryPaths = @{
+                $xboxregistryPaths = @{
                     "HKCU:\Software\Microsoft\GameBar" = @{
                         "AutoGameModeEnabled"       = 1
                         "AllowAutoGameMode"         = 1
@@ -1386,9 +1386,9 @@ Function SystemSettings {
                     }
                 }
         
-                foreach ($path in $registryPaths.Keys) {
-                    foreach ($name in $registryPaths[$path].Keys) {
-                        $value = $registryPaths[$path][$name]
+                foreach ($path in $xboxregistryPaths.Keys) {
+                    foreach ($name in $xboxregistryPaths[$path].Keys) {
+                        $value = $xboxregistryPaths[$path][$name]
                         Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord -Force
                     }
                 }
@@ -1684,51 +1684,35 @@ Function SystemSettings {
 
         Function TaskbarSettings {
             Write-Host "Disabling Search for App in Store for Unknown Extensions..." -NoNewline
-            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+            $taskbarregPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
         
             try {
-                If (!(Test-Path $registryPath)) {
-                    New-Item -Path $registryPath | Out-Null
+                If (!(Test-Path $taskbarregPath)) {
+                    New-Item -Path $taskbarregPath | Out-Null
                 }
         
                 # Disable Search for App in Store for Unknown Extensions
-                Set-ItemProperty -Path $registryPath -Name "NoUseStoreOpenWith" -Type DWord -Value 1
+                Set-ItemProperty -Path $taskbarregPath -Name "NoUseStoreOpenWith" -Type DWord -Value 1
         
                 # Hide 'Recently added' list from the Start Menu
-                Set-ItemProperty -Path $registryPath -Name "HideRecentlyAddedApps" -Type DWord -Value 1
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecentlyAddedApps" -Type DWord -Value 1
         
                 # Hide 'Recommended Settings' in the Start Menu
-                Set-ItemProperty -Path $registryPath -Name "HideRecommendedSettings" -Type DWord -Value 1
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedSettings" -Type DWord -Value 1
     
                 # Hide 'Recommended Apps' in the Start Menu
-                Set-ItemProperty -Path $registryPath -Name "HideRecommendedApps" -Type DWord -Value 1
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedApps" -Type DWord -Value 1
     
                 # Hide 'Recommended Personalized Sites' in the Start Menu
-                Set-ItemProperty -Path $registryPath -Name "HideRecommendedPersonalizedSites" -Type DWord -Value 1
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedPersonalizedSites" -Type DWord -Value 1
     
                 # Hide 'Recommended Section' in the Start Menu
-                Set-ItemProperty -Path $registryPath -Name "HideRecommendedSection" -Type DWord -Value 1
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedSection" -Type DWord -Value 1
     
                 # Add Phone link to the Start Menu
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Force *>$null
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Type DWord -Value 1
 
-                # Set Quick Actions Layout
-                function Set-QuickActionsLayout {
-                    [CmdletBinding()]
-                    param (
-                        [Parameter(Mandatory)]
-                        [string]$RegistryPath,
-            
-                        [Parameter(Mandatory)]
-                        [string]$ValueData
-                    )
-            
-                    Set-ItemProperty -Path $RegistryPath -Name "UserLayoutPaginated" -Value $ValueData -Type String
-                }
-
-                Set-QuickActionsLayout -RegistryPath "HKCU:\Control Panel\Quick Actions\Control Center" -ValueData '[{\"Name\":\"Toggles\",\"QuickActions\":[{\"FriendlyName\":\"Microsoft.QuickAction.WiFi\"},{\"FriendlyName\":\"Microsoft.QuickAction.Bluetooth\"},{\"FriendlyName\":\"Microsoft.QuickAction.Accessibility\"},{\"FriendlyName\":\"Microsoft.QuickAction.BlueLightReduction\"},{\"FriendlyName\":\"Microsoft.QuickAction.EnergySaverAcOnly\"},{\"FriendlyName\":\"Microsoft.QuickAction.Cellular\"},{\"FriendlyName\":\"Microsoft.QuickAction.WindowsStudio\"},{\"FriendlyName\":\"Microsoft.QuickAction.AirplaneMode\"},{\"FriendlyName\":\"Microsoft.QuickAction.Vpn\"},{\"FriendlyName\":\"Microsoft.QuickAction.RotationLock\"},{\"FriendlyName\":\"Microsoft.QuickAction.BatterySaver\"},{\"FriendlyName\":\"Microsoft.QuickAction.LiveCaptions\"},{\"FriendlyName\":\"Microsoft.QuickAction.MobileHotspot\"},{\"FriendlyName\":\"Microsoft.QuickAction.NearShare\"},{\"FriendlyName\":\"Microsoft.QuickAction.ColorProfile\"},{\"FriendlyName\":\"Microsoft.QuickAction.Cast\"},{\"FriendlyName\":\"Microsoft.QuickAction.ProjectL2\"},{\"FriendlyName\":\"Microsoft.QuickAction.LocalBluetooth\"},{\"FriendlyName\":\"Microsoft.QuickAction.A9\"}]},{\"Name\":\"Sliders\",\"QuickActions\":[{\"FriendlyName\":\"Microsoft.QuickAction.Brightness\"},{\"FriendlyName\":\"Microsoft.QuickAction.VolumeNoTimer\"}]}]'
-    
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -1859,13 +1843,13 @@ Function SystemSettings {
         
             try {
                 # Test and create 'Windows Feeds' path if it doesn't exist
-                $feedsPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
-                if (-not (Test-Path -Path $feedsPath)) {
-                    New-Item -Path $feedsPath -ErrorAction Stop | Out-Null
+                $winfeedsPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
+                if (-not (Test-Path -Path $winfeedsPath)) {
+                    New-Item -Path $winfeedsPath -ErrorAction Stop | Out-Null
                 }
         
                 # Set 'EnableFeeds' registry value to 0
-                Set-ItemProperty -Path $feedsPath -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
+                Set-ItemProperty -Path $winfeedsPath -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
         
                 # Disable news and interests in the taskbar
                 $taskbarFeedsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds"
@@ -1884,11 +1868,11 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackDocs" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
 
                 # Disable news and interests via Policies\Explorer
-                $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-                if (-not (Test-Path $registryPath)) {
-                    New-Item -Path $registryPath -Force | Out-Null
+                $newregistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+                if (-not (Test-Path $newregistryPath)) {
+                    New-Item -Path $newregistryPath -Force | Out-Null
                 }
-                Set-ItemProperty -Path $registryPath -Name "NoNewsAndInterests" -Value 1 -ErrorAction Stop
+                Set-ItemProperty -Path $newregistryPath -Name "NoNewsAndInterests" -Value 1 -ErrorAction Stop
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1989,7 +1973,7 @@ Function SystemSettings {
 
         Function TurnOffSuggestedContent {
             Write-Host "Turning off suggested content in Settings..." -NoNewline
-            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+            $suggestregPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
             $contentSettings = @(
                 "SubscribedContent-338393Enabled",
                 "SubscribedContent-353694Enabled",
@@ -1998,7 +1982,7 @@ Function SystemSettings {
         
             try {
                 foreach ($setting in $contentSettings) {
-                    Set-ItemProperty -Path $registryPath -Name $setting -Type DWord -Value 0
+                    Set-ItemProperty -Path $suggestregPath -Name $setting -Type DWord -Value 0
                 }
                 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -3314,8 +3298,8 @@ InstallOrUpdateWinget
         
                     # Uninstall Microsoft Teams Outlook Add-in
                     $TeamsAddinGUID = '{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}'
-                    $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$TeamsAddinGUID"
-                    if (Test-Path $registryPath) {
+                    $teamsregpath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$TeamsAddinGUID"
+                    if (Test-Path $teamsregpath) {
                         try {
                             Start-Process msiexec.exe -ArgumentList "/x $TeamsAddinGUID /qn /norestart" -NoNewWindow -Wait
                         }
@@ -3555,11 +3539,11 @@ InstallOrUpdateWinget
                     }
         
                     foreach ($key in $OfficePrivacyRegistryKeys.GetEnumerator()) {
-                        $registryPath = $key.Key
+                        $officeregpath = $key.Key
                         $registryValues = $key.Value
         
-                        if (-not (Test-Path $registryPath)) {
-                            New-Item -Path $registryPath -Force *>$null
+                        if (-not (Test-Path $officeregpath)) {
+                            New-Item -Path $officeregpath -Force *>$null
                         }
         
                         foreach ($valueName in $registryValues.GetEnumerator()) {
@@ -3567,7 +3551,7 @@ InstallOrUpdateWinget
                             $data = $valueName.Value
         
                             try {
-                                Set-ItemProperty -Path $registryPath -Name $value -Value $data
+                                Set-ItemProperty -Path $officeregpath -Name $value -Value $data
                             }
                             catch {
                                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -3607,11 +3591,11 @@ InstallOrUpdateWinget
                     }
         
                     foreach ($key in $WindowsSyncRegistryKeys.GetEnumerator()) {
-                        $registryPath = $key.Key
+                        $syncregPath = $key.Key
                         $registryValues = $key.Value
         
-                        if (-not (Test-Path $registryPath)) {
-                            New-Item -Path $registryPath -Force *>$null
+                        if (-not (Test-Path $syncregPath)) {
+                            New-Item -Path $syncregPath -Force *>$null
                         }
         
                         foreach ($valueName in $registryValues.GetEnumerator()) {
@@ -3619,7 +3603,7 @@ InstallOrUpdateWinget
                             $data = $valueName.Value
         
                             try {
-                                Set-ItemProperty -Path $registryPath -Name $value -Value $data
+                                Set-ItemProperty -Path $syncregPath -Name $value -Value $data
                             }
                             catch {
                                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -3731,7 +3715,7 @@ InstallOrUpdateWinget
                         # Add "Find Empty Folders"
                         $command = 'powershell.exe -NoExit -Command "Get-ChildItem -Path ''%V'' -Directory -Recurse | Where-Object { $_.GetFileSystemInfos().Count -eq 0 } | ForEach-Object { $_.FullName }"'
 
-                        $registryPaths = @(
+                        $rightclickregpath = @(
                             "Registry::HKEY_CLASSES_ROOT\Directory\shell\FindEmptyFolders",
                             "Registry::HKEY_CLASSES_ROOT\Directory\shell\FindEmptyFolders\command",
                             "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\FindEmptyFolders",
@@ -3743,7 +3727,7 @@ InstallOrUpdateWinget
                         $icon = "imageres.dll,-1025"
                         $defaultValue = "Find Empty Folders"
 
-                        $registryPaths | ForEach-Object {
+                        $rightclickregpath | ForEach-Object {
                             New-Item -Path $_ -Force | Out-Null
                             Set-ItemProperty -Path $_ -Name "(Default)" -Value $defaultValue
                             Set-ItemProperty -Path $_ -Name "Icon" -Value $icon
@@ -3868,17 +3852,17 @@ InstallOrUpdateWinget
                     if ($response -eq 'y' -or $response -eq 'Y') {
                         Write-Host "Disabling Microsoft Copilot..." -NoNewline
                 
-                        $registryPath = "HKCU:\Software\Policies\Microsoft\Windows"
+                        $copilotregPath = "HKCU:\Software\Policies\Microsoft\Windows"
                         $registryName = "WindowsCopilot"
                         $registryProperty = "TurnOffWindowsCopilot"
                         $edgeRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
                         $explorerRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
                 
-                        if (-not (Test-Path $registryPath)) {
-                            New-Item -Path $registryPath -Name $registryName -Force *>$null
+                        if (-not (Test-Path $copilotregPath)) {
+                            New-Item -Path $copilotregPath -Name $registryName -Force *>$null
                         }
                 
-                        New-ItemProperty -Path $registryPath\$registryName -Name $registryProperty -Value 1 -PropertyType DWORD -Force *>$null
+                        New-ItemProperty -Path $copilotregPath\$registryName -Name $registryProperty -Value 1 -PropertyType DWORD -Force *>$null
                 
                         if (-not (Test-Path $edgeRegistryPath)) {
                             New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
