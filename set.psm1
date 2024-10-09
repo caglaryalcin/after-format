@@ -1853,9 +1853,6 @@ Function SystemSettings {
         
                 # Disable news and interests in the taskbar
                 $taskbarFeedsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds"
-                if (-not (Test-Path $taskbarFeedsPath)) {
-                    New-Item -Path $taskbarFeedsPath -Force | Out-Null
-                }
                 Set-ItemProperty -Path $taskbarFeedsPath -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
 
                 # Disable Show recommendations for tips, shortcuts, new apps
@@ -1961,7 +1958,7 @@ Function SystemSettings {
         Function RemoveTaskbarWidgets {
             Write-Host "Removing Widgets from Taskbar..." -NoNewline
             try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarDa" -Type DWord -Value 0
+                Start-Process powershell -Verb runAs -ArgumentList '-Command "Set-ItemProperty -Path \"HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name \"TaskbarDa\" -Type DWord -Value 0"'
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
