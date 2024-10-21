@@ -376,18 +376,6 @@ Function MalwarebytesReset {
 
 MalwarebytesReset
 
-#workstation key
-try {
-    Write-Host "Vmware serial number is being set...." -NoNewline
-    Silent
-    $key = Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation\Dormant\License.ws.17.0.e5.202208" -ErrorAction Stop
-    Set-ItemProperty -Path $key.PSPath -Name "Serial" -Type String -Value 4A4RR-813DK-M81A9-4U35H-06KND *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-}
-catch {
-    Write-Host "[Vmware v7 not installed]" -ForegroundColor Red -BackgroundColor Black
-}
-
 # webview2 is being forcibly reloaded because it is necessary
 try {
     Write-Host "Reinstalling Microsoft Edge WebView2 Runtime..." -NoNewline
