@@ -1833,6 +1833,19 @@ Function SystemSettings {
     
         LocationNotifications
 
+        Function EnableSudo {
+            Write-Host "Enabling Sudo..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo" -Name "Enabled" -Type DWord -Value 1
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+    
+        EnableSudo
+
         ##########
         #region Taskbar Settings
         ##########
