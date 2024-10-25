@@ -1860,6 +1860,21 @@ Function SystemSettings {
         }
             
         RemoveAboutThisPicture
+
+        Function RemoveShortcutName {
+            Write-Host "Removing Shortcut Name..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "link" -Value ([byte[]](0, 0, 0, 0))
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "ShortcutNameTemplate" -Value "ShortcutNameTemplate"
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        
+        RemoveShortcutName
         
             ##########
             #region Taskbar Settings
