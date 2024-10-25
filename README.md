@@ -90,6 +90,10 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Setting End task button
 - Disabling Location Notifications
 - Enabling Sudo
+- Removing shortcut name
+
+![image](https://github.com/user-attachments/assets/5d44a918-bf3f-49df-a27a-105b461a07e3)
+
 - Unpinning all start menu tiles
 
 </details>
