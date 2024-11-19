@@ -3772,6 +3772,15 @@ InstallOrUpdateWinget
                             Set-ItemProperty -Path $_ -Name "Icon" -Value $icon
                         }
 
+                        # Add to "Boot to UEFI Firmware Settings"
+                        New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware" -Force | Out-Null
+                        Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "Icon" -Value "bootux.dll,-1016"
+                        Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "MUIVerb" -Value "Boot to UEFI Firmware Settings"
+                        Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "Position" -Value "Top"
+                    
+                        New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware\command" -Force | Out-Null
+                        Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware\command" -Name "(default)" -Value "powershell -windowstyle hidden -command \"Start-Process cmd -ArgumentList '/s,/c,shutdown /r /fw' -Verb runAs\""
+
                         # Add blocked keys
                         $blockedkeyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked"
                         if (-not (Test-Path -Path $blockedkeyPath)) {
