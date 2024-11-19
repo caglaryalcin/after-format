@@ -22,7 +22,8 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Bringing back the old classic right-click context menu and additional buttons
 
 ![image](https://github.com/user-attachments/assets/1066a699-f11c-4266-a481-cc000da1b451)
-![image](https://github.com/user-attachments/assets/dd630532-4a7f-440e-b5f6-2392cc81f806)
+![image](https://github.com/user-attachments/assets/572b299c-a032-4394-b625-7e092e1bfbed)
+
 
 
 - Taskbar aligns left
