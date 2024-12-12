@@ -1,3 +1,5 @@
+![](https://badgen.net/github/license/caglaryalcin/after-format?tab=GPL-2.0-1-ov-file)
+
 ![Alt Text](https://github.com/caglaryalcin/caglaryalcin/blob/main/main.gif)
 
 ## Description
