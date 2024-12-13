@@ -28,7 +28,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 - Taskbar aligns left
 - Disabling snap
-- Adding ohmypush
+- Adding ohmypush to Windows Terminal
 
 ![image](https://github.com/user-attachments/assets/154e85b6-0872-45ee-b6bb-846655846890)
 
