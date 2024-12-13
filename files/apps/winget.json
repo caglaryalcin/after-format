@@ -41,7 +41,8 @@
         {"PackageIdentifier": "dbeaver.dbeaver"},
         {"PackageIdentifier": "Microsoft.EdgeWebView2Runtime"},
         {"PackageIdentifier": "Microsoft.DotNet.DesktopRuntime.8"},
-        {"PackageIdentifier": "Malwarebytes.Malwarebytes"}
+        {"PackageIdentifier": "Malwarebytes.Malwarebytes"},
+        {"PackageIdentifier": "JanDeDobbeleer.OhMyPosh"}
       ]
     }
   ]

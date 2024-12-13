@@ -38,7 +38,8 @@
         {"PackageIdentifier": ["webview"]},
         {"PackageIdentifier": ["runtime"]},
         {"PackageIdentifier": ["dotnet"]},
-        {"PackageIdentifier": ["Malwarebytes"]}
+        {"PackageIdentifier": ["Malwarebytes"]},
+        {"PackageIdentifier": ["OhMyPosh"]}
       ]
     }
   ]

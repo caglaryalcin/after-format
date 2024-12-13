@@ -459,7 +459,40 @@ Function SystemSettings {
             }
         }
         
-        NVCleanUpdateTask        
+        NVCleanUpdateTask
+
+        Function TerminalConfig {
+            Write-Host "`nDo you want to " -NoNewline
+            Write-Host "configure Windows Terminal config?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Configuring Windows Terminal..." -NoNewline
+                $profileFolder = "$HOME\Documents\WindowsPowerShell"
+                if (-Not (Test-Path -Path $profileFolder)) {
+                    New-Item -ItemType Directory -Path $profileFolder
+                }
+    
+                $profileFile = "$profileFolder\Microsoft.PowerShell_profile.ps1"
+                $commands = @'
+    oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\star.omp.json" | Invoke-Expression
+    clear
+'@
+                Set-Content -Path $profileFile -Value $commands
+    
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Windows Terminal config will not be set.]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
+                TerminalConfig
+            }
+        }
+
+        TerminalConfig
 
         Function DisableGallery {
             try {
@@ -1875,7 +1908,7 @@ Function SystemSettings {
         }
         
         RemoveShortcutName
-        
+
         ##########
         #region Taskbar Settings
         ##########
