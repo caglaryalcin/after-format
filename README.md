@@ -26,9 +26,12 @@ This script allows Windows 1x users to control data collection, privacy and secu
 ![image](https://github.com/user-attachments/assets/1066a699-f11c-4266-a481-cc000da1b451)
 ![image](https://github.com/user-attachments/assets/572b299c-a032-4394-b625-7e092e1bfbed)
 
-
-
 - Taskbar aligns left
+- Disabling snap
+- Adding ohmypush
+
+![image](https://github.com/user-attachments/assets/154e85b6-0872-45ee-b6bb-846655846890)
+
 - Disabling gallery folder
 - Desktop button in taskbar is enabled
 - Disabling sync your settings
