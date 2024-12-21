@@ -471,7 +471,7 @@ Function SystemSettings {
                 Write-Host "Configuring Windows Terminal..." -NoNewline
                 $profileFolder = "$HOME\Documents\WindowsPowerShell"
                 if (-Not (Test-Path -Path $profileFolder)) {
-                    New-Item -ItemType Directory -Path $profileFolder
+                    New-Item -ItemType Directory -Path $profileFolder *>$null
                 }
     
                 $profileFile = "$profileFolder\Microsoft.PowerShell_profile.ps1"
