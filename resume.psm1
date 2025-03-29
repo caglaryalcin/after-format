@@ -838,7 +838,7 @@ Function UnusedApps {
                     "HKEY_CLASSES_ROOT\GoogleDriveFS.gtable"
                     "HKEY_CLASSES_ROOT\GoogleDriveFS.gvid"
                 )
-
+    
                 foreach ($path in $contextMenuPaths) {
                     $regPath = $path -replace 'HKCR:\\', 'HKEY_CLASSES_ROOT\' 
                     $cmd = "reg delete `"$regPath`" /f"
@@ -876,33 +876,12 @@ Function UnusedApps {
                 Remove-Item $tempErr -ErrorAction Ignore
         
                 # Add Turn Off Display Menu
-                $turnOffDisplay = "HKEY_CLASSES_ROOT\DesktopBackground\Shell\TurnOffDisplay"
-                reg add $turnOffDisplay /f *>$null
-                reg add $turnOffDisplay /v "Icon" /t REG_SZ /d "imageres.dll,-109" /f *>$null
-                reg add $turnOffDisplay /v "MUIVerb" /t REG_SZ /d "Turn off display" /f *>$null
-                reg add $turnOffDisplay /v "Position" /t REG_SZ /d "Bottom" /f *>$null
-                reg add $turnOffDisplay /v "SubCommands" /t REG_SZ /d """" /f *>$null
-        
-                reg add "$turnOffDisplay\shell" /f *>$null
-                $turnOffMenu1 = "$turnOffDisplay\shell\01menu"
-                reg add $turnOffMenu1 /f *>$null
-                reg add $turnOffMenu1 /v "Icon" /t REG_SZ /d "powercpl.dll,-513" /f *>$null
-                reg add $turnOffMenu1 /v "MUIVerb" /t REG_SZ /d "Turn off display" /f *>$null
-                reg add "$turnOffMenu1\command" /f *>$null
-                reg add "$turnOffMenu1\command" /ve /d 'cmd /c "powershell.exe -Command \"(Add-Type ''[DllImport(\\\"user32.dll\\\")]public static extern int SendMessage(int hWnd,int hMsg,int wParam,int lParam);'' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)\""' /f *>$null
-        
-                $turnOffMenu2 = "$turnOffDisplay\shell\02menu"
-                reg add $turnOffMenu2 /f *>$null
-                reg add $turnOffMenu2 /v "MUIVerb" /t REG_SZ /d "Lock computer and Turn off display" /f *>$null
-                reg add $turnOffMenu2 /v "CommandFlags" /t REG_DWORD /d 0x20 /f *>$null
-                reg add $turnOffMenu2 /v "Icon" /t REG_SZ /d "imageres.dll,-59" /f *>$null
-                reg add "$turnOffMenu2\command" /f *>$null
-                reg add "$turnOffMenu2\command" /ve /d 'cmd /c "powershell.exe -Command \"(Add-Type ''[DllImport(\\\"user32.dll\\\")]public static extern int SendMessage(int hWnd,int hMsg,int wParam,int lParam);'' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)\" & rundll32.exe user32.dll, LockWorkStation"' /f *>$null
-    
+                curl -o "$env:USERPROFILE\Desktop\turn_off_button.reg" https://raw.githubusercontent.com/caglaryalcin/old-right-click/refs/heads/main/turn_off_button.reg
+                reg import "$env:USERPROFILE\Desktop\turn_off_button.reg"
+                Remove-Item "$env:USERPROFILE\Desktop\turn_off_button.reg" -Recurse -ErrorAction Stop
+                
                 # Add "Find Empty Folders"
-                $command = 'powershell.exe -NoExit -Command "Get-ChildItem -Path ''%V'' -Directory -Recurse | Where-Object { $_.GetFileSystemInfos().Count -eq 0 } | ForEach-Object { $_.FullName }"'
-    
-                $registryPaths = @(
+                $paths = @(
                     "Registry::HKEY_CLASSES_ROOT\Directory\shell\FindEmptyFolders",
                     "Registry::HKEY_CLASSES_ROOT\Directory\shell\FindEmptyFolders\command",
                     "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\FindEmptyFolders",
@@ -911,33 +890,48 @@ Function UnusedApps {
                     "Registry::HKEY_CLASSES_ROOT\Drive\shell\FindEmptyFolders\command"
                 )
     
-                # Create 'Directory\shell\FindEmptyFolders'
-                New-Item -Path $registryPaths[0] -Force | Out-Null
-                Set-ItemProperty -Path $registryPaths[0] -Name "(Default)" -Value "Find Empty Folders"
-                Set-ItemProperty -Path $registryPaths[0] -Name "Icon" -Value "imageres.dll,-1025"
+                $icon = "imageres.dll,-1025"
+                $defaultValue = "Find Empty Folders"
+                $command = 'powershell.exe -NoExit -Command "Get-ChildItem -Path ''%V'' -Directory -Recurse | Where-Object { $_.GetFileSystemInfos().Count -eq 0 } | ForEach-Object { $_.FullName }"'
     
-                # Create 'Directory\shell\FindEmptyFolders\command'
-                New-Item -Path $registryPaths[1] -Force | Out-Null
-                Set-ItemProperty -Path $registryPaths[1] -Name "(Default)" -Value $command
+                $paths | ForEach-Object {
+                    if (-not (Test-Path $_)) {
+                        New-Item -Path $_ -Force | Out-Null
+                    }
     
-                # Create 'Directory\Background\shell\FindEmptyFolders'
-                New-Item -Path $registryPaths[2] -Force | Out-Null
-                Set-ItemProperty -Path $registryPaths[2] -Name "(Default)" -Value "Find Empty Folders"
-                Set-ItemProperty -Path $registryPaths[2] -Name "Icon" -Value "imageres.dll,-1025"
+                    if ($_ -like '*command') {
+                        Set-ItemProperty -Path $_ -Name "(Default)" -Value $command
+                    }
+                    else {
+                        Set-ItemProperty -Path $_ -Name "(Default)" -Value $defaultValue
+                        Set-ItemProperty -Path $_ -Name "Icon" -Value $icon
+                    }
+                }
+                
+                # Add blocked keys
+                $blockedkeyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked"
+                if (-not (Test-Path -Path $blockedkeyPath)) {
+                    New-Item -Path $blockedkeyPath -Force | Out-Null
+                }
+                else {
+                    ##
+                }
     
-                # Create 'Directory\Background\shell\FindEmptyFolders\command'
-                New-Item -Path $registryPaths[3] -Force | Out-Null
-                Set-ItemProperty -Path $registryPaths[3] -Name "(Default)" -Value $command
+                # Add to "Boot to UEFI Firmware Settings"
+                New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware" -Force | Out-Null
+                Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "Icon" -Value "bootux.dll,-1016"
+                Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "MUIVerb" -Value "Boot to UEFI Firmware Settings"
+                Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "Position" -Value "Top"
+            
+                New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware\command" -Force | Out-Null
+                Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware\command" -Name "(default)" -Value 'powershell.exe -WindowStyle Hidden -Command "Start-Process cmd -ArgumentList ''/s,/c,shutdown /r /fw'' -Verb RunAs"'
     
-                # Create 'Drive\shell\FindEmptyFolders'
-                New-Item -Path $registryPaths[4] -Force | Out-Null
-                Set-ItemProperty -Path $registryPaths[4] -Name "(Default)" -Value "Find Empty Folders"
-                Set-ItemProperty -Path $registryPaths[4] -Name "Icon" -Value "imageres.dll,-1025"
+                # Remove "Edit in Notepad"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{CA6CC9F1-867A-481E-951E-A28C5E4F01EA}" -Value "Edit in Notepad"
     
-                # Create 'Drive\shell\FindEmptyFolders\command'
-                New-Item -Path $registryPaths[5] -Force | Out-Null
-                Set-ItemProperty -Path $registryPaths[5] -Name "(Default)" -Value $command
-        
+                # Remove "Cast to Device"
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{7AD84985-87B4-4a16-BE58-8B72A5B390F7}" -Value "Play to Menu"
+    
                 # Restart Windows Explorer
                 taskkill /f /im explorer.exe *>$null
                 Start-Sleep 1
