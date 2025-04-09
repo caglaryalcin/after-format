@@ -191,7 +191,6 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Tailscale
 - WinFsp for Cryptomator
 - NVCleanstall
-- Nvidia Inspector
 - Rufus
 - Regshot
 
