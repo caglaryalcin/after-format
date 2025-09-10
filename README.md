@@ -14,6 +14,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
   
 - It asks if you want region change to turkey
 - It asks if you want change your hostname
+- It asks if you want activating your Windows (Thanks to @massgravel for the script https://github.com/massgravel/Microsoft-Activation-Scripts)
 - It asks if you want disable windows defender
 - It asks if you want date format and keyboard layout
 - It asks you to select all folder views in the explorer as 'Details' and set the separator settings as shown by the arrows in the picture

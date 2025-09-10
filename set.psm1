@@ -105,6 +105,30 @@ Function SystemSettings {
 
         SetHostname
 
+        Function WinActivation {
+            Write-Host `n"Would you like to " -NoNewline
+            Write-Host "active Windows?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+        
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                Write-Host "Activating Windows..." -NoNewline
+                
+                & ([ScriptBlock]::Create((curl.exe -s --doh-url https://1.1.1.1/dns-query https://get.activated.win | Out-String))) /K-Windows
+        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Windows activation will not be performed.]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
+                DisableSnap
+            }
+        }
+        
+        WinActivation
+
         Function DisableDefender {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
