@@ -877,7 +877,7 @@ Function UnusedApps {
         
                 # Add Turn Off Display Menu
                 curl -o "$env:USERPROFILE\Desktop\turn_off_button.reg" https://raw.githubusercontent.com/caglaryalcin/old-right-click/refs/heads/main/turn_off_button.reg
-                reg import "$env:USERPROFILE\Desktop\turn_off_button.reg"
+                reg import "$env:USERPROFILE\Desktop\turn_off_button.reg" 2>$null
                 Remove-Item "$env:USERPROFILE\Desktop\turn_off_button.reg" -Recurse -ErrorAction Stop
                 
                 # Add "Find Empty Folders"
