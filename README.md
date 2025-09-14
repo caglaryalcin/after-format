@@ -182,7 +182,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - SteelSeries
 - Java
 - 7zip
-- Lightshot
+- Flameshot
 - Twinkle Tray
 - Codec Pack Mega
 - Malwarebytes
