@@ -8,6 +8,8 @@ Function Priority {
     New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
     New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
     New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
+    $choicePath = "HKLM:\Software\MyScript"
+    $choiceregName = "GamingMode"
 }
 
 Priority
@@ -35,6 +37,13 @@ Function InstallSoftwares {
     # Create a directory for logs
     New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
 
+    try {
+        $gaming = (Get-ItemProperty -Path $choicePath -Name $choiceregName -ErrorAction Stop).$choiceregName
+    }
+    catch {
+        $gaming = $null
+    }
+
     $appsToClose = @{
         "github-desktop"  = "GithubDesktop";
         "cloudflare-warp" = "Cloudflare WARP"
@@ -52,10 +61,19 @@ Function InstallSoftwares {
     }
 
     # Start the background job for monitoring and stopping processes
-    $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
+    if ($gaming -eq "n") {
+        $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
+    }
 
-    $jsonContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
-    $packages = $jsonContent.Sources.Packages
+    if ($gaming -eq "n") {
+        $jsonContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
+        $packages = $jsonContent.Sources.Packages
+    }
+
+    if ($gaming -eq "g") {
+        $jsonContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/winget.json"
+        $packages = $jsonContent.Sources.Packages
+    }
 
     foreach ($pkg in $packages) {
         $packageName = $pkg.PackageIdentifier
@@ -89,14 +107,16 @@ Function InstallSoftwares {
     Stop-Job -Job $job
     Remove-Job -Job $job
 
-    # Kill the processes of power toys
-    $processName = "PowerToys*"
-    while ($true) {
-        Start-Sleep -Seconds 2
-        $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
-        if ($process) {
-            Stop-Process -Id $process.Id -Force
-            break
+    if ($gaming -eq "n") {
+        # Kill the processes of power toys
+        $processName = "PowerToys*"
+        while ($true) {
+            Start-Sleep -Seconds 2
+            $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
+            if ($process) {
+                Stop-Process -Id $process.Id -Force
+                break
+            }
         }
     }
 }
@@ -197,12 +217,22 @@ Function chocoinstall {
 
 chocoinstall
 
-$checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
-$jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
-$packagesToCheck = $jsonContent.Sources.Packages
+if ($gaming -eq "n") {
+    $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
+    $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
+    $packagesToCheck = $jsonContent.Sources.Packages
 
-$chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
-[xml]$chocoConfig = Invoke-RestMethod -Uri $chocoAppsConfigUrl
+    $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
+    [xml]$chocoConfig = Invoke-RestMethod -Uri $chocoAppsConfigUrl
+}
+
+if ($gaming -eq "g") {
+    $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/check.json"
+    $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
+    $packagesToCheck = $jsonContent.Sources.Packages
+
+    $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/choco-apps.config"
+}
 
 foreach ($pkg in $packagesToCheck) {
     $isInstalled = $false
@@ -257,11 +287,16 @@ Function SafeTaskKill {
         Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
     }
 }
-        
-SafeTaskKill "GithubDesktop.exe"
-SafeTaskKill "Cloudflare WARP.exe"
-SafeTaskKill "steam.exe"
-SafeTaskKill "AnyDesk.exe"
+
+if ($gaming -eq "n") {
+    SafeTaskKill "GithubDesktop.exe"
+    SafeTaskKill "Cloudflare WARP.exe"
+    SafeTaskKill "AnyDesk.exe"
+}
+if ($gaming -eq "g") {
+    SafeTaskKill "steam.exe"
+}
+
 Function Install-VSCodeExtensions {
     Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
     Start-Sleep 5
@@ -312,21 +347,23 @@ Function Install-VSCodeExtensions {
     }
 }
 
-Install-VSCodeExtensions
+if ($gaming -eq "n") {
+    Install-VSCodeExtensions
 
-# Visual Studio Code json path
-$settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
+    # Visual Studio Code json path
+    $settingsPath = "$env:USERPROFILE\AppData\Roaming\Code\User\settings.json"
 
-# Get json content
-$jsonContent = @"
+    # Get json content
+    $jsonContent = @"
 {
 "workbench.colorTheme": "Visual Studio Dark",
 "workbench.iconTheme": "material-icon-theme"
 }
 "@
 
-# Create or rewrite json file
-Set-Content -Path $settingsPath -Value $jsonContent -Force
+    # Create or rewrite json file
+    Set-Content -Path $settingsPath -Value $jsonContent -Force
+}
 
 # 7-Zip on PS
 try {
@@ -374,18 +411,22 @@ Function MalwarebytesReset {
     }
 }
 
-MalwarebytesReset
-
-# webview2 is being forcibly reloaded because it is necessary
-try {
-    Write-Host "Reinstalling Microsoft Edge WebView2 Runtime..." -NoNewline
-    Silent
-    winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+if ($gaming -eq "n") {
+    MalwarebytesReset
 }
-catch {
-    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
 
+if ($gaming -eq "n") {
+    # webview2 is being forcibly reloaded because it is necessary
+    try {
+        Write-Host "Reinstalling Microsoft Edge WebView2 Runtime..." -NoNewline
+        Silent
+        winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+    catch {
+        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+
+    }
 }
 
 ##########
@@ -442,22 +483,67 @@ Function UnusedApps {
             "Microsoft.XboxGameOverlay", #In-game overlay for Xbox features and social interactions.
             "Microsoft.XboxIdentityProvider", #Service for Xbox account authentication.
             "Microsoft.XboxSpeechToTextOverlay" #Speech-to-text services for Xbox gaming.
+
+            $UninstallExcludeXboxAppxPackages =
+            "Microsoft.WindowsAlarms", #Alarm and clock app for Windows.
+            "Microsoft.549981C3F5F10", #Code likely represents a specific app or service, specifics unknown without context.
+            "Microsoft.WindowsFeedbackHub", #Platform for user feedback on Windows.
+            "Microsoft.Bing*", #Bing search engine related services and apps.
+            "Microsoft.Zune*", #Media software for music and videos, now discontinued.
+            "Microsoft.PowerAutomateDesktop", #Automation tool for desktop workflows.
+            "Microsoft.WindowsSoundRecorder", #Audio recording app for Windows.
+            "Microsoft.MicrosoftSolitaireCollection", #Solitaire game collection.
+            "Microsoft.GamingApp", #Likely related to Xbox or Windows gaming services.
+            "*microsoft.windowscomm**", #Likely refers to communication services in Windows, specifics unclear.
+            "MicrosoftCorporationII.QuickAssist", #Remote assistance app by Microsoft.
+            "Microsoft.Todos", #Task management app.
+            "Microsoft.SkypeApp", #Skype communication app for Windows.
+            "Microsoft.Microsoft3DViewer", #App for viewing 3D models.
+            "Microsoft.Wallet", #Digital wallet app, now discontinued.
+            "Microsoft.WebMediaExtensions", #Extensions for media formats in web browsers.
+            "MicrosoftWindows.Client.WebExperience", #Likely related to the web browsing experience in Windows, specifics unclear.
+            "Clipchamp.Clipchamp", #Video editing app.
+            "Microsoft.WindowsMaps", #Mapping and navigation app.
+            "Microsoft.Advertising.Xaml", #Advertising SDK for apps.
+            "Microsoft.MixedReality.Portal", #Mixed Reality portal app for immersive experiences.
+            "Microsoft.BingNews", #News aggregation app.
+            "Microsoft.GetHelp", #Support and troubleshooting app.
+            "Microsoft.Getstarted", #Introduction and tips app for Windows features.
+            "Microsoft.MicrosoftOfficeHub", #Central hub for Office apps and services.
+            "Microsoft.OneConnect", #Connectivity and cloud services app.
+            "Microsoft.People" #Contact management and social integration app.
         
             $installedApps = Get-AppxPackage -AllUsers
             
             Silent #silently
             
-            foreach ($package in $UninstallAppxPackages) {
-                $app = $installedApps | Where-Object { $_.Name -like $package }
-                if ($null -ne $app) {
-                    try {
-                        $app | Remove-AppxPackage -ErrorAction Stop
-                    }
-                    catch {
-                        Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
+            if ($gaming -eq "n") {
+                foreach ($package in $UninstallAppxPackages) {
+                    $app = $installedApps | Where-Object { $_.Name -like $package }
+                    if ($null -ne $app) {
+                        try {
+                            $app | Remove-AppxPackage -ErrorAction Stop
+                        }
+                        catch {
+                            Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
+                        }
                     }
                 }
             }
+
+            if ($gaming -eq "g") {
+                foreach ($package in $UninstallExcludeXboxAppxPackages) {
+                    $app = $installedApps | Where-Object { $_.Name -like $package }
+                    if ($null -ne $app) {
+                        try {
+                            $app | Remove-AppxPackage -ErrorAction Stop
+                        }
+                        catch {
+                            Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
+                        }
+                    }
+                }
+            }    
         
             # Uninstall Microsoft Teams Outlook Add-in
             $TeamsAddinGUID = '{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91}'

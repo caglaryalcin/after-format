@@ -992,6 +992,158 @@ Function SystemSettings {
         
         SetDNS
 
+        Function Disable-Services {
+            param (
+                [string[]]$disableservices
+            )
+            Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
+            
+            $infoOccurred = $false
+            
+            foreach ($service in $disableservices) {
+                try {
+                    $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
+                    if ($null -ne $currentService) {
+                        Stop-Service -Name $service -Force -ErrorAction Stop *>$null
+                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *>$null
+                    }
+                }
+                catch {
+                    Write-Host "[INFO] Could not stop/disable $service" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                    $infoOccurred = $true
+                }
+            }
+        
+            if (-not $infoOccurred) {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+        }
+
+        $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
+            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "lmhosts", "WerSvc", "wisvc", "EFS", "BDESVC",
+            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")
+        
+        $forgaming = @("WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
+            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "lmhosts", "WerSvc", "wisvc", "EFS", "BDESVC",
+            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")    
+            
+        $regPath = "HKCU:\Software\MyScript"
+        $regName = "GamingMode"
+
+        if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+
+        try {
+            $gaming = (Get-ItemProperty -Path $regPath -Name $regName -ErrorAction Stop).$regName
+        }
+        catch {
+            $gaming = $null
+        }
+
+        if (-not $gaming -or ($gaming -ne 'n' -and $gaming -ne 'g')) {
+            $gaming = (Read-Host "What do you use your computer for?(n/g) [n: Normal Use, g: Gaming]").Trim().ToLower()
+            Set-ItemProperty -Path $regPath -Name $regName -Value $gaming -Type String -Force
+        }
+
+        if ($gaming -eq "n") {
+            Disable-Services -disableservices $disableservices
+        }
+        elseif ($gaming -eq "g") {
+            Disable-Services -disableservices $forgaming
+        }
+        else {
+            Write-Host "Invalid choice!" -ForegroundColor Red -BackgroundColor Black
+        }
+
+        Function DisableXboxFeatures {
+            Write-Host "Disabling Xbox Features..." -NoNewline
+        
+            try {
+                $xboxregistryPaths = @{
+                    "HKCU:\Software\Microsoft\GameBar" = @{
+                        "AutoGameModeEnabled"       = 1
+                        "AllowAutoGameMode"         = 1
+                        "UseNexusForGameDetection"  = 0
+                        "UseNexusForGameBarEnabled" = 0
+                    }
+                    "HKCU:\System\GameConfigStore"     = @{
+                        "GameDVR_Enabled" = 0
+                    }
+                }
+        
+                foreach ($path in $xboxregistryPaths.Keys) {
+                    foreach ($name in $xboxregistryPaths[$path].Keys) {
+                        $value = $xboxregistryPaths[$path][$name]
+                        Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord -Force
+                    }
+                }
+        
+                $gameDVRKeyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR"
+                if (-not (Test-Path $gameDVRKeyPath)) {
+                    New-Item -Path $gameDVRKeyPath -Force | Out-Null
+                }
+                Set-ItemProperty -Path $gameDVRKeyPath -Name "AllowGameDVR" -Value 0 -Type DWord -Force
+        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
+            }
+        }
+                
+        if ($gaming -eq 'n') {
+            DisableXboxFeatures
+        }
+
+        Function Telnet {
+            Write-Host "Enabling Telnet Client..." -NoNewline
+            try {
+                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart | Out-Null
+            }
+            catch {
+                if ($_ -match "NoRestart") {
+                    Write-Host "[INFO] Restart is suppressed because NoRestart is specified." -ForegroundColor Yellow -BackgroundColor Black
+                }
+                else {
+                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                }
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        
+        if ($gaming -eq 'n') {
+            Telnet
+        }
+
+        Function EnableSudo {
+            Write-Host "Enabling Sudo..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo" -Name "Enabled" -Type DWord -Value 1
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+    
+        if ($gaming -eq 'n') {
+            EnableSudo
+        }
+
+        Function DisableStorageSense {
+            Write-Host "Disabling Storage Sense..." -NoNewline
+            try {
+                Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
+        }
+
+        if ($gaming -eq 'n') {
+            DisableStorageSense
+        }
+
         Function ExplorerSettings {
             Write-Host "Configuring Windows Explorer settings..." -NoNewline
         
@@ -1413,44 +1565,6 @@ Function SystemSettings {
         
         DisableTailoredExperiences
 
-        Function DisableXboxFeatures {
-            Write-Host "Disabling Xbox Features..." -NoNewline
-        
-            try {
-                $xboxregistryPaths = @{
-                    "HKCU:\Software\Microsoft\GameBar" = @{
-                        "AutoGameModeEnabled"       = 1
-                        "AllowAutoGameMode"         = 1
-                        "UseNexusForGameDetection"  = 0
-                        "UseNexusForGameBarEnabled" = 0
-                    }
-                    "HKCU:\System\GameConfigStore"     = @{
-                        "GameDVR_Enabled" = 0
-                    }
-                }
-        
-                foreach ($path in $xboxregistryPaths.Keys) {
-                    foreach ($name in $xboxregistryPaths[$path].Keys) {
-                        $value = $xboxregistryPaths[$path][$name]
-                        Set-ItemProperty -Path $path -Name $name -Value $value -Type DWord -Force
-                    }
-                }
-        
-                $gameDVRKeyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR"
-                if (-not (Test-Path $gameDVRKeyPath)) {
-                    New-Item -Path $gameDVRKeyPath -Force | Out-Null
-                }
-                Set-ItemProperty -Path $gameDVRKeyPath -Name "AllowGameDVR" -Value 0 -Type DWord -Force
-        
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[DONE WITH ERRORS]" -ForegroundColor Yellow -BackgroundColor Black
-            }
-        }
-                
-        DisableXboxFeatures
-
         Function DisableDownloadBlocking {
             Write-Host "Disabling Blocking of Downloaded Files..." -NoNewline
             try {
@@ -1482,19 +1596,6 @@ Function SystemSettings {
         }
 
         DisableMaintenanceWakeUp
-
-        Function DisableStorageSense {
-            Write-Host "Disabling Storage Sense..." -NoNewline
-            try {
-                Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black  
-        }
-
-        DisableStorageSense
 
         Function DisableAdobeFlash {
             Write-Host "Disabling Built-in Adobe Flash in IE and Edge..." -NoNewline
@@ -1765,57 +1866,6 @@ Function SystemSettings {
         
         TaskbarSettings
 
-        Function Disable-Services {
-            param (
-                [string[]]$disableservices
-            )
-            Write-Host "Stop and Disabling Unnecessary Services..." -NoNewline
-            
-            $infoOccurred = $false
-            
-            foreach ($service in $disableservices) {
-                try {
-                    $currentService = Get-Service -Name $service -ErrorAction SilentlyContinue
-                    if ($null -ne $currentService) {
-                        Stop-Service -Name $service -Force -ErrorAction Stop *>$null
-                        Set-Service -Name $service -StartupType Disabled -ErrorAction Stop *>$null
-                    }
-                }
-                catch {
-                    Write-Host "[INFO] Could not stop/disable $service" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-                    $infoOccurred = $true
-                }
-            }
-        
-            if (-not $infoOccurred) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-        }
-
-        $disableservices = @("XblAuthManager", "XblGameSave", "XblGameSave", "XboxNetApiSvc", "XboxGipSvc", "WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
-            "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "lmhosts", "WerSvc", "wisvc", "EFS", "BDESVC",
-            "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")
-            
-        Disable-Services -disableservices $disableservices        
-
-        Function Telnet {
-            Write-Host "Enabling Telnet Client..." -NoNewline
-            try {
-                Enable-WindowsOptionalFeature -Online -FeatureName "TelnetClient" -NoRestart | Out-Null
-            }
-            catch {
-                if ($_ -match "NoRestart") {
-                    Write-Host "[INFO] Restart is suppressed because NoRestart is specified." -ForegroundColor Yellow -BackgroundColor Black
-                }
-                else {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                }
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-        
-        Telnet
-
         Function RemoveQuota {
             Write-Host "Removing Quota on the disk menu..." -NoNewline
             try {
@@ -1889,19 +1939,6 @@ Function SystemSettings {
         }
     
         LocationNotifications
-
-        Function EnableSudo {
-            Write-Host "Enabling Sudo..." -NoNewline
-            try {
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo" -Name "Enabled" -Type DWord -Value 1
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-    
-        EnableSudo
 
         Function RemoveAboutThisPicture {
             Write-Host "Removing About this picture from desktop..." -NoNewline
@@ -3213,109 +3250,60 @@ Function GithubSoftwares {
         Function installwinget {
             # I now use asheroto's https://github.com/asheroto/winget-install repo to install winget
             Write-Host `n"Installing/upgrading winget..." -NoNewline
-            # The winget install script will stay here as a backup
-            <#
-Function InstallOrUpdateWinget {
-    Function Silent {
-        $Global:ProgressPreference = 'SilentlyContinue'
-    }
-    
-    Function New-TemporaryFile {
-        # Create a temporary file
-        $tempPath = [System.IO.Path]::GetTempPath()
-        $tempFile = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
-        $null = New-Item -Path $tempFile -ItemType File -Force
-    
-        # Return the path of the temporary file
-        return $tempFile
-    }
-    
-    function Get-WingetDownloadUrl {
-        [CmdletBinding()]
-        param (
-            [Parameter(Mandatory = $true)]
-            [string]$Match
-        )
-    
-        $uri = "https://api.github.com/repos/microsoft/winget-cli/releases"
-        $releases = Invoke-RestMethod -uri $uri -Method Get -ErrorAction Stop
-    
-        foreach ($release in $releases) {
-            if ($release.name -match "preview") {
-                continue
-            }
-            $data = $release.assets | Where-Object name -Match $Match
-            if ($data) {
-                return $data.browser_download_url
-            }
-        }
-    
-        $latestRelease = $releases | Select-Object -First 1
-        $data = $latestRelease.assets | Where-Object name -Match $Match
-        return $data.browser_download_url
-    }
-    
-    # Download VCLibs
-    $VCLibs_Path = New-TemporaryFile
-    $VCLibs_Url = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    Silent
-    Invoke-WebRequest -Uri $VCLibs_Url -OutFile $VCLibs_Path
-    
-    # Download UI.Xaml
-    $UIXaml_Path = New-TemporaryFile
-    $UIXaml_Url = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx"
-    Silent
-    Invoke-WebRequest -Uri $UIXaml_Url -OutFile $UIXaml_Path
-    
-    # Download winget license
-    $winget_license_path = New-TemporaryFile
-    $winget_license_url = Get-WingetDownloadUrl -Match "License1.xml"
-    Silent
-    Invoke-WebRequest -Uri $winget_license_url -OutFile $winget_license_path
-    
-    # Download winget
-    $winget_path = New-TemporaryFile
-    $winget_url = "https://aka.ms/getwinget"
-    Silent
-    Invoke-WebRequest -Uri $winget_url -OutFile $winget_path
-    
-    Write-Host "Installing/upgrading winget..." -NoNewline
-    Add-AppxProvisionedPackage -Online -PackagePath $winget_path -DependencyPackagePath $UIXaml_Path, $VCLibs_Path -LicensePath $winget_license_path | Out-Null
-    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    
-    Remove-Item $VCLibs_Path
-    Remove-Item $UIXaml_Path
-    Remove-Item $winget_path
-    Remove-Item $winget_license_path
-}
-
-InstallOrUpdateWinget
-#>
             $job = Start-Job -ScriptBlock {
                 &([ScriptBlock]::Create((irm winget.pro))) -Force *>$null
             }
             
             Wait-Job -Job $job | Out-Null
 
-            #create softwares task
-            $wtPath = Get-Command wt.exe | Select-Object -ExpandProperty Definition
+            Function ForNormal {
+                #create softwares task
+                $wtPath = Get-Command wt.exe | Select-Object -ExpandProperty Definition
 
-            $psCommand = "powershell.exe -ExecutionPolicy Bypass -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/resume.psm1' -UseBasicParsing | iex`""
-            $wtCommand = "-w 0 new-tab $psCommand"
-            $action = New-ScheduledTaskAction -Execute $wtPath -Argument $wtCommand
-            $trigger = New-ScheduledTaskTrigger -AtLogon
-            $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
-            $taskname = "softwares"
-            $description = "temp task"
-            $settings = New-ScheduledTaskSettingsSet
+                $psCommand = "powershell.exe -ExecutionPolicy Bypass -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/resume.psm1' -UseBasicParsing | iex`""
+                $wtCommand = "-w 0 new-tab $psCommand"
+                $action = New-ScheduledTaskAction -Execute $wtPath -Argument $wtCommand
+                $trigger = New-ScheduledTaskTrigger -AtLogon
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $taskname = "softwares"
+                $description = "temp task"
+                $settings = New-ScheduledTaskSettingsSet
 
-            $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description
-            $task | Set-ScheduledTask *>$null
+                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description
+                $task | Set-ScheduledTask *>$null
 
-            Start-Sleep 2
-            Restart-Computer -Force
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                Start-Sleep 2
+                Restart-Computer -Force
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
 
+            Function ForGaming {
+                #create softwares task
+                $wtPath = Get-Command wt.exe | Select-Object -ExpandProperty Definition
+
+                $psCommand = "powershell.exe -ExecutionPolicy Bypass -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/resume.psm1' -UseBasicParsing | iex`""
+                $wtCommand = "-w 0 new-tab $psCommand"
+                $action = New-ScheduledTaskAction -Execute $wtPath -Argument $wtCommand
+                $trigger = New-ScheduledTaskTrigger -AtLogon
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $taskname = "softwares"
+                $description = "temp task"
+                $settings = New-ScheduledTaskSettingsSet
+
+                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description
+                $task | Set-ScheduledTask *>$null
+
+                Start-Sleep 2
+                Restart-Computer -Force
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+
+            if ($gaming -eq "g") {
+                ForGaming
+            }
+            elseif ($gaming -eq "n") {
+                ForNormal
+            }
         }
         
         installwinget
