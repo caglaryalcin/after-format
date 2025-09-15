@@ -1040,14 +1040,16 @@ Function SystemSettings {
         }
 
         if (-not $gaming -or ($gaming -ne 'n' -and $gaming -ne 'g')) {
-            Write-Host "`nWhat do you use  " -NoNewline
+            Write-Host "`nWhat do you use " -NoNewline
             Write-Host "your computer for?" -ForegroundColor Yellow -NoNewline
             Write-Host " (n/g)" -ForegroundColor Green -NoNewline
-            Write-Host " [n: Normal Use, g: Gaming]: "
-            $gaming = Read-Host | ForEach-Object { $_.Trim().ToLower() }
+            Write-Host " [n: Normal Use, g: Gaming]: " -NoNewline
+            $gaming = (Read-Host) | ForEach-Object { $_.Trim().ToLower() }
 
             Set-ItemProperty -Path $regPath -Name $regName -Value $gaming -Type String -Force
         }
+
+        Write-Host "" -NoNewline
 
         if ($gaming -eq "n") {
             Disable-Services -disableservices $disableservices
@@ -3257,15 +3259,14 @@ Function GithubSoftwares {
     if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function installwinget {
-            # I now use asheroto's https://github.com/asheroto/winget-install repo to install winget
-            Write-Host `n"Installing/upgrading winget..." -NoNewline
-
             param(
                 [Parameter(Mandatory = $true)]
                 [ValidateSet('g', 'n')]
                 [string]$Mode
             )
-
+            
+            # I now use asheroto's https://github.com/asheroto/winget-install repo to install winget
+            Write-Host `n"Installing/upgrading winget..." -NoNewline
             $job = Start-Job -ScriptBlock {
                 &([ScriptBlock]::Create((irm winget.pro))) -Force *>$null
             }
