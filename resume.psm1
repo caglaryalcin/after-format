@@ -8,8 +8,6 @@ Function Priority {
     New-PSDrive -PSProvider Registry -Name HKLM -Root HKEY_LOCAL_MACHINE | Out-Null
     New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
     New-PSDrive -Name "HKCR" -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" | Out-Null
-    $choicePath = "HKLM:\Software\MyScript"
-    $choiceregName = "GamingMode"
 }
 
 Priority
@@ -60,6 +58,10 @@ Function InstallSoftwares {
         }
     }
 
+    # Registry path and name for gaming mode choice
+    $choicePath = "HKCU:\Software\MyScript"
+    $choiceregName = "GamingMode"
+
     # Start the background job for monitoring and stopping processes
     if ($gaming -eq "n") {
         $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
@@ -82,11 +84,34 @@ Function InstallSoftwares {
 
         # Install the packages
         Start-Sleep -Milliseconds 5
-        if ($installerType) {
-            $result = & winget install $packageName -e --installer-type $installerType --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
+        if ($packageName -eq 'Blizzard.BattleNet') {
+            $tmp = "$env:TEMP\Battle.net-Setup.exe"
+            Invoke-WebRequest -Uri "https://downloader.battle.net/download/getInstallerForGame?os=win&installer=Battle.net-Setup.exe" -OutFile $tmp -UseBasicParsing
+            Unblock-File -Path $tmp
+            $args = @('--lang=enUS', '--installpath=C:\Program Files (x86)\Battle.net')
+            $p = Start-Process -FilePath $tmp -ArgumentList $args -Verb RunAs -PassThru
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            $p.WaitForExit(5 * 1000) | Out-Null
+            if ($p.HasExited) {
+                $deadline = (Get-Date).AddMinutes(20)
+                while ((Get-Process -Name 'Battle.net-Setup', 'Battle.net Installer', 'Battle.net' -ErrorAction SilentlyContinue) `
+                        -and (Get-Date) -lt $deadline) {
+                    Start-Sleep -Seconds 2
+                }
+            }
+            else {
+                $p.WaitForExit(20 * 60 * 1000) | Out-Null
+            }
+            $LASTEXITCODE = if ($p.HasExited) { $p.ExitCode } else { 1 }
+
+            Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+            $result = ""
         }
         else {
-            $result = & winget install $packageName -e --silent --accept-source-agreements --accept-package-agreements --force 2>&1 | Out-String
+            $args = @('install', $packageName, '-e', '--silent',
+                '--accept-source-agreements', '--accept-package-agreements', '--force', '--disable-interactivity')
+            if ($installerType) { $args += @('--installer-type', $installerType) }
+            $result = & winget @args 2>&1 | Out-String
         }
 
         # Check if the installation was successful
@@ -104,10 +129,10 @@ Function InstallSoftwares {
     }
 
     # Once all installations are done, stop the background job
-    Stop-Job -Job $job
-    Remove-Job -Job $job
-
     if ($gaming -eq "n") {
+        Stop-Job -Job $job
+        Remove-Job -Job $job
+
         # Kill the processes of power toys
         $processName = "PowerToys*"
         while ($true) {
@@ -295,6 +320,8 @@ if ($gaming -eq "n") {
 }
 if ($gaming -eq "g") {
     SafeTaskKill "steam.exe"
+    SafeTaskKill "Discord.exe"
+    SafeTaskKill "EADesktop.exe"
 }
 
 Function Install-VSCodeExtensions {

@@ -1042,7 +1042,7 @@ Function SystemSettings {
         if (-not $gaming -or ($gaming -ne 'n' -and $gaming -ne 'g')) {
             Write-Host "`nWhat do you use " -NoNewline
             Write-Host "your computer for?" -ForegroundColor Yellow -NoNewline
-            Write-Host " (n/g)" -ForegroundColor Green -NoNewline
+            Write-Host "(n/g)" -ForegroundColor Green -NoNewline
             Write-Host " [n: Normal Use, g: Gaming]: " -NoNewline
             $gaming = (Read-Host) | ForEach-Object { $_.Trim().ToLower() }
 
@@ -3315,10 +3315,10 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
-            if ($gaming -eq "g") {
+            if ($Mode -eq "g") {
                 ForGaming
             }
-            elseif ($gaming -eq "n") {
+            elseif ($Mode -eq "n") {
                 ForNormal
             }
         }
