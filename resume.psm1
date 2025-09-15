@@ -35,6 +35,10 @@ Function InstallSoftwares {
     # Create a directory for logs
     New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
 
+    # Registry path and name for gaming mode choice
+    $choicePath = "HKCU:\Software\MyScript"
+    $choiceregName = "GamingMode"
+
     try {
         $gaming = (Get-ItemProperty -Path $choicePath -Name $choiceregName -ErrorAction Stop).$choiceregName
     }
@@ -58,24 +62,19 @@ Function InstallSoftwares {
         }
     }
 
-    # Registry path and name for gaming mode choice
-    $choicePath = "HKCU:\Software\MyScript"
-    $choiceregName = "GamingMode"
-
     # Start the background job for monitoring and stopping processes
     if ($gaming -eq "n") {
         $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
     }
 
-    if ($gaming -eq "n") {
-        $jsonContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json"
-        $packages = $jsonContent.Sources.Packages
+    switch ($gaming) {
+        'n' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json' }
+        'g' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/winget.json' }
+        default { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json' } # varsayılan
     }
 
-    if ($gaming -eq "g") {
-        $jsonContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/winget.json"
-        $packages = $jsonContent.Sources.Packages
-    }
+    $jsonContent = Invoke-RestMethod -Uri $jsonUrl -ErrorAction Stop
+    $packages = $jsonContent.Sources.Packages
 
     foreach ($pkg in $packages) {
         $packageName = $pkg.PackageIdentifier
@@ -88,8 +87,7 @@ Function InstallSoftwares {
             $tmp = "$env:TEMP\Battle.net-Setup.exe"
             Invoke-WebRequest -Uri "https://downloader.battle.net/download/getInstallerForGame?os=win&installer=Battle.net-Setup.exe" -OutFile $tmp -UseBasicParsing
             Unblock-File -Path $tmp
-            $args = @('--lang=enUS', '--installpath=C:\Program Files (x86)\Battle.net')
-            $p = Start-Process -FilePath $tmp -ArgumentList $args -Verb RunAs -PassThru
+            $p = Start-Process -FilePath $tmp -ArgumentList --lang=enUS --installpath="C:\Program Files (x86)\Battle.net" -Verb RunAs -PassThru
             $sw = [System.Diagnostics.Stopwatch]::StartNew()
             $p.WaitForExit(5 * 1000) | Out-Null
             if ($p.HasExited) {
@@ -303,6 +301,17 @@ Write-Host @"
 
 "@ -ForegroundColor Yellow
 
+# Registry path and name for gaming mode choice
+$choicePath = "HKCU:\Software\MyScript"
+$choiceregName = "GamingMode"
+
+try {
+    $gaming = (Get-ItemProperty -Path $choicePath -Name $choiceregName -ErrorAction Stop).$choiceregName
+}
+catch {
+    $gaming = $null
+}
+
 Function SafeTaskKill {
     param($processName)
         
@@ -390,19 +399,21 @@ if ($gaming -eq "n") {
 
     # Create or rewrite json file
     Set-Content -Path $settingsPath -Value $jsonContent -Force
-}
 
-# 7-Zip on PS
-try {
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
-    Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
-    Install-Module -Name 7Zip4PowerShell -Force *>$null
 
-    if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
-}
-catch {
-    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+    # 7-Zip on PS
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force *>$null
+        Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted *>$null
+        Install-Module -Name 7Zip4PowerShell -Force *>$null
+
+        if (-Not (Get-Module -ListAvailable -Name 7Zip4PowerShell)) { throw "7Zip4PowerShell module not installed" }
+    }
+    catch {
+        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+    }
+
 }
 
 # Malwarebytes trial reset

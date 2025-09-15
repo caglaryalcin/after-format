@@ -3258,6 +3258,18 @@ Function GithubSoftwares {
     $response = Read-Host
     if ($response -eq 'y' -or $response -eq 'Y') {
 
+        $regPath = "HKCU:\Software\MyScript"
+            $regName = "GamingMode"
+
+            if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+
+            try {
+                $gaming = (Get-ItemProperty -Path $regPath -Name $regName -ErrorAction Stop).$regName
+            }
+            catch {
+                $gaming = $null
+            }
+
         Function installwinget {
             param(
                 [Parameter(Mandatory = $true)]
