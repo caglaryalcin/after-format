@@ -1040,7 +1040,12 @@ Function SystemSettings {
         }
 
         if (-not $gaming -or ($gaming -ne 'n' -and $gaming -ne 'g')) {
-            $gaming = (Read-Host "What do you use your computer for?(n/g) [n: Normal Use, g: Gaming]").Trim().ToLower()
+            Write-Host "`nWhat do you use  " -NoNewline
+            Write-Host "your computer for?" -ForegroundColor Yellow -NoNewline
+            Write-Host " (n/g)" -ForegroundColor Green -NoNewline
+            Write-Host " [n: Normal Use, g: Gaming]: "
+            $gaming = Read-Host | ForEach-Object { $_.Trim().ToLower() }
+
             Set-ItemProperty -Path $regPath -Name $regName -Value $gaming -Type String -Force
         }
 
@@ -1976,6 +1981,7 @@ Function SystemSettings {
 
         Function DisableNews {
             Write-Host "Disabling News and Interest on Taskbar..." -NoNewline
+            $hadWarning = $false
         
             try {
                 # Test and create 'Windows Feeds' path if it doesn't exist
@@ -2009,9 +2015,12 @@ Function SystemSettings {
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                $hadWarning = $true
             }
-        
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+            if (-not $hadWarning) {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
         }
         
         DisableNews
@@ -3250,6 +3259,13 @@ Function GithubSoftwares {
         Function installwinget {
             # I now use asheroto's https://github.com/asheroto/winget-install repo to install winget
             Write-Host `n"Installing/upgrading winget..." -NoNewline
+
+            param(
+                [Parameter(Mandatory = $true)]
+                [ValidateSet('g', 'n')]
+                [string]$Mode
+            )
+
             $job = Start-Job -ScriptBlock {
                 &([ScriptBlock]::Create((irm winget.pro))) -Force *>$null
             }
@@ -3306,7 +3322,7 @@ Function GithubSoftwares {
             }
         }
         
-        installwinget
+        installwinget -Mode $gaming
         
     }
 
