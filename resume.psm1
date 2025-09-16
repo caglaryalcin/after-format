@@ -338,6 +338,7 @@ if ($gaming -eq "g") {
     SafeTaskKill "steam.exe"
     SafeTaskKill "Discord.exe"
     SafeTaskKill "EADesktop.exe"
+    SafeTaskKill "Battle.net.exe"
 }
 
 Function Install-VSCodeExtensions {
@@ -1521,6 +1522,122 @@ Function UnusedApps {
 }
 
 UnusedApps
+
+Function TaskbarPins {
+        Write-Host "Configure the pins of taskbar icons..." -NoNewline
+        try {
+            # Create Icons folder
+            New-Item -Path 'C:\icons' -ItemType Directory *>$null
+            function CreateShortcut([string]$exePath, [string]$shortcutPath, [string]$workingDirectory = $null, [string]$arguments = $null) {
+                $WScriptShell = New-Object -ComObject WScript.Shell
+                $Shortcut = $WScriptShell.CreateShortcut($shortcutPath)
+                $Shortcut.TargetPath = $exePath
+                if ($workingDirectory) {
+                    $Shortcut.WorkingDirectory = $workingDirectory
+                }
+                if ($arguments) {
+                    $Shortcut.Arguments = $arguments
+                }
+                $Shortcut.Save()
+                Unblock-File -Path $shortcutPath *>$null
+            }
+                
+            # Github Desktop folder name
+            $githubfoldername = Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\GitHubDesktop\" -Directory | Where-Object { $_.Name -like "app*" -and $_.Name -ne "packages" } | Select-Object -ExpandProperty Name
+
+            Function CreateShortcuts {
+                $defaultPaths = @{
+                    "Google Chrome"      = @{
+                        "DefaultPath"    = "$env:USERPROFILE\AppData\Local\Google\Chrome\Application\chrome.exe";
+                        "ChocolateyPath" = "C:\Program Files\Google\Chrome\Application\chrome.exe";
+                    };
+                }
+                
+                $shortcutPaths = @{
+                    "Steam"                  = @{
+                        "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
+                        "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
+                    };
+                }
+                
+                # Create shortcuts for the default paths
+                foreach ($program in $defaultPaths.Keys) {
+                    $paths = $defaultPaths[$program]
+                    $pathFound = $false
+                
+                    foreach ($pathType in $paths.Keys) {
+                        $path = $paths[$pathType] -replace '\$env:USERPROFILE', $env:USERPROFILE
+                
+                        if (Test-Path $path) {
+                            $workingDirectory = Split-Path -Parent $path
+                            $shortcutFile = "C:\icons\$program.lnk"
+                            CreateShortcut -exePath $path -shortcutPath $shortcutFile -workingDirectory $workingDirectory
+                            $pathFound = $true
+                            break
+                        }
+                    }
+                
+                    if (-not $pathFound) {
+                        Write-Host "[INFO] Failed to create shortcut, path to program not found: $program" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                    }
+                }
+                
+                # Create shortcuts for the custom paths
+                foreach ($program in $shortcutPaths.Keys) {
+                    $details = $shortcutPaths[$program]
+                    $path = $details["Path"] -replace '\$env:USERPROFILE', $env:USERPROFILE
+                    $workingDirectory = $details["WorkingDirectory"] -replace '\$env:USERPROFILE', $env:USERPROFILE
+                    $arguments = $details["Arguments"]
+                
+                    if (Test-Path $path) {
+                        $shortcutFile = "C:\icons\$program.lnk"
+                        CreateShortcut -exePath $path -shortcutPath $shortcutFile -workingDirectory $workingDirectory -arguments $arguments
+                    }
+                    else {
+                        Write-Host "[INFO] Failed to create shortcut, path to program not found: $program" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                    }
+                }
+            }
+                
+            CreateShortcuts
+
+            # Remove registry path of all taskbar icons
+            Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse -Force -ErrorAction Stop
+            
+            # Set taskbar icons and pin to taskbar
+            # Download the registry file
+            $taskbarpin = "https://raw.githubusercontent.com/caglaryalcin/after-format/refs/heads/main/files/apps/gaming/taskbar.reg"
+            $progressPreference = 'SilentlyContinue'
+            Invoke-WebRequest -Uri $taskbarpin -Outfile "C:\taskbar_pin.reg" -ErrorAction Stop
+            
+            # Import the registry file
+            reg import "C:\taskbar_pin.reg" *>$null
+            # Copy the icons to the taskbar
+            Copy-Item -Path "C:\icons\*" -Destination "$env:USERPROFILE\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\" -Force -ErrorAction Stop
+            # Apply the registry file import again
+            reg import "C:\taskbar_pin.reg" *>$null
+            # kill explorer
+            taskkill /f /im explorer.exe *>$null
+
+            # Delete registry file and icons folder
+            Remove-Item "C:\taskbar_pin.reg" -Recurse -ErrorAction Stop
+            Start-Sleep 1
+
+            Start-Process "explorer.exe" -ErrorAction Stop
+            Start-Sleep 1
+
+            Remove-Item "C:\icons\" -Recurse -ErrorAction Stop
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        catch {
+            Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+        }
+            
+    }
+
+    if ($gaming -eq "g") {
+        TaskbarPins
+    }
 
 ##########
 #endregion Remove Unused Apps/Softwares
