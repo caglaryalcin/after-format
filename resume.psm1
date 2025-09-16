@@ -113,18 +113,29 @@ Function InstallSoftwares {
         }
 
         # Check if the installation was successful
-        if ($result -match "Successfully installed") {
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-        elseif ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) {
+        $err = $result -match '(?i)installer hash does not match|signature.*(invalid|failed)|download.*failed|\bfail(ed)?\b|\berror\b'
+        $ok = $result -match '(?i)successfully installed|is already installed|no applicable update'
+
+        $logFile = "C:\packages-logs\${packageName}_winget_install.log"
+        ($result | Out-String) | Out-File -FilePath $logFile -Force
+
+        if ($err) {
             Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
             $wingetWarnings += $packageName
-            $logFile = "C:\packages-logs\${packageName}_winget_install.log"
-            $result | Out-File -FilePath $logFile -Force
             Write-Host "[Check the log file at $logFile for details.]"
         }
-        else {
+        elseif ($ok -or ($LASTEXITCODE -in 0, 3010)) {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        else {
+            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) {
+                Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+                $wingetWarnings += $packageName
+                Write-Host "[Check the log file at $logFile for details.]"
+            }
+            else {
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
         }
     }
 

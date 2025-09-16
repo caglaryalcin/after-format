@@ -2102,19 +2102,6 @@ Function SystemSettings {
 
         RemoveTaskbarChat
 
-        Function RemoveTaskbarWidgets {
-            Write-Host "Removing Widgets from Taskbar..." -NoNewline
-            try {
-                Start-Process powershell -Verb runAs -ArgumentList '-Command "Set-ItemProperty -Path \"HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name \"TaskbarDa\" -Type DWord -Value 0"'
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        RemoveTaskbarWidgets
-
         Function TurnOffSuggestedContent {
             Write-Host "Turning off suggested content in Settings..." -NoNewline
             $suggestregPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
