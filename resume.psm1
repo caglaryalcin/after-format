@@ -128,19 +128,13 @@ Function InstallSoftwares {
 
     # Once all installations are done, stop the background job
     if ($gaming -eq "n") {
-        Stop-Job -Job $job
-        Remove-Job -Job $job
+        if ($job) { Stop-Job -Job $job; Remove-Job -Job $job }
 
-        # Kill the processes of power toys
-        $processName = "PowerToys*"
-        while ($true) {
+        $deadline = (Get-Date).AddSeconds(30)
+        do {
+            Stop-Process -Name 'PowerToys*' -Force -ErrorAction SilentlyContinue
             Start-Sleep -Seconds 2
-            $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
-            if ($process) {
-                Stop-Process -Id $process.Id -Force
-                break
-            }
-        }
+        } while ((Get-Process -Name 'PowerToys*' -ErrorAction SilentlyContinue) -and (Get-Date) -lt $deadline)
     }
 }
 
