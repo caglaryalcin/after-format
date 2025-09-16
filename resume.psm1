@@ -70,7 +70,7 @@ Function InstallSoftwares {
     switch ($gaming) {
         'n' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json' }
         'g' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/winget.json' }
-        default { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json' } # varsayılan
+        default { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json' }
     }
 
     $jsonContent = Invoke-RestMethod -Uri $jsonUrl -ErrorAction Stop
@@ -87,9 +87,9 @@ Function InstallSoftwares {
             $tmp = "$env:TEMP\Battle.net-Setup.exe"
             Invoke-WebRequest -Uri "https://downloader.battle.net/download/getInstallerForGame?os=win&installer=Battle.net-Setup.exe" -OutFile $tmp -UseBasicParsing
             Unblock-File -Path $tmp
-            $p = Start-Process -FilePath $tmp -ArgumentList --lang=enUS --installpath="C:\Program Files (x86)\Battle.net" -Verb RunAs -PassThru
+            $p = Start-Process -FilePath $tmp -ArgumentList @('--lang=enUS', '--installpath="C:\Program Files (x86)\Battle.net"') -Verb RunAs -PassThru
             $sw = [System.Diagnostics.Stopwatch]::StartNew()
-            $p.WaitForExit(5 * 1000) | Out-Null
+            if ($p) { $p.WaitForExit(5 * 1000) | Out-Null }
             if ($p.HasExited) {
                 $deadline = (Get-Date).AddMinutes(20)
                 while ((Get-Process -Name 'Battle.net-Setup', 'Battle.net Installer', 'Battle.net' -ErrorAction SilentlyContinue) `
@@ -113,7 +113,10 @@ Function InstallSoftwares {
         }
 
         # Check if the installation was successful
-        if ($LASTEXITCODE -ne 0 -or $result -match "does not match" -or $result -match "fail") {
+        if ($result -match "Successfully installed") {
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        elseif ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) {
             Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
             $wingetWarnings += $packageName
             $logFile = "C:\packages-logs\${packageName}_winget_install.log"
@@ -123,7 +126,6 @@ Function InstallSoftwares {
         else {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-
     }
 
     # Once all installations are done, stop the background job
