@@ -1559,7 +1559,7 @@ Function TaskbarPins {
                         "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Discord\$discordfoldername";
                 };
                 "Steam" = @{
-                    "Path"             = "C:\Users\$env:USERPROFILE\AppData\Local\Discord\Update.exe --processStart Discord.exe";
+                    "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
                     "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
                 };
                 "Epic Games Launcher"         = @{
