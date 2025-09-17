@@ -24,7 +24,9 @@ $mode = (Get-ItemProperty -Path "HKCU:\Software\MyScript" -Name "Mode" -ErrorAct
 
 $wingetWarnings = @()
 Function InstallSoftwares {
-    Write-Host "---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
+    Write-Host "---------Mode Select" -ForegroundColor Blue -BackgroundColor Gray
+    Write-Host "Chapter completed."
+    Write-Host `n"---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
     Write-Host "Chapter completed."
     Write-Host `n"---------Adjusting Privacy Settings" -ForegroundColor Blue -BackgroundColor Gray
     Write-Host "Chapter completed."
