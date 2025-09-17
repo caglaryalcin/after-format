@@ -33,6 +33,8 @@ Function ModeSelect {
     $choiceregPath = "HKCU:\Software\MyScript"
     $choiceregName = "Mode"
 
+    Write-Host "`n---------Mode Select" -ForegroundColor Blue -BackgroundColor Gray
+
     do {
         $mode = $null
         Write-Host "`nWhat do you use " -NoNewline
@@ -953,7 +955,7 @@ Function SystemSettings {
                 param (
                     [string]$address
                 )
-        
+
                 $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
                 if ($pingOutput) {
                     $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
@@ -963,75 +965,72 @@ Function SystemSettings {
                     return "N/A"
                 }
             }
-        
-            Write-Host `n"Would you like to change your " -NoNewline
-            Write-Host "DNS setting?" -ForegroundColor Yellow -NoNewline
-            Write-Host " (y/n): " -ForegroundColor Green -NoNewline
-            $confirmation = Read-Host
 
-            if ($confirmation -notin @("yes", "y", "Y")) {
+            do {
+                Write-Host `n"Would you like to change your " -NoNewline
+                Write-Host "DNS setting?" -ForegroundColor Yellow -NoNewline
+                Write-Host " (y/n): " -ForegroundColor Green -NoNewline
+                $confirmation = Read-Host
+
+                $valid = $confirmation -match '^(?i:y|yes|n|no)$'
+                if (-not $valid) { Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no." }
+            } until ($valid)
+
+            if ($confirmation -match '^(?i:n|no)$') {
                 Write-Host "DNS settings will not be changed."
                 return
             }
-        
+
             Write-Host "Which DNS provider " -NoNewline
             Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
             Write-Host " Write 1, 2 or 3."
             Write-Host `n"MS values are being calculated..." -NoNewline
-        
+
             $cloudflareDNS = "1.1.1.1"
             $googleDNS = "8.8.8.8"
             $adguardDNS = "94.140.14.14"
-        
+
             $cloudflarePing = GetPingTime -address $cloudflareDNS
             $googlePing = GetPingTime -address $googleDNS
             $adguardPing = GetPingTime -address $adguardDNS
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        
-            Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Cloudflare " -NoNewline
-            Write-Host "[$cloudflarePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-            Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
-            Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Google " -NoNewline
-            Write-Host "[$googlePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-            Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
-            Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Adguard " -NoNewline
-            Write-Host "[$adguardPing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-            Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
-            $choice = Read-Host -Prompt `n"[Choice]"
-        
+
+            do {
+                Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Cloudflare " -NoNewline
+                Write-Host "[$cloudflarePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Google " -NoNewline
+                Write-Host "[$googlePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Adguard " -NoNewline
+                Write-Host "[$adguardPing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+
+                $choice = Read-Host -Prompt `n"[Choice]"
+                $validChoice = $choice -match '^[123]$'
+                if (-not $validChoice) { Write-Host "Hatalı giriş. 1, 2 veya 3 girin." }
+            } until ($validChoice)
+
             $dnsServers = @()
-            switch ($choice) {
-                1 {
-                    Write-Host `n"Setting Cloudflare DNS..." -NoNewline
-                    $dnsServers = @("1.1.1.1", "1.0.0.1")
-                }
-                2 {
-                    Write-Host `n"Setting Google DNS..." -NoNewline
-                    $dnsServers = @("8.8.8.8", "8.8.4.4")
-                }
-                3 {
-                    Write-Host `n"Setting Adguard DNS..." -NoNewline
-                    $dnsServers = @("94.140.14.14", "94.140.15.15")
-                }
-                default {
-                    Write-Host "Invalid input. Please enter 1, 2 or 3."
-                    return
-                }
+            switch ([int]$choice) {
+                1 { Write-Host `n"Setting Cloudflare DNS..." -NoNewline; $dnsServers = @("1.1.1.1", "1.0.0.1") }
+                2 { Write-Host `n"Setting Google DNS..."     -NoNewline; $dnsServers = @("8.8.8.8", "8.8.4.4") }
+                3 { Write-Host `n"Setting Adguard DNS..."    -NoNewline; $dnsServers = @("94.140.14.14", "94.140.15.15") }
             }
-        
+
             try {
                 $interfaces = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -ExpandProperty ifIndex
-                Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction SilentlyContinue
+                Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction Stop
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
             }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
-        
+
         SetDNS
 
         Function Disable-Services {
@@ -3187,12 +3186,6 @@ Function GithubSoftwares {
     if ($response -eq 'y' -or $response -eq 'Y') {
 
         Function installwinget {
-            param(
-                [Parameter(Mandatory = $true)]
-                [ValidateSet('normal', 'developer', 'gaming')]
-                [string]$Mode
-            )
-            
             # I now use asheroto's https://github.com/asheroto/winget-install repo to install winget
             Write-Host `n"Installing/upgrading winget..." -NoNewline
             $job = Start-Job -ScriptBlock {
@@ -3201,7 +3194,7 @@ Function GithubSoftwares {
             
             Wait-Job -Job $job | Out-Null
 
-            Function ForNormal {
+            Function CreateTask {
                 #create softwares task
                 $wtPath = Get-Command wt.exe | Select-Object -ExpandProperty Definition
 
@@ -3222,40 +3215,8 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
-            Function Developer {
-                
-            }
+            CreateTask
 
-            Function ForGaming {
-                #create softwares task
-                $wtPath = Get-Command wt.exe | Select-Object -ExpandProperty Definition
-
-                $psCommand = "powershell.exe -ExecutionPolicy Bypass -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/resume.psm1' -UseBasicParsing | iex`""
-                $wtCommand = "-w 0 new-tab $psCommand"
-                $action = New-ScheduledTaskAction -Execute $wtPath -Argument $wtCommand
-                $trigger = New-ScheduledTaskTrigger -AtLogon
-                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
-                $taskname = "softwares"
-                $description = "temp task"
-                $settings = New-ScheduledTaskSettingsSet
-
-                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description
-                $task | Set-ScheduledTask *>$null
-
-                Start-Sleep 2
-                Restart-Computer -Force
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-
-            if ($Mode -eq "gaming") {
-                ForGaming
-            }
-            if ($Mode -eq "developer") {
-                ForDeveloper
-            }
-            elseif ($Mode -eq "normal") {
-                ForNormal
-            }
         }
         
         installwinget
