@@ -1643,7 +1643,7 @@ Function TaskbarPins {
             
 }
 
-if ($mode -eq "normal" -or $mode -eq "developer") {
+if ($mode -eq "gaming") {
     TaskbarPins
 }
 

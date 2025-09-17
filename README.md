@@ -29,7 +29,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 
 - Taskbar aligns left
 - Disabling snap
-- Adding ohmypush to Windows Terminal
+- Adding ohmypush to Windows Terminal (Only Dev/Sys-Eng and Normal mode)
 
 ![image](https://github.com/user-attachments/assets/154e85b6-0872-45ee-b6bb-846655846890)
 
@@ -56,12 +56,11 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Disabling hiberfil.sys
 - Disabling display and sleep mode timeouts
 - Disabling updates for other microsoft products
-- Disabling cortana
 - Disabling bing search in start menu
 - Disabling smartscreen filter
 - Disabling sensors
 - Disabling tailored experiences
-- Disabling xbox features
+- Disabling xbox features (Only Dev/Sys-Eng and Normal mode)
 - Disabling blocking of downloaded files
 - Disabling nightly wake-up for automatic maintenance
 - Disabling storage sense
@@ -77,7 +76,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Disabling recent files lists
 - Disabling search for app in store for unknown extensions
 - Hiding Recently Added, Recommended Settings, Apps, Personalized Sites and Section from list from the start menu
-- Stopping and disabling unnecessary services
+- Stopping and disabling unnecessary services (Xbox features are being removed)
 - Disabling news and interest on taskbar
 - Hiding people icon from taskbar
 - Hiding taskview icon from taskbar
@@ -86,7 +85,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Hiding taskbar search
 - Removing chat from taskbar
 - Removing widgets from taskbar
-- Enabling telnet client
+- Enabling telnet client (Only Dev/Sys-Eng and Normal mode)
 - Setting automatic kill of unsaved changes when trying to log out, restart or close
 
 ![image](https://github.com/user-attachments/assets/869227a1-a299-4e20-8450-b0ba279409ff)
@@ -96,7 +95,7 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - Disabling Account Notifications
 - Setting End task button
 - Disabling Location Notifications
-- Enabling Sudo
+- Enabling Sudo (Only Dev/Sys-Eng and Normal mode)
 - Removing shortcut name
 
 ![image](https://github.com/user-attachments/assets/5d44a918-bf3f-49df-a27a-105b461a07e3)
