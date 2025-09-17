@@ -16,6 +16,8 @@ Function Silent {
     $Global:ProgressPreference = 'SilentlyContinue'
 }
 
+$mode = (Get-ItemProperty -Path "HKCU:\Software\MyScript" -Name "Mode" -ErrorAction SilentlyContinue)."Mode"
+
 ##########
 #endregion Priority
 ##########
@@ -35,17 +37,6 @@ Function InstallSoftwares {
     # Create a directory for logs
     New-Item -Path "C:\packages-logs" -ItemType Directory -Force | Out-Null
 
-    # Registry path and name for gaming mode choice
-    $choicePath = "HKCU:\Software\MyScript"
-    $choiceregName = "GamingMode"
-
-    try {
-        $gaming = (Get-ItemProperty -Path $choicePath -Name $choiceregName -ErrorAction Stop).$choiceregName
-    }
-    catch {
-        $gaming = $null
-    }
-
     $appsToClose = @{
         "github-desktop"  = "GithubDesktop";
         "cloudflare-warp" = "Cloudflare WARP"
@@ -63,14 +54,14 @@ Function InstallSoftwares {
     }
 
     # Start the background job for monitoring and stopping processes
-    if ($gaming -eq "n") {
+    if ($mode -eq "normal") {
         $job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $appsToClose.Values
     }
 
-    switch ($gaming) {
-        'n' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json' }
-        'g' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/winget.json' }
-        default { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/winget.json' }
+    switch ($mode) {
+        'normal' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/normal/winget.json' }
+        'developer' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/dev-sys/winget.json' }
+        'gaming' { $jsonUrl = 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/winget.json' }
     }
 
     $jsonContent = Invoke-RestMethod -Uri $jsonUrl -ErrorAction Stop
@@ -140,7 +131,7 @@ Function InstallSoftwares {
     }
 
     # Once all installations are done, stop the background job
-    if ($gaming -eq "n") {
+    if ($mode -eq "normal") {
         if ($job) { Stop-Job -Job $job; Remove-Job -Job $job }
 
         $deadline = (Get-Date).AddSeconds(30)
@@ -247,16 +238,24 @@ Function chocoinstall {
 
 chocoinstall
 
-if ($gaming -eq "n") {
-    $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/check.json"
+if ($mode -eq "normal") {
+    $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/normal/check.json"
     $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
     $packagesToCheck = $jsonContent.Sources.Packages
 
-    $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/choco-apps.config"
+    $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/normal/choco-apps.config"
     [xml]$chocoConfig = Invoke-RestMethod -Uri $chocoAppsConfigUrl
 }
 
-if ($gaming -eq "g") {
+if ($mode -eq "developer") {
+    $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/dev-sys/check.json"
+    $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
+    $packagesToCheck = $jsonContent.Sources.Packages
+
+    $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/dev-sys/choco-apps.config"
+}
+
+if ($mode -eq "gaming") {
     $checkJsonUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/check.json"
     $jsonContent = Invoke-RestMethod -Uri $checkJsonUrl
     $packagesToCheck = $jsonContent.Sources.Packages
@@ -308,17 +307,6 @@ Write-Host @"
 
 "@ -ForegroundColor Yellow
 
-# Registry path and name for gaming mode choice
-$choicePath = "HKCU:\Software\MyScript"
-$choiceregName = "GamingMode"
-
-try {
-    $gaming = (Get-ItemProperty -Path $choicePath -Name $choiceregName -ErrorAction Stop).$choiceregName
-}
-catch {
-    $gaming = $null
-}
-
 Function SafeTaskKill {
     param($processName)
         
@@ -329,12 +317,12 @@ Function SafeTaskKill {
     }
 }
 
-if ($gaming -eq "n") {
+if ($mode -eq "developer") {
     SafeTaskKill "GithubDesktop.exe"
     SafeTaskKill "Cloudflare WARP.exe"
     SafeTaskKill "AnyDesk.exe"
 }
-if ($gaming -eq "g") {
+if ($mode -eq "gaming") {
     SafeTaskKill "steam.exe"
     SafeTaskKill "Discord.exe"
     SafeTaskKill "EADesktop.exe"
@@ -391,7 +379,7 @@ Function Install-VSCodeExtensions {
     }
 }
 
-if ($gaming -eq "n") {
+if ($mode -eq "developer") {
     Install-VSCodeExtensions
 
     # Visual Studio Code json path
@@ -457,11 +445,11 @@ Function MalwarebytesReset {
     }
 }
 
-if ($gaming -eq "n") {
+if ($mode -eq "normal" -or $mode -eq "developer") {
     MalwarebytesReset
 }
 
-if ($gaming -eq "n") {
+if ($mode -eq "normal" -or $mode -eq "developer") {
     # webview2 is being forcibly reloaded because it is necessary
     try {
         Write-Host "Reinstalling Microsoft Edge WebView2 Runtime..." -NoNewline
@@ -563,7 +551,7 @@ Function UnusedApps {
             
             Silent #silently
             
-            if ($gaming -eq "n") {
+            if ($mode -eq "normal" -or $mode -eq "developer") {
                 foreach ($package in $UninstallAppxPackages) {
                     $app = $installedApps | Where-Object { $_.Name -like $package }
                     if ($null -ne $app) {
@@ -577,7 +565,7 @@ Function UnusedApps {
                 }
             }
 
-            if ($gaming -eq "g") {
+            if ($mode -eq "gaming") {
                 foreach ($package in $UninstallExcludeXboxAppxPackages) {
                     $app = $installedApps | Where-Object { $_.Name -like $package }
                     if ($null -ne $app) {
@@ -1655,17 +1643,7 @@ Function TaskbarPins {
             
 }
 
-# Registry path and name for gaming mode choice
-    $choicePath = "HKCU:\Software\MyScript"
-    $choiceregName = "GamingMode"
-    try {
-        $gaming = (Get-ItemProperty -Path $choicePath -Name $choiceregName -ErrorAction Stop).$choiceregName
-    }
-    catch {
-        $gaming = $null
-    }
-
-if ($gaming -eq "g") {
+if ($mode -eq "normal" -or $mode -eq "developer") {
     TaskbarPins
 }
 

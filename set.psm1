@@ -26,6 +26,48 @@ Function Silent {
 ##########
 
 ##########
+#region Mode
+##########
+
+Function ModeSelect {
+    $choiceregPath = "HKCU:\Software\MyScript"
+    $choiceregName = "Mode"
+
+    do {
+        $mode = $null
+        Write-Host "`nWhat do you use " -NoNewline
+        Write-Host "your computer?" -ForegroundColor Yellow -NoNewline
+        Write-Host " (1/2/3): " -ForegroundColor Green
+        Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+        Write-Host " - Developer-Sys Eng"
+        Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+        Write-Host " - Normal"
+        Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+        Write-Host " - Gaming"
+
+        $response = Read-Host -Prompt `n"[Choice]"
+
+        switch ($response.Trim()) {
+            '1' { $mode = 'developer'; Write-Host "`nDeveloper-Sys Eng. mode is being set... " -NoNewline; Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black }
+            '2' { $mode = 'normal'; Write-Host "`nNormal mode is being set... " -NoNewline; Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black }
+            '3' { $mode = 'gaming'; Write-Host "`nGaming mode is being set... " -NoNewline; Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black }
+            default { Write-Host "[Invalid input. Please enter 1, 2 or 3.]" -ForegroundColor Red -BackgroundColor Black }
+        }
+    } while (-not $mode)
+
+    if (-not (Test-Path $choiceregPath)) { New-Item -Path $choiceregPath -Force | Out-Null }
+    Set-ItemProperty -Path $choiceregPath -Name $choiceregName -Value $mode -Type String -Force
+}
+
+ModeSelect
+
+$mode = (Get-ItemProperty -Path "HKCU:\Software\MyScript" -Name "Mode" -ErrorAction SilentlyContinue)."Mode"
+
+##########
+#endregion Priority
+##########
+
+##########
 #region System Settings 
 ##########
 Function SystemSettings {
@@ -345,7 +387,7 @@ Function SystemSettings {
             }
         }
         
-        SetKeyboardLayout        
+        SetKeyboardLayout
 
         Function ImportStartup {
             Write-Host `n"For detailed information > " -NoNewline
@@ -516,7 +558,7 @@ Function SystemSettings {
             }
         }
 
-        TerminalConfig
+        if ($mode -eq "developer") { TerminalConfig }
 
         Function DisableGallery {
             try {
@@ -1026,39 +1068,12 @@ Function SystemSettings {
         $forgaming = @("WalletService", "RemoteAccess", "WMPNetworkSvc", "NetTcpPortSharing", "AJRouter", "TrkWks", "dmwappushservice",
             "MapsBroker", "Fax", "CscService", "WpcMonSvc", "WPDBusEnum", "PcaSvc", "RemoteRegistry", "RetailDemo", "lmhosts", "WerSvc", "wisvc", "EFS", "BDESVC",
             "CertPropSvc", "SCardSvr", "fhsvc", "SensorDataService", "SensorService", "icssvc", "lfsvc", "SEMgrSvc", "WpnService", "SDRSVC", "Spooler", "Bonjour Service", "SensrSvc", "WbioSrvc", "Sens")    
-            
-        $regPath = "HKCU:\Software\MyScript"
-        $regName = "GamingMode"
 
-        if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
-
-        try {
-            $gaming = (Get-ItemProperty -Path $regPath -Name $regName -ErrorAction Stop).$regName
-        }
-        catch {
-            $gaming = $null
-        }
-
-        if (-not $gaming -or ($gaming -ne 'n' -and $gaming -ne 'g')) {
-            Write-Host "`nWhat do you use " -NoNewline
-            Write-Host "your computer for?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(n/g)" -ForegroundColor Green -NoNewline
-            Write-Host " [n: Normal Use, g: Gaming]: " -NoNewline
-            $gaming = (Read-Host) | ForEach-Object { $_.Trim().ToLower() }
-
-            Set-ItemProperty -Path $regPath -Name $regName -Value $gaming -Type String -Force
-        }
-
-        Write-Host "" -NoNewline
-
-        if ($gaming -eq "n") {
-            Disable-Services -disableservices $disableservices
-        }
-        elseif ($gaming -eq "g") {
+        if ($mode -eq "gaming") {
             Disable-Services -disableservices $forgaming
         }
-        else {
-            Write-Host "Invalid choice!" -ForegroundColor Red -BackgroundColor Black
+        elseif ($mode -eq "normal" -or $mode -eq "developer") {
+            Disable-Services -disableservices $disableservices
         }
 
         Function DisableXboxFeatures {
@@ -1097,9 +1112,7 @@ Function SystemSettings {
             }
         }
                 
-        if ($gaming -eq 'n') {
-            DisableXboxFeatures
-        }
+        if ($mode -eq "developer" -or $mode -eq "normal") { DisableXboxFeatures }
 
         Function Telnet {
             Write-Host "Enabling Telnet Client..." -NoNewline
@@ -1117,7 +1130,7 @@ Function SystemSettings {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         
-        if ($gaming -eq 'n') {
+        if ($mode -eq 'normal' -or $mode -eq 'developer') {
             Telnet
         }
 
@@ -1132,7 +1145,7 @@ Function SystemSettings {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
     
-        if ($gaming -eq 'n') {
+        if ($mode -eq 'normal' -or $mode -eq 'developer') {
             EnableSudo
         }
 
@@ -1352,79 +1365,6 @@ Function SystemSettings {
         }
 
         DisableUpdateMSProducts
-
-        function DisableCortana {
-            Write-Host "Disabling Cortana..." -NoNewline
-            
-            $allSuccessful = $true
-        
-            try {
-                # Define registry keys and their values
-                $RegistryKeys = @{
-                    "HKCU:\Software\Microsoft\Personalization\Settings"                      = @{
-                        "AcceptedPrivacyPolicy" = 0
-                    }
-                    "HKCU:\Software\Microsoft\InputPersonalization"                          = @{
-                        "RestrictImplicitTextCollection" = 1
-                        "RestrictImplicitInkCollection"  = 1
-                    }
-                    "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore"         = @{
-                        "HarvestContacts" = 0
-                    }
-                    "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"      = @{
-                        "ShowCortanaButton" = 0
-                    }
-                    "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowCortana" = @{
-                        "Value" = 0
-                    }
-                    "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"               = @{
-                        "AllowCortana"              = 0
-                        "AllowSearchToUseLocation"  = 0
-                        "DisableWebSearch"          = 1
-                        "ConnectedSearchUseWeb"     = 0
-                        "AllowCloudSearch"          = 0
-                        "AllowCortanaAboveLock"     = 0
-                        "EnableDynamicContentInWSB" = 0
-                    }
-                    "HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization"                 = @{
-                        "AllowInputPersonalization" = 0
-                    }
-                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Windows Search"         = @{
-                        "CortanaConsent" = 0
-                    }
-                    "HKLM:\SOFTWARE\Microsoft\Speech_OneCore\Preferences"                    = @{
-                        "ModelDownloadAllowed" = 0
-                    }
-                }
-        
-                # Apply registry changes
-                foreach ($Key in $RegistryKeys.Keys) {
-                    if (-not (Test-Path $Key)) {
-                        New-Item -Path $Key -Force | Out-Null
-                    }
-                    foreach ($Property in $RegistryKeys[$Key].Keys) {
-                        Set-ItemProperty -Path $Key -Name $Property -Type DWord -Value $RegistryKeys[$Key][$Property]
-                    }
-                }
-        
-                # Remove Cortana Package
-                $progressPreference = 'SilentlyContinue'
-                Get-AppxPackage "Microsoft.549981C3F5F10" | Remove-AppxPackage | Out-Null -ErrorAction SilentlyContinue
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                $allSuccessful = $false
-            }
-        
-            if ($allSuccessful) {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[WARNING] An error occurred." -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-        
-        DisableCortana        
 
         Function DisableWebSearch {
             Write-Host "Disabling Bing Search in Start Menu..." -NoNewline
@@ -2251,6 +2191,7 @@ Function SystemSettings {
         Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
         SystemSettings
     }
+
 }
 
 SystemSettings
@@ -3245,22 +3186,10 @@ Function GithubSoftwares {
     $response = Read-Host
     if ($response -eq 'y' -or $response -eq 'Y') {
 
-        $regPath = "HKCU:\Software\MyScript"
-            $regName = "GamingMode"
-
-            if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
-
-            try {
-                $gaming = (Get-ItemProperty -Path $regPath -Name $regName -ErrorAction Stop).$regName
-            }
-            catch {
-                $gaming = $null
-            }
-
         Function installwinget {
             param(
                 [Parameter(Mandatory = $true)]
-                [ValidateSet('g', 'n')]
+                [ValidateSet('normal', 'developer', 'gaming')]
                 [string]$Mode
             )
             
@@ -3293,6 +3222,10 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
+            Function Developer {
+                
+            }
+
             Function ForGaming {
                 #create softwares task
                 $wtPath = Get-Command wt.exe | Select-Object -ExpandProperty Definition
@@ -3314,15 +3247,18 @@ Function GithubSoftwares {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
 
-            if ($Mode -eq "g") {
+            if ($Mode -eq "gaming") {
                 ForGaming
             }
-            elseif ($Mode -eq "n") {
+            if ($Mode -eq "developer") {
+                ForDeveloper
+            }
+            elseif ($Mode -eq "normal") {
                 ForNormal
             }
         }
         
-        installwinget -Mode $gaming
+        installwinget
         
     }
 
@@ -4014,6 +3950,9 @@ Function GithubSoftwares {
                             New-Item -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
                         }
                         Set-ItemProperty -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1
+
+                        Get-AppxPackage *CoPilot* -AllUsers | Remove-AppPackage -AllUsers
+                        Get-AppxProvisionedPackage -Online | where-object { $_.PackageName -like "*Copilot*" } | Remove-AppxProvisionedPackage -online
         
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
@@ -4026,7 +3965,7 @@ Function GithubSoftwares {
                     }
                 }
         
-                DisableCopilot        
+                DisableCopilot
 
                 # Uninstall OneDrive
                 Function UninstallOneDrive {

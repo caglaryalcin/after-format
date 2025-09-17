@@ -1,0 +1,24 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2023-07-01",
+  "Sources": [
+    {
+      "Packages": [
+        {"PackageIdentifier": ["Chocolatey"]},
+        {"PackageIdentifier": ["Chrome"]},
+        {"PackageIdentifier": ["HWMonitor"]},
+        {"PackageIdentifier": ["Crystal"]},
+        {"PackageIdentifier": ["AnyDesk"]},
+        {"PackageIdentifier": ["Speedtest"]},
+        {"PackageIdentifier": ["TreeSize"]},
+        {"PackageIdentifier": ["Lightshot"]},
+        {"PackageIdentifier": ["twinkle"]},
+        {"PackageIdentifier": ["Codec"]},
+        {"PackageIdentifier": ["rufus"]},
+        {"PackageIdentifier": ["powertoys"]},
+        {"PackageIdentifier": ["VLC"]},
+        {"PackageIdentifier": ["Malwarebytes"]}
+      ]
+    }
+  ]
+}

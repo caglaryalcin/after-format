@@ -1,0 +1,25 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2023-07-01",
+  "Sources": [
+    {
+      "Packages": [
+        {"PackageIdentifier": "Chocolatey.Chocolatey"},
+        {"PackageIdentifier": "Google.Chrome"},
+        {"PackageIdentifier": "CPUID.HWMonitor"},
+        {"PackageIdentifier": "CrystalDewWorld.CrystalDiskInfo"},
+        {"PackageIdentifier": "AnyDeskSoftwareGmbH.AnyDesk"},
+        {"PackageIdentifier": "Ookla.Speedtest.CLI"},
+        {"PackageIdentifier": "JAMSoftware.TreeSize.Free"},
+        {"PackageIdentifier": "Skillbrains.Lightshot"},
+        {"PackageIdentifier": "xanderfrangos.twinkletray"},
+        {"PackageIdentifier": "CodecGuide.K-LiteCodecPack.Mega"},
+        {"PackageIdentifier": "Rufus.Rufus"},
+        {"PackageIdentifier": "Rem0o.FanControl"},
+        {"PackageIdentifier": "Microsoft.PowerToys"},
+        {"PackageIdentifier": "VideoLAN.VLC"},
+        {"PackageIdentifier": "Malwarebytes.Malwarebytes"}
+      ]
+    }
+  ]
+}
