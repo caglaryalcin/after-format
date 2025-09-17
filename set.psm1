@@ -247,7 +247,7 @@ Function SystemSettings {
                 Write-Host "[Windows Defender will not be disabled]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
                 DisableDefender
             }
         }
@@ -436,7 +436,7 @@ Function SystemSettings {
                 Write-Host "[The start task will not be added to the task scheduler.]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
                 ImportStartup
             }
         }
@@ -672,7 +672,7 @@ Function SystemSettings {
                 Write-Host "[Explorer view will not be set to details.]" -ForegroundColor Red -BackgroundColor Black
             }
             else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
                 ExplorerView
             }
         }
@@ -819,44 +819,49 @@ Function SystemSettings {
         DisableBingSearchExtension
 
         Function SetAppsMode {
-            Write-Host "`nDo you want to " -NoNewline
-            Write-Host "set the application mode to Light or Dark?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(light/dark): " -ForegroundColor Green -NoNewline
-            $response = Read-Host
-        
-            if ($response -eq 'light' -or $response -eq 'Light') {
-                Write-Host "Setting Light Mode for Applications..." -NoNewline
-                try {
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 1
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 1
-                    # Disable transparency
-                    Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
+            Write-Host "`nWhich application mode do you want to use?" -ForegroundColor Yellow
+            Write-Host "`n[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Light Mode"
+            Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Dark Mode"
+
+            $response = Read-Host -Prompt `n"[Choice]"
+
+            switch ($response.Trim()) {
+                '1' {
+                    Write-Host "Setting Light Mode for Applications..." -NoNewline
+                    try {
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 1
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 1
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Value 0
+                    }
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-                catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+
+                '2' {
+                    Write-Host "Setting Dark Mode for Applications..." -NoNewline
+                    try {
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Value 0
+                    }
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                 }
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            elseif ($response -eq 'dark' -or $response -eq 'Dark') {
-                Write-Host "Setting Dark Mode for Applications..." -NoNewline
-                try {
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
-                    # Disable transparency
-                    Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
+
+                default {
+                    Write-Host "[Invalid input. Please enter 1 for Light or 2 for Dark.]" -ForegroundColor Red -BackgroundColor Black
+                    SetAppsMode
                 }
-                catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                }
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            else {
-                Write-Host "[Invalid input. Please enter 'light' for Light Mode or 'dark' for Dark Mode.]" -ForegroundColor Red -BackgroundColor Black
-                SetAppsMode
             }
         }
-        
-        SetAppsMode        
+
+        SetAppsMode
 
         Function SetControlPanelLargeIcons {
             Write-Host `n"Setting Control Panel view to large icons..." -NoNewline
@@ -973,7 +978,7 @@ Function SystemSettings {
                 $confirmation = Read-Host
 
                 $valid = $confirmation -match '^(?i:y|yes|n|no)$'
-                if (-not $valid) { Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no." }
+                if (-not $valid) { Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black }
             } until ($valid)
 
             if ($confirmation -match '^(?i:n|no)$') {
@@ -981,10 +986,7 @@ Function SystemSettings {
                 return
             }
 
-            Write-Host "Which DNS provider " -NoNewline
-            Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
-            Write-Host " Write 1, 2 or 3."
-            Write-Host `n"MS values are being calculated..." -NoNewline
+            Write-Host "MS values are being calculated..." -NoNewline
 
             $cloudflareDNS = "1.1.1.1"
             $googleDNS = "8.8.8.8"
@@ -994,6 +996,9 @@ Function SystemSettings {
             $googlePing = GetPingTime -address $googleDNS
             $adguardPing = GetPingTime -address $adguardDNS
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "`nWhich DNS provider " -NoNewline
+            Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
+            Write-Host " Write 1, 2 or 3."
 
             do {
                 Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
@@ -1011,7 +1016,7 @@ Function SystemSettings {
 
                 $choice = Read-Host -Prompt `n"[Choice]"
                 $validChoice = $choice -match '^[123]$'
-                if (-not $validChoice) { Write-Host "Hatalı giriş. 1, 2 veya 3 girin." }
+                if (-not $validChoice) { Write-Host "[Invalid input. Please enter 1, 2, or 3.]" -ForegroundColor Red -BackgroundColor Black }
             } until ($validChoice)
 
             $dnsServers = @()
@@ -1935,8 +1940,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path $winfeedsPath -Name "EnableFeeds" -Type DWord -Value 0 -ErrorAction Stop | Out-Null
         
                 # Disable news and interests in the taskbar
-                $taskbarFeedsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds"
-                Set-ItemProperty -Path $taskbarFeedsPath -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
+                #Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2 -ErrorAction Stop | Out-Null
 
                 # Disable Show recommendations for tips, shortcuts, new apps
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_IrisRecommendations" -Type DWord -Value 0 -ErrorAction Stop | Out-Null

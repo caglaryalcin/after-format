@@ -115,19 +115,18 @@ Function InstallSoftwares {
             $wingetWarnings += $packageName
             Write-Host "[Check the log file at $logFile for details.]"
         }
-        elseif ($ok -or ($LASTEXITCODE -in 0, 3010)) {
+        elseif ($ok) {
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+        elseif ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 3010) {
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
         else {
-            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) {
-                Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
-                $wingetWarnings += $packageName
-                Write-Host "[Check the log file at $logFile for details.]"
-            }
-            else {
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
+            Write-Host "[WARNING]" -ForegroundColor Red -BackgroundColor Black
+            $wingetWarnings += $packageName
+            Write-Host "[Check the log file at $logFile for details.]"
         }
+
     }
 
     # Once all installations are done, stop the background job
@@ -1542,29 +1541,29 @@ Function TaskbarPins {
             }
                 
             $shortcutPaths = @{
-                "Discord"         = @{
-                        "Path"             = "$env:USERPROFILE\AppData\Local\Discord\$discordfoldername\Discord.exe";
-                        "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Discord\$discordfoldername";
+                "Discord"             = @{
+                    "Path"             = "$env:USERPROFILE\AppData\Local\Discord\$discordfoldername\Discord.exe";
+                    "WorkingDirectory" = "$env:USERPROFILE\AppData\Local\Discord\$discordfoldername";
                 };
-                "Steam" = @{
+                "Steam"               = @{
                     "Path"             = "C:\Program Files (x86)\Steam\Steam.exe";
                     "WorkingDirectory" = "C:\Program Files (x86)\Steam\";
                 };
-                "Epic Games Launcher"         = @{
-                        "Path"             = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe";
-                        "WorkingDirectory" = "C:\Program Files (x86)\Epic Games\";
+                "Epic Games Launcher" = @{
+                    "Path"             = "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe";
+                    "WorkingDirectory" = "C:\Program Files (x86)\Epic Games\";
                 };
-                "Battle.net"         = @{
-                        "Path"             = "C:\Program Files (x86)\Battle.net\Battle.net.exe";
-                        "WorkingDirectory" = "C:\Program Files (x86)\Battle.net";
+                "Battle.net"          = @{
+                    "Path"             = "C:\Program Files (x86)\Battle.net\Battle.net.exe";
+                    "WorkingDirectory" = "C:\Program Files (x86)\Battle.net";
                 };
-                "Ubisoft Connect"         = @{
-                        "Path"             = "C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\UbisoftConnect.exe";
-                        "WorkingDirectory" = "C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher";
+                "Ubisoft Connect"     = @{
+                    "Path"             = "C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\UbisoftConnect.exe";
+                    "WorkingDirectory" = "C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher";
                 };
-                "EA Desktop"         = @{
-                        "Path"             = "C:\Program Files\Electronic Arts\EA Desktop\EA Desktop\EADesktop.exe";
-                        "WorkingDirectory" = "C:\Program Files\Electronic Arts\EA Desktop\EA Desktop";
+                "EA Desktop"          = @{
+                    "Path"             = "C:\Program Files\Electronic Arts\EA Desktop\EA Desktop\EADesktop.exe";
+                    "WorkingDirectory" = "C:\Program Files\Electronic Arts\EA Desktop\EA Desktop";
                 };
             }
                 
