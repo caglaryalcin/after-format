@@ -679,6 +679,134 @@ Function SystemSettings {
         
         ExplorerView
 
+        Function SetAppsMode {
+            Write-Host "`nWhich application mode do you want to use?"
+            Write-Host "`n[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Light Mode"
+            Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+            Write-Host " - Dark Mode"
+
+            $response = Read-Host -Prompt `n"[Choice]"
+
+            switch ($response.Trim()) {
+                '1' {
+                    Write-Host "Setting Light Mode for Applications..." -NoNewline
+                    try {
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 1
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 1
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Value 0
+                    }
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+
+                '2' {
+                    Write-Host "Setting Dark Mode for Applications..." -NoNewline
+                    try {
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
+                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Value 0
+                    }
+                    catch {
+                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                    }
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+
+                default {
+                    Write-Host "[Invalid input. Please enter 1 for Light or 2 for Dark.]" -ForegroundColor Red -BackgroundColor Black
+                    SetAppsMode
+                }
+            }
+        }
+
+        SetAppsMode
+
+        Function SetDNS {
+            Function GetPingTime {
+                param (
+                    [string]$address
+                )
+
+                $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
+                if ($pingOutput) {
+                    $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
+                    return $pingTime
+                }
+                else {
+                    return "N/A"
+                }
+            }
+
+            do {
+                Write-Host `n"Would you like to change your " -NoNewline
+                Write-Host "DNS setting?" -ForegroundColor Yellow -NoNewline
+                Write-Host " (y/n): " -ForegroundColor Green -NoNewline
+                $confirmation = Read-Host
+
+                $valid = $confirmation -match '^(?i:y|yes|n|no)$'
+                if (-not $valid) { Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black }
+            } until ($valid)
+
+            if ($confirmation -match '^(?i:n|no)$') {
+                Write-Host "DNS settings will not be changed."
+                return
+            }
+
+            Write-Host "MS values are being calculated..." -NoNewline
+
+            $cloudflareDNS = "1.1.1.1"
+            $googleDNS = "8.8.8.8"
+            $adguardDNS = "94.140.14.14"
+
+            $cloudflarePing = GetPingTime -address $cloudflareDNS
+            $googlePing = GetPingTime -address $googleDNS
+            $adguardPing = GetPingTime -address $adguardDNS
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "`nWhich DNS provider " -NoNewline
+            Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
+            Write-Host " Write 1, 2 or 3."
+
+            do {
+                Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Cloudflare " -NoNewline
+                Write-Host "[$cloudflarePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Google " -NoNewline
+                Write-Host "[$googlePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
+                Write-Host " - Adguard " -NoNewline
+                Write-Host "[$adguardPing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
+                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
+
+                $choice = Read-Host -Prompt `n"[Choice]"
+                $validChoice = $choice -match '^[123]$'
+                if (-not $validChoice) { Write-Host "[Invalid input. Please enter 1, 2, or 3.]" -ForegroundColor Red -BackgroundColor Black }
+            } until ($validChoice)
+
+            $dnsServers = @()
+            switch ([int]$choice) {
+                1 { Write-Host `n"Setting Cloudflare DNS..." -NoNewline; $dnsServers = @("1.1.1.1", "1.0.0.1") }
+                2 { Write-Host `n"Setting Google DNS..."     -NoNewline; $dnsServers = @("8.8.8.8", "8.8.4.4") }
+                3 { Write-Host `n"Setting Adguard DNS..."    -NoNewline; $dnsServers = @("94.140.14.14", "94.140.15.15") }
+            }
+
+            try {
+                $interfaces = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -ExpandProperty ifIndex
+                Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction Stop
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        SetDNS
+
         Function DisableSync {
             Write-Host "Synchronization with Microsoft is completely disabling..." -NoNewline
             $syncPath = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\SettingSync"
@@ -818,51 +946,6 @@ Function SystemSettings {
         
         DisableBingSearchExtension
 
-        Function SetAppsMode {
-            Write-Host "`nWhich application mode do you want to use?"
-            Write-Host "`n[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Light Mode"
-            Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-            Write-Host " - Dark Mode"
-
-            $response = Read-Host -Prompt `n"[Choice]"
-
-            switch ($response.Trim()) {
-                '1' {
-                    Write-Host "Setting Light Mode for Applications..." -NoNewline
-                    try {
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 1
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 1
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Value 0
-                    }
-                    catch {
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                    }
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-
-                '2' {
-                    Write-Host "Setting Dark Mode for Applications..." -NoNewline
-                    try {
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Type DWord -Value 0
-                        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Value 0
-                    }
-                    catch {
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                    }
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                }
-
-                default {
-                    Write-Host "[Invalid input. Please enter 1 for Light or 2 for Dark.]" -ForegroundColor Red -BackgroundColor Black
-                    SetAppsMode
-                }
-            }
-        }
-
-        SetAppsMode
-
         Function SetControlPanelLargeIcons {
             Write-Host `n"Setting Control Panel view to large icons..." -NoNewline
 
@@ -954,89 +1037,6 @@ Function SystemSettings {
         }
 
         DisableIPv6
-
-        Function SetDNS {
-            Function GetPingTime {
-                param (
-                    [string]$address
-                )
-
-                $pingOutput = ping $address -n 2 | Select-String "time=" | Select-Object -Last 1
-                if ($pingOutput) {
-                    $pingTime = [regex]::Match($pingOutput.ToString(), 'time=(\d+)ms').Groups[1].Value
-                    return $pingTime
-                }
-                else {
-                    return "N/A"
-                }
-            }
-
-            do {
-                Write-Host `n"Would you like to change your " -NoNewline
-                Write-Host "DNS setting?" -ForegroundColor Yellow -NoNewline
-                Write-Host " (y/n): " -ForegroundColor Green -NoNewline
-                $confirmation = Read-Host
-
-                $valid = $confirmation -match '^(?i:y|yes|n|no)$'
-                if (-not $valid) { Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black }
-            } until ($valid)
-
-            if ($confirmation -match '^(?i:n|no)$') {
-                Write-Host "DNS settings will not be changed."
-                return
-            }
-
-            Write-Host "MS values are being calculated..." -NoNewline
-
-            $cloudflareDNS = "1.1.1.1"
-            $googleDNS = "8.8.8.8"
-            $adguardDNS = "94.140.14.14"
-
-            $cloudflarePing = GetPingTime -address $cloudflareDNS
-            $googlePing = GetPingTime -address $googleDNS
-            $adguardPing = GetPingTime -address $adguardDNS
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            Write-Host "`nWhich DNS provider " -NoNewline
-            Write-Host "do you want to use?" -ForegroundColor Yellow -NoNewline
-            Write-Host " Write 1, 2 or 3."
-
-            do {
-                Write-Host `n"[1]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-                Write-Host " - Cloudflare " -NoNewline
-                Write-Host "[$cloudflarePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host "[2]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-                Write-Host " - Google " -NoNewline
-                Write-Host "[$googlePing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host "[3]" -NoNewline -BackgroundColor Black -ForegroundColor Yellow
-                Write-Host " - Adguard " -NoNewline
-                Write-Host "[$adguardPing" -ForegroundColor Yellow -BackgroundColor Black -NoNewline
-                Write-Host "ms]" -ForegroundColor Yellow -BackgroundColor Black
-
-                $choice = Read-Host -Prompt `n"[Choice]"
-                $validChoice = $choice -match '^[123]$'
-                if (-not $validChoice) { Write-Host "[Invalid input. Please enter 1, 2, or 3.]" -ForegroundColor Red -BackgroundColor Black }
-            } until ($validChoice)
-
-            $dnsServers = @()
-            switch ([int]$choice) {
-                1 { Write-Host `n"Setting Cloudflare DNS..." -NoNewline; $dnsServers = @("1.1.1.1", "1.0.0.1") }
-                2 { Write-Host `n"Setting Google DNS..."     -NoNewline; $dnsServers = @("8.8.8.8", "8.8.4.4") }
-                3 { Write-Host `n"Setting Adguard DNS..."    -NoNewline; $dnsServers = @("94.140.14.14", "94.140.15.15") }
-            }
-
-            try {
-                $interfaces = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -ExpandProperty ifIndex
-                Set-DnsClientServerAddress -InterfaceIndex $interfaces -ServerAddresses $dnsServers -ErrorAction Stop
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $($_.Exception.Message)" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        SetDNS
 
         Function Disable-Services {
             param (

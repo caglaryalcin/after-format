@@ -254,6 +254,7 @@ if ($mode -eq "developer") {
     $packagesToCheck = $jsonContent.Sources.Packages
 
     $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/dev-sys/choco-apps.config"
+    [xml]$chocoConfig = Invoke-RestMethod -Uri $chocoAppsConfigUrl
 }
 
 if ($mode -eq "gaming") {
@@ -262,6 +263,7 @@ if ($mode -eq "gaming") {
     $packagesToCheck = $jsonContent.Sources.Packages
 
     $chocoAppsConfigUrl = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/apps/gaming/choco-apps.config"
+    [xml]$chocoConfig = Invoke-RestMethod -Uri $chocoAppsConfigUrl
 }
 
 foreach ($pkg in $packagesToCheck) {
@@ -318,7 +320,7 @@ Function SafeTaskKill {
     }
 }
 
-if ($mode -eq "developer") {
+if ($mode -eq "developer" -or $mode -eq "normal") {
     SafeTaskKill "GithubDesktop.exe"
     SafeTaskKill "Cloudflare WARP.exe"
     SafeTaskKill "AnyDesk.exe"
