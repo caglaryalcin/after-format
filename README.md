@@ -1,6 +1,6 @@
 ![](https://badgen.net/github/license/caglaryalcin/after-format)
 
-![Alt Text](https://github.com/caglaryalcin/caglaryalcin/blob/main/main.gif)
+![Alt Text](https://raw.githubusercontent.com/caglaryalcin/caglaryalcin/refs/heads/main/main.gif)
 
 ## Description
 
