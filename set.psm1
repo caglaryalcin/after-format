@@ -87,41 +87,29 @@ Function SystemSettings {
             Write-Host "change the region settings to Turkiye?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
-        
+
             if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Setting date format of Turkiye..." -NoNewline
                 try {
                     Set-TimeZone -Name "Turkey Standard Time" -ErrorAction Stop
                     Set-Culture tr-TR -ErrorAction Stop
-                    Set-ItemProperty -Path "HKCU:\Control Panel\International" -name ShortDate -value "dd/MM/yyyy" -ErrorAction Stop
-        
-                    #sync time
-                    Set-Service -Name "W32Time" -StartupType Automatic -ErrorAction Stop
-                    
-                    Restart-Service W32Time *>$null
-                    if (-not $?) { throw "Failed to stop W32Time" }
-                    w32tm /resync /force *>$null
-                    if (-not $?) { throw "Failed to resync time" }
-                    w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:yes /update *>$null
-                    if (-not $?) { throw "Failed to configure time sync settings" }
+                    Set-ItemProperty -Path "HKCU:\Control Panel\International" -Name sShortDate -Value "dd/MM/yyyy" -ErrorAction Stop
 
-                    #set time sync to Cloudflare
-                    w32tm /config /manualpeerlist:"time.cloudflare.com" /syncfromflags:manual /reliable:yes /update *>$null
-                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    Set-Service -Name "W32Time" -StartupType Automatic -ErrorAction Stop
+                    w32tm /config /manualpeerlist:"time.cloudflare.com time.windows.com" /syncfromflags:manual /update *>$null
+
+                    $svc = Get-Service W32Time
+                    if ($svc.Status -eq 'Running') { Stop-Service W32Time -Force -ErrorAction Stop }
+                    Start-Service W32Time -ErrorAction Stop
+
+                    Start-Sleep -Seconds 2
+                    w32tm /resync /force *>$null
                 }
-                catch {
-                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                }
+                catch {}
             }
-            elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Turkish region format adjustment has been canceled]" -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-                TRFormats
-            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {}
+            else { TRFormats }
         }
-        
+
         TRFormats
 
         Function SetHostname {
