@@ -266,10 +266,11 @@ Installation and settings will be configured according to these modes.
 > [!NOTE]  
 > If you have 100 Mbps internet, this script takes the following amount of time depending on the modes.
 
-Normal: 15min
-Gaming: 30min
-Dev-Sys: 60min
+**Normal**: 15min
 
+**Gaming**: 30min
+
+**Dev-Sys**: 60min
 
 > [!IMPORTANT]  
 > Powershell must be run as admin
