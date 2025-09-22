@@ -8,6 +8,18 @@ If you new formatted your computer on Windows 11(all versions) you can run this 
 
 This script allows Windows 1x users to control data collection, privacy and security functions and does exactly the following; (Some are optional: <kbd>y/n</kbd>)
 
+<details><summary>Mode Select</summary>&nbsp;
+
+The script first asks you to select one of three modes:
+
+**Normal**, **Game**, and **Developer-Sys Eng** Mode.
+
+Installation and settings will be configured according to these modes.
+
+<img width="991" height="303" alt="image" src="https://github.com/user-attachments/assets/7c16420e-cb4e-4fe1-b49c-ab0f7a2876a8" />
+
+</details>
+
 <details><summary>System Settings</summary>&nbsp;
   
 ![image](https://github.com/user-attachments/assets/df445708-a6eb-4cc0-9a64-fd5983d0a502)
@@ -213,6 +225,8 @@ This script allows Windows 1x users to control data collection, privacy and secu
 - It asks if you want uninstall windows onedrive
 - It asks if you want uninstall windows edge
 
+![edge(1)](https://github.com/user-attachments/assets/3ee26ac9-7aeb-43cc-ae5a-567d730d1480)
+
 </details>
 
 <details><summary>Startup Script</summary>&nbsp;
@@ -250,7 +264,12 @@ This script allows Windows 1x users to control data collection, privacy and secu
 > Great care went into making sure this script does not unintentionally break any OS functionality, but use at your own risk!
 
 > [!NOTE]  
-> This script takes about 60 minutes with 100mbps internet.
+> If you have 100 Mbps internet, this script takes the following amount of time depending on the modes.
+
+Normal: 15min
+Gaming: 30min
+Dev-Sys: 60min
+
 
 > [!IMPORTANT]  
 > Powershell must be run as admin
