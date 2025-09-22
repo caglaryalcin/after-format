@@ -324,6 +324,7 @@ if ($mode -eq "developer" -or $mode -eq "normal") {
     SafeTaskKill "GithubDesktop.exe"
     SafeTaskKill "Cloudflare WARP.exe"
     SafeTaskKill "AnyDesk.exe"
+    SafeTaskKill "Powertoys.exe"
 }
 if ($mode -eq "gaming") {
     SafeTaskKill "steam.exe"
