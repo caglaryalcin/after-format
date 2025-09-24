@@ -431,6 +431,114 @@ Function SystemSettings {
         
         ImportStartup
 
+        Function NVCleanUpdateTask {
+            Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
+
+            try {
+                $nvcleanstall = "https://drive.usercontent.google.com/download?id=1BenAUmJ5HiaSfELsZnlWna2py2dWQHKb&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
+                $nvcleanpath = "C:\Program Files\NVCleanstall"
+        
+                New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
+                Silent
+                Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.19.0.exe" -ErrorAction Stop
+        
+                # Update task
+                $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.19.0.exe" -Argument "/check"
+                $description = "Check for new graphics card drivers"
+                $trigger1 = New-ScheduledTaskTrigger -AtLogon
+                $trigger2 = New-ScheduledTaskTrigger -Daily -At "10:00AM"
+                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
+                $taskname = "NVCleanstall"
+        
+                $settings = New-ScheduledTaskSettingsSet
+        
+                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger1, $trigger2 -Action $action -Principal $principal -Settings $settings -Description $description
+        
+                # Remove repetition for trigger1
+                $task.Triggers[0].Repetition = $null
+        
+                # Set repetition interval for trigger2
+                $task.Triggers[1].Repetition.Interval = "PT4H"
+        
+                $task | Set-ScheduledTask *>$null
+
+                # Nvidia Profile Inspector
+                $nvidiainspector = "https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/2.4.0.27/nvidiaProfileInspector.zip"
+                $nvidiazippath = "C:\nvidiaProfileInspector.zip"
+                $nvidiainspectorpath = "C:\Program Files\nvidiaProfileInspector"
+                $nvidiaconfigpath = "C:\Program Files\nvidiaProfileInspector\Base-Profile.nip"
+                $nvidiaconfigurl = "https://raw.githubusercontent.com/caglaryalcin/after-format/refs/heads/main/files/apps/gaming/taskbar.reg"
+
+                # Check if the Nvidia Profile Inspector folder exists
+                if (Test-Path -Path $nvidiainspectorpath -PathType Container) {
+                    Remove-Item -Path $nvidiainspectorpath -Recurse -Force *>$null
+                }
+        
+                function DownloadAndExtract {
+                    # Download the Nvidia Profile Inspector
+                    Invoke-WebRequest -Uri $nvidiainspector -Outfile $nvidiazippath
+
+                    # Create the folder for Nvidia Profile Inspector
+                    New-Item -Path $nvidiainspectorpath -ItemType Directory -Force *>$null
+
+                    # Extract the Nvidia Profile Inspector
+                    & 'C:\Program Files\7-Zip\7z.exe' x $nvidiazippath -o"$nvidiainspectorpath" *>$null
+
+                    # Clean up the zip file
+                    Remove-Item $nvidiazippath -ErrorAction SilentlyContinue
+                }
+                #
+                function ImportBaseProfile {
+                    # Download the base profile
+                    Invoke-WebRequest -Uri $nvidiaconfigurl -Outfile $nvidiaconfigpath
+
+                    # Import the base profile
+                    Set-Location $nvidiainspectorpath
+                    .\nvidiaProfileInspector.exe -silentImport .\Base-Profile.nip
+                    Start-Sleep 1
+                }
+                #
+                function KillNvidiaProfileInspector {
+                    # Kill the Nvidia Profile Inspector process if running
+                    taskkill.exe /f /im nvidiaProfileInspector.exe *>$null
+                }
+
+                # Download, extract, and import base profile
+                DownloadAndExtract
+                ImportBaseProfile
+
+                # Kill any running instance of Nvidia Profile Inspector
+                KillNvidiaProfileInspector
+                Set-Location "C:\"
+        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING]: $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        if ($mode -eq "gaming") {
+            NVCleanUpdateTask
+        }
+        elseif ($mode -eq "normal" -or $mode -eq "developer") {
+            Write-Host `n"Should Nvidia settings be optimized  " -NoNewline
+            Write-Host "for games?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(Nvcleanstall will be installed)" -ForegroundColor DarkCyan -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+            if ($response -match '^(?i:y|yes)$') {
+                NVCleanUpdateTask
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[Nvidia settings will not be configured.]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
+                & $MyInvocation.MyCommand.Path
+            }
+        }
+
         Function DisableSnap {
             Write-Host `n"Do you want to " -NoNewline
             Write-Host "disable the Snap windows feature?" -ForegroundColor Yellow -NoNewline
@@ -469,54 +577,6 @@ Function SystemSettings {
         }
         
         DisableSnap
-        Function NVCleanUpdateTask {
-            Write-Host "`nDo you want to " -NoNewline
-            Write-Host "install NVCleanstall and import the update task?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $response = Read-Host
-        
-            if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
-                $nvcleanstall = "https://drive.usercontent.google.com/download?id=1BenAUmJ5HiaSfELsZnlWna2py2dWQHKb&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
-                $nvcleanpath = "C:\Program Files\NVCleanstall"
-        
-                New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
-                Silent
-                Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.19.0.exe" -ErrorAction Stop
-        
-                # Update task
-                $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.19.0.exe" -Argument "/check"
-                $description = "Check for new graphics card drivers"
-                $trigger1 = New-ScheduledTaskTrigger -AtLogon
-                $trigger2 = New-ScheduledTaskTrigger -Daily -At "10:00AM"
-                $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
-                $taskname = "NVCleanstall"
-        
-                $settings = New-ScheduledTaskSettingsSet
-        
-                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger1, $trigger2 -Action $action -Principal $principal -Settings $settings -Description $description
-        
-                # Remove repetition for trigger1
-                $task.Triggers[0].Repetition = $null
-        
-                # Set repetition interval for trigger2
-                $task.Triggers[1].Repetition.Interval = "PT4H"
-        
-                $task | Set-ScheduledTask *>$null
-        
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[NVCleanstall installation and update task import will not be performed.]" -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
-                NVCleanUpdateTask
-            }
-        }
-        
-        NVCleanUpdateTask
-
         Function TerminalConfig {
             Write-Host "`nDo you want to " -NoNewline
             Write-Host "configure Windows Terminal config?" -ForegroundColor Yellow -NoNewline
