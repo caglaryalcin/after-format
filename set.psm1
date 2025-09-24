@@ -437,10 +437,13 @@ Function SystemSettings {
             try {
                 $nvcleanstall = "https://drive.usercontent.google.com/download?id=1BenAUmJ5HiaSfELsZnlWna2py2dWQHKb&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
                 $nvcleanpath = "C:\Program Files\NVCleanstall"
+                $nvcleansetupurl = "https://drive.usercontent.google.com/download?id=1Pq8wIPa1uYHf2hd-2K17qMwgduMIsbe8&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
         
                 New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
                 Silent
                 Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.19.0.exe" -ErrorAction Stop
+                Silent
+                Invoke-WebRequest -Uri $nvcleansetupurl -Outfile "$nvcleanpath\NVCleanstall_NVIDIA_581.29_x64_dch_Desktop_Setup.exe" -ErrorAction Stop
         
                 # Update task
                 $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.19.0.exe" -Argument "/check"
@@ -461,6 +464,11 @@ Function SystemSettings {
                 $task.Triggers[1].Repetition.Interval = "PT4H"
         
                 $task | Set-ScheduledTask *>$null
+
+                # Install NVIDIA
+                Start-Process -FilePath "$nvcleanpath\NVCleanstall_NVIDIA_581.29_x64_dch_Desktop_Setup.exe" -ArgumentList "-y" -Wait
+                Start-Sleep 2
+                Remove-Item -Path $nvcleanpath\NVCleanstall_NVIDIA_581.29_x64_dch_Desktop_Setup.exe -Recurse -Force *>$null
 
                 # Nvidia Profile Inspector
                 $nvidiainspector = "https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/2.4.0.27/nvidiaProfileInspector.zip"
