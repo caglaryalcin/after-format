@@ -415,7 +415,7 @@ Function SystemSettings {
 
                 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr '$link' -UseB | iex`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
-                $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
+                $description = "[$mode] - You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "startup"
                 $delay = "PT5M" # 5 minutes delay
