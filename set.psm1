@@ -403,7 +403,17 @@ Function SystemSettings {
                 Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description *>$null
 
                 #startup
-                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr 'https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/Shells.psm1' -UseB | iex`""
+                if ($mode -eq "normal") {
+                    $link = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/normal.psm1"
+                }
+                elseif ($mode -eq "gaming") {
+                    $link = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/gaming.psm1"
+                }
+                elseif ($mode -eq "developer") {
+                    $link = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/dev-sys.psm1"
+                }
+
+                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr '$link' -UseB | iex`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
@@ -3974,6 +3984,7 @@ Function GithubSoftwares {
 
                         Get-AppxPackage *CoPilot* -AllUsers | Remove-AppPackage -AllUsers
                         Get-AppxProvisionedPackage -Online | where-object { $_.PackageName -like "*Copilot*" } | Remove-AppxProvisionedPackage -online
+                        Get-AppxPackage *Copilot* | Remove-AppxPackage -AllUsers
         
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
                     }
