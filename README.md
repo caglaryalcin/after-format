@@ -233,21 +233,17 @@ Installation and settings will be configured according to these modes.
 
 ![image](https://github.com/user-attachments/assets/b2cc1a6e-7354-4f0b-a572-6a181bcd2a43)
 
-> [!TIP]
-> This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
+- This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
 
-> [!IMPORTANT]  
 > startup task > This task starts 3 minutes after the computer is turned on, runs again every 3 hours and performs the following operations.
 
-- Time zone is set to Turkey
-- Language bar is set to appear in the taskbar
 - It does expand for file explorer ribbon
 - It does removing stick keys
 - f12 is disabled for snipping tool
 - It does remove toggle keys
 - It does remove unnecessary tasks(update and such) in task scheduler
 - It does remove windows defender icon in taskbar
-- Disables unnecessary applications that open on connection
+- Disables unnecessary applications that open on connection (It varies depending on the mode selected at the beginning)
 - It does remove microsoft edge updates in task scheduler
 - It does remove google chrome updates in task scheduler
 - It does enable shot desktop button
