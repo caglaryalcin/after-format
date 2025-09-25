@@ -1,8 +1,8 @@
-![](https://badgen.net/github/license/caglaryalcin/after-format)
-
 ![Alt Text](https://raw.githubusercontent.com/caglaryalcin/caglaryalcin/refs/heads/main/main.gif)
 
-## Description
+## After Format
+
+![LATEST RELEASE](https://img.shields.io/github/v/release/caglaryalcin/after-format?label=LATEST%20RELEASE&labelColor=4d4d4d&color=red)  ![](https://badgen.net/github/license/caglaryalcin/after-format)
 
 If you new formatted your computer on Windows 11(all versions) you can run this script. 
 
