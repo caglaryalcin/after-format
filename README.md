@@ -95,6 +95,7 @@ Installation and settings will be configured according to these modes.
 - Hiding multitaskview icon from taskbar
 - Showing small icons in taskbar
 - Hiding taskbar search
+- Hiding 'All' section from taskbar
 - Removing chat from taskbar
 - Removing widgets from taskbar
 - Enabling telnet client (Only Dev/Sys-Eng and Normal mode)

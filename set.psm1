@@ -1844,8 +1844,9 @@ Function SystemSettings {
         DisableRecentFiles
 
         Function TaskbarSettings {
-            Write-Host "Disabling Search for App in Store for Unknown Extensions..." -NoNewline
+            Write-Host "Taskbar settings are being configured..." -NoNewline
             $taskbarregPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+            $allSectionPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
         
             try {
                 If (!(Test-Path $taskbarregPath)) {
@@ -1873,6 +1874,9 @@ Function SystemSettings {
                 # Add Phone link to the Start Menu
                 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Force *>$null
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Type DWord -Value 1
+
+                # Hide 'All Section' in the Start Menu
+                Set-ItemProperty -Path $allSectionPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuMorePrograms" -Type DWord -Value 1
 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
