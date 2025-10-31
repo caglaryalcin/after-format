@@ -132,7 +132,7 @@ Function InstallSoftwares {
     }
 
     # Once all installations are done, stop the background job
-    if ($mode -eq "normal") {
+    if ($mode -eq "developer" -or $mode -eq "normal") {
         if ($job) { Stop-Job -Job $job; Remove-Job -Job $job }
 
         $deadline = (Get-Date).AddSeconds(30)
