@@ -467,6 +467,11 @@ if ($mode -eq "normal" -or $mode -eq "developer") {
     }
 }
 
+if ($mode -eq "developer") {
+    setx /M PATH "$($env:PATH);C:\Program Files\OpenSSL-Win64\bin"
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v PATH /t REG_EXPAND_SZ /d "$($env:PATH);C:\Program Files\OpenSSL-Win64\bin" /f
+}
+
 ##########
 #region Remove Unused Apps/Softwares
 ##########

@@ -42,7 +42,8 @@
         {"PackageIdentifier": "Microsoft.EdgeWebView2Runtime"},
         {"PackageIdentifier": "Microsoft.DotNet.DesktopRuntime.8"},
         {"PackageIdentifier": "Malwarebytes.Malwarebytes"},
-        {"PackageIdentifier": "JanDeDobbeleer.OhMyPosh"}
+        {"PackageIdentifier": "JanDeDobbeleer.OhMyPosh"},
+        {"PackageIdentifier": "ShiningLight.OpenSSL.Dev"}
       ]
     }
   ]
