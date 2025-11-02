@@ -39,7 +39,8 @@
         {"PackageIdentifier": ["runtime"]},
         {"PackageIdentifier": ["dotnet"]},
         {"PackageIdentifier": ["Malwarebytes"]},
-        {"PackageIdentifier": ["OhMyPosh"]}
+        {"PackageIdentifier": ["OhMyPosh"]},
+        {"PackageIdentifier": ["powershell"]}
       ]
     }
   ]

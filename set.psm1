@@ -445,9 +445,9 @@ Function SystemSettings {
             Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
 
             try {
-                $nvcleanstall = "https://drive.usercontent.google.com/download?id=1HBOY8ALsqe3W4_YaluoVs4y227dMTbSD&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
+                $nvcleansetupurl = "https://drive.usercontent.google.com/download?id=1HBOY8ALsqe3W4_YaluoVs4y227dMTbSD&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
                 $nvcleanpath = "C:\Program Files\NVCleanstall"
-                $nvcleansetupurl = "https://drive.usercontent.google.com/download?id=1BenAUmJ5HiaSfELsZnlWna2py2dWQHKb&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
+                $nvcleanstall = "https://drive.usercontent.google.com/download?id=1BenAUmJ5HiaSfELsZnlWna2py2dWQHKb&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
                 New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
                 Silent
                 Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.19.0.exe" -ErrorAction Stop
@@ -1875,7 +1875,7 @@ Function SystemSettings {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Type DWord -Value 1
 
                 # Hide 'All Section' in the Start Menu
-                Set-ItemProperty -Path $allSectionPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuMorePrograms" -Type DWord -Value 1
+                Set-ItemProperty -Path $allSectionPath -Name "NoStartMenuMorePrograms" -Type DWord -Value 1
 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }

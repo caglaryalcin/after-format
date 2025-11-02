@@ -43,7 +43,8 @@
         {"PackageIdentifier": "Microsoft.DotNet.DesktopRuntime.8"},
         {"PackageIdentifier": "Malwarebytes.Malwarebytes"},
         {"PackageIdentifier": "JanDeDobbeleer.OhMyPosh"},
-        {"PackageIdentifier": "ShiningLight.OpenSSL.Dev"}
+        {"PackageIdentifier": "ShiningLight.OpenSSL.Dev"},
+        {"PackageIdentifier": "Microsoft.PowerShell"}
       ]
     }
   ]
