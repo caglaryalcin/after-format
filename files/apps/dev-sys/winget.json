@@ -12,7 +12,7 @@
         {"PackageIdentifier": "EpicGames.EpicGamesLauncher"},
         {"PackageIdentifier": "CPUID.HWMonitor"},
         {"PackageIdentifier": "CrystalDewWorld.CrystalDiskInfo"},
-        {"PackageIdentifier": "AnyDeskSoftwareGmbH.AnyDesk"},
+        {"PackageIdentifier": "AnyDesk.AnyDesk"},
         {"PackageIdentifier": "Ookla.Speedtest.CLI"},
         {"PackageIdentifier": "JAMSoftware.TreeSize.Free"},
         {"PackageIdentifier": "Ghisler.TotalCommander"},
@@ -38,7 +38,7 @@
           "PackageIdentifier": "GitHub.GitHubDesktop",
           "InstallerType": "exe"
         },
-        {"PackageIdentifier": "dbeaver.dbeaver"},
+        {"PackageIdentifier": "DBeaver.DBeaver.Community"},
         {"PackageIdentifier": "Microsoft.EdgeWebView2Runtime"},
         {"PackageIdentifier": "Microsoft.DotNet.DesktopRuntime.8"},
         {"PackageIdentifier": "Malwarebytes.Malwarebytes"},

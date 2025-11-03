@@ -475,9 +475,9 @@ Function SystemSettings {
                 $task | Set-ScheduledTask *>$null
 
                 # Install NVIDIA
-                Start-Process -FilePath "$nvcleanpath\NVCleanstall_NVIDIA_581.29_x64_dch_Desktop_Setup.exe" -ArgumentList "-y" -Wait
+                Start-Process -FilePath "$nvcleanpath\NVCleanstall_NVIDIA_581.57_x64_dch_Desktop_Setup.exe" -ArgumentList "-y" -Wait
                 Start-Sleep 2
-                Remove-Item -Path $nvcleanpath\NVCleanstall_NVIDIA_581.29_x64_dch_Desktop_Setup.exe -Recurse -Force *>$null
+                Remove-Item -Path $nvcleanpath\NVCleanstall_NVIDIA_581.57_x64_dch_Desktop_Setup.exe -Recurse -Force *>$null
 
                 # Nvidia Profile Inspector
                 $nvidiainspector = "https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/2.4.0.27/nvidiaProfileInspector.zip"

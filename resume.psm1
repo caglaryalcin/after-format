@@ -457,6 +457,9 @@ if ($mode -eq "normal" -or $mode -eq "developer") {
         Write-Host "Reinstalling Microsoft Edge WebView2 Runtime..." -NoNewline
         Silent
         winget install Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements --force *>$null
+        Invoke-WebRequest -Uri "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/bfbbeee6-130c-46b7-bf66-6b8eab0e894d/MicrosoftEdgeWebview2Setup.exe" -OutFile "$env:USERPROFILE\Desktop\WebView2Runtime.exe" -UseBasicParsing
+        Start-Process -FilePath "$env:USERPROFILE\Desktop\WebView2Runtime.exe" -ArgumentList "/silent", "/install" -Wait
+        Remove-Item -Path "$env:USERPROFILE\Desktop\WebView2Runtime.exe" -Force
         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
     }
     catch {
