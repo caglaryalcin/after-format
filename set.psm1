@@ -2745,13 +2745,13 @@ Function PrivacySettings {
             Write-Host "Stopping and Disabling Connected User Experiences and Telemetry Service..." -NoNewline
         
             try {
-                $diagservice = Get-Service "DiagTrack" -ErrorAction Stop
-        
-                if ($diagservice.Status -eq 'Running') {
-                    Stop-Service "DiagTrack" -Force -ErrorAction Stop
+                $diagservice = Get-Service "DiagTrack" -ErrorAction SilentlyContinue
+
+                if ($diagservice -and $diagservice.Status -eq 'Running') {
+                    Stop-Service "DiagTrack" -Force -WarningAction SilentlyContinue -ErrorAction SilentlyContinue *> $null
                 }
-        
-                Set-Service "DiagTrack" -StartupType Disabled -ErrorAction Stop
+		
+                Set-Service "DiagTrack" -StartupType Disabled -ErrorAction SilentlyContinue *> $null
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -3299,6 +3299,7 @@ Function GithubSoftwares {
                 $wtCommand = "-w 0 new-tab $psCommand"
                 $action = New-ScheduledTaskAction -Execute $wtPath -Argument $wtCommand
                 $trigger = New-ScheduledTaskTrigger -AtLogon
+                $trigger.Delay = 'PT15S'
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "softwares"
                 $description = "temp task"
@@ -4497,6 +4498,7 @@ Please relaunch this script under a regular admin account." -Level Critical -Exi
         Function DisableTask {
             Write-Host "Disabling upgrade-packages task..."
             Disable-ScheduledTask -TaskName "upgrade-packages" *>$null
+            Disable-ScheduledTask -TaskName "startup" *>$null
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 

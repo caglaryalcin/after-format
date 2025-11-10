@@ -1660,6 +1660,7 @@ if ($mode -eq "gaming") {
 Function EnableTask {
     Write-Host "Enabling upgrade-packages task..."
     Enable-ScheduledTask -TaskName "upgrade-packages" *>$null
+    Enable-ScheduledTask -TaskName "startup" *>$null
     Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
 }
 
