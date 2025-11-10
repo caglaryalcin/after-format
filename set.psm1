@@ -2113,6 +2113,20 @@ Function SystemSettings {
         }
 
         RemoveTaskbarChat
+		
+		# Hide Taskbar Remove Widgets from the Taskbar
+		Function RemoveTaskbarWidgets {
+        Write-Host "Removing Widgets from Taskbar..." -NoNewline
+        try {
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0 -Force
+        }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+		}
+
+		RemoveTaskbarWidgets
 
         Function TurnOffSuggestedContent {
             Write-Host "Turning off suggested content in Settings..." -NoNewline
