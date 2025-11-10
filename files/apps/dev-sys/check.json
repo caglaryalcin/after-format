@@ -41,7 +41,7 @@
         {"PackageIdentifier": ["Malwarebytes"]},
         {"PackageIdentifier": ["OhMyPosh"]},
         {"PackageIdentifier": ["powershell"]},
-        {"PackageIdentifier": ["iperf"]}
+        {"PackageIdentifier": ["iperf3"]}
       ]
     }
   ]
