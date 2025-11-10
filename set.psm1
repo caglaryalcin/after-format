@@ -2114,19 +2114,29 @@ Function SystemSettings {
 
         RemoveTaskbarChat
 		
-		# Hide Taskbar Remove Widgets from the Taskbar
-		Function RemoveTaskbarWidgets {
-        Write-Host "Removing Widgets from Taskbar..." -NoNewline
-        try {
-            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0 -Force
-        }
-        catch {
-            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-        }
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-		}
+        # Hide Taskbar Remove Widgets from the Taskbar
+        Function RemoveTaskbarWidgets {
+            Write-Host "Removing Widgets from Taskbar..." -NoNewline
+            try {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0 -Force
+                $explorer = Get-WmiObject -Class Win32_Process -Filter "name='explorer.exe'"
+                if ($explorer) {
+                    $sid = ($explorer | Select-Object -First 1).GetOwnerSid().Sid
+                    $path = "Registry::HKEY_USERS\$sid\Software\Microsoft\Windows\CurrentVersion\Explorer"
+                    if (-not (Test-Path $path)) { New-Item -Path $path | Out-Null }
+                    $path = "$path\Advanced"
+                    if (-not (Test-Path $path)) { New-Item -Path $path -Force | Out-Null }
+                    New-ItemProperty -Path $path -Name "TaskbarDa" -PropertyType DWord -Value 0 -Force *>$null
+                }
 
-		RemoveTaskbarWidgets
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        RemoveTaskbarWidgets
 
         Function TurnOffSuggestedContent {
             Write-Host "Turning off suggested content in Settings..." -NoNewline
@@ -4483,6 +4493,14 @@ Please relaunch this script under a regular admin account." -Level Critical -Exi
         }
 
         UnusedApps
+
+        Function DisableTask {
+            Write-Host "Disabling upgrade-packages task..."
+            Disable-ScheduledTask -TaskName "upgrade-packages" *>$null
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        DisableTask
 
         ##########
         #endregion Remove Unused Apps/Softwares

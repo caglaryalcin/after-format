@@ -44,7 +44,8 @@
         {"PackageIdentifier": "Malwarebytes.Malwarebytes"},
         {"PackageIdentifier": "JanDeDobbeleer.OhMyPosh"},
         {"PackageIdentifier": "ShiningLight.OpenSSL.Dev"},
-        {"PackageIdentifier": "Microsoft.PowerShell"}
+        {"PackageIdentifier": "Microsoft.PowerShell"},
+        {"PackageIdentifier": "ar51an.iPerf3 3.19.1"}
       ]
     }
   ]

@@ -1657,6 +1657,14 @@ if ($mode -eq "gaming") {
     TaskbarPins
 }
 
+Function EnableTask {
+    Write-Host "Enabling upgrade-packages task..."
+    Enable-ScheduledTask -TaskName "upgrade-packages" *>$null
+    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+}
+
+EnableTask
+
 ##########
 #endregion Remove Unused Apps/Softwares
 ##########

@@ -40,7 +40,8 @@
         {"PackageIdentifier": ["dotnet"]},
         {"PackageIdentifier": ["Malwarebytes"]},
         {"PackageIdentifier": ["OhMyPosh"]},
-        {"PackageIdentifier": ["powershell"]}
+        {"PackageIdentifier": ["powershell"]},
+        {"PackageIdentifier": ["iperf"]}
       ]
     }
   ]
