@@ -1990,6 +1990,24 @@ Function SystemSettings {
         
         RemoveShortcutName
 
+        Function Bugfix {
+            Write-Host "Microsoft's known bugs are being fixed..." -NoNewline
+            try {
+
+            foreach($k in 1318466191,4188347533,4027031693){
+            reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledState /t REG_DWORD /d 2 /f
+            reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledStateOptions /t REG_DWORD /d 0 /f
+            
+            }
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        Bugfix
+
         ##########
         #region Taskbar Settings
         ##########
