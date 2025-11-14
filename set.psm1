@@ -1990,15 +1990,30 @@ Function SystemSettings {
         
         RemoveShortcutName
 
+        Function MappedDrives {
+            Write-Host "Mapped Drives Available in the Elevated Command Prompt Are Being Enabled..." -NoNewline
+
+            try {
+                reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLinkedConnections /t REG_DWORD /d 1 /f
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        MappedDrives
+
         Function Bugfix {
             Write-Host "Microsoft's known bugs are being fixed..." -NoNewline
             try {
 
-            foreach($k in 1318466191,4188347533,4027031693){
-            reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledState /t REG_DWORD /d 2 /f
-            reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledStateOptions /t REG_DWORD /d 0 /f
+                foreach ($k in 1318466191, 4188347533, 4027031693) {
+                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledState /t REG_DWORD /d 2 /f
+                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledStateOptions /t REG_DWORD /d 0 /f
             
-            }
+                }
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
