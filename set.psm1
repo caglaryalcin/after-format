@@ -3392,6 +3392,7 @@ Function GithubSoftwares {
                     "Microsoft.XboxGameOverlay", #In-game overlay for Xbox features and social interactions.
                     "Microsoft.XboxIdentityProvider", #Service for Xbox account authentication.
                     "Microsoft.XboxSpeechToTextOverlay" #Speech-to-text services for Xbox gaming.
+                    "Microsoft.M365Companions" #A companion app that connects Microsoft 365 services, offering quick access to recommendations, tips, cross-device features, and productivity tools integrated into Windows.
         
                     $installedApps = Get-AppxPackage -AllUsers
             
