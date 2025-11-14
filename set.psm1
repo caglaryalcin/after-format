@@ -161,6 +161,44 @@ Function SystemSettings {
         
         WinActivation
 
+        Function Set-WindowsUpdatePause {
+            Write-Host "`nWould you like to " -NoNewLine
+            Write-Host "extend the delay period for Windows updates?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
+
+            switch -Regex ($response) {
+                '^(n|no)$' {
+                    Write-Host "[The function to delay Windows updates has been disabled.]" -ForegroundColor Red -BackgroundColor Black
+                    return
+                }
+
+                '^(y|yes)$' {
+                    while ($true) {
+                        $days = Read-Host "How many days should it be postponed?"
+
+                        if ($days -match '^\d+$') {
+                            reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v FlightSettingsMaxPauseDays /t REG_DWORD /d $days /f > $null
+
+                            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+                            break
+                        }
+
+                        Write-Host "[Invalid number. Please enter a numeric value.]" -ForegroundColor Red -BackgroundColor Black
+                    }
+                    return
+                }
+
+
+                default {
+                    Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
+                    Set-WindowsUpdatePause
+                }
+            }
+        }
+
+        Set-WindowsUpdatePause
+
         Function DisableDefender {
             Write-Host `n"Do you want " -NoNewline
             Write-Host "disable Windows Defender?" -ForegroundColor Yellow -NoNewline
@@ -2254,18 +2292,36 @@ Function SystemSettings {
         }
         
         EnableEndTaskButton
-        
-        Function UnpinEverything {
-            Param(
-                [string]$RemoveUnpin
-            )
-        
+
+        Function HideCategoryView {
+            Write-Host "Disabling Category View on the taskbar..." -NoNewline
+
             try {
-                Write-Host "Unpin all taskbar pins..." -NoNewline
+                if (Get-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "HideCategoryView" -ErrorAction SilentlyContinue) {
+                    Remove-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "HideCategoryView"
+                }
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideCategoryView" -Value 1
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        HideCategoryView
+    }
         
-                Function getExplorerVerb {
-                    Param([string]$verb)
-                    $getstring = @'
+    Function UnpinEverything {
+        Param(
+            [string]$RemoveUnpin
+        )
+        
+        try {
+            Write-Host "Unpin all taskbar pins..." -NoNewline
+        
+            Function getExplorerVerb {
+                Param([string]$verb)
+                $getstring = @'
                     [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
                     public static extern IntPtr GetModuleHandle(string lpModuleName);
                     
@@ -2279,48 +2335,46 @@ Function SystemSettings {
                         return sb.ToString();
                     }
 '@
-                    $getstring = Add-Type $getstring -PassThru -Name GetStr -Using System.Text
+                $getstring = Add-Type $getstring -PassThru -Name GetStr -Using System.Text
         
-                    if ($verb -eq "PinToTaskbar") { $getstring[0]::GetString(5386) }  # String: Pin to Taskbar
-                    if ($verb -eq "UnpinFromTaskbar") { $getstring[0]::GetString(5387) }  # String: Unpin from taskbar
-                    if ($verb -eq "PinToStart") { $getstring[0]::GetString(51201) } # String: Pin to start
-                    if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
+                if ($verb -eq "PinToTaskbar") { $getstring[0]::GetString(5386) }  # String: Pin to Taskbar
+                if ($verb -eq "UnpinFromTaskbar") { $getstring[0]::GetString(5387) }  # String: Unpin from taskbar
+                if ($verb -eq "PinToStart") { $getstring[0]::GetString(51201) } # String: Pin to start
+                if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
+            }
+        
+            Function ConfigureTaskbarPinningApp {
+                Param([string]$RemoveUnpin, [string]$Verb)
+                $myProcessName = Get-Process | Where-Object { $_.ID -eq $pid } | ForEach-Object { $_.ProcessName }
+                if (-not ($myProcessName -like "explorer")) {
+                    return
                 }
-        
-                Function ConfigureTaskbarPinningApp {
-                    Param([string]$RemoveUnpin, [string]$Verb)
-                    $myProcessName = Get-Process | Where-Object { $_.ID -eq $pid } | ForEach-Object { $_.ProcessName }
-                    if (-not ($myProcessName -like "explorer")) {
-                        return
-                    }
         
                     
-                }
-        
-                ConfigureTaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
-        
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
+        
+            ConfigureTaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
+        
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
         }
+        catch {
+            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+        }
+    }
         
-        UnpinEverything -RemoveUnpin ""
+    UnpinEverything -RemoveUnpin ""
         
-        ##########
-        #endregion Taskbar Settings
-        ##########
+    ##########
+    #endregion Taskbar Settings
+    ##########
 
-    }
-    elseif ($response -eq 'n' -or $response -eq 'N') {
-        Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
-    }
-    else {
-        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-        SystemSettings
-    }
-
+}
+elseif ($response -eq 'n' -or $response -eq 'N') {
+    Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
+}
+else {
+    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+    SystemSettings
 }
 
 SystemSettings

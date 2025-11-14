@@ -27,6 +27,11 @@ Installation and settings will be configured according to these modes.
 - It asks if you want region change to turkey
 - It asks if you want change your hostname
 - It asks if you want activating your Windows (Thanks to @massgravel for the script https://github.com/massgravel/Microsoft-Activation-Scripts)
+
+- It asks whether you want to delay Windows updates for longer than the default period
+
+<img width="1016" height="692" alt="image" src="https://github.com/user-attachments/assets/cbd63641-ae29-4df8-ab51-77e5493016b8" />
+
 - It asks if you want disable windows defender
 - It asks if you want date format and keyboard layout
 - It asks you to select all folder views in the explorer as 'Details' and set the separator settings as shown by the arrows in the picture
@@ -107,6 +112,7 @@ Installation and settings will be configured according to these modes.
 - Setting password never expires for local admins
 - Disabling Account Notifications
 - Setting End task button
+- Disabling Category View on the taskbar
 - Disabling Location Notifications
 - Enabling Sudo (Only Dev/Sys-Eng and Normal mode)
 - Removing shortcut name
