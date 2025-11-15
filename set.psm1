@@ -162,7 +162,7 @@ Function SystemSettings {
         WinActivation
 
         Function Set-WindowsUpdatePause {
-            Write-Host "`nWould you like to " -NoNewLine
+            Write-Host `n"Would you like to " -NoNewLine
             Write-Host "extend the delay period for Windows updates?" -ForegroundColor Yellow -NoNewline
             Write-Host "(y/n): " -ForegroundColor Green -NoNewline
             $response = Read-Host
@@ -2032,7 +2032,7 @@ Function SystemSettings {
             Write-Host "Mapped Drives Available in the Elevated Command Prompt Are Being Enabled..." -NoNewline
 
             try {
-                reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLinkedConnections /t REG_DWORD /d 1 /f
+                reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLinkedConnections /t REG_DWORD /d 1 /f *> $null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -2048,8 +2048,8 @@ Function SystemSettings {
             try {
 
                 foreach ($k in 1318466191, 4188347533, 4027031693) {
-                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledState /t REG_DWORD /d 2 /f
-                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledStateOptions /t REG_DWORD /d 0 /f
+                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledState /t REG_DWORD /d 2 /f *> $null
+                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledStateOptions /t REG_DWORD /d 0 /f *> $null
             
                 }
             }
@@ -3460,7 +3460,7 @@ Function GithubSoftwares {
                     "Microsoft.XboxApp", #Main app for Xbox social and gaming features.
                     "Microsoft.XboxGameOverlay", #In-game overlay for Xbox features and social interactions.
                     "Microsoft.XboxIdentityProvider", #Service for Xbox account authentication.
-                    "Microsoft.XboxSpeechToTextOverlay" #Speech-to-text services for Xbox gaming.
+                    "Microsoft.XboxSpeechToTextOverlay", #Speech-to-text services for Xbox gaming.
                     "Microsoft.M365Companions" #A companion app that connects Microsoft 365 services, offering quick access to recommendations, tips, cross-device features, and productivity tools integrated into Windows.
         
                     $installedApps = Get-AppxPackage -AllUsers
