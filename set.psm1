@@ -2059,8 +2059,47 @@ Function SystemSettings {
                     "C:\Program Files\HandBrake\HandBrake.exe"
                 )
 
+                $games = @(
+                    "C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\cs2.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\bin\win64\dota2.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64\TslGame.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\ARC Raiders\ARC.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Delta Force\deltaforce.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\WhereWindsMeet\wwm.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Battlefield 6\bf6.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Apex Legends\r5apex.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\wallpaper_engine\wallpaper32.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\BongoCat\bongo.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Banana\banana.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Rust\RustClient.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\EscapeFromDuckov\duckov.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\NARAKA BLADEPOINT\Win64\NarakaBladepoint.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Warframe\Warframe.x64.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\GTA5.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Stardew Valley.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Team Fortress 2\hl2.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\War Thunder\launcher.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Path of Exile\PathOfExile.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Source SDK Base 2007\hl2.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\FishIdle2\fishidle2.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Call of Duty\cod.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V Enhanced\GTA5_enhanced.exe",
+                    "C:\Program Files (x86)\Steam\steamapps\common\Football Manager 2026\fm.exe",
+                    "C:\Riot Games\VALORANT\live\VALORANT.exe",
+                    "C:\Riot Games\League of Legends\LeagueClient.exe",
+                    "C:\Program Files\Epic Games\Fortnite\FortniteGame\Binaries\Win64\FortniteClient-Win64-Shipping.exe",
+                    "C:\Program Files (x86)\Overwatch\Overwatch.exe",
+                    "C:\Program Files (x86)\Call of Duty\cod.exe"
+                )
+
+                if ($mode -eq "developer" -or $mode -eq "gaming") {
+                    foreach ($game in $games) {
+                        Set-ItemProperty -Path $reg -Name $game -Value "GpuPreference=2;" *> $null
+                    }
+                }
+
                 foreach ($app in $apps) {
-                    Set-ItemProperty -Path $reg -Name $app -Value "GpuPreference=2;" *> $null
+                    Set-ItemProperty -Path $reg -Name $app -Value "SwapEffectUpgradeEnable=0;GpuPreference=2;" *> $null
                 }
 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2070,9 +2109,7 @@ Function SystemSettings {
             }
         }
 
-        if ($mode -eq "developer") {
         GPUacceleration
-        }
 
         Function Bugfix {
             Write-Host "Microsoft's known bugs are being fixed..." -NoNewline
