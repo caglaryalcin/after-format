@@ -517,7 +517,7 @@ Function SystemSettings {
                 $nvidiazippath = "C:\nvidiaProfileInspector.zip"
                 $nvidiainspectorpath = "C:\Program Files\nvidiaProfileInspector"
                 $nvidiaconfigpath = "C:\Program Files\nvidiaProfileInspector\Base-Profile.nip"
-                $nvidiaconfigurl = "https://raw.githubusercontent.com/caglaryalcin/after-format/refs/heads/main/files/apps/gaming/taskbar.reg"
+                $nvidiaconfigurl = "https://raw.githubusercontent.com/caglaryalcin/after-format/refs/heads/main/files/apps/gaming/Base-Profile.nip"
 
                 # Check if the Nvidia Profile Inspector folder exists
                 if (Test-Path -Path $nvidiainspectorpath -PathType Container) {
