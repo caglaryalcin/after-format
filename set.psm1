@@ -209,11 +209,6 @@ Function SystemSettings {
                 Write-Host "Disabling Windows Defender..." -NoNewline
         
                 try {
-                    # Disable Defender Cloud
-                    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")) {
-                        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Force *>$null
-                    }
-        
                     # Remove existing policies
                     Remove-Item -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Recurse -ErrorAction SilentlyContinue
         
@@ -534,7 +529,9 @@ Function SystemSettings {
                     Invoke-WebRequest -Uri $nvidiainspector -Outfile $nvidiazippath
 
                     # Create the folder for Nvidia Profile Inspector
-                    New-Item -Path $nvidiainspectorpath -ItemType Directory -Force *>$null
+                    if (-not (Test-Path $nvidiainspectorpath)) {
+                        New-Item -Path $nvidiainspectorpath -ItemType Directory -Force *>$null
+                    }
 
                     # Extract the Nvidia Profile Inspector
                     & 'C:\Program Files\7-Zip\7z.exe' x $nvidiazippath -o"$nvidiainspectorpath" *>$null
@@ -668,7 +665,9 @@ Function SystemSettings {
         Function DisableGallery {
             try {
                 Write-Host "Disabling gallery folder..." -NoNewline
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
+                if (-not (Test-Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}")) {
+                    New-Item -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -ItemType Key *>$null
+                }
                 New-itemproperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value "0" -PropertyType Dword *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -1909,7 +1908,9 @@ Function SystemSettings {
                 Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedSection" -Type DWord -Value 1
     
                 # Add Phone link to the Start Menu
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Force *>$null
+                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *>$null
+                }
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Type DWord -Value 1
 
                 # Hide 'All Section' in the Start Menu
@@ -2017,7 +2018,9 @@ Function SystemSettings {
             Write-Host "Removing Shortcut Name..." -NoNewline
             try {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "link" -Value ([byte[]](0, 0, 0, 0)) *> $null
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *> $null
+                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *> $null
+                }
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "ShortcutNameTemplate" -Value "ShortcutNameTemplate" *> $null
             }
             catch {
@@ -2042,6 +2045,34 @@ Function SystemSettings {
         }
 
         MappedDrives
+
+        Function GPUacceleration {
+            Write-Host "Some applications have their GPU mode set to 'performance'..." -NoNewline
+            try {
+                $reg = "HKCU:\Software\Microsoft\DirectX\UserGpuPreferences"
+                if (-not (Test-Path $reg)) { New-Item -Path $reg -Force | Out-Null }
+
+                $apps = @(
+                    "C:\Program Files\VideoLAN\VLC\vlc.exe",
+                    "C:\Program Files (x86)\K-Lite Codec Pack\MPC-HC64\mpc-hc64.exe",
+                    "C:\Program Files\Mozilla Firefox\firefox.exe",
+                    "C:\Program Files\HandBrake\HandBrake.exe"
+                )
+
+                foreach ($app in $apps) {
+                    Set-ItemProperty -Path $reg -Name $app -Value "GpuPreference=2;" *> $null
+                }
+
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        if ($mode -eq "developer") {
+        GPUacceleration
+        }
 
         Function Bugfix {
             Write-Host "Microsoft's known bugs are being fixed..." -NoNewline
@@ -2235,7 +2266,11 @@ Function SystemSettings {
         Function TaskbarAlwaysCombine {
             try {
                 Write-Host "Taskbar Always Combine..." -NoNewline
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue *>$null
+                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *> $null
+                }
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue
+
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -2261,7 +2296,11 @@ Function SystemSettings {
         Function EnableShowDesktop {
             try {
                 Write-Host "Enabling Show Desktop Button..." -NoNewline
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarSd" -Value 1 -ErrorAction SilentlyContinue *>$null
+                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *> $null
+                }
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "TaskbarSd" -Value 1 -PropertyType DWord -Force *> $null
+
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -3604,7 +3643,9 @@ Function GithubSoftwares {
                     }
                     
                     # homepath additional settings
-                    New-Item -Path $homePath2 -Force *>$null
+                    if (-not (Test-Path $homePath2)) {
+                        New-Item -Path $homePath2 -Force *> $null
+                    }
                     Set-ItemProperty -Path $homePath2 -Name "(Default)" -Value "CLSID_MSGraphHomeFolder"
                     Set-ItemProperty -Path $homePath2 -Name "HiddenByDefault" -Value 1 -Type DWord
             
@@ -3917,12 +3958,16 @@ Function GithubSoftwares {
                         }
 
                         # Add to "Boot to UEFI Firmware Settings"
-                        New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware" -Force | Out-Null
+                        if (-not (Test-Path "HKCR:\DesktopBackground\Shell\Firmware")) {
+                            New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware" -Force | Out-Null
+                        }
                         Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "Icon" -Value "bootux.dll,-1016"
                         Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "MUIVerb" -Value "Boot to UEFI Firmware Settings"
                         Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware" -Name "Position" -Value "Top"
                     
-                        New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware\command" -Force | Out-Null
+                        if (-not (Test-Path "HKCR:\DesktopBackground\Shell\Firmware\command")) {
+                            New-Item -Path "HKCR:\DesktopBackground\Shell\Firmware\command" -Force | Out-Null
+                        }
                         Set-ItemProperty -Path "HKCR:\DesktopBackground\Shell\Firmware\command" -Name "(default)" -Value "powershell -windowstyle hidden -command \"Start-Process cmd -ArgumentList '/s,/c,shutdown /r /fw' -Verb runAs\""
 
                         # Add blocked keys
@@ -4461,7 +4506,9 @@ Function GithubSoftwares {
                                 $edgeAppXKey = (Get-Item -Path $pattern -EA 0).PSChildName
                                 if (Test-Path "$pattern") { reg delete "HKLM$appxStore\InboxApplications\$edgeAppXKey" /f 2>$null | Out-Null }
 
-                                New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force -EA 0 | Out-Null
+                                if (-not (Test-Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe")) {
+                                    New-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force -EA 0 | Out-Null
+                                }
                                 Get-AppxPackage -Name Microsoft.MicrosoftEdge -EA 0 | Remove-AppxPackage -EA 0 | Out-Null
                                 Remove-Item -Path "HKLM:$appxStore\EndOfLife\$SID\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" -Force -EA 0 | Out-Null
                             }
