@@ -763,10 +763,10 @@ Function SystemSettings {
                 Set-ItemProperty -Path $Key2 -Name "ColInfo" -Value $byteArray2 -Type Binary -ErrorAction SilentlyContinue
     
                 # Remove ShareX from context menu
-                reg delete "HKEY_CLASSES_ROOT\*\shell\ShareX" /f *> $null
+                reg delete "HKEY_CLASSES_ROOT\*\shell\ShareX" /f *>$null
     
                 # Restart Explorer
-                taskkill /f /im explorer.exe *> $null
+                taskkill /f /im explorer.exe *>$null
                 Start-Process "explorer.exe" -NoNewWindow
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -2017,11 +2017,11 @@ Function SystemSettings {
         Function RemoveShortcutName {
             Write-Host "Removing Shortcut Name..." -NoNewline
             try {
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "link" -Value ([byte[]](0, 0, 0, 0)) *> $null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "link" -Value ([byte[]](0, 0, 0, 0)) *>$null
                 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *> $null
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *>$null
                 }
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "ShortcutNameTemplate" -Value "ShortcutNameTemplate" *> $null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "ShortcutNameTemplate" -Value "ShortcutNameTemplate" *>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -2035,7 +2035,7 @@ Function SystemSettings {
             Write-Host "Mapped Drives Available in the Elevated Command Prompt Are Being Enabled..." -NoNewline
 
             try {
-                reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLinkedConnections /t REG_DWORD /d 1 /f *> $null
+                reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLinkedConnections /t REG_DWORD /d 1 /f *>$null
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -2094,12 +2094,12 @@ Function SystemSettings {
 
                 if ($mode -eq "developer" -or $mode -eq "gaming") {
                     foreach ($game in $games) {
-                        Set-ItemProperty -Path $reg -Name $game -Value "GpuPreference=2;" *> $null
+                        Set-ItemProperty -Path $reg -Name $game -Value "GpuPreference=2;" *>$null
                     }
                 }
 
                 foreach ($app in $apps) {
-                    Set-ItemProperty -Path $reg -Name $app -Value "SwapEffectUpgradeEnable=0;GpuPreference=2;" *> $null
+                    Set-ItemProperty -Path $reg -Name $app -Value "SwapEffectUpgradeEnable=0;GpuPreference=2;" *>$null
                 }
 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -2116,8 +2116,8 @@ Function SystemSettings {
             try {
 
                 foreach ($k in 1318466191, 4188347533, 4027031693) {
-                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledState /t REG_DWORD /d 2 /f *> $null
-                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledStateOptions /t REG_DWORD /d 0 /f *> $null
+                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledState /t REG_DWORD /d 2 /f *>$null
+                    reg add "HKLM\SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\14\$k" /v EnabledStateOptions /t REG_DWORD /d 0 /f *>$null
             
                 }
             }
@@ -2304,7 +2304,7 @@ Function SystemSettings {
             try {
                 Write-Host "Taskbar Always Combine..." -NoNewline
                 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *> $null
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *>$null
                 }
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "TaskbarGlomLevel" -Value 0 -ErrorAction SilentlyContinue
 
@@ -2334,9 +2334,9 @@ Function SystemSettings {
             try {
                 Write-Host "Enabling Show Desktop Button..." -NoNewline
                 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *> $null
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *>$null
                 }
-                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "TaskbarSd" -Value 1 -PropertyType DWord -Force *> $null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Name "TaskbarSd" -Value 1 -PropertyType DWord -Force *>$null
 
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -2385,6 +2385,21 @@ Function SystemSettings {
         }
 
         HideCategoryView
+
+        Function EnableWSL {
+            Write-Host "Enabling Windows Subsystem Linux..." -NoNewline
+            try {
+                wsl --install *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+    }
+
+    if ($mode -eq 'normal' -or $mode -eq 'developer') {
+        EnableWSL
     }
         
     Function UnpinEverything {
@@ -2911,10 +2926,10 @@ Function PrivacySettings {
                 $diagservice = Get-Service "DiagTrack" -ErrorAction SilentlyContinue
 
                 if ($diagservice -and $diagservice.Status -eq 'Running') {
-                    Stop-Service "DiagTrack" -Force -WarningAction SilentlyContinue -ErrorAction SilentlyContinue *> $null
+                    Stop-Service "DiagTrack" -Force -WarningAction SilentlyContinue -ErrorAction SilentlyContinue *>$null
                 }
 		
-                Set-Service "DiagTrack" -StartupType Disabled -ErrorAction SilentlyContinue *> $null
+                Set-Service "DiagTrack" -StartupType Disabled -ErrorAction SilentlyContinue *>$null
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
@@ -3681,7 +3696,7 @@ Function GithubSoftwares {
                     
                     # homepath additional settings
                     if (-not (Test-Path $homePath2)) {
-                        New-Item -Path $homePath2 -Force *> $null
+                        New-Item -Path $homePath2 -Force *>$null
                     }
                     Set-ItemProperty -Path $homePath2 -Name "(Default)" -Value "CLSID_MSGraphHomeFolder"
                     Set-ItemProperty -Path $homePath2 -Name "HiddenByDefault" -Value 1 -Type DWord

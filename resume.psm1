@@ -414,9 +414,18 @@ if ($mode -eq "developer") {
 
 }
 
+Function RestartWSL {
+    Write-Host "Installing Ubuntu on WSL..." -NoNewline
+    wsl --install -d Ubuntu
+}
+
+if ($mode -eq 'developer') {
+    RestartWSL
+}
+
 # Malwarebytes trial reset
 Function MalwarebytesReset {
-    Write-Host "Adding task for Malwarebytes trial version reset..." -NoNewline
+    Write-Host `n"Adding task for Malwarebytes trial version reset..." -NoNewline
 
     $taskName = "Malwarebytes-Reset"
     $taskPath = "\"
