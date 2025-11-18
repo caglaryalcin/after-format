@@ -414,6 +414,39 @@ if ($mode -eq "developer") {
 
 }
 
+Function VSCodeBug {
+    Write-Host "The VSCode 'unins000.exe' bug is being fixed..."
+    try {
+        $paths = @(
+            "$env:LOCALAPPDATA\Programs\Microsoft VS Code\",
+            "C:\Program Files\Microsoft VS Code\",
+            "C:\ProgramData\chocolatey\lib\vscode\"
+        )
+
+        $username = "$env:COMPUTERNAME\$env:USERNAME"
+        $newAccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($username, "FullControl", 3, "None", "Allow")
+
+        foreach ($folder in $paths) {
+            if (Test-Path $folder) {
+                $acl = Get-ACL $folder
+                $acl.AddAccessRule($newAccessRule)
+                Set-ACL $folder -AclObject $acl
+            }
+        }
+
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+    }
+    catch {
+        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+    }
+}
+
+if ($mode -eq 'developer') {
+    VSCodeBug
+}
+
+        
 Function RestartWSL {
     Write-Host "Installing Ubuntu on WSL..." -NoNewline
     wsl --install -d Ubuntu
