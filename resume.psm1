@@ -415,7 +415,7 @@ if ($mode -eq "developer") {
 }
 
 Function VSCodeBug {
-    Write-Host "The VSCode 'unins000.exe' bug is being fixed..."
+    Write-Host "The VSCode 'unins000.exe' bug is being fixed..." -NoNewline
     try {
         $paths = @(
             "$env:LOCALAPPDATA\Programs\Microsoft VS Code\",
