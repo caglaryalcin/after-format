@@ -165,7 +165,7 @@ Installation and settings will be configured according to these modes.
 
 ![image](https://github.com/user-attachments/assets/048bf752-293e-474e-944d-f15fe9dcecb6)
 
-> 💡It asks if you want to install the following softwares or not. If an error is received while loading packets with chocolatey, it will try to load them with winget.
+> 💡The following packages will be installed based on the answer you provide at the beginning of the script (normal, gaming, or developer).
 
 ![image](https://github.com/user-attachments/assets/88b71d2a-3e78-4ecf-aeb8-df98f7952a3d)
 
@@ -176,7 +176,6 @@ Installation and settings will be configured according to these modes.
 - Epic Games
 - HWMonitor
 - CrystalDisk Info
-- VMware Workstation
 - VirtualBox
 - Signal
 - VSCode (with extensions)
@@ -204,6 +203,7 @@ Installation and settings will be configured according to these modes.
 - Twinkle Tray
 - Codec Pack Mega
 - Malwarebytes
+- ClaudeCode
 - Internet Download Manager
 - Cloudflare Warp
 - OpenRGB
