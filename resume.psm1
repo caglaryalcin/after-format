@@ -515,6 +515,30 @@ if ($mode -eq "developer") {
     reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v PATH /t REG_EXPAND_SZ /d "$($env:PATH);C:\Program Files\OpenSSL-Win64\bin" /f
 }
 
+Function InstallClaude {
+    try {
+        Write-Host "Installing Claude Code..." -NoNewline
+        irm https://claude.ai/install.ps1 | iex *>$null
+
+        $claudetarget = "$HOME\.local\bin"
+        if (-not ($env:Path -split ";" | Where-Object { $_ -eq $claudetarget })) {
+            [Environment]::SetEnvironmentVariable(
+                "Path",
+                $env:Path + ";" + $claudetarget,
+                "User"
+            )
+        }
+        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+    }
+    catch {
+        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+    }
+}
+
+if ($mode -eq "developer") {
+    InstallClaude
+}
+
 ##########
 #region Remove Unused Apps/Softwares
 ##########

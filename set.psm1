@@ -1281,7 +1281,8 @@ Function SystemSettings {
                     "LaunchTo"                     = 1; # 1 'This PC' #2 'Quick Access'
                     "HideFileExt"                  = 0; # Show known file extensions
                     "NavPaneExpandToCurrentFolder" = 0; # expand all folders
-                    "NavPaneShowAllFolders"        = 0 # show all folders
+                    "NavPaneShowAllFolders"        = 0; # show all folders
+                    "ShouldPrelaunchFileExplorer"  = 1  # preloading
                 };
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"                    = @{
                     "ShowFrequent"                = 0; # Hide frequently used folders in quick access
