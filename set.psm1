@@ -2397,6 +2397,21 @@ Function SystemSettings {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
+
+        Function TaskManager {
+            try {
+                Write-Host "Enabling launch folder Windows in a separate" -NoNewLine
+                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force *>$null
+                }
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SeparateProcess" -Value 1 *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        TaskManager
     }
 
     if ($mode -eq 'normal' -or $mode -eq 'developer') {
