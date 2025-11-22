@@ -113,6 +113,8 @@ Installation and settings will be configured according to these modes.
 - Disabling Account Notifications
 - Setting End task button
 - Disabling Category View on the taskbar
+- Enabling WSL
+- Enabling launch folder Windows in a separate
 - Disabling Location Notifications
 - Enabling Sudo (Only Dev/Sys-Eng and Normal mode)
 - Removing shortcut name

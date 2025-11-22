@@ -2400,7 +2400,7 @@ Function SystemSettings {
 
         Function TaskManager {
             try {
-                Write-Host "Enabling launch folder Windows in a separate" -NoNewLine
+                Write-Host "Enabling launch folder Windows in a separate..." -NoNewLine
                 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
                     New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force *>$null
                 }
