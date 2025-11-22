@@ -24,7 +24,7 @@ Installation and settings will be configured according to these modes.
   
 ![image](https://github.com/user-attachments/assets/df445708-a6eb-4cc0-9a64-fd5983d0a502)
   
-- It asks if you want region change to turkey
+- It asks if you want region change to Turkiye
 - It asks if you want change your hostname
 - It asks if you want activating your Windows (Thanks to @massgravel for the script https://github.com/massgravel/Microsoft-Activation-Scripts)
 
@@ -118,6 +118,9 @@ Installation and settings will be configured according to these modes.
 - Disabling Location Notifications
 - Enabling Sudo (Only Dev/Sys-Eng and Normal mode)
 - Removing shortcut name
+- Mapped Drives Available in the Elevated Command Prompt Are Being Enabled
+- Some applications have their GPU mode set to 'performance'
+- Known Windows errors are fixed
 
 ![image](https://github.com/user-attachments/assets/5d44a918-bf3f-49df-a27a-105b461a07e3)
 
