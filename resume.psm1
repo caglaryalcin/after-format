@@ -515,6 +515,45 @@ if ($mode -eq "developer") {
     reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v PATH /t REG_EXPAND_SZ /d "$($env:PATH);C:\Program Files\OpenSSL-Win64\bin" /f
 }
 
+Function npmConf {
+        $nodePath = (Get-Command node -ErrorAction SilentlyContinue).Source
+        if ($nodePath) {
+            $nodeDir = Split-Path $nodePath
+    
+            $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    
+            if ($currentPath -notlike "*$nodeDir*") {
+                [Environment]::SetEnvironmentVariable(
+                    "Path",
+                    "$currentPath;$nodeDir",
+                    "User"
+                )
+            }
+        }
+        else {
+            $possiblePaths = @(
+                "$env:ProgramFiles\nodejs",
+                "$env:ProgramFiles(x86)\nodejs",
+                "$env:APPDATA\npm"
+            )
+    
+            foreach ($path in $possiblePaths) {
+                if (Test-Path $path) {
+                    $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
+                    [Environment]::SetEnvironmentVariable(
+                        "Path",
+                        "$currentPath;$path",
+                        "User"
+                    )
+                }
+            }
+        }
+    }
+
+    if ($mode -eq "developer") {
+    npmConf
+    }
+
 Function InstallClaude {
     try {
         Write-Host "Installing Claude Code..." -NoNewline
