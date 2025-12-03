@@ -114,6 +114,7 @@ Installation and settings will be configured according to these modes.
 - Setting End task button
 - Disabling Category View on the taskbar
 - Enabling WSL
+- Memory compression is enabled or disabled based on the amount of RAM
 - Enabling launch folder Windows in a separate
 - Disabling Location Notifications
 - Enabling Sudo (Only Dev/Sys-Eng and Normal mode)
