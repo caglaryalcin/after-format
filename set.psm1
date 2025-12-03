@@ -475,18 +475,17 @@ Function SystemSettings {
         ImportStartup
 
         Function NVCleanUpdateTask {
-            Write-Host "Importing and installing NVCleanstall Update task in Task Scheduler..." -NoNewline
+            Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
 
             try {
-                $nvcleanstalldriverurl = "https://drive.usercontent.google.com/download?id=11pYS7fOHN3a3ocIZesDHGb3FlBZKu-ih&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
+                $nvcleansetupurl = "https://drive.usercontent.google.com/download?id=1HBOY8ALsqe3W4_YaluoVs4y227dMTbSD&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
                 $nvcleanpath = "C:\Program Files\NVCleanstall"
-                $nvcleanstall = "https://drive.usercontent.google.com/download?id=1iPf-XtcE8Hgu2k-D7TvRSqQRxgaF5_MK&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
-
+                $nvcleanstall = "https://drive.usercontent.google.com/download?id=1BenAUmJ5HiaSfELsZnlWna2py2dWQHKb&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
                 New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
                 Silent
                 Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.19.0.exe" -ErrorAction Stop
                 Silent
-                Invoke-WebRequest -Uri $nvcleanstalldriverurl -Outfile "$nvcleanpath\NVCleanstall_NVIDIA_581.94_x64_dch_Desktop_Setup.exe" -ErrorAction Stop
+                Invoke-WebRequest -Uri $nvcleansetupurl -Outfile "$nvcleanpath\NVCleanstall_NVIDIA_581.57_x64_dch_Desktop_Setup.exe" -ErrorAction Stop
         
                 # Update task
                 $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.19.0.exe" -Argument "/check"
@@ -509,9 +508,9 @@ Function SystemSettings {
                 $task | Set-ScheduledTask *>$null
 
                 # Install NVIDIA
-                Start-Process -FilePath "$nvcleanpath\NVCleanstall_NVIDIA_581.94_x64_dch_Desktop_Setup.exe" -ArgumentList "-y" -Wait
+                Start-Process -FilePath "$nvcleanpath\NVCleanstall_NVIDIA_581.57_x64_dch_Desktop_Setup.exe" -ArgumentList "-y" -Wait
                 Start-Sleep 2
-                Remove-Item -Path $nvcleanpath\NVCleanstall_NVIDIA_581.94_x64_dch_Desktop_Setup.exe -Recurse -Force *>$null
+                Remove-Item -Path $nvcleanpath\NVCleanstall_NVIDIA_581.57_x64_dch_Desktop_Setup.exe -Recurse -Force *>$null
 
                 # Nvidia Profile Inspector
                 $nvidiainspector = "https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/2.4.0.27/nvidiaProfileInspector.zip"
@@ -1282,8 +1281,7 @@ Function SystemSettings {
                     "LaunchTo"                     = 1; # 1 'This PC' #2 'Quick Access'
                     "HideFileExt"                  = 0; # Show known file extensions
                     "NavPaneExpandToCurrentFolder" = 0; # expand all folders
-                    "NavPaneShowAllFolders"        = 0; # show all folders
-                    "ShouldPrelaunchFileExplorer"  = 1  # preloading
+                    "NavPaneShowAllFolders"        = 0 # show all folders
                 };
                 "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"                    = @{
                     "ShowFrequent"                = 0; # Hide frequently used folders in quick access
@@ -2399,25 +2397,22 @@ Function SystemSettings {
             }
         }
 
-        Function TaskManager {
-            try {
-                Write-Host "Enabling launch folder Windows in a separate..." -NoNewLine
-                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force *>$null
-                }
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SeparateProcess" -Value 1 *>$null
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        if ($mode -eq 'normal' -or $mode -eq 'developer') {
+            EnableWSL
+        }
+
+        Function MemCompress {
+            $totalRAM = (Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB
+    
+            if ($totalRAM -le 16) {
+                Enable-MMAgent -mc
             }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            else {
+                Disable-MMAgent -mc
             }
         }
 
-        TaskManager
-    }
-
-    if ($mode -eq 'normal' -or $mode -eq 'developer') {
-        EnableWSL
+        MemCompress
     }
         
     Function UnpinEverything {
