@@ -4743,8 +4743,22 @@ Please relaunch this script under a regular admin account." -Level Critical -Exi
                     Write-Host `n"Removing Windows 11 Recall..." -NoNewline
                     try {
                         Silent
+                        Disable-WindowsOptionalFeature -Online -FeatureName "Recall" -Remove
                         DISM /Online /Disable-Feature /FeatureName:"Recall"​ *>$null
-                        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
+                        $AIPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI"
+
+                        if (-not (Test-Path $AIPath)) {
+                            New-Item -Path $AIPath -Force *>$null
+                        }
+
+                        try {
+                            Set-ItemProperty -Path $AIPath -Name "AllowRecallEnablement" -Value 0
+                            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                        }
+                        catch {
+                            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                        }
                     }
                     catch {
                         Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
