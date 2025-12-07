@@ -218,6 +218,7 @@ Installation and settings will be configured according to these modes.
 - NVCleanstall
 - Rufus
 - Regshot
+- Yarn
 
 </details>
 
