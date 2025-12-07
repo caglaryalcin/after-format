@@ -45,7 +45,8 @@
         {"PackageIdentifier": "JanDeDobbeleer.OhMyPosh"},
         {"PackageIdentifier": "ShiningLight.OpenSSL.Dev"},
         {"PackageIdentifier": "Microsoft.PowerShell"},
-        {"PackageIdentifier": "ar51an.iPerf3"}
+        {"PackageIdentifier": "ar51an.iPerf3"},
+        {"PackageIdentifier": "Yarn.Yarn"}
       ]
     }
   ]
