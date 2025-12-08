@@ -4220,16 +4220,16 @@ Function GithubSoftwares {
         
                 RemoveTasks
 
-                # Disable Copilot
-                Function DisableCopilot {
+                Function DisableMicrosoftAI {
                     Write-Host `n"Do you want " -NoNewline
-                    Write-Host "to disable Microsoft Copilot?" -ForegroundColor Yellow -NoNewline
+                    Write-Host "to disable Microsoft AI?" -ForegroundColor Yellow -NoNewline
                     Write-Host "(y/n): " -ForegroundColor Green -NoNewline
                     $response = Read-Host
         
                     if ($response -eq 'y' -or $response -eq 'Y') {
-                        Write-Host "Disabling Microsoft Copilot..." -NoNewline
-                
+                        Write-Host "Disabling Microsoft AI..." -NoNewline
+                        
+                        #Copilot
                         $copilotregPath = "HKCU:\Software\Policies\Microsoft\Windows"
                         $registryName = "WindowsCopilot"
                         $registryProperty = "TurnOffWindowsCopilot"
@@ -4247,8 +4247,7 @@ Function GithubSoftwares {
                         }
                 
                         New-ItemProperty -Path $edgeRegistryPath -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
-        
-                        # Remove Copilot button from File Explorer
+
                         Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCopilotButton" -Value 0 -Force *>$null
                 
                         $lmRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows"
@@ -4266,18 +4265,149 @@ Function GithubSoftwares {
                 
                         Set-ItemProperty -Path $wowRegistryPath\$registryName -Name $registryProperty -Value 1 -Force *>$null
 
-                        $currentSID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-                        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null
-                        If (-not (Test-Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows\WindowsCopilot")) {
-                            New-Item -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows" -Name "WindowsCopilot" -Force *>$null
-                        }
-                        Set-ItemProperty -Path "HKU:\$currentSID\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Value 1
+                        $LMCU = @('HKLM', 'HKCU')
 
-                        Get-AppxPackage *CoPilot* -AllUsers | Remove-AppPackage -AllUsers
-                        Get-AppxProvisionedPackage -Online | where-object { $_.PackageName -like "*Copilot*" } | Remove-AppxProvisionedPackage -online
-                        Get-AppxPackage *Copilot* | Remove-AppxPackage -AllUsers
-        
+                        $keys = @(
+                            @{rkey = $LMCU; Path = "SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot"; Name = "TurnOffWindowsCopilot"; Type = "DWORD"; Value = 1 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Policies\Microsoft\Windows\WindowsAI"; Name = "DisableAIDataAnalysis"; Type = "DWORD"; Value = 1 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Policies\Microsoft\Windows\WindowsAI"; Name = "AllowRecallEnablement"; Type = "DWORD"; Value = 0 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Policies\Microsoft\Windows\WindowsAI"; Name = "DisableClickToDo"; Type = "DWORD"; Value = 1 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Policies\Microsoft\Windows\WindowsAI"; Name = "TurnOffSavingSnapshots"; Type = "DWORD"; Value = 1 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Policies\Microsoft\Windows\WindowsAI"; Name = "DisableSettingsAgent"; Type = "DWORD"; Value = 1 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Microsoft\Windows\Shell\Copilot\BingChat"; Name = "IsUserEligible"; Type = "DWORD"; Value = 0 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Microsoft\Windows\Shell\Copilot"; Name = "IsCopilotAvailable"; Type = "DWORD"; Value = 0 },
+                            @{rkey = $LMCU; Path = "SOFTWARE\Microsoft\Windows\Shell\Copilot"; Name = "CopilotDisabledReason"; Type = "String"; Value = 'FeatureIsDisabled' },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone\Microsoft.Copilot_8wekyb3d8bbwe"; Name = "Value"; Type = "String"; Value = 'Deny' },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps"; Name = "AgentActivationEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"; Name = "ShowCopilotButton"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\input\Settings"; Name = "InsightsEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\Shell\ClickToDo"; Name = "DisableClickToDo"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKCU'; Path = "SOFTWARE\Policies\Microsoft\Windows\Explorer"; Name = "DisableSearchBoxSuggestions"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "CopilotCDPPageContext"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "CopilotPageContext"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "HubsSidebarEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "EdgeEntraCopilotPageContext"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "Microsoft365CopilotChatIconEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "EdgeHistoryAISearchEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "ComposeInlineEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "GenAILocalFoundationalModelSettings"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "BuiltInAIAPIsEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "AIGenThemesEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "DevToolsGenAiSettings"; Type = "DWORD"; Value = 2 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Edge"; Name = "ShareBrowsingHistoryWithCopilotSearchAllowed"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\office\16.0\common\ai\training\general"; Name = "disabletraining"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\office\16.0\common\ai\training\specific\adaptivefloatie"; Name = "disabletrainingofadaptivefloatie"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings"; Name = "AutoOpenCopilotLargeScreens"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\generativeAI"; Name = "Value"; Type = "String"; Value = 'Deny' },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\systemAIModels"; Name = "Value"; Type = "String"; Value = 'Deny' },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Windows\AppPrivacy"; Name = "LetAppsAccessGenerativeAI"; Type = "DWORD"; Value = 2 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Policies\Microsoft\Windows\AppPrivacy"; Name = "LetAppsAccessSystemAIModels"; Type = "DWORD"; Value = 2 },
+                            @{rkey = 'HKCU'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsCopilot"; Name = "AllowCopilotRuntime"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband\AuxilliaryPins"; Name = "CopilotPWAPin"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband\AuxilliaryPins"; Name = "RecallPin"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\1853569164"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\4098520719"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\929719951"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\1546588812"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\203105932"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\2381287564"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\3189581453"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\3552646797"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\3389499533"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\4027803789"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\ControlSet001\Control\FeatureManagement\Overrides\8\450471565"; Name = "EnabledState"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"; Name = "TaskbarCompanion"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\Shell\BrandedKey"; Name = "BrandedKeyChoiceType"; Type = "String"; Value = 'NoneSelected' },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\CurrentVersion\SettingSync\WindowsSettingHandlers"; Name = "A9HomeContentEnabled"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\InputPersonalization"; Name = "RestrictImplicitInkCollection"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\InputPersonalization"; Name = "RestrictImplicitTextCollection"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\InputPersonalization\TrainedDataStore"; Name = "HarvestContacts"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKCU'; Path = "Software\Microsoft\Windows\CurrentVersion\CPSS\Store\InkingAndTypingPersonalization"; Name = "Value"; Type = "DWORD"; Value = 0 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint"; Name = "DisableImageCreator"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint"; Name = "DisableCocreator"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint"; Name = "DisableGenerativeFill"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint"; Name = "DisableGenerativeErase"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint"; Name = "DisableRemoveBackground"; Type = "DWORD"; Value = 1 },
+                            @{rkey = 'HKLM'; Path = "SYSTEM\CurrentControlSet\Services\WSAIFabricSvc"; Name = "Start"; Type = "DWORD"; Value = 4 }
+                        )
+
+                        $createdPaths = @{}
+                        foreach ($key in $keys) {
+                            $rkeys = if ($key.rkey -is [array]) { $key.rkey } else { @($key.rkey) }
+
+                            foreach ($rk in $rkeys) {
+                                $fullPath = "$rk`:\$($key.Path)"
+
+                                if (-not $createdPaths.ContainsKey($fullPath)) {
+                                    if (-not (Test-Path $fullPath)) {
+                                        New-Item -Path $fullPath -Force *>$null
+                                    }
+                                    $createdPaths[$fullPath] = $true
+                                }
+
+                                Set-ItemProperty -Path $fullPath -Name $key.Name -Value $key.Value -Type $key.Type -Force *>$null
+                            }
+                        }
+
+                        Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\Shell\Copilot" -Name "CopilotLogonTelemetryTime" -Force -ErrorAction SilentlyContinue
+
+                        $aipackages = @(
+                            '*Copilot*'
+                            'MicrosoftWindows.Client.AIX'
+                            'MicrosoftWindows.Client.CoPilot'
+                            'Microsoft.Windows.Ai.Copilot.Provider'
+                            'Microsoft.Copilot'
+                            'Microsoft.MicrosoftOfficeHub'
+                            'Microsoft.Edge.GameAssist'
+                            'Microsoft.Office.ActionsServer'
+                            'aimgr'
+                            'Microsoft.WritingAssistant'
+                            'MicrosoftWindows.*.Voiess'
+                            'MicrosoftWindows.*.Speion'
+                            'MicrosoftWindows.*.Livtop'
+                            'MicrosoftWindows.*.InpApp'
+                            'WindowsWorkload.Data.Analysis.Stx.*'
+                            'WindowsWorkload.Manager.*'
+                            'WindowsWorkload.PSOnnxRuntime.Stx.*'
+                            'WindowsWorkload.PSTokenizer.Stx.*'
+                            'WindowsWorkload.QueryBlockList.*'
+                            'WindowsWorkload.QueryProcessor.Data.*'
+                            'WindowsWorkload.QueryProcessor.Stx.*'
+                            'WindowsWorkload.SemanticText.Data.*'
+                            'WindowsWorkload.SemanticText.Stx.*'
+                            'WindowsWorkload.Data.ContentExtraction.Stx.*'
+                            'WindowsWorkload.ScrRegDetection.Data.*'
+                            'WindowsWorkload.ScrRegDetection.Stx.*'
+                            'WindowsWorkload.TextRecognition.Stx.*'
+                            'WindowsWorkload.Data.ImageSearch.Stx.*'
+                            'WindowsWorkload.ImageContentModeration.*'
+                            'WindowsWorkload.ImageContentModeration.Data.*'
+                            'WindowsWorkload.ImageSearch.Data.*'
+                            'WindowsWorkload.ImageSearch.Stx.*'
+                            'WindowsWorkload.ImageTextSearch.Data.*'
+                            'WindowsWorkload.PSTokenizerShared.Data.*'
+                            'WindowsWorkload.PSTokenizerShared.Stx.*'
+                        )
+
+                        $provisionedPackages = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+
+                        foreach ($package in $aipackages) {
+                            Get-AppxPackage -Name $package -AllUsers -ErrorAction SilentlyContinue | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+                            $provisionedPackages | Where-Object { $_.PackageName -like $package } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+                        }
+
+                        Silent
+                        Disable-WindowsOptionalFeature -Online -FeatureName "Recall" -Remove -NoRestart *>$null
+                        DISM /Online /Disable-Feature /FeatureName:"Recall" /NoRestart *>$null
+
+                        $AIPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI"
+
+                        if (-not (Test-Path $AIPath)) {
+                            New-Item -Path $AIPath -Force *>$null
+                        }
+                        Set-ItemProperty -Path $AIPath -Name "AllowRecallEnablement" -Value 0
                         Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+
                     }
                     elseif ($response -eq 'n' -or $response -eq 'N') {
                         Write-Host "[Copilot will not be disabled]" -ForegroundColor Red -BackgroundColor Black
@@ -4288,7 +4418,7 @@ Function GithubSoftwares {
                     }
                 }
         
-                DisableCopilot
+                DisableMicrosoftAI
 
                 # Uninstall OneDrive
                 Function UninstallOneDrive {
@@ -4733,34 +4863,6 @@ Please relaunch this script under a regular admin account." -Level Critical -Exi
                 }
 
                 Removelnks
-
-                Function RemoveRecall {
-                    Write-Host `n"Removing Windows 11 Recall..." -NoNewline
-                    try {
-                        Silent
-                        Disable-WindowsOptionalFeature -Online -FeatureName "Recall" -Remove
-                        DISM /Online /Disable-Feature /FeatureName:"Recall"​ *>$null
-
-                        $AIPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI"
-
-                        if (-not (Test-Path $AIPath)) {
-                            New-Item -Path $AIPath -Force *>$null
-                        }
-
-                        try {
-                            Set-ItemProperty -Path $AIPath -Name "AllowRecallEnablement" -Value 0
-                            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-                        }
-                        catch {
-                            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                        }
-                    }
-                    catch {
-                        Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-                    }
-                }
-
-                RemoveRecall
                 
             }
             elseif ($response -eq 'n' -or $response -eq 'N') {
