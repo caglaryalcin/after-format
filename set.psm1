@@ -2111,6 +2111,21 @@ Function SystemSettings {
 
         GPUacceleration
 
+        Function RestartAppsBack {
+            Write-Host "Disabling 'Automatically save my restartable apps and restart them when I sign back in'..." -NoNewline
+            try {
+                if (-not (Test-Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon")) {
+                    New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Force *>$null
+                }
+                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "RestartApps" -Value "0" *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        RestartAppsBack
+
         Function Bugfix {
             Write-Host "Microsoft's known bugs are being fixed..." -NoNewline
             try {
@@ -2413,6 +2428,21 @@ Function SystemSettings {
         }
 
         MemCompress
+
+        Function RunOldDialog {
+            Write-Host "Disabling new run dialog window..." -NoNewline
+            try {
+                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Force *>$null
+                }
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Name "Run" -Value "0" *>$null
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            } catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        RunOldDialog
     }
         
     Function UnpinEverything {
