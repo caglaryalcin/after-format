@@ -17,7 +17,9 @@
         {"PackageIdentifier": "Blizzard.BattleNet"},
         {"PackageIdentifier": "ElectronicArts.EADesktop"},
         {"PackageIdentifier": "Google.PlayGames.Beta"},
-        {"PackageIdentifier": "Ubisoft.Connect"}
+        {"PackageIdentifier": "Ubisoft.Connect"},
+        {"PackageIdentifier": "FACEITLTD.FACEITClient"},
+        {"PackageIdentifier": "FACEITLTD.FACEITAC"}
       ]
     }
   ]

@@ -16,7 +16,8 @@
         {"PackageIdentifier": ["Blizzard"]},
         {"PackageIdentifier": ["ea"]},
         {"PackageIdentifier": ["PlayGames"]},
-        {"PackageIdentifier": ["Ubisoft"]}
+        {"PackageIdentifier": ["Ubisoft"]},
+        {"PackageIdentifier": ["Faceit"]}
       ]
     }
   ]
