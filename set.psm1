@@ -2119,7 +2119,8 @@ Function SystemSettings {
                 }
                 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "RestartApps" -Value "0" *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
@@ -2404,7 +2405,7 @@ Function SystemSettings {
         Function EnableWSL {
             Write-Host "Enabling Windows Subsystem Linux..." -NoNewline
             try {
-                wsl --install *>$null
+                wsl --install --no-launch *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
@@ -2437,7 +2438,8 @@ Function SystemSettings {
                 }
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Name "Run" -Value "0" *>$null
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            } catch {
+            }
+            catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
@@ -4259,41 +4261,38 @@ Function GithubSoftwares {
                     if ($response -eq 'y' -or $response -eq 'Y') {
                         Write-Host "Disabling Microsoft AI..." -NoNewline
                         
-                        #Copilot
+                        #Copilot Registry Settings
                         $copilotregPath = "HKCU:\Software\Policies\Microsoft\Windows"
                         $registryName = "WindowsCopilot"
                         $registryProperty = "TurnOffWindowsCopilot"
                         $edgeRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
                         $explorerRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-                
+            
                         if (-not (Test-Path $copilotregPath)) {
                             New-Item -Path $copilotregPath -Name $registryName -Force *>$null
                         }
-                
-                        New-ItemProperty -Path $copilotregPath\$registryName -Name $registryProperty -Value 1 -PropertyType DWORD -Force *>$null
-                
+            
+                        New-ItemProperty -Path "$copilotregPath\$registryName" -Name $registryProperty -Value 1 -PropertyType DWORD -Force *>$null
+            
                         if (-not (Test-Path $edgeRegistryPath)) {
                             New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\" -Name "Edge" -Force *>$null
                         }
-                
+            
                         New-ItemProperty -Path $edgeRegistryPath -Name "HubsSidebarEnabled" -Value 0 -PropertyType DWORD -Force *>$null
-
                         Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCopilotButton" -Value 0 -Force *>$null
-                
+            
                         $lmRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows"
                         $wowRegistryPath = "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows"
-                
-                        if (-not (Test-Path $lmRegistryPath\$registryName)) {
+            
+                        if (-not (Test-Path "$lmRegistryPath\$registryName")) {
                             New-Item -Path $lmRegistryPath -Name $registryName -Force *>$null
                         }
-                
-                        Set-ItemProperty -Path $lmRegistryPath\$registryName -Name $registryProperty -Value 1 -Force *>$null
-        
-                        if (-not (Test-Path $wowRegistryPath\$registryName)) {
+                        Set-ItemProperty -Path "$lmRegistryPath\$registryName" -Name $registryProperty -Value 1 -Force *>$null
+    
+                        if (-not (Test-Path "$wowRegistryPath\$registryName")) {
                             New-Item -Path $wowRegistryPath -Name $registryName -Force *>$null
-                        }
-                
-                        Set-ItemProperty -Path $wowRegistryPath\$registryName -Name $registryProperty -Value 1 -Force *>$null
+                        }     
+                        Set-ItemProperty -Path "$wowRegistryPath\$registryName" -Name $registryProperty -Value 1 -Force *>$null
 
                         $LMCU = @('HKLM', 'HKCU')
 
@@ -4382,48 +4381,48 @@ Function GithubSoftwares {
                         Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\Shell\Copilot" -Name "CopilotLogonTelemetryTime" -Force -ErrorAction SilentlyContinue
 
                         $aipackages = @(
-                            '*Copilot*'
-                            'MicrosoftWindows.Client.AIX'
-                            'MicrosoftWindows.Client.CoPilot'
-                            'Microsoft.Windows.Ai.Copilot.Provider'
-                            'Microsoft.Copilot'
-                            'Microsoft.MicrosoftOfficeHub'
-                            'Microsoft.Edge.GameAssist'
-                            'Microsoft.Office.ActionsServer'
-                            'aimgr'
-                            'Microsoft.WritingAssistant'
-                            'MicrosoftWindows.*.Voiess'
-                            'MicrosoftWindows.*.Speion'
-                            'MicrosoftWindows.*.Livtop'
-                            'MicrosoftWindows.*.InpApp'
-                            'WindowsWorkload.Data.Analysis.Stx.*'
-                            'WindowsWorkload.Manager.*'
-                            'WindowsWorkload.PSOnnxRuntime.Stx.*'
-                            'WindowsWorkload.PSTokenizer.Stx.*'
-                            'WindowsWorkload.QueryBlockList.*'
-                            'WindowsWorkload.QueryProcessor.Data.*'
-                            'WindowsWorkload.QueryProcessor.Stx.*'
-                            'WindowsWorkload.SemanticText.Data.*'
-                            'WindowsWorkload.SemanticText.Stx.*'
-                            'WindowsWorkload.Data.ContentExtraction.Stx.*'
-                            'WindowsWorkload.ScrRegDetection.Data.*'
-                            'WindowsWorkload.ScrRegDetection.Stx.*'
-                            'WindowsWorkload.TextRecognition.Stx.*'
-                            'WindowsWorkload.Data.ImageSearch.Stx.*'
-                            'WindowsWorkload.ImageContentModeration.*'
-                            'WindowsWorkload.ImageContentModeration.Data.*'
-                            'WindowsWorkload.ImageSearch.Data.*'
-                            'WindowsWorkload.ImageSearch.Stx.*'
-                            'WindowsWorkload.ImageTextSearch.Data.*'
-                            'WindowsWorkload.PSTokenizerShared.Data.*'
+                            '*Copilot*',
+                            'MicrosoftWindows.Client.AIX',
+                            'MicrosoftWindows.Client.CoPilot',
+                            'Microsoft.Windows.Ai.Copilot.Provider',
+                            'Microsoft.Copilot',
+                            'Microsoft.MicrosoftOfficeHub',
+                            'Microsoft.Edge.GameAssist',
+                            'Microsoft.Office.ActionsServer',
+                            'aimgr',
+                            'Microsoft.WritingAssistant',
+                            'MicrosoftWindows.*.Voiess',
+                            'MicrosoftWindows.*.Speion',
+                            'MicrosoftWindows.*.Livtop',
+                            'MicrosoftWindows.*.InpApp',
+                            'WindowsWorkload.Data.Analysis.Stx.*',
+                            'WindowsWorkload.Manager.*',
+                            'WindowsWorkload.PSOnnxRuntime.Stx.*',
+                            'WindowsWorkload.PSTokenizer.Stx.*',
+                            'WindowsWorkload.QueryBlockList.*',
+                            'WindowsWorkload.QueryProcessor.Data.*',
+                            'WindowsWorkload.QueryProcessor.Stx.*',
+                            'WindowsWorkload.SemanticText.Data.*',
+                            'WindowsWorkload.SemanticText.Stx.*',
+                            'WindowsWorkload.Data.ContentExtraction.Stx.*',
+                            'WindowsWorkload.ScrRegDetection.Data.*',
+                            'WindowsWorkload.ScrRegDetection.Stx.*',
+                            'WindowsWorkload.TextRecognition.Stx.*',
+                            'WindowsWorkload.Data.ImageSearch.Stx.*',
+                            'WindowsWorkload.ImageContentModeration.*',
+                            'WindowsWorkload.ImageContentModeration.Data.*',
+                            'WindowsWorkload.ImageSearch.Data.*',
+                            'WindowsWorkload.ImageSearch.Stx.*',
+                            'WindowsWorkload.ImageTextSearch.Data.*',
+                            'WindowsWorkload.PSTokenizerShared.Data.*',
                             'WindowsWorkload.PSTokenizerShared.Stx.*'
                         )
 
                         $provisionedPackages = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
 
                         foreach ($package in $aipackages) {
-                            Get-AppxPackage -Name $package -AllUsers -ErrorAction SilentlyContinue | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
-                            $provisionedPackages | Where-Object { $_.PackageName -like $package } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+                            Get-AppxPackage -Name $package -AllUsers -ErrorAction SilentlyContinue | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue *>$null
+                            $provisionedPackages | Where-Object { $_.PackageName -like $package } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue *>$null
                         }
 
                         Silent
