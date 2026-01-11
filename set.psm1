@@ -424,39 +424,54 @@ Function SystemSettings {
                 Write-Host "Importing Startup task in Task Scheduler..." -NoNewline
         
                 #upgrade
-                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"`winget upgrade --all`""
+                $vbsDir = "C:\vbs"
+                $vbsFilename = "upgrade_hidden.vbs" # Dosya ismini göreve özel yaptık
+                $vbsPath = Join-Path -Path $vbsDir -ChildPath $vbsFilename
+
+                if (-not (Test-Path -Path $vbsDir)) {
+                    New-Item -ItemType Directory -Path $vbsDir -Force | Out-Null
+                }
+
+                $vbsContent = @"
+Dim WinScriptHost
+Set WinScriptHost = CreateObject("WScript.Shell")
+WinScriptHost.Run "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""winget upgrade --all""", 0
+Set WinScriptHost = Nothing
+"@
+
+                Set-Content -Path $vbsPath -Value $vbsContent -Encoding Ascii -Force
+
+                $action = New-ScheduledTaskAction -Execute "wscript.exe" -Argument "`"$vbsPath`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
-                $settings = New-ScheduledTaskSettingsSet -Hidden:$true
-                $description = "You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
+                $trigger.Delay = "PT10M" 
+                $description = "Automatically upgrades all software using Winget (Hidden Window Mode)."
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "upgrade-packages"
-                $delay = "PT1M"  # 1 minutes delay
-                $trigger.Delay = $delay
+                $settings = New-ScheduledTaskSettingsSet -Hidden:$true -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 
-                Register-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -TaskName $taskname -Description $description *>$null
+                Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description -Force *>$null
 
                 #startup
-                if ($mode -eq "normal") {
-                    $link = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/normal.psm1"
-                }
-                elseif ($mode -eq "gaming") {
-                    $link = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/gaming.psm1"
-                }
-                elseif ($mode -eq "developer") {
-                    $link = "https://raw.githubusercontent.com/caglaryalcin/after-format/main/files/startup/dev-sys.psm1"
-                }
+                $vbsFilename = "startup_hidden.vbs"
+                $vbsPath = Join-Path -Path $vbsDir -ChildPath $vbsFilename
 
-                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -Command `"iwr '$link' -UseB | iex`""
+                $vbsContent = @"
+Dim WinScriptHost
+Set WinScriptHost = CreateObject("WScript.Shell")
+WinScriptHost.Run "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command ""iwr 'private.caglaryalcin.com/startup' -UseB | iex""", 0
+Set WinScriptHost = Nothing
+"@
+
+                Set-Content -Path $vbsPath -Value $vbsContent -Encoding Ascii -Force
+                $action = New-ScheduledTaskAction -Execute "wscript.exe" -Argument "`"$vbsPath`""
                 $trigger = New-ScheduledTaskTrigger -AtStartup
                 $description = "[$mode] - You can check all the operations of this project at this link.  https://github.com/caglaryalcin/after-format"
                 $principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-544" -RunLevel Highest
                 $taskname = "startup"
                 $delay = "PT5M" # 5 minutes delay
                 $trigger.Delay = $delay
-
                 $settings = New-ScheduledTaskSettingsSet -Hidden:$true
-
-                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description
+                $task = Register-ScheduledTask -TaskName $taskname -Trigger $trigger -Action $action -Principal $principal -Settings $settings -Description $description -Force
                 $task.Triggers.Repetition.Duration = ""
                 $task.Triggers.Repetition.Interval = "PT3H"
                 $task | Set-ScheduledTask *>$null
