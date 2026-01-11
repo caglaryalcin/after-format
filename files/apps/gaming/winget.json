@@ -16,7 +16,7 @@
         {"PackageIdentifier": "Discord.Discord"},
         {"PackageIdentifier": "Blizzard.BattleNet"},
         {"PackageIdentifier": "ElectronicArts.EADesktop"},
-        {"PackageIdentifier": "Google.PlayGames.Beta"},
+        {"PackageIdentifier": "Google.PlayGames"},
         {"PackageIdentifier": "Ubisoft.Connect"},
         {"PackageIdentifier": "FACEITLTD.FACEITClient"},
         {"PackageIdentifier": "FACEITLTD.FACEITAC"}
