@@ -329,6 +329,8 @@ if ($mode -eq "gaming") {
     SafeTaskKill "Discord.exe"
     SafeTaskKill "EADesktop.exe"
     SafeTaskKill "Battle.net.exe"
+    SafeTaskKill "FACEIT.exe"
+    SafeTaskKill "faceitservice.exe"
 }
 
 Function Install-VSCodeExtensions {

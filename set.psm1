@@ -1911,7 +1911,13 @@ Function SystemSettings {
                 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
                     New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *>$null
                 }
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe" -Name "IsEnabled" -Type DWord -Value 1
+                $phoneRegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe"
+
+                if (-not (Test-Path $phoneRegPath)) {
+                    New-Item -Path $phoneRegPath -Force | Out-Null
+                }
+
+                Set-ItemProperty -Path $phoneRegPath -Name "IsEnabled" -Type DWord -Value 1
 
                 # Hide 'All Section' in the Start Menu
                 Set-ItemProperty -Path $allSectionPath -Name "NoStartMenuMorePrograms" -Type DWord -Value 1
@@ -4391,10 +4397,10 @@ Function GithubSoftwares {
                             'Microsoft.Office.ActionsServer',
                             'aimgr',
                             'Microsoft.WritingAssistant',
-                            'MicrosoftWindows.*.Voiess',
-                            'MicrosoftWindows.*.Speion',
-                            'MicrosoftWindows.*.Livtop',
-                            'MicrosoftWindows.*.InpApp',
+                            #'MicrosoftWindows.*.Voiess',
+                            #'MicrosoftWindows.*.Speion',
+                            #'MicrosoftWindows.*.Livtop',
+                            #'MicrosoftWindows.*.InpApp',
                             'WindowsWorkload.Data.Analysis.Stx.*',
                             'WindowsWorkload.Manager.*',
                             'WindowsWorkload.PSOnnxRuntime.Stx.*',
