@@ -1894,58 +1894,6 @@ Set WinScriptHost = Nothing
 
         DisableRecentFiles
 
-        Function TaskbarSettings {
-            Write-Host "Taskbar settings are being configured..." -NoNewline
-            $taskbarregPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
-            $allSectionPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-        
-            try {
-                If (!(Test-Path $taskbarregPath)) {
-                    New-Item -Path $taskbarregPath | Out-Null
-                }
-        
-                # Disable Search for App in Store for Unknown Extensions
-                Set-ItemProperty -Path $taskbarregPath -Name "NoUseStoreOpenWith" -Type DWord -Value 1
-        
-                # Hide 'Recently added' list from the Start Menu
-                Set-ItemProperty -Path $taskbarregPath -Name "HideRecentlyAddedApps" -Type DWord -Value 1
-        
-                # Hide 'Recommended Settings' in the Start Menu
-                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedSettings" -Type DWord -Value 1
-    
-                # Hide 'Recommended Apps' in the Start Menu
-                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedApps" -Type DWord -Value 1
-    
-                # Hide 'Recommended Personalized Sites' in the Start Menu
-                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedPersonalizedSites" -Type DWord -Value 1
-    
-                # Hide 'Recommended Section' in the Start Menu
-                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedSection" -Type DWord -Value 1
-    
-                # Add Phone link to the Start Menu
-                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
-                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *>$null
-                }
-                $phoneRegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe"
-
-                if (-not (Test-Path $phoneRegPath)) {
-                    New-Item -Path $phoneRegPath -Force | Out-Null
-                }
-
-                Set-ItemProperty -Path $phoneRegPath -Name "IsEnabled" -Type DWord -Value 1
-
-                # Hide 'All Section' in the Start Menu
-                Set-ItemProperty -Path $allSectionPath -Name "NoStartMenuMorePrograms" -Type DWord -Value 1
-
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-        
-        TaskbarSettings
-
         Function RemoveQuota {
             Write-Host "Removing Quota on the disk menu..." -NoNewline
             try {
@@ -2169,6 +2117,58 @@ Set WinScriptHost = Nothing
         ##########
         #region Taskbar Settings
         ##########
+
+        Function Firstofall {
+            Write-Host "Taskbar settings are being configured..." -NoNewline
+            $taskbarregPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+            $allSectionPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+        
+            try {
+                If (!(Test-Path $taskbarregPath)) {
+                    New-Item -Path $taskbarregPath | Out-Null
+                }
+        
+                # Disable Search for App in Store for Unknown Extensions
+                Set-ItemProperty -Path $taskbarregPath -Name "NoUseStoreOpenWith" -Type DWord -Value 1
+        
+                # Hide 'Recently added' list from the Start Menu
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecentlyAddedApps" -Type DWord -Value 1
+        
+                # Hide 'Recommended Settings' in the Start Menu
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedSettings" -Type DWord -Value 1
+    
+                # Hide 'Recommended Apps' in the Start Menu
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedApps" -Type DWord -Value 1
+    
+                # Hide 'Recommended Personalized Sites' in the Start Menu
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedPersonalizedSites" -Type DWord -Value 1
+    
+                # Hide 'Recommended Section' in the Start Menu
+                Set-ItemProperty -Path $taskbarregPath -Name "HideRecommendedSection" -Type DWord -Value 1
+    
+                # Add Phone link to the Start Menu
+                if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates")) {
+                    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates" -Force *>$null
+                }
+                $phoneRegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start\Companions\Microsoft.YourPhone_8wekyb3d8bbwe"
+
+                if (-not (Test-Path $phoneRegPath)) {
+                    New-Item -Path $phoneRegPath -Force | Out-Null
+                }
+
+                Set-ItemProperty -Path $phoneRegPath -Name "IsEnabled" -Type DWord -Value 1
+
+                # Hide 'All Section' in the Start Menu
+                Set-ItemProperty -Path $allSectionPath -Name "NoStartMenuMorePrograms" -Type DWord -Value 1
+
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+        
+        Firstofall
 
         Function DisableNews {
             Write-Host "Disabling News and Interest on Taskbar..." -NoNewline
@@ -2467,6 +2467,38 @@ Set WinScriptHost = Nothing
 
         RunOldDialog
     }
+
+    Function Autohide {
+        Write-Host `n"(If you are using an OLED monitor, it is recommended.)" -ForegroundColor Gray
+        Write-Host "Do you want to " -NoNewline
+        Write-Host "auto-hide the taskbar?" -ForegroundColor Yellow -NoNewline
+        Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+        $response = Read-Host
+
+        if ($response -eq 'y' -or $response -eq 'Y') {
+            try {
+                Write-Host "The taskbar is set to auto-hide..." -NoNewLine
+                $p = 'HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3'
+                $v = (Get-ItemProperty -Path $p).Settings
+                $v[8] = 3
+                Set-ItemProperty -Path $p -Name Settings -Value $v
+                Stop-Process -f -ProcessName explorer
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+        elseif ($response -eq 'n' -or $response -eq 'N') {
+            Write-Host "[The task will be visible continuously.]" -ForegroundColor Red -BackgroundColor Black
+        }
+        else {
+            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+            Autohide
+        }
+    }
+
+    Autohide
         
     Function UnpinEverything {
         Param(
