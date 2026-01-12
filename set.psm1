@@ -493,14 +493,14 @@ Set WinScriptHost = Nothing
             Write-Host "Importing NVCleanstall Update task in Task Scheduler..." -NoNewline
 
             try {
-                $nvcleansetupurl = "https://drive.usercontent.google.com/download?id=1HBOY8ALsqe3W4_YaluoVs4y227dMTbSD&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
+                $nvcleanstalldriverurl = "https://drive.usercontent.google.com/download?id=1unG6kOs7Z7_aw6y2Jy7BLNASrVtrSNw-&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
                 $nvcleanpath = "C:\Program Files\NVCleanstall"
                 $nvcleanstall = "https://drive.usercontent.google.com/download?id=1BenAUmJ5HiaSfELsZnlWna2py2dWQHKb&export=download&confirm=t&uuid=3dafda5a-d638-4e45-8655-3e4dcc5a7212&at=APZUnTXgUibc057YzjK_mWRb_0Di%3A1713698912361"
                 New-Item -ItemType Directory -Force -Path $nvcleanpath | Out-Null
                 Silent
                 Invoke-WebRequest -Uri $nvcleanstall -Outfile "$nvcleanpath\NVCleanstall_1.19.0.exe" -ErrorAction Stop
                 Silent
-                Invoke-WebRequest -Uri $nvcleansetupurl -Outfile "$nvcleanpath\NVCleanstall_NVIDIA_581.57_x64_dch_Desktop_Setup.exe" -ErrorAction Stop
+                Invoke-WebRequest -Uri $nvcleanstalldriverurl -Outfile "$nvcleanpath\NVCleanstall_NVIDIA_581.57_x64_dch_Desktop_Setup.exe" -ErrorAction Stop
         
                 # Update task
                 $action = New-ScheduledTaskAction -Execute "$nvcleanpath\NVCleanstall_1.19.0.exe" -Argument "/check"
