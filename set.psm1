@@ -2557,13 +2557,13 @@ Set WinScriptHost = Nothing
     #endregion Taskbar Settings
     ##########
 
-}
-elseif ($response -eq 'n' -or $response -eq 'N') {
-    Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
-}
-else {
-    Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-    SystemSettings
+    elseif ($response -eq 'n' -or $response -eq 'N') {
+        Write-Host "[System Settings Cancelled]" -ForegroundColor Red -BackgroundColor Black
+    }
+    else {
+        Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+        SystemSettings
+    }
 }
 
 SystemSettings
