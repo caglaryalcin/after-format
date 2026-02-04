@@ -425,7 +425,7 @@ Function SystemSettings {
         
                 #upgrade
                 $vbsDir = "C:\vbs"
-                $vbsFilename = "upgrade_hidden.vbs" # Dosya ismini göreve özel yaptık
+                $vbsFilename = "upgrade_hidden.vbs"
                 $vbsPath = Join-Path -Path $vbsDir -ChildPath $vbsFilename
 
                 if (-not (Test-Path -Path $vbsDir)) {
