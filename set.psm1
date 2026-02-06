@@ -1386,6 +1386,25 @@ Set WinScriptHost = Nothing
         
         FileExplorerExpandRibbon
 
+        Function SetExplorerNavBar {
+            Write-Host "The Explorer left panel alignment is being adjusted..."
+            $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Modules\GlobalSettings\Sizer"
+            $binaryData = @(0xC8, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93, 0x05, 0x00, 0x00)
+
+            if (-not (Test-Path $regPath)) {
+                New-Item -Path $regPath -Force | Out-Null
+            }
+
+            try {
+                Set-ItemProperty -Path $regPath -Name "PageSpaceControlSizer" -Value $binaryData -Type Binary
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+        }
+
+        SetExplorerNavBar
+
         Function HideRecycleBinFromDesktop {
             Write-Host "Hiding Recycle Bin Shortcut from Desktop..." -NoNewline
         
