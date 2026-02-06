@@ -456,26 +456,27 @@ Function InstallWSL {
 
 if ($mode -eq 'developer') {
 
-Write-Host ""
-Write-Host "============================================" -ForegroundColor White
-Write-Host "           INSTALLING UBUNTU WSL            " -ForegroundColor Cyan
-Write-Host "============================================" -ForegroundColor White
-Write-Host ""
-Write-Host " [!] MANUAL INTERVENTION REQUIRED" -ForegroundColor Yellow
-Write-Host "     Please create your UNIX username and password." -ForegroundColor Gray
-Write-Host ""
-Write-Host "1. Create a user inside the WSL window." -ForegroundColor Gray
-Write-Host "2. When done, type " -NoNewline -ForegroundColor Gray
-Write-Host "'exit'" -ForegroundColor Magenta -NoNewline
-Write-Host " to resume this script." -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "============================================" -ForegroundColor White
+    Write-Host "           INSTALLING UBUNTU WSL            " -ForegroundColor Cyan
+    Write-Host "============================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host " [!] MANUAL INTERVENTION REQUIRED" -ForegroundColor Yellow
+    Write-Host "     Please create your UNIX username and password." -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "1. Create a user inside the WSL window." -ForegroundColor Gray
+    Write-Host "2. When done, type " -NoNewline -ForegroundColor Gray
+    Write-Host "'exit'" -ForegroundColor Magenta -NoNewline
+    Write-Host " to resume this script." -ForegroundColor Gray
 
     InstallWSL
 
-Write-Host @"
-"============================================"
+    Write-Host @"
+============================================
 Ubuntu WSL Installed!
-"============================================"
+============================================
 "@ -ForegroundColor White
+Write-Host ""
 }
 
 # Malwarebytes trial reset
@@ -538,43 +539,43 @@ if ($mode -eq "developer") {
 }
 
 Function npmConf {
-        $nodePath = (Get-Command node -ErrorAction SilentlyContinue).Source
-        if ($nodePath) {
-            $nodeDir = Split-Path $nodePath
+    $nodePath = (Get-Command node -ErrorAction SilentlyContinue).Source
+    if ($nodePath) {
+        $nodeDir = Split-Path $nodePath
     
-            $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
+        $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
     
-            if ($currentPath -notlike "*$nodeDir*") {
+        if ($currentPath -notlike "*$nodeDir*") {
+            [Environment]::SetEnvironmentVariable(
+                "Path",
+                "$currentPath;$nodeDir",
+                "User"
+            )
+        }
+    }
+    else {
+        $possiblePaths = @(
+            "$env:ProgramFiles\nodejs",
+            "$env:ProgramFiles(x86)\nodejs",
+            "$env:APPDATA\npm"
+        )
+    
+        foreach ($path in $possiblePaths) {
+            if (Test-Path $path) {
+                $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
                 [Environment]::SetEnvironmentVariable(
                     "Path",
-                    "$currentPath;$nodeDir",
+                    "$currentPath;$path",
                     "User"
                 )
             }
         }
-        else {
-            $possiblePaths = @(
-                "$env:ProgramFiles\nodejs",
-                "$env:ProgramFiles(x86)\nodejs",
-                "$env:APPDATA\npm"
-            )
-    
-            foreach ($path in $possiblePaths) {
-                if (Test-Path $path) {
-                    $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
-                    [Environment]::SetEnvironmentVariable(
-                        "Path",
-                        "$currentPath;$path",
-                        "User"
-                    )
-                }
-            }
-        }
     }
+}
 
-    if ($mode -eq "developer") {
+if ($mode -eq "developer") {
     npmConf
-    }
+}
 
 Function InstallClaude {
     try {
@@ -1798,7 +1799,8 @@ EnableTask
 ##########
 
 Function Restart {
-    Write-Host `n"A restart is required for the script to continue. Do you " -NoNewline
+    Write-Host `n"[A restart is required for the script to continue.]" -ForegroundColor Gray
+    Write-Host "Do you " -NoNewline
     Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor Black
     Write-Host "(y/n): " -NoNewline
     $response = Read-Host

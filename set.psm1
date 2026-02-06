@@ -4991,7 +4991,8 @@ Please relaunch this script under a regular admin account." -Level Critical -Exi
         ##########
 
         Function Restart {
-            Write-Host `n"A restart is required for the script to continue. Do you " -NoNewline
+            Write-Host `n"[A restart is required for the script to continue.]" -ForegroundColor Gray
+            Write-Host "Do you " -NoNewline
             Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor Black
             Write-Host "(y/n): " -NoNewline
             $response = Read-Host
