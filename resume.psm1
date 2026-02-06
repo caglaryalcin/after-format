@@ -450,13 +450,12 @@ if ($mode -eq 'developer') {
 }
 
         
-Function RestartWSL {
-    Write-Host "Installing Ubuntu on WSL..." -NoNewline
+Function InstallWSL {
     wsl --install -d Ubuntu
 }
 
 if ($mode -eq 'developer') {
-    RestartWSL
+    InstallWSL
 }
 
 # Malwarebytes trial reset
@@ -1779,7 +1778,7 @@ EnableTask
 ##########
 
 Function Restart {
-    Write-Host `n"Do you " -NoNewline
+    Write-Host `n"A restart is required for the script to continue. Do you " -NoNewline
     Write-Host "want restart?" -NoNewline -ForegroundColor Red -BackgroundColor Black
     Write-Host "(y/n): " -NoNewline
     $response = Read-Host
