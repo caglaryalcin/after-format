@@ -457,9 +457,9 @@ Function InstallWSL {
 if ($mode -eq 'developer') {
 
 Write-Host ""
-Write-Host "============================================" -ForegroundColor DarkGray
+Write-Host "============================================" -ForegroundColor White
 Write-Host "           INSTALLING UBUNTU WSL            " -ForegroundColor Cyan
-Write-Host "============================================" -ForegroundColor DarkGray
+Write-Host "============================================" -ForegroundColor White
 Write-Host ""
 Write-Host " [!] MANUAL INTERVENTION REQUIRED" -ForegroundColor Yellow
 Write-Host "     Please create your UNIX username and password." -ForegroundColor Gray
@@ -468,17 +468,14 @@ Write-Host "1. Create a user inside the WSL window." -ForegroundColor Gray
 Write-Host "2. When done, type " -NoNewline -ForegroundColor Gray
 Write-Host "'exit'" -ForegroundColor Magenta -NoNewline
 Write-Host " to resume this script." -ForegroundColor Gray
-Write-Host ""
-Write-Host "============================================" -ForegroundColor DarkGray
-Write-Host ""
 
     InstallWSL
 
 Write-Host @"
-==================
+"============================================"
 Ubuntu WSL Installed!
-==================
-"@ -ForegroundColor Gray
+"============================================"
+"@ -ForegroundColor White
 }
 
 # Malwarebytes trial reset
