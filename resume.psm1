@@ -276,7 +276,8 @@ foreach ($pkg in $packagesToCheck) {
         
     if (-not $isInstalled) {
         foreach ($identifier in $pkg.PackageIdentifier) {
-            $chocoPackageId = $chocoConfig.packages.package | Where-Object { $_.id -match $identifier } | Select-Object -ExpandProperty id
+            $regexPattern = $identifier.Replace("*", ".*")
+            $chocoPackageId = $chocoConfig.packages.package | Where-Object { $_.id -match $regexPattern } | Select-Object -ExpandProperty id
         
             if ($chocoPackageId) {
                 Write-Host "$identifier" -ForegroundColor Red -BackgroundColor Black -NoNewline
