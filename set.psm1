@@ -1457,6 +1457,23 @@ Set WinScriptHost = Nothing
 
         DisableHiberfil
 
+        Function UltimatePerformance {
+            Write-Host "Enabling ultimate performance..." -NoNewline
+            try { 
+                $p = powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
+                $newGuid = $p.Split(" ")[3]
+                powercfg /setactive $newGuid
+            }
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        if ($mode -eq "gaming") {
+        UltimatePerformance
+        }
+        
         Function DisableSleepTimeout {
             Write-Host "Disabling display and sleep mode timeouts..." -NoNewline
         
