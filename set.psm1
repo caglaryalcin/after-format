@@ -1460,9 +1460,12 @@ Set WinScriptHost = Nothing
         Function UltimatePerformance {
             Write-Host "Enabling ultimate performance..." -NoNewline
             try { 
-                $p = powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
-                $newGuid = $p.Split(" ")[3]
-                powercfg /setactive $newGuid
+                $output = powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
+                
+                if ($output -match '[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}') {
+                    $newGuid = $matches[0]
+                    powercfg /setactive $newGuid
+                }
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
@@ -1471,7 +1474,7 @@ Set WinScriptHost = Nothing
         }
 
         if ($mode -eq "gaming") {
-        UltimatePerformance
+            UltimatePerformance
         }
         
         Function DisableSleepTimeout {
