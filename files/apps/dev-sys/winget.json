@@ -46,7 +46,8 @@
         {"PackageIdentifier": "ShiningLight.OpenSSL.Dev"},
         {"PackageIdentifier": "Microsoft.PowerShell"},
         {"PackageIdentifier": "ar51an.iPerf3"},
-        {"PackageIdentifier": "Yarn.Yarn"}
+        {"PackageIdentifier": "Yarn.Yarn"},
+        {"PackageIdentifier": "Anthropic.ClaudeCode"}
       ]
     }
   ]

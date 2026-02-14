@@ -42,7 +42,8 @@
         {"PackageIdentifier": ["OhMyPosh"]},
         {"PackageIdentifier": ["powershell"]},
         {"PackageIdentifier": ["iperf3"]},
-        {"PackageIdentifier": ["yarn"]}
+        {"PackageIdentifier": ["yarn"]},
+        {"PackageIdentifier": ["claude"]}
       ]
     }
   ]
