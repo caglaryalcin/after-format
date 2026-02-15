@@ -4,286 +4,343 @@
 
 ![LATEST RELEASE](https://img.shields.io/github/v/release/caglaryalcin/after-format?label=LATEST%20RELEASE&labelColor=4d4d4d&color=red)  ![](https://badgen.net/github/license/caglaryalcin/after-format)
 
-If you new formatted your computer on Windows 11(all versions) you can run this script. 
+A comprehensive Windows 11 post-installation script that automates system configuration, privacy hardening, software installation, and bloatware removal. The script supports all Windows 11 versions and offers three distinct operation modes tailored to different use cases. Some settings are optional and prompted interactively (<kbd>y/n</kbd>).
 
-This script allows Windows 1x users to control data collection, privacy and security functions and does exactly the following; (Some are optional: <kbd>y/n</kbd>)
+---
 
-<details><summary>Mode Select</summary>&nbsp;
+### How It Works
 
-The script first asks you to select one of three modes:
+The script runs in two phases:
 
-**Normal**, **Game**, and **Developer-Sys Eng** Mode.
+1. **`set.psm1`** — Configures system settings, applies privacy tweaks, initiates software installation, and removes bloatware.
+2. **`resume.psm1`** — Runs after reboot to complete software installation, install VSCode extensions, configure developer tools (WSL, npm, OpenSSL, Claude Code), and perform final cleanup.
 
-Installation and settings will be configured according to these modes.
+---
+
+<details><summary><strong>Mode Selection</strong></summary>&nbsp;
+
+The script starts by asking you to choose one of three modes. All subsequent settings, software installations, and optimizations are configured based on your selection.
+
+| Mode | Description |
+|------|-------------|
+| **Normal** | Standard desktop usage — basic utilities, productivity tools |
+| **Gaming** | Optimized for gaming — game launchers, Discord, NVIDIA tools, performance tweaks |
+| **Dev-Sys Eng** | Full development environment — IDEs, SDKs, languages, CLI tools, containers |
 
 <img width="991" height="303" alt="image" src="https://github.com/user-attachments/assets/7c16420e-cb4e-4fe1-b49c-ab0f7a2876a8" />
 
 </details>
 
-<details><summary>System Settings</summary>&nbsp;
-  
-![image](https://github.com/user-attachments/assets/df445708-a6eb-4cc0-9a64-fd5983d0a502)
-  
-- It asks if you want region change to Turkiye
-- It asks if you want change your hostname
-- It asks if you want activating your Windows (Thanks to @massgravel for the script https://github.com/massgravel/Microsoft-Activation-Scripts)
+<details><summary><strong>System Settings</strong></summary>&nbsp;
 
-- It asks whether you want to delay Windows updates for longer than the default period
+![image](https://github.com/user-attachments/assets/df445708-a6eb-4cc0-9a64-fd5983d0a502)
+
+#### Interactive Prompts (y/n)
+
+- Region change to Turkiye (date/time/currency formats)
+- Hostname customization
+- Windows activation via [Microsoft Activation Scripts](https://github.com/massgravel/Microsoft-Activation-Scripts)
+- Windows Update delay configuration
 
 <img width="1016" height="692" alt="image" src="https://github.com/user-attachments/assets/cbd63641-ae29-4df8-ab51-77e5493016b8" />
 
-- It asks if you want disable windows defender
-- It asks if you want date format and keyboard layout
-- It asks you to select all folder views in the explorer as 'Details' and set the separator settings as shown by the arrows in the picture
+- Windows Defender removal
+- Date format and keyboard layout selection (TR/UK)
+- Explorer folder view set to "Details" with custom separator settings
 
 ![image](https://github.com/user-attachments/assets/6a5a335f-1ffe-4427-94a0-75d01204668e)
 
-- Ask if you want to add a "startup" task to run at startup (recommended)
-- Bringing back the old classic right-click context menu and additional buttons
+- Startup scheduled task creation (recommended)
+
+#### Taskbar & UI
+
+- Classic right-click context menu restoration
 
 ![image](https://github.com/user-attachments/assets/1066a699-f11c-4266-a481-cc000da1b451)
 ![image](https://github.com/user-attachments/assets/572b299c-a032-4394-b625-7e092e1bfbed)
 
-- Taskbar aligns left
-- Disabling snap
-- Adding ohmypush to Windows Terminal (Only Dev/Sys-Eng and Normal mode)
+- Taskbar left alignment
+- Snap windows disabled
+- Oh-My-Posh integration for Windows Terminal (Dev-Sys & Normal modes)
 
 ![image](https://github.com/user-attachments/assets/154e85b6-0872-45ee-b6bb-846655846890)
 
-- Disabling gallery folder
-- Desktop button in taskbar is enabled
-- Disabling sync your settings
-- Disabling spotligt
-- Disabling toast and apps notifications on lock screen
-- Disabling windows media player diagnostics
-- Disabling extension of windows search with bing
-- Default old photo viewer
-- Setting dark mode for applications
-- Setting dark mode for system
-- Setting control panel view to large icons
-- Disabling user interface and device recognition features
-- Enabling numlock after startup
-- Disabling windows beep sound
-- Disabling ipv6 stack
-- Disabling virtual ethernet adapters
-- Setting cloud flare dns
-- Configuring windows explorer settings
-- Expanding for file explorer
-- Hiding recycle bin shortcut from desktop
-- Disabling hiberfil.sys
-- Disabling display and sleep mode timeouts
-- Disabling updates for other microsoft products
-- Disabling bing search in start menu
-- Disabling smartscreen filter
-- Disabling sensors
-- Disabling tailored experiences
-- Disabling xbox features (Only Dev/Sys-Eng and Normal mode)
-- Disabling blocking of downloaded files
-- Disabling nightly wake-up for automatic maintenance
-- Disabling storage sense
-- Disabling built-in adobe flash in ie and edge
-- Disabling edge preload
-- Disabling internet explorer first run wizard
-- Disabling windows media player online access
-- Disabling action center (notification center)
-- Disabling system restore for system drive
-- Setting low uac level
-- Removing unnecessary tasks
-- Enabling clearing of recent files on exit
-- Disabling recent files lists
-- Disabling search for app in store for unknown extensions
-- Hiding Recently Added, Recommended Settings, Apps, Personalized Sites and Section from list from the start menu
-- Stopping and disabling unnecessary services (Xbox features are being removed)
-- Disabling news and interest on taskbar
-- Hiding people icon from taskbar
-- Hiding taskview icon from taskbar
-- Hiding multitaskview icon from taskbar
-- Showing small icons in taskbar
-- Hiding taskbar search
-- Hiding 'All' section from taskbar
-- Removing chat from taskbar
-- Removing widgets from taskbar
-- Enabling telnet client (Only Dev/Sys-Eng and Normal mode)
-- Setting automatic kill of unsaved changes when trying to log out, restart or close
+- Gallery folder disabled
+- Desktop button enabled on taskbar
+- News, interest, people icon, task view, multitask view, search, chat, and widgets removed from taskbar
+- Category view disabled on taskbar
+- Always combine taskbar buttons
 
-![image](https://github.com/user-attachments/assets/869227a1-a299-4e20-8450-b0ba279409ff)
+#### Display & Appearance
 
-- Removing Quota on the disk menu
-- Setting password never expires for local admins
-- Disabling Account Notifications
-- Setting End task button
-- Disabling Category View on the taskbar
-- Enabling WSL
-- Memory compression is enabled or disabled based on the amount of RAM
-- Enabling launch folder Windows in a separate
-- Disabling Location Notifications
-- Enabling Sudo (Only Dev/Sys-Eng and Normal mode)
-- Removing shortcut name
-- Mapped Drives Available in the Elevated Command Prompt Are Being Enabled
-- Some applications have their GPU mode set to 'performance'
-- Known Windows errors are fixed
+- Dark mode for applications and system
+- Control panel set to large icons view
+- Classic photo viewer restored
+- Shortcut name prefix removed
 
 ![image](https://github.com/user-attachments/assets/5d44a918-bf3f-49df-a27a-105b461a07e3)
 
-- Unpinning all start menu tiles
+#### Power & Performance
 
-</details>
+- Hibernate file (`hiberfil.sys`) disabled
+- Display and sleep mode timeouts disabled
+- Ultimate Performance power plan enabled
+- Memory compression enabled/disabled based on RAM amount
+- GPU performance mode set for specific applications
+- Storage Sense disabled
 
-<details><summary>Privacy Settings</summary>&nbsp;
+#### Network
+
+- IPv6 stack disabled
+- DNS provider selection (Cloudflare, Google, AdGuard) with automatic ping-based optimization
+- Virtual ethernet adapters disabled
+
+#### Security & System
+
+- SmartScreen filter disabled
+- Low UAC level set
+- System restore disabled for system drive
+- Password never expires for local admins
+- Account notifications disabled
+- Auto-end task on logout/restart enabled
+- Disk quota removed
+- Mapped drives enabled in elevated Command Prompt
+- Downloaded files blocking disabled
+- Automatic maintenance wake-up disabled
+
+#### Features & Services
+
+- WSL enabled
+- Telnet client enabled (Dev-Sys & Normal modes)
+- Sudo enabled (Dev-Sys & Normal modes)
+- Xbox features disabled (Dev-Sys & Normal modes)
+- Unnecessary services stopped and disabled
+- NumLock enabled after startup
+- Windows beep sound disabled
+- Sensors disabled
+- Tailored experiences disabled
+- Settings sync disabled
+- Spotlight disabled
+- Toast and lock screen notifications disabled
+- Windows Media Player diagnostics disabled
+- Bing search in Start Menu disabled
+- Built-in Adobe Flash disabled in IE and Edge
+- Edge preload disabled
+- IE first run wizard disabled
+- Windows Media Player online access disabled
+- Recent files clearing enabled on exit
 
 ![image](https://github.com/user-attachments/assets/ed4a0085-fe62-4e33-967a-4a3a1ccdd812)
 
-- Disabling telemetry
-- Blocking telemetry in host file
-- Disabling feedback
-- Disabling activity history
-- Disabling clipboard history
-- Disabling user steps recorder
-- Turning off text suggestions for hardware keyboard
-- Disabling app launch tracking
-- Disabling website access to language list
-- Stopping and disabling Connected User Experiences and Telemetry service
-- Disabling advertising ID
-- Disabling Wi-Fi Sense
-- Disabling application suggestions
-- Disabling UWP apps background access
-- Disabling access to voice activation from UWP apps
-- Disabling access to notifications from UWP apps
-- Disabling access to account info from UWP apps
-- Disabling access to contacts from UWP apps
-- Disabling access to calendar from UWP apps
-- Disabling access to phone calls from UWP apps
-- Disabling access to call history from UWP apps
-- Disabling access to email from UWP apps
-- Disabling access to tasks from UWP apps
-- Disabling access to messaging from UWP apps
-- Disabling access to radios from UWP apps
-- Disabling access to other devices from UWP apps
-- Disabling access to diagnostic information from UWP apps
-- Disabling access to libraries and file system from UWP apps
-- Disabling UWP apps swap file
-- Disabling automatic maps updates
-- Disabling windows update automatic restart
-- Disabling windows update automatic downloads
+- Recent files list disabled
+- Start menu tiles unpinned
+- Start menu: Recently Added, Recommended, Personalized Sites hidden
+- Known Windows errors fixed
+
+![image](https://github.com/user-attachments/assets/869227a1-a299-4e20-8450-b0ba279409ff)
 
 </details>
-<details><summary>Install Softwares</summary>&nbsp;
+
+<details><summary><strong>Privacy Settings</strong></summary>&nbsp;
+
+#### Telemetry & Tracking
+
+- Telemetry disabled via registry
+- Telemetry endpoints blocked in hosts file
+- Connected User Experiences and Telemetry service stopped
+- Diagnostic data collection disabled
+- Diagnostic log collection disabled
+- Error reporting disabled
+- Handwriting error reports disabled
+- Advertising ID disabled
+- Activity history disabled
+- App launch tracking disabled
+- Tailored experiences disabled
+- User steps recorder disabled
+- Feedback disabled
+
+#### Input & Communication
+
+- Clipboard history disabled
+- Clipboard sharing disabled
+- Text suggestions for hardware keyboard disabled
+- Text message cloud backup disabled
+- Password reveal button disabled
+- Website access to language list disabled
+
+#### Network & Connectivity
+
+- Wi-Fi Sense disabled
+- Bluetooth advertising disabled
+- Location system disabled
+- Automatic maps updates disabled
+
+#### UWP App Permissions
+
+All UWP app access restricted for:
+- Voice activation, Notifications, Account info, Contacts, Calendar
+- Phone calls, Call history, Email, Tasks, Messaging
+- Radios, Other devices, Diagnostic info, File system
+- Background access disabled
+- UWP swap file disabled
+
+#### Windows Update
+
+- Automatic restart disabled
+- Automatic downloads disabled
+- Updates for other Microsoft products disabled
+
+#### Other
+
+- Application suggestions disabled
+- Task scheduler history enabled
+
+</details>
+
+<details><summary><strong>Software Installation</strong></summary>&nbsp;
 
 ![image](https://github.com/user-attachments/assets/048bf752-293e-474e-944d-f15fe9dcecb6)
 
-> 💡The following packages will be installed based on the answer you provide at the beginning of the script (normal, gaming, or developer).
+> 💡Packages are installed via **winget** with automatic **Chocolatey** fallback for failed installations. The package list depends on the mode selected at the start.
 
 ![image](https://github.com/user-attachments/assets/88b71d2a-3e78-4ecf-aeb8-df98f7952a3d)
 
-- Chrome
-- Brave
-- Firefox
-- Steam
-- Epic Games
-- HWMonitor
-- CrystalDisk Info
-- VirtualBox
-- Signal
-- VSCode (with extensions)
-- Notepad
-- Windows SDK
-- Node.js
-- Python
-- Git
-- AnyDesk
-- Terminal
-- Speedtest cli
-- GitHub
-- VLC
-- TreeSize
-- Total Commander
-- Wireshark
-- Deluge
-- DBeaver
-- Cryptomator
-- Microsoft Teams
-- SteelSeries
-- Java
-- 7zip
-- Flameshot
-- Twinkle Tray
-- Codec Pack Mega
-- Malwarebytes
-- ClaudeCode
-- Internet Download Manager
-- Cloudflare Warp
-- OpenRGB
-- Tailscale
-- WinFsp for Cryptomator
-- NVCleanstall
-- Rufus
-- Regshot
-- Yarn
+#### Normal Mode
+| Category | Packages |
+|----------|----------|
+| Browser | Chrome |
+| Monitoring | HWMonitor, CrystalDisk Info |
+| Utilities | AnyDesk, Speedtest CLI, TreeSize, Lightshot, Twinkle Tray, Rufus, PowerToys |
+| Media | VLC, K-Lite Codec Pack Mega |
+| Security | Malwarebytes |
+| System | FanControl |
+
+#### Gaming Mode
+| Category | Packages |
+|----------|----------|
+| Browser | Chrome |
+| Game Launchers | Steam, Epic Games, Battle.net, EA Desktop, Ubisoft Connect |
+| Gaming | Discord, FACEIT Client, FACEIT AC, Google Play Games |
+| Monitoring | HWMonitor, CrystalDisk Info |
+| Utilities | Speedtest CLI, 7-Zip |
+| System | FanControl |
+
+#### Dev-Sys Eng Mode
+| Category | Packages |
+|----------|----------|
+| Browsers | Chrome, Brave, Firefox |
+| Game Launchers | Steam, Epic Games |
+| IDEs & Editors | VSCode (with extensions), Notepad++ |
+| Languages & Runtimes | Node.js, Python, Git, Yarn, .NET Desktop Runtime 8, PowerShell |
+| SDKs | Windows SDK, OpenSSL |
+| Dev Tools | GitHub Desktop, DBeaver, Oh-My-Posh, iPerf3, Claude Code |
+| Communication | Signal, Microsoft Teams |
+| Monitoring | HWMonitor, CrystalDisk Info |
+| Utilities | AnyDesk, Speedtest CLI, TreeSize, Total Commander, qBittorrent, 7-Zip, Flameshot, Twinkle Tray, Rufus, PowerToys, IDM |
+| Media | VLC, K-Lite Codec Pack Mega |
+| Security | Malwarebytes |
+| System | FanControl, EdgeWebView2 Runtime |
+
+#### VSCode Extensions (Dev-Sys Eng Mode)
+
+Automatically installed after VSCode setup:
+
+- **Docker**: GitLens, Docker, Docker Explorer, Docker Compose, Remote Containers
+- **Autocomplete**: Auto Close/Rename/Complete Tag, Spell Checker, XML
+- **Design**: Material Icon Theme
+- **PowerShell**: PowerShell, Run in PowerShell, Remote WSL
+- **Frontend**: React Native, CSS Peek, ES7 Snippets, ESLint, Path Intellisense, Prettier, Python, Color Highlight, JSON
+- **GitHub**: Pull Request, Copilot
+- **Linux**: Bash Debug, Bash Beautify, Bash IDE, YAML
+
+#### Additional Dev Setup (Dev-Sys Eng Mode)
+
+- WSL with Ubuntu installation
+- npm global configuration
+- OpenSSL PATH configuration
+- Claude Code installation
 
 </details>
 
-<details><summary>Remove Unused apps/Softwares</summary>&nbsp;
+<details><summary><strong>Remove Unused Apps</strong></summary>&nbsp;
 
 ![image](https://github.com/user-attachments/assets/6166868e-7eef-4012-b530-ee6c10eb6674)
 
-- Uninstalling default third party applications
-- It asks if you want disable Microsoft Copilot.
-- Uninstalling windows media player
-- Uninstalling work folders client
-- Uninstalling microsoft XPS document writer
-- Removing default fax printer
-- Uninstalling windows fax and scan services
-- Removing 3D folders
-- Microsoft edge privacy settings are being adjusted
-- It asks if you want remove unnecessary tasks
-- It asks if you want uninstall windows onedrive
-- It asks if you want uninstall windows edge
+#### Automatic Removal
+
+- Default third-party bloatware applications
+- Windows Media Player
+- Work Folders Client
+- Microsoft XPS Document Writer
+- Default fax printer
+- Windows Fax and Scan Services
+- 3D Object folders
+- Windows 11 Recall
+- Desktop shortcuts cleanup
+
+#### Privacy Adjustments
+
+- Microsoft Edge privacy settings hardened
+- Microsoft Office privacy settings hardened
+- Windows sync disabled
+
+#### Interactive Prompts (y/n)
+
+- Microsoft Copilot removal
+- Microsoft AI features removal
+- Unnecessary scheduled tasks removal
+- OneDrive uninstallation
+- Microsoft Edge uninstallation
 
 ![edge(1)](https://github.com/user-attachments/assets/3ee26ac9-7aeb-43cc-ae5a-567d730d1480)
 
 </details>
 
-<details><summary>Startup Script</summary>&nbsp;
+<details><summary><strong>Startup Script</strong></summary>&nbsp;
 
 ![image](https://github.com/user-attachments/assets/b2cc1a6e-7354-4f0b-a572-6a181bcd2a43)
 
-- This script adds a task named 'startup' to the task scheduler. This task does exactly the following;
+The script creates two scheduled tasks in Task Scheduler:
 
-> startup task > This task starts 3 minutes after the computer is turned on, runs again every 3 hours and performs the following operations.
+#### `startup` Task
+> 💡Runs 3 minutes after boot, repeats every 3 hours
 
-- It does expand for file explorer ribbon
-- It does removing stick keys
-- f12 is disabled for snipping tool
-- It does remove toggle keys
-- It does remove unnecessary tasks(update and such) in task scheduler
-- It does remove windows defender icon in taskbar
-- Disables unnecessary applications that open on connection (It varies depending on the mode selected at the beginning)
-- It does remove microsoft edge updates in task scheduler
-- It does remove google chrome updates in task scheduler
-- It does enable shot desktop button
-- Sync windows localtime
+- Expands File Explorer ribbon
+- Removes Sticky Keys and Toggle Keys
+- Disables F12 for Snipping Tool
+- Removes unnecessary scheduled tasks (updates, etc.)
+- Removes Windows Defender icon from taskbar
+- Disables unnecessary startup applications (varies by mode)
+- Removes Microsoft Edge update tasks
+- Removes Google Chrome update tasks
+- Enables Show Desktop button
+- Syncs Windows local time
 
-> upgrade-packages > This task runs 3 minutes after the computer is turned on and performs the following operations.
+#### `upgrade-packages` Task
+> 💡 Runs 3 minutes after boot
 
-- Updates all applications and packages with winget.
+- Updates all installed packages via `winget upgrade --all`
 
 </details>
 
-## Start the script
-> [!WARNING]  
-> Great care went into making sure this script does not unintentionally break any OS functionality, but use at your own risk!
+---
 
-> [!NOTE]  
-> If you have 100 Mbps internet, this script takes the following amount of time depending on the modes.
+## Usage
 
-**Normal**: 15min
+> [!WARNING]
+> This script makes extensive changes to Windows settings, registry, and services. While carefully tested to avoid breaking OS functionality, **use at your own risk**.
 
-**Gaming**: 30min
+> [!NOTE]
+> Approximate execution times with 100 Mbps internet:
+>
+> | Mode | Duration |
+> |------|----------|
+> | Normal | ~15 min |
+> | Gaming | ~30 min |
+> | Dev-Sys Eng | ~60 min |
 
-**Dev-Sys**: 60min
-
-> [!IMPORTANT]  
-> Powershell must be run as admin
+> [!IMPORTANT]
+> PowerShell must be run as **Administrator**
 
 ```powershell
 iwr "set.caglaryalcin.com" -UseB | iex
