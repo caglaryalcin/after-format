@@ -52,6 +52,14 @@ The script starts by asking you to choose one of three modes. All subsequent set
 
 - Startup scheduled task creation (recommended)
 
+#### NVIDIA Driver Optimization (Gaming mode, optional for others)
+
+The script uses [NVCleanstall](https://www.techpowerup.com/nvcleanstall/) to install NVIDIA graphics drivers **without bloatware**. Instead of NVIDIA's default installer — which bundles telemetry, GeForce Experience, HD Audio via HDMI, and other unnecessary components — NVCleanstall strips everything down and installs only the pure display driver and essential packages. This results in a cleaner, lighter, and more performant system.
+
+Additionally, [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfileInspector) is installed and a pre-configured base profile is imported to optimize driver-level settings for maximum gaming performance. A scheduled task is also created to automatically check for new driver updates at logon and every 4 hours.
+
+> In Gaming mode this runs automatically. In Normal and Dev-Sys modes, you will be prompted whether to apply NVIDIA optimizations.
+
 #### Taskbar & UI
 
 - Classic right-click context menu restoration
