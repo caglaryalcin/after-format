@@ -2505,51 +2505,119 @@ Set WinScriptHost = Nothing
         }
 
         RunOldDialog
-    }
 
-    Function Autohide {
-        Write-Host `n"(If you are using an OLED monitor, it is recommended.)" -ForegroundColor Gray
-        Write-Host "Do you want to " -NoNewline
-        Write-Host "auto-hide the taskbar?" -ForegroundColor Yellow -NoNewline
-        Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-        $response = Read-Host
+        Function Autohide {
+            Write-Host `n"(If you are using an OLED monitor, it is recommended.)" -ForegroundColor Gray
+            Write-Host "Do you want to " -NoNewline
+            Write-Host "auto-hide the taskbar?" -ForegroundColor Yellow -NoNewline
+            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+            $response = Read-Host
 
-        if ($response -eq 'y' -or $response -eq 'Y') {
+            if ($response -eq 'y' -or $response -eq 'Y') {
+                try {
+                    Write-Host "The taskbar is set to auto-hide..." -NoNewLine
+                    $p = 'HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3'
+                    $v = (Get-ItemProperty -Path $p).Settings
+                    $v[8] = 3
+                    Set-ItemProperty -Path $p -Name Settings -Value $v
+                    Stop-Process -f -ProcessName explorer
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                catch {
+                    Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                }
+            }
+            elseif ($response -eq 'n' -or $response -eq 'N') {
+                Write-Host "[The task will be visible continuously.]" -ForegroundColor Red -BackgroundColor Black
+            }
+            else {
+                Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
+                Autohide
+            }
+        }
+
+        Autohide
+
+        Function WinsatTest {
+            $start = @'
+=========================================
+    WinSAT Formal test is starting...    
+=========================================
+'@
+            Write-Host $start -ForegroundColor White
+            Write-Host ""
+
+            Start-Process -FilePath "winsat.exe" -ArgumentList "formal" -Wait -WindowStyle Hidden
+
+            $xmlPath = "$env:WINDIR\Performance\WinSAT\DataStore"
+            $latestFile = Get-ChildItem -Path $xmlPath -Filter "*Formal.Assessment*.xml" | 
+            Sort-Object LastWriteTime -Descending | 
+            Select-Object -First 1
+
+            if ($null -eq $latestFile) {
+                Write-Error "Result file not found."
+                return
+            }
+
             try {
-                Write-Host "The taskbar is set to auto-hide..." -NoNewLine
-                $p = 'HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3'
-                $v = (Get-ItemProperty -Path $p).Settings
-                $v[8] = 3
-                Set-ItemProperty -Path $p -Name Settings -Value $v
-                Stop-Process -f -ProcessName explorer
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                [xml]$xmlContent = Get-Content $latestFile.FullName
+                $scores = $xmlContent.WinSAT.WinSPR
+                $result = [PSCustomObject]@{
+                    'CPU Score'          = [double]$scores.CpuScore
+                    'RAM Score'          = [double]$scores.MemoryScore
+                    'GPU Score'          = [double]$scores.GraphicsScore
+                    'Gaming Score'       = [double]$scores.GamingScore
+                    'Disk Score'         = [double]$scores.DiskScore
+                    'Overall Base Score' = [double]$scores.SystemScore
+                }
+
+                $result.PSObject.Properties | ForEach-Object {
+                    if ($_.Name -eq "Overall Base Score") {
+                        Write-Host "-------------------- : -----------------"
+                    }
+                    Write-Host ("{0,-20} : {1}" -f $_.Name, $_.Value)
+                }
+        
+                $calcParts = @{
+                    'CPU Score'          = [double]$scores.CpuScore
+                    'RAM Score'          = [double]$scores.MemoryScore
+                    'GPU Score'          = [double]$scores.GraphicsScore
+                    'Gaming Score'       = [double]$scores.GamingScore
+                    'Disk Score'         = [double]$scores.DiskScore
+                    'Overall Base Score' = [double]$scores.SystemScore
+                }
+
+                $lowestPart = $calcParts.GetEnumerator() | Sort-Object Value | Select-Object -First 1
+
+                Write-Host ""
+                Write-Host "Lowest scoring ($($lowestPart.Value)) part: $($lowestPart.Name)" -ForegroundColor Red
+                Write-Host "You might consider updating this component." -ForegroundColor Yellow
+
+                $end = @'
+=========================================
+    WinSAT Formal test completed...
+=========================================
+'@
+
+                Write-Host `n$end -ForegroundColor White
             }
             catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+                Write-Error "Error reading XML data: $_"
             }
         }
-        elseif ($response -eq 'n' -or $response -eq 'N') {
-            Write-Host "[The task will be visible continuously.]" -ForegroundColor Red -BackgroundColor Black
-        }
-        else {
-            Write-Host "Invalid input. Please enter 'y' for yes or 'n' for no."
-            Autohide
-        }
-    }
 
-    Autohide
+        WinsatTest
+        Function UnpinEverything {
+            Param(
+                [string]$RemoveUnpin
+            )
         
-    Function UnpinEverything {
-        Param(
-            [string]$RemoveUnpin
-        )
+            try {
+                Write-Host "Unpin all taskbar pins..." -NoNewline
         
-        try {
-            Write-Host "Unpin all taskbar pins..." -NoNewline
-        
-            Function getExplorerVerb {
-                Param([string]$verb)
-                $getstring = @'
+                Function getExplorerVerb {
+                    Param([string]$verb)
+                    $getstring = @'
                     [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
                     public static extern IntPtr GetModuleHandle(string lpModuleName);
                     
@@ -2563,34 +2631,36 @@ Set WinScriptHost = Nothing
                         return sb.ToString();
                     }
 '@
-                $getstring = Add-Type $getstring -PassThru -Name GetStr -Using System.Text
+                    $getstring = Add-Type $getstring -PassThru -Name GetStr -Using System.Text
         
-                if ($verb -eq "PinToTaskbar") { $getstring[0]::GetString(5386) }  # String: Pin to Taskbar
-                if ($verb -eq "UnpinFromTaskbar") { $getstring[0]::GetString(5387) }  # String: Unpin from taskbar
-                if ($verb -eq "PinToStart") { $getstring[0]::GetString(51201) } # String: Pin to start
-                if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
-            }
-        
-            Function ConfigureTaskbarPinningApp {
-                Param([string]$RemoveUnpin, [string]$Verb)
-                $myProcessName = Get-Process | Where-Object { $_.ID -eq $pid } | ForEach-Object { $_.ProcessName }
-                if (-not ($myProcessName -like "explorer")) {
-                    return
+                    if ($verb -eq "PinToTaskbar") { $getstring[0]::GetString(5386) }  # String: Pin to Taskbar
+                    if ($verb -eq "UnpinFromTaskbar") { $getstring[0]::GetString(5387) }  # String: Unpin from taskbar
+                    if ($verb -eq "PinToStart") { $getstring[0]::GetString(51201) } # String: Pin to start
+                    if ($verb -eq "UnpinFromStart") { $getstring[0]::GetString(51394) } # String: Unpin from start
                 }
         
+                Function ConfigureTaskbarPinningApp {
+                    Param([string]$RemoveUnpin, [string]$Verb)
+                    $myProcessName = Get-Process | Where-Object { $_.ID -eq $pid } | ForEach-Object { $_.ProcessName }
+                    if (-not ($myProcessName -like "explorer")) {
+                        return
+                    }
+        
                     
+                }
+        
+                ConfigureTaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
+        
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
             }
-        
-            ConfigureTaskbarPinningApp -RemoveUnpin $RemoveUnpin -Verb "UnpinFromTaskbar"
-        
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+            catch {
+                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
+            }
         }
-        catch {
-            Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-        }
+        
+        UnpinEverything -RemoveUnpin ""
+    
     }
-        
-    UnpinEverything -RemoveUnpin ""
         
     ##########
     #endregion Taskbar Settings
