@@ -143,6 +143,7 @@ Additionally, [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfil
 - Recent files list disabled
 - Start menu tiles unpinned
 - Start menu: Recently Added, Recommended, Personalized Sites hidden
+- Winsal test with hardware bottleneck test
 - Known Windows errors fixed
 
 ![image](https://github.com/user-attachments/assets/869227a1-a299-4e20-8450-b0ba279409ff)
