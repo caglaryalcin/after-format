@@ -132,9 +132,6 @@ Additionally, [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfil
 - Toast and lock screen notifications disabled
 - Windows Media Player diagnostics disabled
 - Bing search in Start Menu disabled
-- Built-in Adobe Flash disabled in IE and Edge
-- Edge preload disabled
-- IE first run wizard disabled
 - Windows Media Player online access disabled
 - Recent files clearing enabled on exit
 
@@ -261,6 +258,7 @@ Automatically installed after VSCode setup:
 - **Frontend**: React Native, CSS Peek, ES7 Snippets, ESLint, Path Intellisense, Prettier, Python, Color Highlight, JSON
 - **GitHub**: Pull Request, Copilot
 - **Linux**: Bash Debug, Bash Beautify, Bash IDE, YAML
+- **AI**: Claude, Gemini
 
 #### Additional Dev Setup (Dev-Sys Eng Mode)
 

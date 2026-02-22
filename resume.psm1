@@ -334,6 +334,18 @@ if ($mode -eq "gaming") {
     SafeTaskKill "faceitservice.exe"
 }
 
+Function FixedENVS {
+    [Environment]::SetEnvironmentVariable("GIT_PATH", "C:\Program Files\Git\bin\bash.exe", "User")
+    $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+    if ($currentPath -notmatch "C:\\Program Files\\Git\\cmd") {
+        [Environment]::SetEnvironmentVariable("PATH", "$currentPath;C:\Program Files\Git\cmd", "User")
+    }
+}
+
+if ($mode -eq "developer") {
+    FixedENVS
+}
+
 Function Install-VSCodeExtensions {
     Write-Host "Installing Microsoft Visual Studio Code Extensions..." -NoNewline
     Start-Sleep 5
@@ -353,7 +365,8 @@ Function Install-VSCodeExtensions {
     "naumovs.color-highlight", "meezilla.json", "oliversturm.fix-json"
     $github = "github.vscode-pull-request-github", "github.copilot"
     $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode", "redhat.vscode-yaml"
-    $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux
+    $ai = "anthropic.claude-code", "google.geminicodeassist"
+    $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux + $ai
         
     $installed = & $vsCodePath --list-extensions
         
@@ -476,7 +489,7 @@ if ($mode -eq 'developer') {
 Ubuntu WSL Installed!
 ============================================
 "@ -ForegroundColor White
-Write-Host ""
+    Write-Host ""
 }
 
 # Malwarebytes trial reset
