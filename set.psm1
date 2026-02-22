@@ -1482,7 +1482,6 @@ Set WinScriptHost = Nothing
         
             $allSuccessful = $true
             $commands = @(
-                "powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c",
                 "powercfg /X monitor-timeout-ac 0",
                 "powercfg /X monitor-timeout-dc 0",
                 "powercfg /X standby-timeout-ac 0",
@@ -1552,9 +1551,6 @@ Set WinScriptHost = Nothing
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
         }
         
         DisableWebSearch
@@ -1582,11 +1578,8 @@ Set WinScriptHost = Nothing
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
         }
-        
+
         DisableSmartScreen
 
         function DisableSensors {
@@ -1622,7 +1615,7 @@ Set WinScriptHost = Nothing
                 }
 
                 foreach ($Property in $HKLMRegistryValues.Keys) {
-                    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\LocationAndSensors" -Name $Property -Type DWord -Value $RegistryValues[$Property]
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\LocationAndSensors" -Name $Property -Type DWord -Value $HKLMRegistryValues[$Property]
                 }
         
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
@@ -1665,11 +1658,8 @@ Set WinScriptHost = Nothing
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
         }
-        
+
         DisableTailoredExperiences
 
         Function DisableDownloadBlocking {
@@ -1730,12 +1720,9 @@ Set WinScriptHost = Nothing
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
 
         }
-        
+
         DisableAdobeFlash
 
         Function DisableEdgePreload {
@@ -1764,12 +1751,9 @@ Set WinScriptHost = Nothing
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
 
         }
-        
+
         DisableEdgePreload
 
         Function DisableIEFirstRun {
@@ -1819,12 +1803,9 @@ Set WinScriptHost = Nothing
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
 
         }
-        
+
         DisableMediaOnlineAccess
 
         Function DisableRestorePoints {
@@ -1880,11 +1861,8 @@ Set WinScriptHost = Nothing
             if ($allSuccessful) {
                 Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
         }
-        
+
         DisableRestorePoints
        
         Function SetUACLow {
@@ -2779,11 +2757,8 @@ Function PrivacySettings {
                     Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
                 }
             }
-            else {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
         }
-        
+
         BlockUrlsToHost
 
         # Disable Feedback 
