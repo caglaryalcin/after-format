@@ -66,11 +66,11 @@ ModeSelect
 $mode = (Get-ItemProperty -Path "HKCU:\Software\MyScript" -Name "Mode" -ErrorAction SilentlyContinue)."Mode"
 
 ##########
-#endregion Priority
+#endregion Mode
 ##########
 
 ##########
-#region System Settings 
+#region System Settings
 ##########
 Function SystemSettings {
     Write-Host "`n---------Adjusting System Settings" -ForegroundColor Blue -BackgroundColor Gray
@@ -155,10 +155,10 @@ Function SystemSettings {
             }
             else {
                 Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
-                DisableSnap
+                WinActivation
             }
         }
-        
+
         WinActivation
 
         Function Set-WindowsUpdatePause {
@@ -3263,227 +3263,41 @@ Function PrivacySettings {
         
         DisableUWPBackgroundApps
 
-        # Disable access to voice activation from UWP apps
-        Function DisableUWPVoiceActivation {
-            Write-Host "Disabling Access to Voice Activation from UWP Apps..." -NoNewline
+        # Disable UWP app access to AppPrivacy permissions
+        Function Set-UWPAppPrivacy {
+            param (
+                [string]$Label,
+                [string[]]$Properties
+            )
+            $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy"
+            Write-Host "Disabling Access to $Label from UWP Apps..." -NoNewline
             try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
+                if (!(Test-Path $regPath)) {
+                    New-Item -Path $regPath -Force | Out-Null
                 }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsActivateWithVoice" -Type DWord -Value 2
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsActivateWithVoiceAboveLock" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
+                foreach ($prop in $Properties) {
+                    Set-ItemProperty -Path $regPath -Name $prop -Type DWord -Value 2
+                }
+                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
             }
             catch {
                 Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
             }
         }
 
-        DisableUWPVoiceActivation
-
-        # Disable access to notifications from UWP apps
-        Function DisableUWPNotifications {
-            Write-Host "Disabling Access to Notifications from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessNotifications" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableUWPNotifications
-
-        # Disable access to account info from UWP apps
-        Function DisableUWPAccountInfo {
-            Write-Host "Disabling Access to account Info from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessAccountInfo" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableUWPAccountInfo
-
-        # Disable access to contacts from UWP apps
-        Function DisableUWPContacts {
-            Write-Host "Disabling Access to Contacts from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessContacts" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableUWPContacts
-
-        # Disable access to calendar from UWP apps
-        Function DisableUWPCalendar {
-            Write-Host "Disabling Access to Calendar from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessCalendar" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableUWPCalendar
-
-        # Disable access to phone calls from UWP apps
-        Function DisableUWPPhoneCalls {
-            Write-Host "Disabling Access to Phone Calls from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessPhone" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableUWPPhoneCalls
-
-        # Disable access to call history from UWP apps
-        Function DisableUWPCallHistory {
-            Write-Host "Disabling Access to Call History from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessCallHistory" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableUWPCallHistory
-
-        # Disable access to email from UWP apps
-        Function DisableUWPEmail {
-            Write-Host "Disabling Access to Email from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessEmail" -Type DWord -Value 2
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-        }
-
-        DisableUWPEmail
-
-        # Disable access to tasks from UWP apps
-        Function DisableUWPTasks {
-            Write-Host "Disabling Access to Tasks from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessTasks" -Type DWord -Value 2
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-        }
-
-        DisableUWPTasks
-
-        # Disable access to messaging (SMS, MMS) from UWP apps
-        Function DisableUWPMessaging {
-            Write-Host "Disabling Access to Messaging from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessMessaging" -Type DWord -Value 2
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        }
-
-        DisableUWPMessaging
-
-        # Disable access to radios (e.g. Bluetooth) from UWP apps
-        Function DisableUWPRadios {
-            Write-Host "Disabling Access to Radios from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessRadios" -Type DWord -Value 2
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-        }
-
-        DisableUWPRadios
-
-        # Disable access to other devices (unpaired, beacons, TVs etc.) from UWP apps
-        Function DisableUWPOtherDevices {
-            Write-Host "Disabling Access to Other Devices from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsSyncWithDevices" -Type DWord -Value 2
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-        }
-
-        DisableUWPOtherDevices
-
-        # Disable access to diagnostic information from UWP apps
-        Function DisableUWPDiagInfo {
-            Write-Host "Disabling Access to Diagnostic Information from UWP Apps..." -NoNewline
-            try {
-                If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy")) {
-                    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
-                }
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsGetDiagnosticInfo" -Type DWord -Value 2
-            }
-            catch {
-                Write-Host "[WARNING] $_" -ForegroundColor Red -BackgroundColor Black
-            }
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black 
-        }
-
-        DisableUWPDiagInfo
+        Set-UWPAppPrivacy -Label "Voice Activation"       -Properties @("LetAppsActivateWithVoice", "LetAppsActivateWithVoiceAboveLock")
+        Set-UWPAppPrivacy -Label "Notifications"          -Properties @("LetAppsAccessNotifications")
+        Set-UWPAppPrivacy -Label "Account Info"           -Properties @("LetAppsAccessAccountInfo")
+        Set-UWPAppPrivacy -Label "Contacts"               -Properties @("LetAppsAccessContacts")
+        Set-UWPAppPrivacy -Label "Calendar"               -Properties @("LetAppsAccessCalendar")
+        Set-UWPAppPrivacy -Label "Phone Calls"            -Properties @("LetAppsAccessPhone")
+        Set-UWPAppPrivacy -Label "Call History"           -Properties @("LetAppsAccessCallHistory")
+        Set-UWPAppPrivacy -Label "Email"                  -Properties @("LetAppsAccessEmail")
+        Set-UWPAppPrivacy -Label "Tasks"                  -Properties @("LetAppsAccessTasks")
+        Set-UWPAppPrivacy -Label "Messaging"              -Properties @("LetAppsAccessMessaging")
+        Set-UWPAppPrivacy -Label "Radios"                 -Properties @("LetAppsAccessRadios")
+        Set-UWPAppPrivacy -Label "Other Devices"          -Properties @("LetAppsSyncWithDevices")
+        Set-UWPAppPrivacy -Label "Diagnostic Information" -Properties @("LetAppsGetDiagnosticInfo")
 
         # Disable access to libraries and file system from UWP apps
         Function DisableUWPFileSystem {
