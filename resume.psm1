@@ -363,7 +363,7 @@ Function Install-VSCodeExtensions {
     $frontend = "emin.vscode-react-native-kit", "msjsdiag.vscode-react-native", "pranaygp.vscode-css-peek", "rodrigovallades.es7-react-js-snippets", 
     "dsznajder.es7-react-js-snippets", "dbaeumer.vscode-eslint", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "ms-python.python", 
     "naumovs.color-highlight", "meezilla.json", "oliversturm.fix-json"
-    $github = "github.vscode-pull-request-github", "github.copilot"
+    $github = "github.vscode-pull-request-github", "github.copilot-chat"
     $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode", "redhat.vscode-yaml"
     $ai = "anthropic.claude-code", "google.geminicodeassist"
     $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux + $ai
