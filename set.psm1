@@ -644,6 +644,22 @@ Set WinScriptHost = Nothing
         }
         
         DisableSnap
+
+        Function DeleteHomeIcon {
+            Write-Host "Deleting home icon on Desktop..." -NoNewline
+            $homeiconpath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+            $name = "{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
+
+            if (-not (Test-Path $homeiconpath)) {
+                New-Item -Path $homeiconpath -Force | Out-Null
+            }
+
+            Set-ItemProperty -Path $homeiconpath -Name $name -Value 1 -Type DWord -Force
+
+            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        }
+
+        DeleteHomeIcon
         Function TerminalConfig {
             Write-Host "`nDo you want to " -NoNewline
             Write-Host "configure Windows Terminal config?" -ForegroundColor Yellow -NoNewline
