@@ -368,32 +368,32 @@ Function Install-VSCodeExtensions {
     $ai = "anthropic.claude-code", "google.geminicodeassist"
     $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux + $ai
         
-    $installed = & $vsCodePath --list-extensions
+    $installed = & $vsCodePath --list-extensions 2>$null
         
     foreach ($vse in $vsextensions) {
-        if ($installed -contains $vse) {
-            Write-Host "$vse already installed." -ForegroundColor Gray
-        }
-        else {
+        if ($installed -notcontains $vse) {
             & $vsCodePath --install-extension $vse *>$null
             Start-Sleep -Seconds 3  # Give some time for the extension to install
-            $updatedInstalled = & $vsCodePath --list-extensions
         }
     }
+
+    $updatedInstalled = & $vsCodePath --list-extensions 2>$null
         
     $allExtensionsInstalled = $True
+    $failedExtension = ""
     foreach ($vse in $vsextensions) {
         if (-not ($updatedInstalled -contains $vse)) {
             $allExtensionsInstalled = $False
+            $failedExtension = $vse
             break
         }
     }
         
     if ($allExtensionsInstalled) {
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+        Write-Host " [DONE]" -ForegroundColor Green -BackgroundColor Black
     }
     else {
-        Write-Host "[INFO] VSCode's $vse plugin failed to install" -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host " [INFO] VSCode's $failedExtension plugin failed to install" -ForegroundColor Yellow -BackgroundColor Black
     }
 }
 
