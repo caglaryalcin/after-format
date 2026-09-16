@@ -43,7 +43,9 @@
         {"PackageIdentifier": ["powershell"]},
         {"PackageIdentifier": ["iperf3"]},
         {"PackageIdentifier": ["fancontrol"]},
-        {"PackageIdentifier": ["yarn"]}
+        {"PackageIdentifier": ["yarn"]},
+        {"PackageIdentifier": ["codex"]},
+        {"PackageIdentifier": ["Claude"]}
       ]
     }
   ]
