@@ -45,7 +45,8 @@
         {"PackageIdentifier": ["fancontrol"]},
         {"PackageIdentifier": ["yarn"]},
         {"PackageIdentifier": ["codex"]},
-        {"PackageIdentifier": ["Claude"]}
+        {"PackageIdentifier": ["Claude"]},
+        {"PackageIdentifier": ["Antigravity"]}
       ]
     }
   ]

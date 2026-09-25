@@ -365,7 +365,7 @@ Function Install-VSCodeExtensions {
     "naumovs.color-highlight", "meezilla.json", "oliversturm.fix-json"
     $github = "github.vscode-pull-request-github", "github.copilot-chat"
     $linux = "rogalmic.bash-debug", "shakram02.bash-beautify", "mads-hartmann.bash-ide-vscode", "redhat.vscode-yaml"
-    $ai = "anthropic.claude-code", "google.geminicodeassist"
+    $ai = "anthropic.claude-code"
     $vsextensions = $docker + $autocomplete + $design + $vspowershell + $frontend + $github + $linux + $ai
         
     $installed = & $vsCodePath --list-extensions 2>$null

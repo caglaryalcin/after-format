@@ -48,7 +48,8 @@
         {"PackageIdentifier": "ar51an.iPerf3"},
         {"PackageIdentifier": "Yarn.Yarn"},
         {"PackageIdentifier": "Anthropic.ClaudeCode"},
-        {"PackageIdentifier": "OpenAI.Codex"}
+        {"PackageIdentifier": "OpenAI.Codex"},
+        {"PackageIdentifier": "Google.Antigravity"}
       ]
     }
   ]
