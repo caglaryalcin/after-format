@@ -137,29 +137,92 @@ Function SystemSettings {
 
         SetHostname
 
-        Function WinActivation {
-            Write-Host `n"Would you like to " -NoNewline
-            Write-Host "active Windows?" -ForegroundColor Yellow -NoNewline
-            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
-            $response = Read-Host
+        Function Check-EmbeddedOEMKey {
+            try {
+                $embeddedKey = (
+                    Get-CimInstance `
+                        -ClassName SoftwareLicensingService `
+                        -ErrorAction Stop
+                ).OA3xOriginalProductKey
+            }
+            catch {
+                Write-Host "[The embedded OEM product key could not be checked.]" `
+                    -ForegroundColor Red -BackgroundColor Black
+                return
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($embeddedKey)) {
+                return
+            }
+
+            Write-Host "[No embedded OEM product key was found.]" `
+                -ForegroundColor Yellow -BackgroundColor Black
+
+            Function WinActivation {
+                Write-Host `n"Would you like to " -NoNewline
+                Write-Host "active Windows?" -ForegroundColor Yellow -NoNewline
+                Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+                $response = Read-Host
         
-            if ($response -eq 'y' -or $response -eq 'Y') {
-                Write-Host "Activating Windows..." -NoNewline
+                if ($response -eq 'y' -or $response -eq 'Y') {
+                    Write-Host "Activating Windows..." -NoNewline
                 
-                & ([ScriptBlock]::Create((curl.exe -s --doh-url https://1.1.1.1/dns-query https://get.activated.win | Out-String))) /K-Windows
+                    & ([ScriptBlock]::Create((curl.exe -s --doh-url https://1.1.1.1/dns-query https://get.activated.win | Out-String))) /K-Windows
         
-                Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                    Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
+                }
+                elseif ($response -eq 'n' -or $response -eq 'N') {
+                    Write-Host "[Windows activation will not be performed.]" -ForegroundColor Red -BackgroundColor Black
+                    Function Remove-WindowsActivationWatermark {
+                        while ($true) {
+                            Write-Host "`nWould you like to temporarily remove the Windows activation watermark? " `
+                                -ForegroundColor Yellow -NoNewline
+                            Write-Host "(y/n): " -ForegroundColor Green -NoNewline
+
+                            $response = Read-Host
+
+                            if ($response -match '^(y|yes)$') {
+                                $cscriptPath = Join-Path $env:SystemRoot "System32\cscript.exe"
+                                $slmgrPath = Join-Path $env:SystemRoot "System32\slmgr.vbs"
+
+                                Write-Host 'Removing the “Active Windows” watermark... ' -NoNewline
+
+                                & $cscriptPath //NoLogo $slmgrPath /rearm *>$null
+                                $exitCode = $LASTEXITCODE
+
+                                if ($exitCode -eq 0) {
+                                    Write-Host "[DONE]" `
+                                        -ForegroundColor Green -BackgroundColor Black
+                                }
+                                else {
+                                    Write-Host "[WARNING] $_" `
+                                        -ForegroundColor Red -BackgroundColor Black
+                                }
+
+                                return
+                            }
+
+                            if ($response -match '^(n|no)$') {
+                                return
+                            }
+
+                            Write-Host "[Invalid input. Please enter 'y' or 'n'.]" `
+                                -ForegroundColor Red -BackgroundColor Black
+                        }
+                    }
+
+                    Remove-WindowsActivationWatermark
+                }
+                else {
+                    Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
+                    WinActivation
+                }
             }
-            elseif ($response -eq 'n' -or $response -eq 'N') {
-                Write-Host "[Windows activation will not be performed.]" -ForegroundColor Red -BackgroundColor Black
-            }
-            else {
-                Write-Host "[Invalid input. Please enter 'y' for yes or 'n' for no.]" -ForegroundColor Red -BackgroundColor Black
-                WinActivation
-            }
+
+            WinActivation
         }
 
-        WinActivation
+        Check-EmbeddedOEMKey
 
         Function Set-WindowsUpdatePause {
             Write-Host `n"Would you like to " -NoNewLine
