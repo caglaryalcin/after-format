@@ -2813,6 +2813,7 @@ Function PrivacySettings {
             }
 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\TabletTip\1.7" -Name "EnableTextPrediction" -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\TabletTip\1.7" -Name "EnableAutocorrection" -Value 0
             Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
         }
 
